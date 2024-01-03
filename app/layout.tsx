@@ -4,7 +4,7 @@ import { ReactQueryProvider, RecoilProvider } from "@/components/providers";
 
 export const metadata: Metadata = {
 	title: "NCA",
-	description: "CRM for MCA",
+	description: "CRM for NCA",
 };
 
 export default function RootLayout({
