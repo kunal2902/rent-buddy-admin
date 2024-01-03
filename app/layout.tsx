@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ReactQueryProvider } from "@/components/providers";
+import { ReactQueryProvider, RecoilProvider } from "@/components/providers";
 
 export const metadata: Metadata = {
 	title: "NCA",
@@ -15,7 +15,9 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body>
-				<ReactQueryProvider>{children}</ReactQueryProvider>
+				<ReactQueryProvider>
+					<RecoilProvider>{children}</RecoilProvider>
+				</ReactQueryProvider>
 			</body>
 		</html>
 	);
