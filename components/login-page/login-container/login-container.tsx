@@ -2,6 +2,7 @@
 
 import { SolidBtn, TextInput } from "@/components/elements";
 import { useLoginContainer } from "./hook";
+import Link from "next/link";
 
 const LoginContainer = () => {
 	const { email, onEmailChange, password, onPasswordChange } =
@@ -12,6 +13,13 @@ const LoginContainer = () => {
 			<h1 className="text-2xl font-semibold text-light-primary-text">
 				Sign in to NCA
 			</h1>
+
+			<div className="w-full flex text-sm mt-4">
+				<p className="text-grey-800">{"Don't have an account?"}</p>
+				<Link href="#" className="ml-1">
+					<p className="underline text-primary-main">Get Started</p>
+				</Link>
+			</div>
 
 			<hr className="mt-5 border-t border-t-grey-400" />
 
@@ -30,6 +38,14 @@ const LoginContainer = () => {
 				className="mt-5"
 				placeholder="******"
 			/>
+
+			<div className="w-full flex justify-end">
+				<Link href="#">
+					<p className="text-sm mt-5 hover:underline text-primary-main font-public-sans">
+						Forgot Password?
+					</p>
+				</Link>
+			</div>
 
 			<SolidBtn
 				title="Login"
