@@ -35,6 +35,8 @@ const config = {
 			fontFamily: {
 				"public-sans": "'Public Sans', sans-serif",
 				barlow: "'Barlow', sans-serif",
+				"geist-sans": ["var(--font-geist-sans)"],
+				"geist-mono": ["var(--font-geist-mono)"],
 			},
 			colors: {
 				white: "#ffffff",
