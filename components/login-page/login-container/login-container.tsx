@@ -27,7 +27,7 @@ const LoginContainer = () => {
 				title="Email"
 				value={email}
 				onChange={onEmailChange}
-				className="mt-5"
+				className="mt-6"
 				placeholder="abc@gmail.com"
 			/>
 
@@ -35,13 +35,13 @@ const LoginContainer = () => {
 				title="Password"
 				value={password}
 				onChange={onPasswordChange}
-				className="mt-5"
+				className="mt-6"
 				placeholder="******"
 			/>
 
 			<div className="w-full flex justify-end">
 				<Link href="#">
-					<p className="text-sm mt-5 hover:underline text-primary-main font-public-sans">
+					<p className="text-sm mt-6 hover:underline text-primary-main font-public-sans">
 						Forgot Password?
 					</p>
 				</Link>
@@ -49,7 +49,7 @@ const LoginContainer = () => {
 
 			<SolidBtn
 				title="Login"
-				className="mt-5 py-3 rounded-lg"
+				className="mt-6 py-3 rounded-lg"
 				titleClassName="font-medium"
 			/>
 		</div>
