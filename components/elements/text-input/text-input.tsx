@@ -1,3 +1,5 @@
+"use client";
+
 import { twMerge } from "tailwind-merge";
 
 interface Props {
@@ -25,7 +27,7 @@ const TextInput = (props: Props) => {
 		<div className={twMerge("w-full flex flex-col items-start", className)}>
 			<p
 				className={twMerge(
-					"font-public-sans text-light-primary-text",
+					"font-public-sans text-light-primary-text text-sm",
 					titleClassName
 				)}
 			>

@@ -1,6 +1,6 @@
 "use client";
 
-import { TextInput } from "@/components/elements";
+import { SolidBtn, TextInput } from "@/components/elements";
 import { useLoginContainer } from "./hook";
 
 const LoginContainer = () => {
@@ -13,7 +13,7 @@ const LoginContainer = () => {
 				Sign in to NCA
 			</h1>
 
-			<hr className="my-3 border-t border-t-grey-400" />
+			<hr className="mt-5 border-t border-t-grey-400" />
 
 			<TextInput
 				title="Email"
@@ -29,6 +29,12 @@ const LoginContainer = () => {
 				onChange={onPasswordChange}
 				className="mt-5"
 				placeholder="******"
+			/>
+
+			<SolidBtn
+				title="Login"
+				className="mt-5 py-3 rounded-lg"
+				titleClassName="font-medium"
 			/>
 		</div>
 	);
