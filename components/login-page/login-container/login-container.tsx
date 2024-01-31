@@ -2,8 +2,10 @@
 
 const LoginContainer = () => {
 	return (
-		<div className="w-full sm:max-w-[450px] flex flex-col border border-black rounded-md px-3 py-4">
-			<h1 className="text-2xl font-semibold">Sign in to NCA CRM</h1>
+		<div className="w-full sm:max-w-[450px] flex flex-col bg-light-background-paper rounded-xl px-7 py-8 shadow-md shadow-grey-500/40">
+			<h1 className="text-2xl font-medium text-light-primary-text">
+				Sign in to Nca
+			</h1>
 		</div>
 	);
 };
