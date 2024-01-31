@@ -9,7 +9,7 @@ const LoginContainer = () => {
 		useLoginContainer();
 
 	return (
-		<div className="w-full sm:max-w-[450px] flex flex-col bg-light-background-paper rounded-xl px-9 py-10 shadow-md shadow-grey-500/40">
+		<div className="w-full sm:max-w-[420px] flex flex-col bg-light-background-paper rounded-xl px-9 py-10 shadow-md shadow-grey-500/40">
 			<h1 className="text-2xl font-semibold text-light-primary-text">
 				Sign in to NCA
 			</h1>
