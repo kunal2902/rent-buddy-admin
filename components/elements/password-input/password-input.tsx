@@ -58,7 +58,7 @@ const PasswordInput = (props: Props) => {
 
 			<div
 				className={twMerge(
-					"relative mt-3 w-full flex",
+					"relative mt-1 w-full flex",
 					inputDivClassName
 				)}
 			>
