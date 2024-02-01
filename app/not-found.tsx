@@ -1,5 +1,7 @@
 import { AuthNavbar } from "@/components/common";
 import { SolidBtn } from "@/components/elements";
+import NotFoundHero from "@/assets/illustrations/404.png";
+import Image from "next/image";
 
 const NotFoundPage = () => {
 	return (
@@ -16,9 +18,17 @@ const NotFoundPage = () => {
 					}
 				</p>
 
+				<Image
+					src={NotFoundHero.src}
+					width={NotFoundHero.width}
+					height={NotFoundHero.height}
+					className="w-80 h-60 object-contain mt-10"
+					alt="404 Image"
+				/>
+
 				<SolidBtn
 					title="Go to Home"
-					className="w-fit px-5 py-3 mt-5 bg-primary-main hover:bg-primary-main/90"
+					className="w-fit px-5 py-3 mt-6 bg-primary-main hover:bg-primary-main/90"
 					link="/"
 					type="internal"
 				/>
