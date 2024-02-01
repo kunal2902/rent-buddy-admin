@@ -3,6 +3,7 @@ import { useState } from "react";
 export const useLoginContainer = () => {
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
+	const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
 	const onTextChange =
 		(setState: React.Dispatch<React.SetStateAction<string>>) =>
@@ -10,10 +11,17 @@ export const useLoginContainer = () => {
 			setState(e.target.value);
 		};
 
+	const toggleBooleanState =
+		(setState: React.Dispatch<React.SetStateAction<boolean>>) => () => {
+			setState((prev) => !prev);
+		};
+
 	return {
 		email,
 		onEmailChange: onTextChange(setEmail),
 		password,
 		onPasswordChange: onTextChange(setPassword),
+		isPasswordVisible,
+		togglePasswordVisibility: toggleBooleanState(setIsPasswordVisible),
 	};
 };
