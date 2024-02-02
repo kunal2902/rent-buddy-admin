@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const AuthNavbar = () => {
 	return (
-		<div className="w-full pt-6 pb-2 px-6 fixed top-0 left-0 bg-light-background-natural z-10">
+		<div className="w-full pt-6 pb-2 px-6 fixed top-0 left-0 bg-gradient-to-r from-light-background-natural to-light-background-default z-10">
 			<Link href="/">
 				<Image
 					src={Logo.src}
