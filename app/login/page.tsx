@@ -5,7 +5,7 @@ const LoginPage = () => {
 	return (
 		<>
 			<AuthNavbar />
-			<main className="w-full min-h-screen flex bg-light-background-natural flex-col items-center justify-center font-public-sans px-4 pt-8">
+			<main className="w-full min-h-screen flex bg-gradient-to-r from-light-background-natural to-light-background-default flex-col items-center justify-center font-public-sans px-4 pt-8">
 				<LoginContainer />
 			</main>
 		</>

@@ -1,12 +1,18 @@
 "use client";
 
-import { SolidBtn, TextInput } from "@/components/elements";
+import { PasswordInput, SolidBtn, TextInput } from "@/components/elements";
 import { useLoginContainer } from "./hook";
 import Link from "next/link";
 
 const LoginContainer = () => {
-	const { email, onEmailChange, password, onPasswordChange } =
-		useLoginContainer();
+	const {
+		email,
+		onEmailChange,
+		password,
+		onPasswordChange,
+		isPasswordVisible,
+		togglePasswordVisibility,
+	} = useLoginContainer();
 
 	return (
 		<div className="w-full sm:max-w-[420px] flex flex-col bg-light-background-paper rounded-xl px-9 py-10 shadow-md shadow-grey-500/40">
@@ -31,12 +37,16 @@ const LoginContainer = () => {
 				placeholder="abc@gmail.com"
 			/>
 
-			<TextInput
+			<PasswordInput
 				title="Password"
 				value={password}
 				onChange={onPasswordChange}
 				className="mt-6"
 				placeholder="******"
+				isPasswordVisible={isPasswordVisible}
+				togglePasswordVisibility={togglePasswordVisibility}
+				visibleIconSize={20}
+				invisibleIconSize={20}
 			/>
 
 			<div className="w-full flex justify-end">
