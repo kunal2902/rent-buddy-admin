@@ -1,7 +1,12 @@
+import { MainNavbar } from "@/components/common";
+
 export default function Home() {
 	return (
-		<main className="flex min-h-screen w-full flex-col">
-			<h1>Main Webpage</h1>
-		</main>
+		<>
+			<MainNavbar />
+			<main className="flex min-h-screen w-full bg-light-background-natural flex-col pt-14">
+				<h1>Main Webpage</h1>
+			</main>
+		</>
 	);
 }
