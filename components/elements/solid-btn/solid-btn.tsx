@@ -39,6 +39,7 @@ const SolidBtnCore = (props: CoreProps) => {
 				className
 			)}
 			onClick={onClick}
+			aria-label={`${title} button`}
 		>
 			{LeftIcon && (
 				<LeftIcon

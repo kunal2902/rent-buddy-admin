@@ -1,7 +1,12 @@
+import { MainNavbar, MainSidebar } from "@/components/common";
+import { HomeScreen } from "@/components/screens";
+
 export default function Home() {
 	return (
-		<main className="flex min-h-screen flex-col items-center justify-between p-24">
-			<h1>Main Webpage</h1>
-		</main>
+		<>
+			<MainNavbar />
+			<MainSidebar />
+			<HomeScreen />
+		</>
 	);
 }
