@@ -36,6 +36,7 @@ const MainNavbar = () => {
 				<SolidBtn
 					title="POS"
 					className="w-fit px-5 py-1.5 rounded-md bg-black"
+					link="/pos"
 				/>
 			</div>
 		</div>
