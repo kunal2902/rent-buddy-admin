@@ -1,7 +1,7 @@
 import { sidebarStateAtom } from "@/atoms";
 import { useRecoilValue } from "recoil";
 
-export const useTaxesScreen = () => {
+export const useSettingsScreen = () => {
 	const isSidebarOpen = useRecoilValue<boolean>(sidebarStateAtom);
 
 	return {
