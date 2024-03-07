@@ -3,9 +3,8 @@ import {
 	ShieldCheck,
 	Users,
 	Warehouse,
-	Receipt,
-	Percent,
 	Clipboard,
+	Settings,
 } from "lucide-react";
 export const MainSidebarItems = [
 	{
@@ -28,26 +27,20 @@ export const MainSidebarItems = [
 	},
 	{
 		id: 4,
-		title: "Users",
-		link: "/users",
+		title: "Team",
+		link: "/team",
 		Icon: ShieldCheck,
 	},
 	{
 		id: 5,
-		title: "Receipts",
-		link: "/receipts",
-		Icon: Receipt,
-	},
-	{
-		id: 6,
-		title: "Taxes",
-		link: "/taxes",
-		Icon: Percent,
-	},
-	{
-		id: 7,
 		title: "Reports",
 		link: "/reports",
 		Icon: Clipboard,
+	},
+	{
+		id: 6,
+		title: "Settings",
+		link: "/settings",
+		Icon: Settings,
 	},
 ];
