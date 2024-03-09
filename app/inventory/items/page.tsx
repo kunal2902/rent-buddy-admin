@@ -5,7 +5,6 @@ const InventoryPage = () => {
 	return (
 		<>
 			<MainNavbar />
-			{/* <MainSidebar /> */}
 			<InventorySidebar />
 			<InventoryScreen />
 		</>

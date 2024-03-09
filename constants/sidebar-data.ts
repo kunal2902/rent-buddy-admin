@@ -22,7 +22,7 @@ export const MainSidebarItems = [
 	{
 		id: 2,
 		title: "Inventory",
-		link: "/inventory",
+		link: "/inventory/items",
 		Icon: Warehouse,
 	},
 	{
