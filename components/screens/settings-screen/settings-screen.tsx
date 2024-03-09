@@ -1,10 +1,10 @@
 "use client";
 
 import { DashboardPageHeader } from "@/components/common";
-import { useHomeScreen } from "./hook";
+import { useSettingsScreen } from "./hook";
 
-const HomeScreen = () => {
-	const { isSidebarOpen } = useHomeScreen();
+const ReceiptsScreen = () => {
+	const { isSidebarOpen } = useSettingsScreen();
 
 	return (
 		<main
@@ -13,11 +13,11 @@ const HomeScreen = () => {
 			}`}
 		>
 			<DashboardPageHeader
-				heading="Hi, Welcome back 👋"
+				heading="Settings"
 				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
 			/>
 		</main>
 	);
 };
 
-export default HomeScreen;
+export default ReceiptsScreen;
