@@ -36,7 +36,7 @@ const SidebarBtn = (props: Props) => {
 		<Link className={twMerge("w-full flex", linkClassName)} href={link}>
 			<button
 				className={twMerge(
-					"w-full flex items-end my-1.5 py-2.5 font-public-sans transition-none",
+					"w-full flex items-center my-1.5 py-2.5 font-public-sans transition-none",
 					`${
 						isSidebarOpen
 							? "justify-start px-3 rounded-md hover:bg-gray-200/70 hover:text-light-secondary-text"
@@ -66,7 +66,7 @@ const SidebarBtn = (props: Props) => {
 				{isSidebarOpen && (
 					<p
 						className={twMerge(
-							"text-end my-0 py-0",
+							"text-start my-0 py-0",
 							titleClassName
 						)}
 					>
