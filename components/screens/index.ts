@@ -5,3 +5,4 @@ export * from "./settings-screen/index";
 export * from "./customers-screen/index";
 export * from "./categories-screen/index";
 export * from "./sub-categories-screen/index";
+export * from "./item-types-screen/index";

@@ -60,8 +60,8 @@ export const InventorySidebarItems = [
 	},
 	{
 		id: 2,
-		title: "Item Type",
-		link: "/inventory/item-type",
+		title: "Item Types",
+		link: "/inventory/item-types",
 		Icon: ScanBarcode,
 	},
 	{
