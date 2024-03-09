@@ -1,11 +1,11 @@
 "use client";
 
 import { DashboardPageHeader } from "@/components/common";
-import { useInventoryScreen } from "./hook";
+import { useItemsScreen } from "./hook";
 import { Plus } from "lucide-react";
 
-const InventoryScreen = () => {
-	const { isSidebarOpen } = useInventoryScreen();
+const ItemsScreen = () => {
+	const { isSidebarOpen } = useItemsScreen();
 
 	return (
 		<main
@@ -14,12 +14,14 @@ const InventoryScreen = () => {
 			}`}
 		>
 			<DashboardPageHeader
-				heading="Inventory"
+				heading="Items"
 				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
 				button
 				buttonProps={{
-					title: "New Product",
+					title: "New Item",
 					className: "rounded-md w-fit text-grey-100 text-sm",
+					titleClassName: "sm:flex hidden",
+					leftIconClassName: "sm:mr-2 mr-0",
 					LeftIcon: Plus,
 					leftIconSize: 20,
 				}}
@@ -28,4 +30,4 @@ const InventoryScreen = () => {
 	);
 };
 
-export default InventoryScreen;
+export default ItemsScreen;

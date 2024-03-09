@@ -1,14 +1,14 @@
 import { MainNavbar, InventorySidebar } from "@/components/common";
-import { InventoryScreen } from "@/components/screens";
+import { ItemsScreen } from "@/components/screens";
 
-const InventoryPage = () => {
+const ItemsPage = () => {
 	return (
 		<>
 			<MainNavbar />
 			<InventorySidebar />
-			<InventoryScreen />
+			<ItemsScreen />
 		</>
 	);
 };
 
-export default InventoryPage;
+export default ItemsPage;

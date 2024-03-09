@@ -1,7 +1,7 @@
 import { sidebarStateAtom } from "@/atoms";
 import { useRecoilValue } from "recoil";
 
-export const useInventoryScreen = () => {
+export const useItemsScreen = () => {
 	const isSidebarOpen = useRecoilValue<boolean>(sidebarStateAtom);
 
 	return {
