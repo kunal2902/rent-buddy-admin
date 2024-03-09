@@ -5,7 +5,13 @@ import {
 	Warehouse,
 	Clipboard,
 	Settings,
+	ScanLine,
+	ScanBarcode,
+	Tag,
+	Tags,
+	List,
 } from "lucide-react";
+
 export const MainSidebarItems = [
 	{
 		id: 1,
@@ -42,5 +48,38 @@ export const MainSidebarItems = [
 		title: "Settings",
 		link: "/settings",
 		Icon: Settings,
+	},
+];
+
+export const InventorySidebarItems = [
+	{
+		id: 1,
+		title: "Items",
+		link: "/inventory/items",
+		Icon: ScanLine,
+	},
+	{
+		id: 2,
+		title: "Item Type",
+		link: "/inventory/item-type",
+		Icon: ScanBarcode,
+	},
+	{
+		id: 3,
+		title: "Category",
+		link: "/inventory/category",
+		Icon: Tag,
+	},
+	{
+		id: 4,
+		title: "Sub Category",
+		link: "/inventory/sub-category",
+		Icon: Tags,
+	},
+	{
+		id: 5,
+		title: "Custom Attributes",
+		link: "/inventory/custom-attributes",
+		Icon: List,
 	},
 ];
