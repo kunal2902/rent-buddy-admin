@@ -26,6 +26,8 @@ type Props = {
 				RightIcon?: LucideIcon | IconType;
 				rightIconSize?: number;
 				rightIconClassName?: string;
+				link?: string;
+				type?: "internal" | "external";
 			};
 	  }
 );

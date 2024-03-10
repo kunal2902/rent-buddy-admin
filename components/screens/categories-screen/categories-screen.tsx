@@ -24,6 +24,8 @@ const CategoriesScreen = () => {
 					leftIconClassName: "sm:mr-2 mr-0",
 					LeftIcon: Plus,
 					leftIconSize: 20,
+					type: "internal",
+					link: "/inventory/categories/create"
 				}}
 			/>
 		</main>
