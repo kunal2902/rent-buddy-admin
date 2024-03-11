@@ -22,7 +22,7 @@ export const MainSidebarItems = [
 	{
 		id: 2,
 		title: "Inventory",
-		link: "/inventory",
+		link: "/inventory/items",
 		Icon: Warehouse,
 	},
 	{
@@ -60,20 +60,20 @@ export const InventorySidebarItems = [
 	},
 	{
 		id: 2,
-		title: "Item Type",
-		link: "/inventory/item-type",
+		title: "Item Types",
+		link: "/inventory/item-types",
 		Icon: ScanBarcode,
 	},
 	{
 		id: 3,
-		title: "Category",
-		link: "/inventory/category",
+		title: "Categories",
+		link: "/inventory/categories",
 		Icon: Tag,
 	},
 	{
 		id: 4,
-		title: "Sub Category",
-		link: "/inventory/sub-category",
+		title: "Sub Categories",
+		link: "/inventory/sub-categories",
 		Icon: Tags,
 	},
 	{
