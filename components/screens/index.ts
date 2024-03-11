@@ -7,3 +7,4 @@ export * from "./categories-screen/index";
 export * from "./sub-categories-screen/index";
 export * from "./item-types-screen/index";
 export * from "./custom-attributes-page/index";
+export * from "./create-category-screen/index";

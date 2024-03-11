@@ -1,6 +1,4 @@
-import { SolidBtn } from "@/components/elements";
-import { LucideIcon } from "lucide-react";
-import { IconType } from "react-icons";
+import { SolidBtn, SolidBtnProps } from "@/components/elements";
 import { twMerge } from "tailwind-merge";
 
 type Props = {
@@ -13,22 +11,7 @@ type Props = {
 	  }
 	| {
 			button: true;
-			buttonProps: {
-				className?: string;
-				onClick?: (
-					e?: React.MouseEvent<HTMLButtonElement> | undefined
-				) => void;
-				title: string;
-				titleClassName?: string;
-				LeftIcon?: LucideIcon | IconType;
-				leftIconSize?: number;
-				leftIconClassName?: string;
-				RightIcon?: LucideIcon | IconType;
-				rightIconSize?: number;
-				rightIconClassName?: string;
-				link?: string;
-				type?: "internal" | "external";
-			};
+			buttonProps: SolidBtnProps;
 	  }
 );
 
