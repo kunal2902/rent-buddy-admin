@@ -1,3 +1,13 @@
+import { useRouter } from "next/navigation";
+
 export const useCreateCategoryScreen = () => {
-	return {};
+	const router = useRouter();
+
+	const onBackClick = () => {
+		router.back();
+	};
+
+	return {
+		onBackClick,
+	};
 };
