@@ -66,7 +66,7 @@ const SolidBtnCore = (props: CoreProps) => {
 	);
 };
 
-type Props = CoreProps & {
+export type Props = CoreProps & {
 	link?: string;
 	type?: "internal" | "external";
 };
