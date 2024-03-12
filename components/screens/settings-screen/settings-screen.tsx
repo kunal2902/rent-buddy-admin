@@ -1,10 +1,10 @@
 "use client";
 
 import { DashboardPageHeader } from "@/components/common";
-import { useSettingsScreen } from "./hook";
+import { useSettingScreen } from "./hook";
 
-const ReceiptsScreen = () => {
-	const { isSidebarOpen } = useSettingsScreen();
+const SettingScreen = () => {
+	const { isSidebarOpen } = useSettingScreen();
 
 	return (
 		<main
@@ -20,4 +20,4 @@ const ReceiptsScreen = () => {
 	);
 };
 
-export default ReceiptsScreen;
+export default SettingScreen;
