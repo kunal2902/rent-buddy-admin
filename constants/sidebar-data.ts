@@ -119,4 +119,10 @@ export const SettingSidebarItems = [
 		link: "/settings/email-setting",
 		Icon: Mail,
 	},
+	{
+		id: 6,
+		title: "Taxes",
+		link: "/settings/taxes",
+		Icon: Mail,
+	},
 ];
