@@ -1,10 +1,10 @@
 "use client";
 
 import { DashboardPageHeader } from "@/components/common";
-import { useSettingScreen } from "./hook";
+import { usePaymentGatewayScreen } from "./hook";
 
-const SettingScreen = () => {
-	const { isSidebarOpen } = useSettingScreen();
+const PaymentGatewayScreen = () => {
+	const { isSidebarOpen } = usePaymentGatewayScreen();
 
 	return (
 		<main
@@ -13,11 +13,11 @@ const SettingScreen = () => {
 			}`}
 		>
 			<DashboardPageHeader
-				heading="Settings"
+				heading="Payment Gateway"
 				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
 			/>
 		</main>
 	);
 };
 
-export default SettingScreen;
+export default PaymentGatewayScreen;

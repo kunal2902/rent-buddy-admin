@@ -1,10 +1,10 @@
 "use client";
 
 import { DashboardPageHeader } from "@/components/common";
-import { useSettingScreen } from "./hook";
+import { useEmailScreen } from "./hook";
 
-const SettingScreen = () => {
-	const { isSidebarOpen } = useSettingScreen();
+const EmailScreen = () => {
+	const { isSidebarOpen } = useEmailScreen();
 
 	return (
 		<main
@@ -13,11 +13,11 @@ const SettingScreen = () => {
 			}`}
 		>
 			<DashboardPageHeader
-				heading="Settings"
+				heading="Email"
 				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
 			/>
 		</main>
 	);
 };
 
-export default SettingScreen;
+export default EmailScreen;

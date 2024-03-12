@@ -10,6 +10,10 @@ import {
 	Tag,
 	Tags,
 	List,
+	LayoutPanelTop,
+	BookOpenText,
+	CreditCard,
+	Mail,
 } from "lucide-react";
 
 export const MainSidebarItems = [
@@ -81,5 +85,44 @@ export const InventorySidebarItems = [
 		title: "Custom Attributes",
 		link: "/inventory/custom-attributes",
 		Icon: List,
+	},
+];
+
+export const SettingSidebarItems = [
+	{
+		id: 1,
+		title: "General Setting",
+		link: "/settings/general-setting",
+		Icon: Settings,
+	},
+	{
+		id: 2,
+		title: "Page Layout",
+		link: "/settings/page-layout",
+		Icon: LayoutPanelTop,
+	},
+	{
+		id: 3,
+		title: "Pages",
+		link: "/settings/pages",
+		Icon: BookOpenText,
+	},
+	{
+		id: 4,
+		title: "Payment Gateway",
+		link: "/settings/payment-gateway",
+		Icon: CreditCard,
+	},
+	{
+		id: 5,
+		title: "Email Setting",
+		link: "/settings/email-setting",
+		Icon: Mail,
+	},
+	{
+		id: 6,
+		title: "Taxes",
+		link: "/settings/taxes",
+		Icon: Mail,
 	},
 ];

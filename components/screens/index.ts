@@ -8,3 +8,8 @@ export * from "./sub-categories-screen/index";
 export * from "./item-types-screen/index";
 export * from "./custom-attributes-page/index";
 export * from "./create-category-screen/index";
+export * from "./page-layout-screen/index";
+export * from "./page-screen/index";
+export * from "./payment-gateway-screen/index";
+export * from "./email-screen/index";
+export * from "./taxes-screen/index";

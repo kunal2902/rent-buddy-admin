@@ -1,7 +1,7 @@
 import { sidebarStateAtom } from "@/atoms";
 import { useRecoilValue } from "recoil";
 
-export const useSettingScreen = () => {
+export const usePageLayoutScreen = () => {
 	const isSidebarOpen = useRecoilValue<boolean>(sidebarStateAtom);
 
 	return {

@@ -9,7 +9,6 @@ import { useMainNavbar } from "./hook";
 
 const MainNavbar = () => {
 	const { toggleSidebar } = useMainNavbar();
-
 	return (
 		<div className="w-full px-4 pt-3 pb-3 flex fixed top-0 left-0 bg-light-background-natural items-center justify-between z-30">
 			<div className="flex items-center">
