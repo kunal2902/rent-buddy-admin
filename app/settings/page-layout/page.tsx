@@ -1,11 +1,11 @@
-import { SettingSidebar, MainNavbar } from "@/components/common";
+import { MainNavbar, MainSidebar } from "@/components/common";
 import { PageLayoutScreen } from "@/components/screens";
 
 const PageLayoutPage = () => {
 	return (
 		<>
 			<MainNavbar />
-			<SettingSidebar />
+			<MainSidebar />
 			<PageLayoutScreen />
 		</>
 	);
