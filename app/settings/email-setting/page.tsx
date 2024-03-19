@@ -1,11 +1,11 @@
-import { SettingSidebar, MainNavbar } from "@/components/common";
+import { MainNavbar, MainSidebar } from "@/components/common";
 import { EmailScreen } from "@/components/screens";
 
 const EmailPage = () => {
 	return (
 		<>
 			<MainNavbar />
-			<SettingSidebar />
+			<MainSidebar />
 			<EmailScreen />
 		</>
 	);

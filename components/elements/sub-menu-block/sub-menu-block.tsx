@@ -7,13 +7,14 @@ import { useSubMenuBlock } from "./hook";
 import { SidebarBtn } from "../sidebar-btn";
 
 interface Props {
+	id: string;
 	title: string;
 	Icon: IconType | LucideIcon;
 	iconSize?: number;
 	iconClassName?: string;
 	titleClassName?: string;
 	options: Array<{
-		id: number;
+		id: string;
 		title: string;
 		Icon: IconType | LucideIcon;
 		link: string;
@@ -22,11 +23,18 @@ interface Props {
 }
 
 const SubMenuBlock = (props: Props) => {
-	const { title, Icon, options, iconClassName, iconSize, titleClassName } =
-		props;
+	const {
+		title,
+		Icon,
+		options,
+		iconClassName,
+		iconSize,
+		titleClassName,
+		id,
+	} = props;
 
 	const { currentPathname, isBlockOpen, isSidebarOpen, toggleBlockState } =
-		useSubMenuBlock();
+		useSubMenuBlock({ subMenuId: id });
 
 	return (
 		<div className="w-full flex flex-col">

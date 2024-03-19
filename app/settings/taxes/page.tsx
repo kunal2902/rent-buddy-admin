@@ -1,11 +1,11 @@
-import { SettingSidebar, MainNavbar } from "@/components/common";
+import { MainNavbar, MainSidebar } from "@/components/common";
 import { TaxesScreen } from "@/components/screens";
 
 const TaxesPage = () => {
 	return (
 		<>
 			<MainNavbar />
-			<SettingSidebar />
+			<MainSidebar />
 			<TaxesScreen />
 		</>
 	);

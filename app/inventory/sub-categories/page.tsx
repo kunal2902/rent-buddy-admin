@@ -1,11 +1,11 @@
-import { InventorySidebar, MainNavbar } from "@/components/common";
+import { MainNavbar, MainSidebar } from "@/components/common";
 import { SubCategoriesScreen } from "@/components/screens";
 
 const SubCategories = () => {
 	return (
 		<>
 			<MainNavbar />
-			<InventorySidebar />
+			<MainSidebar />
 			<SubCategoriesScreen />
 		</>
 	);

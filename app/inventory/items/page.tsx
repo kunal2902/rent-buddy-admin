@@ -1,11 +1,11 @@
-import { MainNavbar, InventorySidebar } from "@/components/common";
+import { MainNavbar, MainSidebar } from "@/components/common";
 import { ItemsScreen } from "@/components/screens";
 
 const ItemsPage = () => {
 	return (
 		<>
 			<MainNavbar />
-			<InventorySidebar />
+			<MainSidebar />
 			<ItemsScreen />
 		</>
 	);
