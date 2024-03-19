@@ -4,6 +4,7 @@ import { DashboardPageHeader } from "@/components/common";
 import { useCustomersScreen } from "./hook";
 import { TableComponent } from "@/components/common/table";
 import { TableColumn, TableRow } from "@/components/common/table/table";
+import { Modal } from "@/components/common/modal";
 
 const CustomersScreen = () => {
 	const { isSidebarOpen } = useCustomersScreen();
@@ -51,6 +52,8 @@ const CustomersScreen = () => {
 			<div className="box mx-10 p-4">
 				<TableComponent rows={rows} columns={columns} caption="A list of your recent invoices."/>
 			</div>
+			<Modal className = "w-full">
+			</Modal>
 		</main>
 	);
 };
