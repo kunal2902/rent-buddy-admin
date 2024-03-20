@@ -1,18 +1,42 @@
-import { sidebarStateAtom } from "@/atoms";
-import { toggleBooleanState } from "@/utils/toggle-boolean-state";
+import { openSubMenuAtom, sidebarStateAtom } from "@/atoms";
+// import { toggleBooleanState } from "@/utils/toggle-boolean-state";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { useRecoilValue } from "recoil";
+import { useMemo } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 
-export const useSubMenuBlock = () => {
+interface Args {
+	subMenuId: string;
+}
+
+export const useSubMenuBlock = (args: Args) => {
+	const { subMenuId } = args;
+
 	const isSidebarOpen = useRecoilValue<boolean>(sidebarStateAtom);
 	const currentPathname = usePathname();
-	const [isBlockOpen, setIsBlockOpen] = useState<boolean>(false);
+	const [openSubMenus, setOpenSideMenus] =
+		useRecoilState<Array<string>>(openSubMenuAtom);
+
+	const isBlockOpen = useMemo(
+		() => openSubMenus.includes(subMenuId),
+		[openSubMenus, subMenuId]
+	);
+
+	const toggleBlockState = () => {
+		if (isBlockOpen) {
+			setOpenSideMenus((prev) =>
+				prev.filter((item) => item !== subMenuId)
+			);
+
+			return;
+		}
+
+		setOpenSideMenus((prev) => [...prev, subMenuId]);
+	};
 
 	return {
 		isSidebarOpen,
 		currentPathname,
 		isBlockOpen,
-		toggleBlockState: toggleBooleanState(setIsBlockOpen),
+		toggleBlockState,
 	};
 };
