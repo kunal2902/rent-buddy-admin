@@ -6,7 +6,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { SolidBtn, SolidBtnProps } from "@/components/elements";
+import { SolidBtn } from "@/components/elements";
 import { twMerge } from "tailwind-merge";
 
 const Modal = ({ className, children }: any) => {
