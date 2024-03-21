@@ -15,18 +15,19 @@ import {
 	CreditCard,
 	Mail,
 	LucideIcon,
+	Bookmark,
 } from "lucide-react";
 import { IconType } from "react-icons";
 
 type SidebarElement = {
-	id: string;
+	id: number;
 	title: string;
 	Icon: IconType | LucideIcon;
 } & (
 	| {
 			type: "sub-menu";
 			subMenu: Array<{
-				id: string;
+				id: number;
 				title: string;
 				Icon: IconType | LucideIcon;
 				link: string;
@@ -151,109 +152,115 @@ export const SettingSidebarItems = [
 
 export const SidebarItems: Array<SidebarElement> = [
 	{
-		id: "a",
+		id: 1,
 		title: "Dashboard",
 		link: "/",
 		Icon: BarChart3,
 		type: "simple",
 	},
 	{
-		id: "b",
+		id: 2,
 		title: "Inventory",
 		Icon: Warehouse,
 		type: "sub-menu",
 		subMenu: [
 			{
-				id: "c",
+				id: 1,
 				title: "Items",
 				link: "/inventory/items",
 				Icon: ScanLine,
 			},
 			{
-				id: "d",
+				id: 2,
 				title: "Item Types",
 				link: "/inventory/item-types",
 				Icon: ScanBarcode,
 			},
 			{
-				id: "e",
+				id: 3,
 				title: "Categories",
 				link: "/inventory/categories",
 				Icon: Tag,
 			},
 			{
-				id: "f",
+				id: 4,
 				title: "Sub Categories",
 				link: "/inventory/sub-categories",
 				Icon: Tags,
 			},
 			{
-				id: "g",
+				id: 5,
 				title: "Custom Attributes",
 				link: "/inventory/custom-attributes",
 				Icon: List,
 			},
+			{
+				id: 6,
+				title: "Tags",
+				link: "/inventory/tags",
+				Icon: Bookmark,
+			},
 		],
 	},
 	{
-		id: "h",
+		id: 3,
 		title: "Customers",
 		link: "/customers",
 		Icon: Users,
 		type: "simple",
 	},
 	{
-		id: "i",
+		id: 4,
 		title: "Team",
 		link: "/team",
 		Icon: ShieldCheck,
 		type: "simple",
 	},
 	{
-		id: "j",
+		id: 5,
 		title: "Reports",
 		link: "/reports",
 		Icon: Clipboard,
 		type: "simple",
 	},
 	{
-		id: "k",
+		id: 6,
 		title: "Settings",
 		Icon: Settings,
 		type: "sub-menu",
 		subMenu: [
 			{
-				id: "l",
+				id: 1,
 				title: "General Setting",
 				link: "/settings/general-setting",
 				Icon: Settings,
 			},
 			{
-				id: "m",
+				id: 2,
 				title: "Page Layout",
 				link: "/settings/page-layout",
 				Icon: LayoutPanelTop,
 			},
 			{
-				id: "n",
+				id: 3,
 				title: "Pages",
 				link: "/settings/pages",
 				Icon: BookOpenText,
 			},
 			{
-				id: "o",
+				id: 4,
 				title: "Payment Gateway",
 				link: "/settings/payment-gateway",
 				Icon: CreditCard,
 			},
 			{
-				id: "p",
+				id: 5,
 				title: "Email Setting",
 				link: "/settings/email-setting",
 				Icon: Mail,
 			},
 			{
-				id: "q",
+				id: 6,
 				title: "Taxes",
 				link: "/settings/taxes",
 				Icon: Mail,
