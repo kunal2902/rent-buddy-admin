@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 
 interface Args {
-	subMenuId: string;
+	subMenuId: number;
 }
 
 export const useSubMenuBlock = (args: Args) => {
@@ -14,7 +14,7 @@ export const useSubMenuBlock = (args: Args) => {
 	const isSidebarOpen = useRecoilValue<boolean>(sidebarStateAtom);
 	const currentPathname = usePathname();
 	const [openSubMenus, setOpenSideMenus] =
-		useRecoilState<Array<string>>(openSubMenuAtom);
+		useRecoilState<Array<number>>(openSubMenuAtom);
 
 	const isBlockOpen = useMemo(
 		() => openSubMenus.includes(subMenuId),

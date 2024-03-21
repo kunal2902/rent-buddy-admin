@@ -7,14 +7,14 @@ import { useSubMenuBlock } from "./hook";
 import { SidebarBtn } from "../sidebar-btn";
 
 interface Props {
-	id: string;
+	id: number;
 	title: string;
 	Icon: IconType | LucideIcon;
 	iconSize?: number;
 	iconClassName?: string;
 	titleClassName?: string;
 	options: Array<{
-		id: string;
+		id: number;
 		title: string;
 		Icon: IconType | LucideIcon;
 		link: string;
