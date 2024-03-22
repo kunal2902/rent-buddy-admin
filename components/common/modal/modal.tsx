@@ -30,7 +30,7 @@ const Modal = (props: Props) => {
 		<Dialog open={isOpen} onOpenChange={onClose}>
 			<DialogOverlay
 				className={twMerge(
-					"bg-light-background-paper/70",
+					"bg-light-background-paper/70 px-3",
 					overlayClassName
 				)}
 			/>
