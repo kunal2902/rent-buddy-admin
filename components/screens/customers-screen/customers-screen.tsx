@@ -5,39 +5,43 @@ import { useCustomersScreen } from "./hook";
 import { TableComponent } from "@/components/common/table";
 import { TableColumn, TableRow } from "@/components/common/table/table";
 import { Modal } from "@/components/common/modal";
+import { Plus } from "lucide-react";
 
 const CustomersScreen = () => {
-	const { isSidebarOpen } = useCustomersScreen();
+	const { isSidebarOpen, isModalOpen, toggleModalState } =
+		useCustomersScreen();
 
-	const rows : TableRow[] = [
+	const rows: TableRow[] = [
 		{
-			title : "Invoice"
+			title: "Invoice",
 		},
 		{
-			title : "Status"
+			title: "Status",
 		},
 		{
-			title : "Method"
+			title: "Method",
 		},
 		{
-			title : "Amount"
+			title: "Amount",
 		},
-	]
+	];
 
-	const columns : TableColumn[][] = [[
-		{
-			content : "INV001"
-		},
-		{
-			content : "Paid"
-		},
-		{
-			content : "Credit Card"
-		},
-		{
-			content : "$250.00"
-		}
-	]]
+	const columns: TableColumn[][] = [
+		[
+			{
+				content: "INV001",
+			},
+			{
+				content: "Paid",
+			},
+			{
+				content: "Credit Card",
+			},
+			{
+				content: "$250.00",
+			},
+		],
+	];
 
 	return (
 		<main
@@ -48,11 +52,26 @@ const CustomersScreen = () => {
 			<DashboardPageHeader
 				heading="Customers"
 				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
+				button
+				buttonProps={{
+					title: "Add Customer",
+					LeftIcon: Plus,
+					onClick: toggleModalState,
+				}}
 			/>
 			<div className="box mx-10 p-4">
-				<TableComponent rows={rows} columns={columns} caption="A list of your recent invoices."/>
+				<TableComponent
+					rows={rows}
+					columns={columns}
+					caption="A list of your recent invoices."
+				/>
 			</div>
-			<Modal className = "w-full">
+			<Modal
+				className="flex flex-col"
+				isOpen={isModalOpen}
+				onClose={toggleModalState}
+			>
+				<h1 className="text-lg font-public-sans">Hello there!!</h1>
 			</Modal>
 		</main>
 	);
