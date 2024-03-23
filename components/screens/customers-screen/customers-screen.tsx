@@ -4,11 +4,9 @@ import { DashboardPageHeader } from "@/components/common";
 import { useCustomersScreen } from "./hook";
 import { TableComponent } from "@/components/common/table";
 import { TableColumn, TableRow } from "@/components/common/table/table";
-import { Modal } from "@/components/common/modal";
-import { Plus } from "lucide-react";
 
 const CustomersScreen = () => {
-	const { isSidebarOpen, isModalOpen, toggleModalState } =
+	const { isSidebarOpen } =
 		useCustomersScreen();
 
 	const rows: TableRow[] = [
@@ -52,12 +50,6 @@ const CustomersScreen = () => {
 			<DashboardPageHeader
 				heading="Customers"
 				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
-				button
-				buttonProps={{
-					title: "Add Customer",
-					LeftIcon: Plus,
-					onClick: toggleModalState,
-				}}
 			/>
 			<div className="box mx-10 p-4">
 				<TableComponent
@@ -66,13 +58,6 @@ const CustomersScreen = () => {
 					caption="A list of your recent invoices."
 				/>
 			</div>
-			<Modal
-				className="flex flex-col"
-				isOpen={isModalOpen}
-				onClose={toggleModalState}
-			>
-				<h1 className="text-lg font-public-sans">Hello there!!</h1>
-			</Modal>
 		</main>
 	);
 };
