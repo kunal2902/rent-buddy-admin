@@ -1,6 +1,6 @@
 "use client";
 
-import { Modal } from "@/components/common";
+import { Modal, ModalHeader } from "@/components/common";
 
 interface Props {
 	isOpen: boolean;
@@ -8,13 +8,13 @@ interface Props {
 }
 
 const CreateTagModal = (props: Props) => {
-    const { isOpen, onClose } = props;
+	const { isOpen, onClose } = props;
 
-    return (
-        <Modal isOpen={isOpen} onClose={onClose}>
-            <h1>Create A Tag</h1>
-        </Modal>
-    )
-}
+	return (
+		<Modal isOpen={isOpen} onClose={onClose}>
+			<ModalHeader title="Create A Tag" onClose={onClose} />
+		</Modal>
+	);
+};
 
 export default CreateTagModal;
