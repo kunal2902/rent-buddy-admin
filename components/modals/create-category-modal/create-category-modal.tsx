@@ -18,7 +18,7 @@ const CreateCategoryModal = (props: Props) => {
 			<ModalHeader title="Create New Category" onClose={onClose} />
 
 			<TextInput
-				title="Category Name"
+				title="Name*"
 				value={categoryName}
 				onChange={onCategoryNameChange}
 				inputClassName="border-grey-600 py-2 font-barlow font-base text-base"

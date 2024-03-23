@@ -19,7 +19,7 @@ const CreateTagModal = (props: Props) => {
 			<ModalHeader title="Create A Tag" onClose={onClose} />
 
 			<TextInput
-				title="Tag Name"
+				title="Name*"
 				value={tagName}
 				onChange={onTagNameChange}
 				inputClassName="border-grey-600 py-2 font-barlow font-base text-base"
