@@ -2,7 +2,6 @@ import {
 	BarChart3,
 	ShieldCheck,
 	Users,
-	Warehouse,
 	Clipboard,
 	Settings,
 	ScanLine,
@@ -19,6 +18,8 @@ import {
 	Blocks,
 } from "lucide-react";
 import { IconType } from "react-icons";
+import { PiWarehouse, PiWarehouseFill } from "react-icons/pi";
+import { RiSettingsFill, RiSettingsLine } from "react-icons/ri";
 
 type SidebarElement = {
 	id: number;
@@ -27,6 +28,7 @@ type SidebarElement = {
 } & (
 	| {
 			type: "sub-menu";
+			ActiveIcon: IconType | LucideIcon;
 			subMenu: Array<{
 				id: number;
 				title: string;
@@ -51,7 +53,8 @@ export const SidebarItems: Array<SidebarElement> = [
 	{
 		id: 2,
 		title: "Inventory",
-		Icon: Warehouse,
+		Icon: PiWarehouse,
+		ActiveIcon: PiWarehouseFill,
 		type: "sub-menu",
 		subMenu: [
 			{
@@ -122,7 +125,8 @@ export const SidebarItems: Array<SidebarElement> = [
 	{
 		id: 6,
 		title: "Settings",
-		Icon: Settings,
+		Icon: RiSettingsLine,
+		ActiveIcon: RiSettingsFill,
 		type: "sub-menu",
 		subMenu: [
 			{

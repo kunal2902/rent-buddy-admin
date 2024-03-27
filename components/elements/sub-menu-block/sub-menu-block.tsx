@@ -10,6 +10,7 @@ interface Props {
 	id: number;
 	title: string;
 	Icon: IconType | LucideIcon;
+	ActiveIcon: IconType | LucideIcon;
 	iconSize?: number;
 	iconClassName?: string;
 	titleClassName?: string;
@@ -31,6 +32,7 @@ const SubMenuBlock = (props: Props) => {
 		iconSize,
 		titleClassName,
 		id,
+		ActiveIcon,
 	} = props;
 
 	const { currentPathname, isBlockOpen, isSidebarOpen, toggleBlockState } =
@@ -47,13 +49,23 @@ const SubMenuBlock = (props: Props) => {
 				)}
 				onClick={toggleBlockState}
 			>
-				<Icon
-					size={iconSize ?? 22}
-					className={twMerge(
-						`${isSidebarOpen ? "mr-2.5" : ""} transition-none`,
-						iconClassName
-					)}
-				/>
+				{isBlockOpen ? (
+					<ActiveIcon
+						size={iconSize ?? 22}
+						className={twMerge(
+							`${isSidebarOpen ? "mr-2.5" : ""} transition-none`,
+							iconClassName
+						)}
+					/>
+				) : (
+					<Icon
+						size={iconSize ?? 22}
+						className={twMerge(
+							`${isSidebarOpen ? "mr-2.5" : ""} transition-none`,
+							iconClassName
+						)}
+					/>
+				)}
 
 				{isSidebarOpen && (
 					<>
