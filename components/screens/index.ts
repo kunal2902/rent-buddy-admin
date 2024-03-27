@@ -13,3 +13,4 @@ export * from "./payment-gateway-screen/index";
 export * from "./email-screen/index";
 export * from "./taxes-screen/index";
 export * from "./tags-screen/index";
+export * from "./add-ons-screen/index";
