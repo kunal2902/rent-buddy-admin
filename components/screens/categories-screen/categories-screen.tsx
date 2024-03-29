@@ -3,9 +3,14 @@
 import { DashboardPageHeader } from "@/components/common";
 import { useCategoriesScreen } from "./hook";
 import { Plus } from "lucide-react";
+import { CreateCategoryModal } from "@/components/modals";
 
 const CategoriesScreen = () => {
-	const { isSidebarOpen } = useCategoriesScreen();
+	const {
+		isSidebarOpen,
+		isCreateCategoryModalOpen,
+		toggleCreateCategoryModalOpen,
+	} = useCategoriesScreen();
 
 	return (
 		<main
@@ -24,9 +29,13 @@ const CategoriesScreen = () => {
 					leftIconClassName: "sm:mr-2 mr-0",
 					LeftIcon: Plus,
 					leftIconSize: 20,
-					type: "internal",
-					link: "/inventory/categories/create"
+					onClick: toggleCreateCategoryModalOpen,
 				}}
+			/>
+
+			<CreateCategoryModal
+				isOpen={isCreateCategoryModalOpen}
+				onClose={toggleCreateCategoryModalOpen}
 			/>
 		</main>
 	);

@@ -1,27 +1,26 @@
 "use client";
 
 import { Modal, ModalHeader } from "@/components/common";
+import { useCreateCategoryModal } from "./hook";
 import { SolidBtn, TextInput } from "@/components/elements";
-import { useCreateTagModal } from "./hook";
 
 interface Props {
 	isOpen: boolean;
 	onClose: () => void;
 }
 
-const CreateTagModal = (props: Props) => {
+const CreateCategoryModal = (props: Props) => {
 	const { isOpen, onClose } = props;
-
-	const { tagName, onTagNameChange } = useCreateTagModal();
+	const { categoryName, onCategoryNameChange } = useCreateCategoryModal();
 
 	return (
 		<Modal isOpen={isOpen} onClose={onClose} className="border-grey-800">
-			<ModalHeader title="Create A Tag" onClose={onClose} />
+			<ModalHeader title="Create New Category" onClose={onClose} />
 
 			<TextInput
 				title="Name*"
-				value={tagName}
-				onChange={onTagNameChange}
+				value={categoryName}
+				onChange={onCategoryNameChange}
 				inputClassName="border-grey-600 py-2 font-barlow font-base text-base"
 				className="mt-1"
 			/>
@@ -33,4 +32,4 @@ const CreateTagModal = (props: Props) => {
 	);
 };
 
-export default CreateTagModal;
+export default CreateCategoryModal;
