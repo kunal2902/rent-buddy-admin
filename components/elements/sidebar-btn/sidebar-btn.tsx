@@ -92,6 +92,7 @@ const SidebarBtn = (props: Props) => {
 				<TooltipContent
 					side="right"
 					className="transition-none bg-light-background-paper border border-gray-800 font-public-sans"
+					translate="no"
 				>
 					{title}
 				</TooltipContent>
