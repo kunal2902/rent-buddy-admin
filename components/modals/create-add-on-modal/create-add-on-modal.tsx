@@ -24,6 +24,7 @@ const CreateAddOnModal = (props: Props) => {
 				onChange={onAddOnNameChange}
 				inputClassName="border-grey-600 py-2 font-barlow font-base text-base"
 				className="mt-1"
+				placeholder="Awesome Name"
 			/>
 
 			<TextInput
@@ -32,6 +33,8 @@ const CreateAddOnModal = (props: Props) => {
 				onChange={onAddOnPriceChange}
 				inputClassName="border-grey-600 py-2 font-barlow font-base text-base"
 				className="mt-1"
+				type="number"
+				placeholder="347.1"
 			/>
 
 			<div className="mt-1 flex items-center justify-end">
