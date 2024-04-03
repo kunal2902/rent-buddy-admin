@@ -3,6 +3,7 @@ import { useState } from "react";
 
 export const useCreateCustomAttributeModal = () => {
 	const [customAttributeName, setCustomAttributeName] = useState<string>("");
+	const [] = useState<string>("")
 
 	return {
 		customAttributeName,
