@@ -51,7 +51,7 @@ const LoginContainer = () => {
 
 			<div className="w-full flex justify-end">
 				<Link href="#">
-					<p className="text-sm mt-6 hover:underline text-primary-main font-public-sans">
+					<p className="text-sm mt-6 hover:underline text-primary-main font-public-sans fade-transition">
 						Forgot Password?
 					</p>
 				</Link>
