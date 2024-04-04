@@ -3,9 +3,14 @@
 import { Plus } from "lucide-react";
 import { useAddOnsScreen } from "./hook";
 import { DashboardPageHeader } from "@/components/common";
+import { CreateAddOnModal } from "@/components/modals";
 
 const AddOnsScreen = () => {
-	const { isSidebarOpen } = useAddOnsScreen();
+	const {
+		isSidebarOpen,
+		isCreateAddOnModalOpen,
+		toggleCreateAddOnModalOpen,
+	} = useAddOnsScreen();
 
 	return (
 		<main
@@ -24,8 +29,13 @@ const AddOnsScreen = () => {
 					leftIconClassName: "sm:mr-2 mr-0",
 					LeftIcon: Plus,
 					leftIconSize: 20,
-					// onClick: toggleCreateCategoryModalOpen,
+					onClick: toggleCreateAddOnModalOpen,
 				}}
+			/>
+
+			<CreateAddOnModal
+				isOpen={isCreateAddOnModalOpen}
+				onClose={toggleCreateAddOnModalOpen}
 			/>
 		</main>
 	);

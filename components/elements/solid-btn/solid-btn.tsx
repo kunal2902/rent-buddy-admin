@@ -35,7 +35,7 @@ const SolidBtnCore = (props: CoreProps) => {
 	return (
 		<button
 			className={twMerge(
-				"w-full flex items-center justify-center px-3 py-2 bg-grey-800 hover:bg-grey-800/90 rounded-xl font-public-sans",
+				"w-full flex items-center justify-center px-3 py-2 bg-grey-800 hover:bg-grey-800/90 rounded-xl font-public-sans fade-transition",
 				className
 			)}
 			onClick={onClick}
