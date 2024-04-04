@@ -35,6 +35,7 @@ const LoginContainer = () => {
 				onChange={onEmailChange}
 				className="mt-6"
 				placeholder="abc@gmail.com"
+				inputClassName="border-2"
 			/>
 
 			<PasswordInput
@@ -47,6 +48,7 @@ const LoginContainer = () => {
 				togglePasswordVisibility={togglePasswordVisibility}
 				visibleIconSize={20}
 				invisibleIconSize={20}
+				inputClassName="border-2"
 			/>
 
 			<div className="w-full flex justify-end">

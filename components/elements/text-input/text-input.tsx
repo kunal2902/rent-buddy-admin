@@ -39,7 +39,7 @@ const TextInput = (props: Props) => {
 
 			<input
 				className={twMerge(
-					"w-full px-4 border-2 border-grey-200 hover:border-gray-800 focus:border-primary-main mt-1 py-3 rounded-lg outline-none text-lg font-base text-light-primary-text placeholder:text-light-secondary-text font-light",
+					"w-full px-4 border border-grey-200 hover:border-gray-800 focus:border-primary-main mt-1 py-3 rounded-lg outline-none text-lg font-base text-light-primary-text placeholder:text-light-secondary-text font-light",
 					inputClassName
 				)}
 				value={value}
