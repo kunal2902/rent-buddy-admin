@@ -1,1 +1,1 @@
-export * from "./add-on-type-options";
+export * from "./custom-attribute-type-options";

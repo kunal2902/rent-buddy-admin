@@ -1,6 +1,6 @@
 import { SelectOption } from "@/types/common";
 
-export const AddOnTypeOptions: Array<SelectOption> = [
+export const CustomAttributeTypeOptions: Array<SelectOption> = [
 	{
 		id: "bafcb49f-d6e3-4cb7-938e-251378a1272a",
 		name: "String",

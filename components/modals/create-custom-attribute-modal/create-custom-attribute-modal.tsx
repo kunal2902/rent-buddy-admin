@@ -3,6 +3,7 @@
 import { Modal, ModalHeader } from "@/components/common";
 import { SelectInput, SolidBtn, TextInput } from "@/components/elements";
 import { useCreateCustomAttributeModal } from "./hook";
+import { CustomAttributeTypeOptions } from "@/constants/select-options";
 
 interface Props {
 	isOpen: boolean;
@@ -12,8 +13,12 @@ interface Props {
 const CreateCustomAttributeModal = (props: Props) => {
 	const { isOpen, onClose } = props;
 
-	const { customAttributeName, onCustomAttributeNameChange } =
-		useCreateCustomAttributeModal();
+	const {
+		customAttributeName,
+		onCustomAttributeNameChange,
+		type,
+		onTypeChange,
+	} = useCreateCustomAttributeModal();
 
 	return (
 		<Modal isOpen={isOpen} onClose={onClose} className="border-grey-800">
@@ -27,7 +32,13 @@ const CreateCustomAttributeModal = (props: Props) => {
 				className="mt-1"
 			/>
 
-			<SelectInput title="Type*" />
+			<SelectInput
+				title="Type*"
+				options={CustomAttributeTypeOptions}
+				value={type}
+				onSelect={onTypeChange}
+				placeholder="Select a type"
+			/>
 
 			<div className="mt-1 flex items-center justify-end">
 				<SolidBtn title="Save" className="w-fit px-5" />
