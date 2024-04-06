@@ -1,5 +1,6 @@
 "use client";
 
+import { HTMLInputTypeAttribute } from "react";
 import { twMerge } from "tailwind-merge";
 
 interface Props {
@@ -10,6 +11,7 @@ interface Props {
 	titleClassName?: string;
 	placeholder?: string;
 	inputClassName?: string;
+	type?: HTMLInputTypeAttribute;
 }
 
 const TextInput = (props: Props) => {
@@ -21,6 +23,7 @@ const TextInput = (props: Props) => {
 		className,
 		placeholder,
 		inputClassName,
+		type,
 	} = props;
 
 	return (
@@ -36,12 +39,13 @@ const TextInput = (props: Props) => {
 
 			<input
 				className={twMerge(
-					"w-full px-4 border-2 border-grey-200 hover:border-gray-800 focus:border-primary-main mt-1 py-3 rounded-lg outline-none text-lg font-base text-light-primary-text placeholder:text-light-secondary-text font-light",
+					"w-full px-4 border border-grey-200 hover:border-gray-800 focus:border-primary-main mt-1 py-3 rounded-lg outline-none text-lg font-base text-light-primary-text placeholder:text-light-secondary-text font-light",
 					inputClassName
 				)}
 				value={value}
 				onChange={onChange}
 				placeholder={placeholder}
+				type={type}
 			/>
 		</div>
 	);
