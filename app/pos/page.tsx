@@ -7,7 +7,7 @@ import PosCartSection from "@/components/pos/pos-cart-section";
 const POSHome = () => {
 	return (
 		<main className="w-full h-screen flex bg-light-background-natural font-public-sans relative flex-col">
-			<div className="w-full h-[5vh] text-center flex justify-between px-3">
+			<div className="w-full h-[5vh] text-center flex justify-between px-3 pt-2">
 				<PosHeader />
 			</div>
 			<div className="flex w-[100%] h-[95vh]">

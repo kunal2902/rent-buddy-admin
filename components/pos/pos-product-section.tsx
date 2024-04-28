@@ -34,7 +34,7 @@ const PosProductSection = () => {
 					</div>
 				</div>
 			</div>
-			<div className="flex flex-wrap ">
+			<div className="flex flex-wrap justify-between">
 				<Card />
 				<Card />
 				<Card />
@@ -53,7 +53,7 @@ const Card = () => {
 	const [count, setCount] = useState(0);
 	const [price, setPrice] = useState(100);
 	return (
-		<div className="max-w-[25rem] rounded overflow-hidden shadow-lg min-h-[20rem] auto m-5">
+		<div className="max-w-[15rem] rounded overflow-hidden shadow-lg min-h-[10rem] auto m-5">
 			<img
 				width={"100%"}
 				src="https://media.istockphoto.com/id/176816406/photo/tile-flooring-samples-on-display.jpg?s=612x612&w=0&k=20&c=j3Q38Hj8eirmMn9cbncwDLGYd9e3BRQxEqTIOOE92vg="
