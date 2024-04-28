@@ -2,10 +2,12 @@
 
 import { useTagsScreen } from "./hook";
 import { DashboardPageHeader } from "@/components/common";
+import { CreateTagModal } from "@/components/modals";
 import { Plus } from "lucide-react";
 
 const TagsScreen = () => {
-	const { isSidebarOpen } = useTagsScreen();
+	const { isSidebarOpen, isCreateTagModalOpen, toggleCreateModalTagOpen } =
+		useTagsScreen();
 
 	return (
 		<main
@@ -24,7 +26,13 @@ const TagsScreen = () => {
 					leftIconClassName: "sm:mr-2 mr-0",
 					LeftIcon: Plus,
 					leftIconSize: 20,
+					onClick: toggleCreateModalTagOpen,
 				}}
+			/>
+
+			<CreateTagModal
+				isOpen={isCreateTagModalOpen}
+				onClose={toggleCreateModalTagOpen}
 			/>
 		</main>
 	);

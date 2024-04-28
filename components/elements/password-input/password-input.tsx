@@ -64,7 +64,7 @@ const PasswordInput = (props: Props) => {
 			>
 				<input
 					className={twMerge(
-						"w-full pl-4 pr-8 border-2 border-grey-200 hover:border-gray-800 focus:border-primary-main py-3 rounded-lg outline-none text-lg font-base text-light-primary-text placeholder:text-light-secondary-text font-light",
+						"w-full pl-4 pr-8 border border-grey-200 hover:border-gray-800 focus:border-primary-main py-3 rounded-lg outline-none text-lg font-base text-light-primary-text placeholder:text-light-secondary-text font-light",
 						inputClassName
 					)}
 					value={value}

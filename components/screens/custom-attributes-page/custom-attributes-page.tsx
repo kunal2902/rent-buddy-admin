@@ -2,10 +2,15 @@
 
 import { useCustomAttributesScreen } from "./hook";
 import { DashboardPageHeader } from "@/components/common";
+import { CreateCustomAttributeModal } from "@/components/modals";
 import { Plus } from "lucide-react";
 
 const CustomAttributesScreen = () => {
-	const { isSidebarOpen } = useCustomAttributesScreen();
+	const {
+		isSidebarOpen,
+		isCreateCustomAttributeModalOpen,
+		toggleCreateCustomAttributeModalOpen,
+	} = useCustomAttributesScreen();
 
 	return (
 		<main
@@ -24,7 +29,13 @@ const CustomAttributesScreen = () => {
 					leftIconClassName: "sm:mr-2 mr-0",
 					LeftIcon: Plus,
 					leftIconSize: 20,
+					onClick: toggleCreateCustomAttributeModalOpen,
 				}}
+			/>
+
+			<CreateCustomAttributeModal
+				isOpen={isCreateCustomAttributeModalOpen}
+				onClose={toggleCreateCustomAttributeModalOpen}
 			/>
 		</main>
 	);

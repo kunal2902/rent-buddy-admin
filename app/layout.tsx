@@ -7,6 +7,7 @@ import {
 	RecoilProvider,
 	ThemeProvider,
 } from "@/components/providers";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export const metadata: Metadata = {
 	title: "NCA",
@@ -23,7 +24,9 @@ export default function RootLayout({
 			<body className={`${GeistSans.variable} ${GeistMono.variable}`}>
 				<ReactQueryProvider>
 					<RecoilProvider>
-						<ThemeProvider>{children}</ThemeProvider>
+						<ThemeProvider>
+							<TooltipProvider>{children}</TooltipProvider>
+						</ThemeProvider>
 					</RecoilProvider>
 				</ReactQueryProvider>
 			</body>

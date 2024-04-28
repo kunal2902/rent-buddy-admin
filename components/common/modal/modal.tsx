@@ -1,33 +1,45 @@
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "@/components/ui/dialog";
-import { SolidBtn } from "@/components/elements";
+import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
+import { PointerDownOutSideEvent } from "@/types/events";
 import { twMerge } from "tailwind-merge";
 
-const Modal = ({ className, children }: any) => {
+interface Props {
+	children: React.ReactNode;
+	className?: string;
+	overlayClassName?: string;
+	isOpen: boolean;
+	onClose: () => void;
+	onEscapeKeyDown?: () => void;
+	onOverlayClick?: (e: PointerDownOutSideEvent) => void;
+}
+
+const Modal = (props: Props) => {
+	const {
+		children,
+		className,
+		isOpen,
+		onClose,
+		onEscapeKeyDown,
+		onOverlayClick,
+		overlayClassName,
+	} = props;
+
+	const onDefaultEscapeKeyDown = () => true;
+	const onDefaultOverlayClick = () => {};
+
 	return (
-		<Dialog>
-			<DialogTrigger asChild>
-				<SolidBtn
-					className={twMerge("bg-grey-900 ml-2 w-fit text-grey-100")}
-					title="Open Modal"
-				/>
-			</DialogTrigger>
-			<DialogContent className={className}>
+		<Dialog open={isOpen} onOpenChange={onClose}>
+			<DialogOverlay
+				className={twMerge(
+					"bg-light-background-paper/70 px-3",
+					overlayClassName
+				)}
+			/>
+			<DialogContent
+				className={twMerge("w-screen", className)}
+				onEscapeKeyDown={onEscapeKeyDown ?? onDefaultEscapeKeyDown}
+				onPointerDownOutside={onOverlayClick ?? onDefaultOverlayClick}
+			>
 				{children}
-				<DialogHeader>
-					<DialogTitle>Are you absolutely sure?</DialogTitle>
-					<DialogDescription>
-						This action cannot be undone. This will permanently
-						delete your account and remove your data from our
-						servers.
-					</DialogDescription>
-				</DialogHeader>
 			</DialogContent>
 		</Dialog>
 	);
