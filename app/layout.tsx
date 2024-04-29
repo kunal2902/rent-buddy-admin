@@ -8,6 +8,8 @@ import {
 	ThemeProvider,
 } from "@/components/providers";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const metadata: Metadata = {
 	title: "NCA",
@@ -26,6 +28,12 @@ export default function RootLayout({
 					<RecoilProvider>
 						<ThemeProvider>
 							<TooltipProvider>{children}</TooltipProvider>
+							<ToastContainer
+								autoClose={2000}
+								hideProgressBar
+								closeOnClick
+								rtl={false}
+							/>
 						</ThemeProvider>
 					</RecoilProvider>
 				</ReactQueryProvider>
