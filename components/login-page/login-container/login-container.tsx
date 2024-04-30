@@ -6,6 +6,8 @@ import Link from "next/link";
 import { login } from "@/utils/api-utils/network-utils";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { setCookie } from "cookies-next";
+import { crm_jwt } from "@/utils/config/config";
 
 const LoginContainer = () => {
 	const {
@@ -17,7 +19,6 @@ const LoginContainer = () => {
 		togglePasswordVisibility,
 	} = useLoginContainer();
 	const router = useRouter();
-	console.log("routr", router);
 
 	const handleLogin = async (event: { preventDefault: () => void }) => {
 		event.preventDefault();
@@ -30,9 +31,25 @@ const LoginContainer = () => {
 				body.email,
 				body.password,
 				(data: any) => {
-					localStorage.setItem("crm_token", data.data.authToken);
-					sessionStorage.setItem("crm_token", data.data.authToken);
-					router.push("/");
+					if (data.code === 200) {
+						console.log("success");
+						setCookie(`${crm_jwt}`, data.data.authToken, {
+							secure: true,
+						});
+						// const cookie = getCookie(`${crm_jwt}`, {
+						// 	secure: true,
+						// });
+						// console.log("cookie?.crm_jwt", cookie);
+						router.replace("/");
+					} else {
+						console.log({ data });
+						console.log("Error");
+					}
+					// localStorage.setItem("crm_token", data.data.authToken);
+					// sessionStorage.setItem("crm_token", data.data.authToken);
+					// cookies().set("crm_jwt", data.data.authToken, {
+					// 	secure: true,
+					// });
 				},
 				(err: any) => {
 					toast.error(err);
