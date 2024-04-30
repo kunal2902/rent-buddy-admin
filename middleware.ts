@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { crm_jwt } from "./utils/config/config";
+import { crmJwtConstant } from "./utils/config/config";
 
 const protectedRoutes = ["/"];
 const publicRoutes = ["/login"];
@@ -10,7 +10,7 @@ export default async function middleware(req: NextRequest) {
 	const isProtectedRoute = protectedRoutes.includes(path);
 	const isPublicRoute = publicRoutes.includes(path);
 
-	const cookie = cookies().get(`${crm_jwt}`)?.value;
+	const cookie = cookies().get(crmJwtConstant)?.value;
 
 	if (isProtectedRoute && !cookie) {
 		// Redirect to /login if accessing a protected route without authentication

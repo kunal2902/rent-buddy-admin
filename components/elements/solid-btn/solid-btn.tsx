@@ -4,23 +4,26 @@ import { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { IconType } from "react-icons";
 import { twMerge } from "tailwind-merge";
+import React from "react";
 
 interface CoreProps {
-	className?: string;
-	onClick?: (e?: React.MouseEvent<HTMLButtonElement> | undefined) => void;
-	title: string;
-	titleClassName?: string;
-	LeftIcon?: LucideIcon | IconType;
-	leftIconSize?: number;
-	leftIconClassName?: string;
-	RightIcon?: LucideIcon | IconType;
-	rightIconSize?: number;
-	rightIconClassName?: string;
+	className?: string,
+	onClick?: (e?: React.MouseEvent<HTMLButtonElement> | undefined) => void,
+	title: string,
+	titleClassName?: string,
+	LeftIcon?: LucideIcon | IconType,
+	leftIconSize?: number,
+	leftIconClassName?: string,
+	RightIcon?: LucideIcon | IconType,
+	rightIconSize?: number,
+	rightIconClassName?: string,
+	style?: { backgroundColor: string }
 }
 
 const SolidBtnCore = (props: CoreProps) => {
 	const {
 		className,
+		style,
 		onClick,
 		title,
 		titleClassName,
@@ -29,7 +32,7 @@ const SolidBtnCore = (props: CoreProps) => {
 		leftIconClassName,
 		RightIcon,
 		rightIconSize,
-		rightIconClassName,
+		rightIconClassName
 	} = props;
 
 	return (
@@ -40,6 +43,7 @@ const SolidBtnCore = (props: CoreProps) => {
 			)}
 			onClick={onClick}
 			aria-label={`${title} button`}
+			style={style}
 		>
 			{LeftIcon && (
 				<LeftIcon
