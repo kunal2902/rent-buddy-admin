@@ -20,3 +20,12 @@ export const roleIdConstant = "role_id";
 /** API Constants */
 export const apiUrl = "http://localhost:8000/api/v1/";
 export const loginPath = `${apiUrl}auth/login`;
+
+// Permission path
+export const getPermissionPath = `${apiUrl}permission`;
+
+// Tag path
+export const getTagPath = `${apiUrl}tag`;
+
+// Role path
+export const getRolePath = `${apiUrl}role`;
