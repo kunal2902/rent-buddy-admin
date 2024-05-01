@@ -6,11 +6,17 @@ import Image from "next/image";
 import Logo from "@/assets/images/logo.png";
 import { SolidBtn } from "@/components/elements";
 import { useMainNavbar } from "./hook";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/elements/ui/avatar";
+import { appAccentColor, appColor, appName, nameConstant, whiteColor } from "@/utils/config/config";
+import { getCookie } from "cookies-next";
 
 const MainNavbar = () => {
 	const { toggleSidebar } = useMainNavbar();
+	const userName = getCookie(nameConstant) ?? "";
+
 	return (
-		<div className="w-full px-4 pt-3 pb-3 flex fixed top-0 left-0 bg-light-background-natural items-center justify-between z-30">
+		<div
+			className="w-full px-4 pt-3 pb-3 flex fixed top-0 left-0 bg-light-background-natural items-center justify-between z-30 shadow">
 			<div className="flex items-center">
 				<button
 					className="flex items-center justify-center mr-3"
@@ -26,17 +32,29 @@ const MainNavbar = () => {
 						width={Logo.width}
 						height={Logo.height}
 						alt="main logo"
-						className="w-8 h-8 object-contain"
+						className="w-10 h-10 object-contain"
 					/>
 				</Link>
+				<div className={"ml-3 text-xl"}
+					 style={{ color: appAccentColor }}
+				>
+					{appName}
+				</div>
 			</div>
 
 			<div className="flex items-center">
 				<SolidBtn
 					title="POS"
-					className="w-fit px-5 py-1.5 rounded-md bg-black"
+					style={{ backgroundColor: appAccentColor }}
+					className={`w-24 px-5 mr-3 py-1.5 rounded-md`}
 					link="/pos"
 				/>
+
+				<Avatar>
+					<AvatarImage src="" />
+					<AvatarFallback
+						style={{ backgroundColor: appColor, color: whiteColor }}>{userName[0]}</AvatarFallback>
+				</Avatar>
 			</div>
 		</div>
 	);

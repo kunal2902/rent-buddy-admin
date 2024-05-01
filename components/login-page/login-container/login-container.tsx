@@ -7,7 +7,14 @@ import { login } from "@/utils/api-utils/network-utils";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { setCookie } from "cookies-next";
-import { crm_jwt } from "@/utils/config/config";
+import {
+	crmJwtConstant,
+	emailConstant,
+	nameConstant,
+	roleIdConstant,
+	userIdConstant,
+	userNameConstant
+} from "@/utils/config/config";
 
 const LoginContainer = () => {
 	const {
@@ -16,7 +23,7 @@ const LoginContainer = () => {
 		password,
 		onPasswordChange,
 		isPasswordVisible,
-		togglePasswordVisibility,
+		togglePasswordVisibility
 	} = useLoginContainer();
 	const router = useRouter();
 
@@ -24,32 +31,38 @@ const LoginContainer = () => {
 		event.preventDefault();
 		const body = {
 			email: email,
-			password: password,
+			password: password
 		};
 		try {
 			await login(
 				body.email,
 				body.password,
-				(data: any) => {
-					if (data.code === 200) {
+				(result: any) => {
+					if (result.code === 200) {
 						console.log("success");
-						setCookie(`${crm_jwt}`, data.data.authToken, {
-							secure: true,
+						setCookie(crmJwtConstant, result.data.authToken, {
+							secure: true
 						});
-						// const cookie = getCookie(`${crm_jwt}`, {
-						// 	secure: true,
-						// });
-						// console.log("cookie?.crm_jwt", cookie);
+						setCookie(userIdConstant, result.data.user.user_id, {
+							secure: true
+						});
+						setCookie(nameConstant, result.data.user.name, {
+							secure: true
+						});
+						setCookie(emailConstant, result.data.user.email, {
+							secure: true
+						});
+						setCookie(userNameConstant, result.data.user.username, {
+							secure: true
+						});
+						setCookie(roleIdConstant, result.data.user.role_id, {
+							secure: true
+						});
 						router.replace("/");
 					} else {
-						console.log({ data });
+						console.log({ result });
 						console.log("Error");
 					}
-					// localStorage.setItem("crm_token", data.data.authToken);
-					// sessionStorage.setItem("crm_token", data.data.authToken);
-					// cookies().set("crm_jwt", data.data.authToken, {
-					// 	secure: true,
-					// });
 				},
 				(err: any) => {
 					toast.error(err);
@@ -62,7 +75,8 @@ const LoginContainer = () => {
 
 	return (
 		<form onSubmit={handleLogin}>
-			<div className="w-full sm:max-w-[420px] flex flex-col bg-light-background-paper rounded-xl px-9 py-10 shadow-md shadow-grey-500/40">
+			<div
+				className="w-full sm:max-w-[420px] flex flex-col bg-light-background-paper rounded-xl px-9 py-10 shadow-md shadow-grey-500/40">
 				<h1 className="text-2xl font-semibold text-light-primary-text">
 					Sign in to NCA
 				</h1>
