@@ -2,12 +2,46 @@
 
 import { useTagsScreen } from "./hook";
 import { DashboardPageHeader } from "@/components/common";
+import { TableComponent } from "@/components/common/table";
+import { TableColumn, TableRow } from "@/components/common/table/table";
 import { CreateTagModal } from "@/components/modals";
 import { Plus } from "lucide-react";
 
 const TagsScreen = () => {
 	const { isSidebarOpen, isCreateTagModalOpen, toggleCreateModalTagOpen } =
 		useTagsScreen();
+
+	const rows: TableRow[] = [
+		{
+			title: "Name",
+		},
+		{
+			title: "Icon",
+		},
+		{
+			title: "Is disabled",
+		},
+		{
+			title: "Is deleted",
+		},
+	];
+
+	const columns: TableColumn[][] = [
+		[
+			{
+				content: "INV001",
+			},
+			{
+				content: "Paid",
+			},
+			{
+				content: "Credit Card",
+			},
+			{
+				content: "$250.00",
+			},
+		],
+	];
 
 	return (
 		<main
@@ -29,6 +63,14 @@ const TagsScreen = () => {
 					onClick: toggleCreateModalTagOpen,
 				}}
 			/>
+
+			<div className="box mx-10 p-4">
+				<TableComponent
+					rows={rows}
+					columns={columns}
+					caption="A list of your recent invoices."
+				/>
+			</div>
 
 			<CreateTagModal
 				isOpen={isCreateTagModalOpen}
