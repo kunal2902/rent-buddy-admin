@@ -1,14 +1,12 @@
-import { MainNavbar, MainSidebar } from "@/components/common";
-import { ItemsScreen } from "@/components/screens";
+import { MainNavbar, MainSidebar } from '@/components';
+import { ItemsContainer } from '@/containers';
 
-const ItemsPage = () => {
-	return (
-		<>
-			<MainNavbar />
-			<MainSidebar />
-			<ItemsScreen />
-		</>
-	);
-};
+const ItemsPage = () => (
+	<>
+		<MainNavbar />
+		<MainSidebar />
+		<ItemsContainer />
+	</>
+);
 
 export default ItemsPage;

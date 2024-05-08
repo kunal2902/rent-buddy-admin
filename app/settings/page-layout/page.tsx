@@ -1,14 +1,12 @@
-import { MainNavbar, MainSidebar } from "@/components/common";
-import { PageLayoutScreen } from "@/components/screens";
+import { MainNavbar, MainSidebar } from '@/components';
+import { LayoutSettingsContainer } from '@/containers';
 
-const PageLayoutPage = () => {
-	return (
-		<>
-			<MainNavbar />
-			<MainSidebar />
-			<PageLayoutScreen />
-		</>
-	);
-};
+const PageLayoutPage = () => (
+	<>
+		<MainNavbar />
+		<MainSidebar />
+		<LayoutSettingsContainer />
+	</>
+);
 
 export default PageLayoutPage;

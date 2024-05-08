@@ -1,14 +1,14 @@
-import { MainNavbar, MainSidebar } from "@/components/common";
-import { CustomersScreen } from "@/components/screens";
+'use client';
 
-const CustomersPage = () => {
-	return (
-		<>
-			<MainNavbar />
-			<MainSidebar />
-			<CustomersScreen />
-		</>
-	);
-};
+import { CustomerContainer } from '@/containers';
+import { MainNavbar, MainSidebar } from '@/components';
+
+const CustomersPage = () => (
+	<>
+		<MainNavbar />
+		<MainSidebar />
+		<CustomerContainer />
+	</>
+);
 
 export default CustomersPage;

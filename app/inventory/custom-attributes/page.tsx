@@ -1,14 +1,12 @@
-import { MainNavbar, MainSidebar } from "@/components/common";
-import { CustomAttributesScreen } from "@/components/screens";
+import { MainNavbar, MainSidebar } from '@/components';
+import { CustomAttributesContainer } from '@/containers';
 
-const CustomAttributesPage = () => {
-	return (
-		<>
-			<MainNavbar />
-			<MainSidebar />
-			<CustomAttributesScreen />
-		</>
-	);
-};
+const CustomAttributesPage = () => (
+	<>
+		<MainNavbar />
+		<MainSidebar />
+		<CustomAttributesContainer />
+	</>
+);
 
 export default CustomAttributesPage;

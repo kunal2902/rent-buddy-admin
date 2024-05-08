@@ -1,14 +1,12 @@
-import { MainNavbar, MainSidebar } from "@/components/common";
-import { AddOnsScreen } from "@/components/screens";
+import { MainNavbar, MainSidebar } from '@/components';
+import { AddOnsContainer } from '@/containers';
 
-const AddOnsPage = () => {
-	return (
-		<>
-			<MainNavbar />
-			<MainSidebar />
-			<AddOnsScreen />
-		</>
-	);
-};
+const AddOnsPage = () => (
+	<>
+		<MainNavbar />
+		<MainSidebar />
+		<AddOnsContainer />
+	</>
+);
 
 export default AddOnsPage;

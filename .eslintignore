@@ -1,1 +1,3 @@
-next.config.js
+*.cjs
+*.mjs
+*.js

@@ -1,14 +1,12 @@
-import { MainNavbar, MainSidebar } from "@/components/common";
-import { TagsScreen } from "@/components/screens";
+import { MainNavbar, MainSidebar } from '@/components';
+import { TagsContainer } from '@/containers';
 
-const TagsPage = () => {
-	return (
-		<>
-			<MainNavbar />
-			<MainSidebar />
-			<TagsScreen />
-		</>
-	);
-};
+const TagsPage = () => (
+	<>
+		<MainNavbar />
+		<MainSidebar />
+		<TagsContainer />
+	</>
+);
 
 export default TagsPage;

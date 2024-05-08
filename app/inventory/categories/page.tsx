@@ -1,14 +1,12 @@
-import { MainNavbar, MainSidebar } from "@/components/common";
-import { CategoriesScreen } from "@/components/screens";
+import { MainNavbar, MainSidebar } from '@/components';
+import { CategoriesContainer } from '@/containers';
 
-const CategoriesPage = () => {
-	return (
-		<>
-			<MainNavbar />
-			<MainSidebar />
-			<CategoriesScreen />
-		</>
-	);
-};
+const CategoriesPage = () => (
+	<>
+		<MainNavbar />
+		<MainSidebar />
+		<CategoriesContainer />
+	</>
+);
 
 export default CategoriesPage;

@@ -1,22 +1,13 @@
-"use client";
-import { MainNavbar, MainSidebar } from "@/components/common";
-import { HomeScreen } from "@/components/screens";
-import { getCookie } from "cookies-next";
-import { useEffect } from "react";
-import { userIdConstant, userNameConstant } from "@/utils/config/config";
+import DashboardContainer from '@/containers/1_dashboard/dashboard_container';
+import { MainNavbar, MainSidebar } from '@/components';
+import './globals.css';
 
-export default function Home() {
-
-	useEffect(() => {
-		console.log(getCookie(userIdConstant));
-		console.log(getCookie(userNameConstant));
-	}, []);
-
+export default function Dashboard() {
 	return (
 		<>
 			<MainNavbar />
 			<MainSidebar />
-			<HomeScreen />
+			<DashboardContainer />
 		</>
 	);
 }

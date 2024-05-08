@@ -1,14 +1,12 @@
-import { MainNavbar, MainSidebar } from "@/components/common";
-import { TaxesScreen } from "@/components/screens";
+import { MainNavbar, MainSidebar } from '@/components';
+import { TaxesSettingsContainer } from '@/containers';
 
-const TaxesPage = () => {
-	return (
-		<>
-			<MainNavbar />
-			<MainSidebar />
-			<TaxesScreen />
-		</>
-	);
-};
+const TaxesPage = () => (
+	<>
+		<MainNavbar />
+		<MainSidebar />
+		<TaxesSettingsContainer />
+	</>
+);
 
 export default TaxesPage;

@@ -1,14 +1,12 @@
-import { MainNavbar, MainSidebar } from "@/components/common";
-import { SubCategoriesScreen } from "@/components/screens";
+import { MainNavbar, MainSidebar } from '@/components';
+import { SubCategoriesContainer } from '@/containers';
 
-const SubCategories = () => {
-	return (
-		<>
-			<MainNavbar />
-			<MainSidebar />
-			<SubCategoriesScreen />
-		</>
-	);
-};
+const SubCategories = () => (
+	<>
+		<MainNavbar />
+		<MainSidebar />
+		<SubCategoriesContainer />
+	</>
+);
 
 export default SubCategories;
