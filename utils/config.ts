@@ -1,11 +1,13 @@
 import { getCookie } from 'cookies-next';
-import { AvatarVariant, InputVariant, MantineColor, MantineRadius, MantineSize } from '@mantine/core';
+import { ActionIconVariant, AvatarVariant, InputVariant, MantineColor, MantineRadius, MantineSize } from '@mantine/core';
 
 /** Global variables */
 export const isDebug: boolean = true;
 export const appName: string = 'NCA CRM';
 export const appTitle: string = 'NCA CRM';
 export const appDescription: string = 'NCM ';
+export const appLogoWidth: number = 40;
+export const appLogoHeight: number = 40;
 
 /** App colors */
 export const appColor: string = '#6cd2d5';
@@ -16,10 +18,15 @@ export const blackColor: string = '#000000';
 /** Mantine Variables */
 export const appColorRGBA: MantineColor = 'rgba(108, 210, 213, 1)';
 export const appAccentColorRGBA: MantineColor = 'rgba(232,142,124,1)';
-export const mantineSize: MantineSize = 'lg';
-export const mantineRadius: MantineRadius = 'xl';
+export const mantineSize: MantineSize = 'md';
+export const mantineButtonSize: MantineSize = 'sm';
+export const mantineActionIconSize: MantineSize = 'lg';
+export const mantineActionIconVariant: ActionIconVariant = 'light';
+export const mantineRadius: MantineRadius = 'lg';
 export const mantineInputVariant: InputVariant = 'filled';
 export const mantineAvatarVariant: AvatarVariant = 'filled';
+export const mantineSpaceHeight: MantineSize = 'md';
+export const mantineSpaceWidth: MantineSize = 'md';
 
 /** Cookie constants */
 export const cookieOptions = {
@@ -34,16 +41,14 @@ export const roleIdConstant: string = 'role_id';
 
 /** API Constants */
 export const apiUrl: string = 'http://localhost:8000/api/v1/';
-export const loginPath: string = `${apiUrl}auth/login`;
+export const loginAPIPath: string = `${apiUrl}auth/login`;
 
 // Permission path
-export const getPermissionPath: string = `${apiUrl}permission`;
+export const getPermissionsAPIPath: string = `${apiUrl}permission`;
 
 // Tag path
 /** get, post and put api path */
-export const tagPath: string = `${apiUrl}tag`;
-/** restore api path */
-export const restoreTagPath: string = `${apiUrl}tag/restore/:id`;
+export const tagAPIPath: string = `${apiUrl}tag`;
 /** enable / disable, delete, get api path */
 export const tagByIdPath: string = `${apiUrl}tag/:id`;
 
@@ -99,3 +104,28 @@ export const getEmail = (): string => getCookie(emailConstant) ?? '';
 export const getUserName = (): string => getCookie(userNameConstant) ?? '';
 /** To get the Role id stored in Cookies */
 export const getRoleId = (): string => getCookie(roleIdConstant) ?? '';
+
+/** Route Constants */
+export const dashboardRoute: string = '/';
+export const loginRoute: string = '/login';
+export const customersRoute: string = '/customers';
+export const posRoute: string = '/pos';
+export const usersRoute: string = '/users';
+export const rolesRoute: string = '/roles';
+const inventoryRoute: string = '/inventory';
+export const addOnsRoute: string = `${inventoryRoute}/add-ons`;
+export const categoriesRoute: string = `${inventoryRoute}/categories`;
+export const customAttributesRoute: string = `${inventoryRoute}/custom-attributes`;
+export const itemTypesRoute: string = `${inventoryRoute}/item-types`;
+export const itemsRoute: string = `${inventoryRoute}/items`;
+export const subCategoriesRoute: string = `${inventoryRoute}/sub-categories`;
+export const tagsRoute: string = `${inventoryRoute}/tags`;
+const settingsRoute: string = '/settings';
+export const aboutRoute: string = `${settingsRoute}/about`;
+export const contactRoute: string = `${settingsRoute}/contact`;
+export const emailRoute: string = `${settingsRoute}/email`;
+export const generalRoute: string = `${settingsRoute}/general`;
+export const pageLayoutRoute: string = `${settingsRoute}/page-layout`;
+export const privacyPolicyRoute: string = `${settingsRoute}/privacy-policy`;
+export const taxesRoute: string = `${settingsRoute}/taxes`;
+export const tncRoute: string = `${settingsRoute}/tnc`;

@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { AuthNavbar, ButtonComponent } from '@/components';
 import NotFoundHero from '@/public/illustrations/404.png';
+import { dashboardRoute } from '@/utils';
 
 const NotFoundPage = () => (
 	<>
@@ -11,7 +12,7 @@ const NotFoundPage = () => (
 			</h1>
 
 			<p className="w-full max-w-[450px] text-center mt-5 text-light-disabled-text font-light">
-				Sorry, we couldn’t find the page you’re looking for.
+				Sorry, we couldn&apos;t find the page you’re looking for.
 				Perhaps you’ve mistyped the URL?
 				Be sure to check your spelling.
 			</p>
@@ -26,7 +27,7 @@ const NotFoundPage = () => (
 
 			<ButtonComponent
 				className="w-fit px-5 py-3 mt-6 bg-primary-main hover:bg-primary-main/90"
-				href="/"
+				href={dashboardRoute}
 				title="Go to Home"
 			/>
 		</main>

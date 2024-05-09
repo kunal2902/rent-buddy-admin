@@ -14,11 +14,10 @@ export interface AvatarComponentProps extends AvatarProps {
 export const AvatarComponent = (props: AvatarComponentProps) =>
 	<Avatar
 		{...props}
-		autoContrast
-		size={mantineSize}
-		color={appColorRGBA}
-		radius={mantineRadius}
-		variant={mantineAvatarVariant}
+		size={props.size ?? mantineSize}
+		color={props.color ?? appColorRGBA}
+		radius={props.radius ?? mantineRadius}
+		variant={props.variant ?? mantineAvatarVariant}
 	>
 		{props.children}
 	</Avatar>;

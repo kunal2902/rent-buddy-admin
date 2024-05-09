@@ -7,9 +7,9 @@ export interface TooltipComponentProps extends TooltipProps {
 }
 
 /** This is the Mantine Tooltip component - https://mantine.dev/core/tooltip/ */
-export const TooltipComponent = (props: TooltipComponentProps) =>
+export const TooltipComponent = (props: TooltipComponentProps) => props.label ?
 	<Tooltip
 		{...props}
 	>
 		{props.children}
-	</Tooltip>;
+	</Tooltip> : props.children;

@@ -3,11 +3,10 @@ import {
 	createRolePath,
 	deleteRolePath,
 	getCrmJWT,
-	getPermissionPath,
-	tagPath,
+	getPermissionsAPIPath,
+	tagAPIPath,
 	isDebug,
-	loginPath,
-	restoreTagPath,
+	loginAPIPath,
 	updateRolePath,
 	attributePath,
 	restoreAttributePath,
@@ -94,7 +93,7 @@ export const loginApi = async (
 	successCallback: (arg0: any) => void,
 	errorCallback: (arg0: any) => void
 ) => {
-	const response = await makePostRequest(loginPath, {
+	const response = await makePostRequest(loginAPIPath, {
 		email,
 		password,
 	});
@@ -122,7 +121,7 @@ export const getPermissionApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(getPermissionPath, {
+	const response = await makeGetRequest(getPermissionsAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -155,7 +154,7 @@ export const getTagsApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(tagPath, {
+	const response = await makeGetRequest(tagAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -188,7 +187,7 @@ export const tagApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePostRequest(tagPath, {
+	const response = await makePostRequest(tagAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -220,7 +219,7 @@ export const getTagApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(tagPath, {
+	const response = await makeGetRequest(tagAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -253,38 +252,6 @@ export const deleteTagByIdApi = async (
 		return;
 	}
 	const response = await makeDeleteRequest(tagByIdPath, {
-		authorization: `Bearer ${token}`,
-	});
-	if (isDebug) {
-		console.log(response);
-	}
-	switch (response.status) {
-		case 200:
-			successCallback(response.data);
-			break;
-		case 420:
-		case 498:
-		case 491:
-			logoutCallback();
-			break;
-		default:
-			errorCallback();
-			toast.error(response.message);
-	}
-};
-
-export const restoreTagApi = async (
-	body: any,
-	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
-	logoutCallback: () => void
-) => {
-	const token = getCrmJWT();
-	if (token === null) {
-		logoutCallback();
-		return;
-	}
-	const response = await makePutRequest(restoreTagPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
