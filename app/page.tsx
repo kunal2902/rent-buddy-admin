@@ -3,11 +3,11 @@ import { MainNavbar, MainSidebar } from '@/components';
 import './globals.css';
 
 export default function Dashboard() {
-	return (
-		<>
-			<MainNavbar />
-			<MainSidebar />
-			<DashboardContainer />
-		</>
-	);
+  return (
+    <>
+      <MainNavbar />
+      <MainSidebar />
+      <DashboardContainer />
+    </>
+  );
 }

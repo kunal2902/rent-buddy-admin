@@ -33,58 +33,67 @@ export const userNameConstant: string = 'username';
 export const roleIdConstant: string = 'role_id';
 
 /** API Constants */
-export const apiUrl: string = 'http://localhost:8000/api/v1/';
-export const loginPath: string = `${apiUrl}auth/login`;
+export const apiUrl: string = 'http://localhost:8000/api/v1';
+export const loginPath: string = `${apiUrl}/auth/login`;
 
 // Permission path
-export const getPermissionPath: string = `${apiUrl}permission`;
+export const getPermissionPath: string = `${apiUrl}/permission`;
 
 // Tag path
-/** get, post and put api path */
-export const tagPath: string = `${apiUrl}tag`;
-/** restore api path */
-export const restoreTagPath: string = `${apiUrl}tag/restore/:id`;
-/** enable / disable, delete, get api path */
-export const tagByIdPath: string = `${apiUrl}tag/:id`;
+/** get all tags based on filtter, sorting and search */
+export const tagsPath: string = `${apiUrl}/tags`;
+/** add or insert tag route */
+export const upsertTagPath: string = `${apiUrl}/upsert-tag`;
+/** enable/disable tag, get tag by id and delete tag*/
+export const tagByIdPath: string = `${apiUrl}/tag/:id`;
 
 // Role path
-/** post and get api path */
-export const createRolePath: string = `${apiUrl}role`;
-/**delete api path */
-export const deleteRolePath: string = `${apiUrl}role/delete/:id`;
-export const updateRolePath: string = `${apiUrl}role/:id`;
+/** get all roles based on filtter, sorting and search */
+export const rolesPath: string = `${apiUrl}/roles`;
+/** add or insert role route */
+export const upsertRolePath: string = `${apiUrl}/upsert-role`;
+/** enable/disable role, get role by id and delete role*/
+export const roleByIdPath: string = `${apiUrl}/role/:id`;
 
 // Custom Attributes path
-/** post and get api path */
-export const attributePath: string = `${apiUrl}custom-attribute`;
-/** restore api path */
-export const restoreAttributePath: string = `${apiUrl}custom-attribute/restore/:id`;
-/** enable / disable, get and delete api path */
-export const attributeByIdPath: string = `${apiUrl}custom-attribute/:id`;
+/** get all attributes based on filtter, sorting and search */
+export const attributesPath: string = `${apiUrl}/attributes`;
+/** add or insert attribute route */
+export const upsertAttributePath: string = `${apiUrl}/upsert-attribute`;
+/** enable/disable attribute, get attribute by id and delete attribute*/
+export const attributeByIdPath: string = `${apiUrl}/attribute/:id`;
 
 // Category path
-/**post and get api path */
-export const categoryPath: string = `${apiUrl}category`;
-/** put, delete and get by id path */
-export const categoryByIdPath: string = `${apiUrl}category/:id`;
+/** get all Categories based on filtter, sorting and search */
+export const categoriesPath: string = `${apiUrl}/categories`;
+/** add or insert Category route */
+export const upsertCategoryPath: string = `${apiUrl}/upsert-category`;
+/** enable/disable category, get category by id and delete category*/
+export const categoryByIdPath: string = `${apiUrl}/category/:id`;
 
 // Sub category api path
-/** get and post api path */
-export const subCategoryPath: string = `${apiUrl}sub-category`;
-/** get, put and delete path */
-export const subCategoryByIdPath: string = `${apiUrl}sub-category/:id`;
+/** get all Sub categories based on filtter, sorting and search */
+export const subCategoriesPath: string = `${apiUrl}/sub-categories`;
+/** add or insert Sub category route */
+export const upsertSubCategoryPath: string = `${apiUrl}/upsert-sub-category`;
+/** enable/disable Sub category, get Sub category by id and delete Sub category*/
+export const subCategoryByIdPath: string = `${apiUrl}/sub-category/:id`;
 
 // Item type path
-/**post and get api path */
-export const itemTypePath: string = `${apiUrl}item-type`;
-/** get, put and delete path */
-export const itemTypeByIdPath: string = `${apiUrl}item-type/:id`;
+/** get all Item Type based on filtter, sorting and search */
+export const itemTypesPath: string = `${apiUrl}/item-types`;
+/** add or insert item type route */
+export const upsertItemTypePath: string = `${apiUrl}/upsert-item-type`;
+/** enable/disable item type, get item type by id and delete item type*/
+export const itemTypeByIdPath: string = `${apiUrl}/item-type/:id`;
 
 // Add-on path
-/** post and get api path */
-export const addOnPath: string = `${apiUrl}add-on`;
-/** get, put and delete path */
-export const addOnByIdPath: string = `${apiUrl}add-on/:id`;
+/** get all add on based on filtter, sorting and search */
+export const addOnsPath: string = `${apiUrl}/add-Ons`;
+/** add or insert Add On route */
+export const upsertAddOnPath: string = `${apiUrl}/upsert-add-on`;
+/** enable/disable add on, get add on by id and delete add on*/
+export const addOnByIdPath: string = `${apiUrl}/add-on/:id`;
 
 /** Constant Functions */
 /** To get the CRM JWT stored in Cookies */

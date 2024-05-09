@@ -25,5 +25,6 @@ module.exports = {
     "react/jsx-indent": [2, "tab"],
     "react/jsx-indent-props": [2, "tab"],
     'no-console': 'off',
+    'linebreak-style': ['error', 'windows']
   },
 };
