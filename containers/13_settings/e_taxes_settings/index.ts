@@ -1,1 +1,1 @@
-export { default as TaxesSettingsContainer } from './taxes_settings_container';
+export { default as TaxesSettingsContainer } from "./taxes_settings_container";

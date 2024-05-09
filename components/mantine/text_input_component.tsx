@@ -1,9 +1,9 @@
 import {
 	TextInput,
 	TextInputProps,
-} from '@mantine/core';
-import React from 'react';
-import { appColorRGBA, mantineInputVariant, mantineRadius, mantineSize } from '@/utils';
+} from "@mantine/core";
+import React from "react";
+import { appColorRGBA, mantineInputVariant, mantineRadius, mantineSize } from "@/utils";
 
 /** Props list of Mantine's TextInput component - https://mantine.dev/core/text-input/?t=props */
 export interface TextInputComponentProps extends TextInputProps {

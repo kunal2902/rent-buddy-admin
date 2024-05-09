@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useCreateTagModal } from './hook';
-import { ButtonComponent, ModalComponent, TextInputComponent } from '@/components';
+import { useCreateTagModal } from "./hook";
+import { ButtonComponent, ModalComponent, TextInputComponent } from "@/components";
 
 interface Props {
 	isOpen: boolean;

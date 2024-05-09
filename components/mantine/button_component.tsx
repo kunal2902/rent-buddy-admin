@@ -1,10 +1,10 @@
 import {
 	Button,
 	ButtonProps,
-} from '@mantine/core';
-import React from 'react';
-import Link from 'next/link';
-import { appColorRGBA, mantineRadius, mantineSize } from '@/utils';
+} from "@mantine/core";
+import React from "react";
+import Link from "next/link";
+import { appColorRGBA, mantineRadius, mantineSize } from "@/utils";
 
 /** Props list of Mantine's Button component - https://mantine.dev/core/button/?t=props */
 export interface ButtonComponentProps extends ButtonProps {
@@ -25,5 +25,5 @@ export const ButtonComponent = (props: ButtonComponentProps) =>
 		{...(props.href ? { component: Link, href: props.href } :
 			{ onClick: props.onClick })}
 	>
-		{props.children ?? props.title ? <p className={props.titleClassName}>{props.title}</p> : '' }
+		{props.children ?? props.title ? <p className={props.titleClassName}>{props.title}</p> : "" }
 	</Button>;

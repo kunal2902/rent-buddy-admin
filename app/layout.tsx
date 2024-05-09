@@ -1,13 +1,13 @@
-import '@mantine/core/styles.css';
-import { GeistSans } from 'geist/font/sans';
-import { GeistMono } from 'geist/font/mono';
-import './globals.css';
-import React from 'react';
-import { MantineProvider, ColorSchemeScript } from '@mantine/core';
-import { Metadata } from 'next';
-import { ToastContainer } from 'react-toastify';
-import { theme } from '@/theme';
-import { appDescription, appTitle, ReactQueryProvider, RecoilProvider, ThemeProvider } from '@/utils';
+import "@mantine/core/styles.css";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
+import "./globals.css";
+import React from "react";
+import { MantineProvider, ColorSchemeScript } from "@mantine/core";
+import { Metadata } from "next";
+import { ToastContainer } from "react-toastify";
+import { theme } from "@/theme";
+import { appDescription, appTitle, ReactQueryProvider, RecoilProvider, ThemeProvider } from "@/utils";
 
 export const metadata: Metadata = {
 	title: appTitle,

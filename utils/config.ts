@@ -1,39 +1,39 @@
-import { getCookie } from 'cookies-next';
-import { AvatarVariant, InputVariant, MantineColor, MantineRadius, MantineSize } from '@mantine/core';
+import { getCookie } from "cookies-next";
+import { AvatarVariant, InputVariant, MantineColor, MantineRadius, MantineSize } from "@mantine/core";
 
 /** Global variables */
 export const isDebug: boolean = true;
-export const appName: string = 'NCA CRM';
-export const appTitle: string = 'NCA CRM';
-export const appDescription: string = 'NCM ';
+export const appName: string = "NCA CRM";
+export const appTitle: string = "NCA CRM";
+export const appDescription: string = "NCM ";
 
 /** App colors */
-export const appColor: string = '#6cd2d5';
-export const appAccentColor: string = '#e88e7c';
-export const whiteColor: string = '#ffffff';
-export const blackColor: string = '#000000';
+export const appColor: string = "#6cd2d5";
+export const appAccentColor: string = "#e88e7c";
+export const whiteColor: string = "#ffffff";
+export const blackColor: string = "#000000";
 
 /** Mantine Variables */
-export const appColorRGBA: MantineColor = 'rgba(108, 210, 213, 1)';
-export const appAccentColorRGBA: MantineColor = 'rgba(232,142,124,1)';
-export const mantineSize: MantineSize = 'lg';
-export const mantineRadius: MantineRadius = 'xl';
-export const mantineInputVariant: InputVariant = 'filled';
-export const mantineAvatarVariant: AvatarVariant = 'filled';
+export const appColorRGBA: MantineColor = "rgba(108, 210, 213, 1)";
+export const appAccentColorRGBA: MantineColor = "rgba(232,142,124,1)";
+export const mantineSize: MantineSize = "lg";
+export const mantineRadius: MantineRadius = "xl";
+export const mantineInputVariant: InputVariant = "filled";
+export const mantineAvatarVariant: AvatarVariant = "filled";
 
 /** Cookie constants */
 export const cookieOptions = {
 	secure: true,
 };
-export const crmJwtConstant: string = 'crm_jwt';
-export const userIdConstant: string = 'user_id';
-export const nameConstant: string = 'name';
-export const emailConstant: string = 'email';
-export const userNameConstant: string = 'username';
-export const roleIdConstant: string = 'role_id';
+export const crmJwtConstant: string = "crm_jwt";
+export const userIdConstant: string = "user_id";
+export const nameConstant: string = "name";
+export const emailConstant: string = "email";
+export const userNameConstant: string = "username";
+export const roleIdConstant: string = "role_id";
 
 /** API Constants */
-export const apiUrl: string = 'http://localhost:8000/api/v1/';
+export const apiUrl: string = "http://localhost:8000/api/v1/";
 export const loginPath: string = `${apiUrl}auth/login`;
 
 // Permission path
@@ -88,14 +88,14 @@ export const addOnByIdPath: string = `${apiUrl}add-on/:id`;
 
 /** Constant Functions */
 /** To get the CRM JWT stored in Cookies */
-export const getCrmJWT = (): string => getCookie(crmJwtConstant) ?? '';
+export const getCrmJWT = (): string => getCookie(crmJwtConstant) ?? "";
 /** To get the User id stored in Cookies */
-export const getUserId = (): string => getCookie(userIdConstant) ?? '';
+export const getUserId = (): string => getCookie(userIdConstant) ?? "";
 /** To get the name stored in Cookies */
-export const getName = (): string => getCookie(nameConstant) ?? '';
+export const getName = (): string => getCookie(nameConstant) ?? "";
 /** To get the Email stored in Cookies */
-export const getEmail = (): string => getCookie(emailConstant) ?? '';
+export const getEmail = (): string => getCookie(emailConstant) ?? "";
 /** To get the Username stored in Cookies */
-export const getUserName = (): string => getCookie(userNameConstant) ?? '';
+export const getUserName = (): string => getCookie(userNameConstant) ?? "";
 /** To get the Role id stored in Cookies */
-export const getRoleId = (): string => getCookie(roleIdConstant) ?? '';
+export const getRoleId = (): string => getCookie(roleIdConstant) ?? "";

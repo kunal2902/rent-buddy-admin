@@ -1,4 +1,4 @@
-import { CartModel, CustomerModel, UserModel, InvoiceItemModel } from '@/models';
+import { CartModel, CustomerModel, UserModel, InvoiceItemModel } from "@/models";
 
 export interface InvoiceModel {
     invoice_id: string;

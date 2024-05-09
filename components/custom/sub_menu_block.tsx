@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { ChevronDown, ChevronUp, LucideIcon } from 'lucide-react';
-import { IconType } from 'react-icons';
-import { twMerge } from 'tailwind-merge';
-import { useSubMenuBlock } from './hook';
-import { SidebarButton, ActionIconComponent, TooltipComponent } from '@/components';
+import { ChevronDown, ChevronUp, LucideIcon } from "lucide-react";
+import { IconType } from "react-icons";
+import { twMerge } from "tailwind-merge";
+import { useSubMenuBlock } from "./hook";
+import { SidebarButton, ActionIconComponent, TooltipComponent } from "@/components";
 
 export interface SubMenuBlockProps {
 	id: number;
@@ -41,15 +41,15 @@ export const SubMenuBlock = (props: SubMenuBlockProps) => {
 	return (
 		<div className="w-full flex flex-col transition-none">
 			<TooltipComponent
-				label={!isSidebarOpen ? title : ''}
+				label={!isSidebarOpen ? title : ""}
 				// className="transition-none bg-light-background-paper border border-gray-800 font-public-sans"
 			>
 				<ActionIconComponent
 					className={twMerge(
-						'py-2.5 items-center transition-none my-1.5 flex rounded-md',
+						"py-2.5 items-center transition-none my-1.5 flex rounded-md",
 						isSidebarOpen
-							? 'justify-start px-3 hover:bg-light-background-paper'
-							: 'justify-center'
+							? "justify-start px-3 hover:bg-light-background-paper"
+							: "justify-center"
 					)}
 					onClick={toggleBlockState}
 				>
@@ -58,7 +58,7 @@ export const SubMenuBlock = (props: SubMenuBlockProps) => {
 							size={iconSize ?? 22}
 							className={twMerge(
 								`${
-									isSidebarOpen ? 'mr-2.5' : ''
+									isSidebarOpen ? "mr-2.5" : ""
 								} transition-none`,
 								iconClassName
 							)}
@@ -68,7 +68,7 @@ export const SubMenuBlock = (props: SubMenuBlockProps) => {
 							size={iconSize ?? 22}
 							className={twMerge(
 								`${
-									isSidebarOpen ? 'mr-2.5' : ''
+									isSidebarOpen ? "mr-2.5" : ""
 								} transition-none`,
 								iconClassName
 							)}
@@ -79,7 +79,7 @@ export const SubMenuBlock = (props: SubMenuBlockProps) => {
 						<>
 							<p
 								className={twMerge(
-									'text-start my-0 py-0 flex-1',
+									"text-start my-0 py-0 flex-1",
 									titleClassName
 								)}
 							>
@@ -97,7 +97,7 @@ export const SubMenuBlock = (props: SubMenuBlockProps) => {
 			</TooltipComponent>
 
 			{isBlockOpen && (
-				<div className={`${isSidebarOpen ? 'pl-2' : ''}`}>
+				<div className={`${isSidebarOpen ? "pl-2" : ""}`}>
 					{options.map((option) => (
 						<SidebarButton
 							key={option.id}

@@ -1,5 +1,5 @@
-import { MainNavbar, MainSidebar } from '@/components';
-import { LayoutSettingsContainer } from '@/containers';
+import { MainNavbar, MainSidebar } from "@/components";
+import { LayoutSettingsContainer } from "@/containers";
 
 const PageLayoutPage = () => (
 	<>

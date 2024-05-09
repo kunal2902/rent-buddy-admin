@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { Plus } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { useAddOnsContainer } from './hook';
-import { DashboardPageHeader } from '@/components';
-import AddAddOnModal from './add_add_on_modal';
-import { AddOnModel } from '@/models';
+import { Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useAddOnsContainer } from "./hook";
+import { DashboardPageHeader } from "@/components";
+import AddAddOnModal from "./add_add_on_modal";
+import { AddOnModel } from "@/models";
 import {
 	deleteAddOnByIdApi,
 	getAddOnApi,
-} from '@/utils';
+} from "@/utils";
 
 const AddOnsContainer = () => {
 	const {
@@ -24,18 +24,18 @@ const AddOnsContainer = () => {
 	useEffect(() => {
 		if (callApi) {
 			const successCallback = (data: any) => {
-				console.log('Success:', data);
+				console.log("Success:", data);
 				setAddOnList(data.tags);
 				setCallApi(false);
 			};
 
 			const errorCallback = () => {
-				console.log('Error occurred.');
+				console.log("Error occurred.");
 				setCallApi(false);
 			};
 
 			const logoutCallback = () => {
-				console.log('Logout.');
+				console.log("Logout.");
 				setCallApi(false);
 			};
 
@@ -49,12 +49,12 @@ const AddOnsContainer = () => {
 		};
 
 		const errorCallback = () => {
-			console.log('Error occurred.');
+			console.log("Error occurred.");
 			setCallApi(false);
 		};
 
 		const logoutCallback = () => {
-			console.log('Logout.');
+			console.log("Logout.");
 			setCallApi(false);
 		};
 		deleteAddOnByIdApi(
@@ -68,7 +68,7 @@ const AddOnsContainer = () => {
 	return (
 		<main
 			className={`flex min-h-screen w-full bg-light-background-natural flex-col pt-14 ${
-				isSidebarOpen ? 'lg:pl-64 pl-0' : 'pl-16'
+				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-16"
 			}`}
 		>
 			<DashboardPageHeader
@@ -76,10 +76,10 @@ const AddOnsContainer = () => {
 				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
 				button
 				buttonProps={{
-					title: 'New Add On',
-					titleClassName: 'sm:flex hidden',
+					title: "New Add On",
+					titleClassName: "sm:flex hidden",
 					onClick: toggleCreateAddOnModalOpen,
-					className: 'rounded-md w-fit text-grey-100 text-sm',
+					className: "rounded-md w-fit text-grey-100 text-sm",
 					children: <Plus size={20} className="sm:mr-2 mr-0" />,
 				}}
 			/>

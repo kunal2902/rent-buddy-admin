@@ -1,5 +1,5 @@
-import { MainNavbar, MainSidebar } from '@/components';
-import { PrivacyPolicyPageContainer } from '@/containers';
+import { MainNavbar, MainSidebar } from "@/components";
+import { PrivacyPolicyPageContainer } from "@/containers";
 
 const PrivacyPolicy = () => (
 	<>

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { twMerge } from 'tailwind-merge';
-import { useState } from 'react';
-import { ButtonComponent } from '@/components';
-import { AddUserModal } from '@/containers/10_users/add_user_modal';
+import { twMerge } from "tailwind-merge";
+import { useState } from "react";
+import { ButtonComponent } from "@/components";
+import { AddUserModal } from "@/containers/10_users/add_user_modal";
 
 export const PosCartSection = () => {
 	const [isUserModalOpen, setUserModalOpen] = useState(false);
@@ -30,7 +30,7 @@ export const PosCartSection = () => {
 					</select>
 					<ButtonComponent
 						className={twMerge(
-							'bg-grey-900 ml-2 w-16 text-grey-100'
+							"bg-grey-900 ml-2 w-16 text-grey-100"
 						)}
 						title="+"
 						onClick={() => {

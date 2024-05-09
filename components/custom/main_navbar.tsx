@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { Menu } from 'lucide-react';
-import Link from 'next/link';
-import Image from 'next/image';
-import Logo from '@/public/images/logo.png';
-import { useMainNavbar } from './hook';
-import { appAccentColor, appName, getName } from '@/utils';
-import { ButtonComponent, ActionIconComponent, AvatarComponent } from '@/components';
+import { Menu } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import Logo from "@/public/images/logo.png";
+import { useMainNavbar } from "./hook";
+import { appAccentColor, appName, getName } from "@/utils";
+import { ButtonComponent, ActionIconComponent, AvatarComponent } from "@/components";
 
 export const MainNavbar = () => {
 	const { toggleSidebar } = useMainNavbar();

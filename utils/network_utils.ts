@@ -1,4 +1,4 @@
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import {
 	createRolePath,
 	deleteRolePath,
@@ -21,17 +21,17 @@ import {
 	subCategoryByIdPath,
 	addOnPath,
 	addOnByIdPath,
-} from '@/utils';
+} from "@/utils";
 
 const makeGetRequest = async (
 	url: string | URL | Request,
 	additionalHeaders = {}
 ) => {
 	const rawResponse = await fetch(url, {
-		method: 'GET',
+		method: "GET",
 		headers: {
-			Accept: 'application/json',
-			'Content-Type': 'application/json',
+			Accept: "application/json",
+			"Content-Type": "application/json",
 			...additionalHeaders,
 		},
 	});
@@ -43,10 +43,10 @@ const makeDeleteRequest = async (
 	additionalHeaders = {}
 ) => {
 	const rawResponse = await fetch(url, {
-		method: 'DELETE',
+		method: "DELETE",
 		headers: {
-			Accept: 'application/json',
-			'Content-Type': 'application/json',
+			Accept: "application/json",
+			"Content-Type": "application/json",
 			...additionalHeaders,
 		},
 	});
@@ -59,10 +59,10 @@ const makePostRequest = async (
 	additionalHeaders = {}
 ) => {
 	const rawResponse = await fetch(url, {
-		method: 'POST',
+		method: "POST",
 		headers: {
-			'Content-Type': 'application/json',
-			'X-localization': 'en',
+			"Content-Type": "application/json",
+			"X-localization": "en",
 			...additionalHeaders,
 		},
 		body: JSON.stringify(body),
@@ -76,10 +76,10 @@ const makePutRequest = async (
 	additionalHeaders = {}
 ) => {
 	const rawResponse = await fetch(url, {
-		method: 'PUT',
+		method: "PUT",
 		headers: {
-			'Content-Type': 'application/json',
-			'X-localization': 'en',
+			"Content-Type": "application/json",
+			"X-localization": "en",
 			...additionalHeaders,
 		},
 		body: JSON.stringify(body),
