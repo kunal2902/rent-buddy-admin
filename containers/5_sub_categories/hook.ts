@@ -1,5 +1,5 @@
-import { useRecoilValue } from 'recoil';
-import { sidebarStateAtom } from '@/utils';
+import { useRecoilValue } from "recoil";
+import { sidebarStateAtom } from "@/utils";
 
 export const useSubCategoriesContainer = () => {
 	const isSidebarOpen = useRecoilValue<boolean>(sidebarStateAtom);

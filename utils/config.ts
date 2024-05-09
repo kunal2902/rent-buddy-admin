@@ -41,10 +41,10 @@ export const roleIdConstant: string = 'role_id';
 
 /** API Constants */
 export const apiUrl: string = 'http://localhost:8000/api/v1/';
-export const loginAPIPath: string = `${apiUrl}auth/login`;
+export const loginPath: string = `${apiUrl}auth/login`;
 
 // Permission path
-export const getPermissionsAPIPath: string = `${apiUrl}permission`;
+export const getPermissionPath: string = `${apiUrl}permission`;
 
 // Tag path
 /** get, post and put api path */

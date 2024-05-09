@@ -1,4 +1,4 @@
-import { ItemTypeModel, CategoryModel, SubCategoryModel, UserModel, CartItemModel, InvoiceItemModel } from '@/models';
+import { ItemTypeModel, CategoryModel, SubCategoryModel, UserModel, CartItemModel, InvoiceItemModel } from "@/models";
 
 export interface ItemModel {
     item_id: string;

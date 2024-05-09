@@ -1,1 +1,1 @@
-export { default as LayoutSettingsContainer } from './layout_settings_container';
+export { default as LayoutSettingsContainer } from "./layout_settings_container";

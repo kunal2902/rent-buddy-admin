@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useRecoilValue } from 'recoil';
-import { onTextInputChange, sidebarStateAtom, toggleBooleanState } from '@/utils';
+import { useState } from "react";
+import { useRecoilValue } from "recoil";
+import { onTextInputChange, sidebarStateAtom, toggleBooleanState } from "@/utils";
 
 export const useAddOnsContainer = () => {
 	const isSidebarOpen = useRecoilValue<boolean>(sidebarStateAtom);
@@ -17,8 +17,8 @@ export const useAddOnsContainer = () => {
 };
 
 export const useCreateAddOnModal = () => {
-	const [addOnName, setAddOnName] = useState<string>('');
-	const [addOnPrice, setAddOnPrice] = useState<string>('');
+	const [addOnName, setAddOnName] = useState<string>("");
+	const [addOnPrice, setAddOnPrice] = useState<string>("");
 
 	return {
 		addOnName,

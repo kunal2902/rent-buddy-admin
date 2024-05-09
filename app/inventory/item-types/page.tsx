@@ -1,5 +1,5 @@
-import { MainNavbar, MainSidebar } from '@/components';
-import { ItemTypesContainer } from '@/containers';
+import { MainNavbar, MainSidebar } from "@/components";
+import { ItemTypesContainer } from "@/containers";
 
 const ItemTypes = () => (
 	<>

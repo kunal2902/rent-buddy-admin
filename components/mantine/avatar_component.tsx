@@ -1,9 +1,9 @@
 import {
 	Avatar,
 	AvatarProps,
-} from '@mantine/core';
-import React from 'react';
-import { appColorRGBA, mantineAvatarVariant, mantineRadius, mantineSize } from '@/utils';
+} from "@mantine/core";
+import React from "react";
+import { appColorRGBA, mantineAvatarVariant, mantineRadius, mantineSize } from "@/utils";
 
 /** Props list of Mantine's Avatar component - https://mantine.dev/core/avatar/?t=props */
 export interface AvatarComponentProps extends AvatarProps {
