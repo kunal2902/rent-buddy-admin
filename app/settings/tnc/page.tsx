@@ -1,5 +1,5 @@
-import { MainNavbar, MainSidebar } from "@/components";
-import { TnCPageContainer } from "@/containers";
+import { MainNavbar, MainSidebar } from '@/components';
+import { TnCPageContainer } from '@/containers';
 
 const TnC = () => (
 	<>

@@ -1,4 +1,4 @@
-import { CustomerModel, CartModel } from "@/models";
+import { CustomerModel, CartModel } from '@/models';
 
 export interface LocationModel {
     location_id: string;

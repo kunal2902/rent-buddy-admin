@@ -1,5 +1,5 @@
-import { MainNavbar, MainSidebar } from "@/components";
-import { AddOnsContainer } from "@/containers";
+import { MainNavbar, MainSidebar } from '@/components';
+import { AddOnsContainer } from '@/containers';
 
 const AddOnsPage = () => (
 	<>

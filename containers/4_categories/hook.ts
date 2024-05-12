@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { useRecoilValue } from "recoil";
-import { onTextInputChange, sidebarStateAtom, toggleBooleanState } from "@/utils";
+import { useState } from 'react';
+import { useRecoilValue } from 'recoil';
+import { onTextInputChange, sidebarStateAtom, toggleBooleanState } from '@/utils';
 
 export const useCategoriesContainer = () => {
 	const isSidebarOpen = useRecoilValue<boolean>(sidebarStateAtom);
@@ -17,7 +17,7 @@ export const useCategoriesContainer = () => {
 };
 
 export const useCreateCategoryModal = () => {
-	const [categoryName, setCategoryName] = useState<string>("");
+	const [categoryName, setCategoryName] = useState<string>('');
 
 	return {
 		categoryName,

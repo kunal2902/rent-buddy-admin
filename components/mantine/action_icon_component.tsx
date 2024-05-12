@@ -17,11 +17,11 @@ export const ActionIconComponent = (props: ActionIconComponentProps) =>
 // @ts-ignore
 	<ActionIcon
 		{...props}
-		variant={mantineActionIconVariant}
-		size={props.size ?? mantineActionIconSize}
 		color={props.color ?? appColorRGBA}
 		radius={props.radius ?? mantineRadius}
-		{...(props.href ? { component: { Link }, href: props.href } :
+		size={props.size ?? mantineActionIconSize}
+		variant={props.variant ?? mantineActionIconVariant}
+		{...(props.href ? { component: Link, href: props.href } :
 			{ onClick: props.onClick })}
 	>
 		{props.children}

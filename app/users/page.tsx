@@ -1,5 +1,5 @@
-import { MainNavbar, MainSidebar } from "@/components";
-import UsersContainer from "@/containers/10_users/users_container";
+import { MainNavbar, MainSidebar } from '@/components';
+import UsersContainer from '@/containers/10_users/users_container';
 
 const UsersPage = () => (
 	<>

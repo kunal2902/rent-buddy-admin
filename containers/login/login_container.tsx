@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
-import { setCookie } from "cookies-next";
+import Link from 'next/link';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
+import { setCookie } from 'cookies-next';
 import {
 	loginApi,
 	crmJwtConstant,
@@ -12,12 +12,12 @@ import {
 	roleIdConstant,
 	userIdConstant,
 	userNameConstant, cookieOptions,
-} from "@/utils";
-import { useLoginContainer } from "./hook";
+} from '@/utils';
+import { useLoginContainer } from './hook';
 import {
 	TextInputComponent,
 	PasswordInputComponent, ButtonComponent,
-} from "@/components";
+} from '@/components';
 
 const LoginContainer = () => {
 	const {
@@ -48,10 +48,10 @@ const LoginContainer = () => {
 						setCookie(emailConstant, result.data.user.email, cookieOptions);
 						setCookie(userNameConstant, result.data.user.username, cookieOptions);
 						setCookie(roleIdConstant, result.data.user.role_id, cookieOptions);
-						router.replace("/");
+						router.replace('/');
 					} else {
 						console.log({ result });
-						console.log("Error");
+						console.log('Error');
 					}
 				},
 				(err: any) => {
@@ -59,7 +59,7 @@ const LoginContainer = () => {
 				}
 			);
 		} catch (error) {
-			console.error("Login failed:", error);
+			console.error('Login failed:', error);
 		}
 	};
 

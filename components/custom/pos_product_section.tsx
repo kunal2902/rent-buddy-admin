@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { Pizza, SearchIcon } from "lucide-react";
-import React, { useState } from "react";
-import Image from "next/image";
-import { ButtonComponent } from "@/components";
+import { Pizza, SearchIcon } from 'lucide-react';
+import React, { useState } from 'react';
+import Image from 'next/image';
+import { ButtonComponent } from '@/components';
 
 export interface Categories {
 	categoryName: string;

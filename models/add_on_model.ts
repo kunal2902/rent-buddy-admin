@@ -1,4 +1,4 @@
-import { UserModel } from "@/models";
+import { UserModel } from '@/models';
 
 export interface AddOnModel {
     add_on_id: string;

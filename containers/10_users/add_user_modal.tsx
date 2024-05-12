@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { ButtonComponent, ModalComponent } from "@/components";
+import { ButtonComponent, ModalComponent } from '@/components';
 
 export interface AddUserModalProps {
 	isOpen: boolean;

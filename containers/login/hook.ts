@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 export const useLoginContainer = () => {
-	const [email, setEmail] = useState<string>("simon@admin.com");
-	const [password, setPassword] = useState<string>("bulai002");
+	const [email, setEmail] = useState<string>('simon@admin.com');
+	const [password, setPassword] = useState<string>('bulai002');
 	const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
 	const onTextChange =

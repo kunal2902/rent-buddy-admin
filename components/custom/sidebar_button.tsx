@@ -4,7 +4,7 @@ import { LucideIcon } from 'lucide-react';
 import { IconType } from 'react-icons';
 import { twMerge } from 'tailwind-merge';
 import { ActionIconComponent, ButtonComponent, TooltipComponent } from '@/components';
-import { mantineActionIconVariant } from '@/utils';
+import { appColorRGBA, mantineActionIconVariant } from '@/utils';
 import { TextComponent } from '@/components/mantine/text_component';
 
 export interface SidebarButtonProps {
@@ -41,9 +41,11 @@ export const SidebarButton = (props: SidebarButtonProps) => {
 			{
 				isSidebarOpen ?
 					<ButtonComponent
-						variant={mantineActionIconVariant}
-						href={link}
 						fullWidth
+						href={link}
+						justify="start"
+						color={isActive ? appColorRGBA : undefined}
+						variant={isActive ? 'filled' : mantineActionIconVariant}
 						className={twMerge(
 							'w-full flex text-white items-center my-1.5 py-2.5 font-public-sans transition-none' +
 								'justify-start px-3 rounded-md hover:bg-gray-200/70 hover:text-light-secondary-text',
@@ -58,7 +60,8 @@ export const SidebarButton = (props: SidebarButtonProps) => {
 									: ''
 							}`,
 							className
-						)}>
+						)}
+					>
 						<Icon
 							size={iconSize ?? 22}
 							className={twMerge(
@@ -69,12 +72,14 @@ export const SidebarButton = (props: SidebarButtonProps) => {
 							)}
 						/>
 
-						<TextComponent c="blue" text={title} />
+						<TextComponent c={isActive ? 'white' : appColorRGBA} text={title} />
 
 					</ButtonComponent>
 					:
 					<ActionIconComponent
-						variant={mantineActionIconVariant}
+						href={link}
+						color={isActive ? appColorRGBA : undefined}
+						variant={isActive ? 'filled' : mantineActionIconVariant}
 						className={twMerge(
 							'w-full flex items-center my-1.5 py-2.5 font-public-sans transition-none' +
 								'justify-center text-light-secondary-text',

@@ -1,5 +1,5 @@
-import { MainNavbar, MainSidebar } from "@/components";
-import { TaxesSettingsContainer } from "@/containers";
+import { MainNavbar, MainSidebar } from '@/components';
+import { TaxesSettingsContainer } from '@/containers';
 
 const TaxesPage = () => (
 	<>

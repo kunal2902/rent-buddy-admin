@@ -1,5 +1,5 @@
-import { MainNavbar, MainSidebar } from "@/components";
-import { TagsContainer } from "@/containers";
+import { MainNavbar, MainSidebar } from '@/components';
+import { TagsContainer } from '@/containers';
 
 const TagsPage = () => (
 	<>

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useCreateCustomAttributeModal } from "./hook";
-import { ButtonComponent, ModalComponent, SelectComponent, TextInputComponent } from "@/components";
-import { CustomAttributeTypeOptions } from "@/constants";
+import { useCreateCustomAttributeModal } from './hook';
+import { ButtonComponent, ModalComponent, SelectComponent, TextInputComponent } from '@/components';
+import { CustomAttributeTypeOptions } from '@/constants';
 
 interface Props {
 	isOpen: boolean;

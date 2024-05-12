@@ -15,15 +15,21 @@ export interface ButtonComponentProps extends ButtonProps {
 }
 
 /** This is the Mantine Button component - https://mantine.dev/core/button/ */
-export const ButtonComponent = (props: ButtonComponentProps) =>
-// @ts-ignore
-	<Button
+export const ButtonComponent = (props: ButtonComponentProps) => {
+	console.log(props.children);
+	// @ts-ignore
+	return <Button
 		{...props}
 		size={props.size ?? mantineButtonSize}
 		color={props.color ?? appColorRGBA}
 		radius={props.radius ?? mantineRadius}
 		{...(props.href ? { component: Link, href: props.href } :
 			{ onClick: props.onClick })}
-	>
-		{props.children ?? props.title ? <p className={props.titleClassName}>{props.title}</p> : '' }
+		>
+		{props.children ? props.children :
+			props.title ?
+				<p className={props.titleClassName}>{props.title}</p>
+				: ''
+		}
 	</Button>;
+};

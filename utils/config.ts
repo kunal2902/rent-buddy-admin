@@ -25,7 +25,7 @@ export const mantineActionIconVariant: ActionIconVariant = 'light';
 export const mantineRadius: MantineRadius = 'lg';
 export const mantineInputVariant: InputVariant = 'filled';
 export const mantineAvatarVariant: AvatarVariant = 'filled';
-export const mantineSpaceHeight: MantineSize = 'md';
+export const mantineSpaceHeight: MantineSize = 'sm';
 export const mantineSpaceWidth: MantineSize = 'md';
 
 /** Cookie constants */
@@ -41,10 +41,10 @@ export const roleIdConstant: string = 'role_id';
 
 /** API Constants */
 export const apiUrl: string = 'http://localhost:8000/api/v1/';
-export const loginPath: string = `${apiUrl}auth/login`;
+export const loginAPIPath: string = `${apiUrl}auth/login`;
 
 // Permission path
-export const getPermissionPath: string = `${apiUrl}permission`;
+export const getPermissionsAPIPath: string = `${apiUrl}permission`;
 
 // Tag path
 /** get, post and put api path */
@@ -111,7 +111,7 @@ export const loginRoute: string = '/login';
 export const customersRoute: string = '/customers';
 export const posRoute: string = '/pos';
 export const usersRoute: string = '/users';
-export const rolesRoute: string = '/roles';
+export const reportsRoute: string = '/reports';
 const inventoryRoute: string = '/inventory';
 export const addOnsRoute: string = `${inventoryRoute}/add-ons`;
 export const categoriesRoute: string = `${inventoryRoute}/categories`;
@@ -124,8 +124,34 @@ const settingsRoute: string = '/settings';
 export const aboutRoute: string = `${settingsRoute}/about`;
 export const contactRoute: string = `${settingsRoute}/contact`;
 export const emailRoute: string = `${settingsRoute}/email`;
-export const generalRoute: string = `${settingsRoute}/general`;
+export const generalSettingsRoute: string = `${settingsRoute}/general`;
 export const pageLayoutRoute: string = `${settingsRoute}/page-layout`;
 export const privacyPolicyRoute: string = `${settingsRoute}/privacy-policy`;
+export const rolesRoute: string = `${settingsRoute}/roles`;
 export const taxesRoute: string = `${settingsRoute}/taxes`;
 export const tncRoute: string = `${settingsRoute}/tnc`;
+
+/** Sidebar Constants */
+export const dashboardName: string = 'Dashboard';
+export const inventoryName: string = 'Inventory';
+export const itemsName: string = 'Items';
+export const itemTypesName: string = 'Item Types';
+export const categoriesName: string = 'Categories';
+export const subCategoriesName: string = 'Sub-Categories';
+export const customAttributesName: string = 'Custom Attributes';
+export const tagsName: string = 'Tags';
+export const addOnsName: string = 'Add-ons';
+export const customersName: string = 'Customers';
+export const usersName: string = 'Users';
+export const reportsName: string = 'Reports';
+export const settingsName: string = 'Settings';
+export const generalSettingsName: string = 'General Settings';
+export const rolesName: string = 'Roles';
+export const pageLayoutName: string = 'Page Layout';
+export const pagesName: string = 'Pages';
+export const aboutName: string = 'Pos';
+export const contactName: string = 'Pos';
+export const privacyPolicyName: string = 'Pos';
+export const tncName: string = 'Pos';
+export const emailSettingsName: string = 'Email Settings';
+export const taxesName: string = 'Taxes';

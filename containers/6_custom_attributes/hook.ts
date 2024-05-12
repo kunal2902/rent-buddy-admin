@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
-import { onSelectInputChange, onTextInputChange, sidebarStateAtom, toggleBooleanState } from "@/utils";
+import { useEffect, useState } from 'react';
+import { useRecoilValue } from 'recoil';
+import { onSelectInputChange, onTextInputChange, sidebarStateAtom, toggleBooleanState } from '@/utils';
 
 export const useCustomAttributesContainer = () => {
 	const isSidebarOpen = useRecoilValue<boolean>(sidebarStateAtom);
@@ -19,11 +19,11 @@ export const useCustomAttributesContainer = () => {
 };
 
 export const useCreateCustomAttributeModal = () => {
-	const [customAttributeName, setCustomAttributeName] = useState<string>("");
-	const [type, setType] = useState<string | null>("");
+	const [customAttributeName, setCustomAttributeName] = useState<string>('');
+	const [type, setType] = useState<string | null>('');
 
 	useEffect(() => {
-		console.log("type", type);
+		console.log('type', type);
 	}, [type]);
 
 	return {

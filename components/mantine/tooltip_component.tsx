@@ -1,5 +1,5 @@
-import { Tooltip, TooltipProps } from "@mantine/core";
-import React from "react";
+import { Tooltip, TooltipProps } from '@mantine/core';
+import React from 'react';
 
 /** Props list of Mantine's Tooltip component - https://mantine.dev/core/tooltip/?t=props */
 export interface TooltipComponentProps extends TooltipProps {

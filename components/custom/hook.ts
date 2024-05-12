@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { usePathname } from "next/navigation";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { useMemo } from "react";
-import { sidebarStateAtom, toggleBooleanState, openSubMenuAtom } from "@/utils";
+import { usePathname } from 'next/navigation';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useMemo } from 'react';
+import { sidebarStateAtom, toggleBooleanState, openSubMenuAtom } from '@/utils';
 
 interface Args {
 	subMenuId: number;

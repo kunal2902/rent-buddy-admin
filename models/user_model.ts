@@ -11,7 +11,7 @@ import {
 	CustomerModel,
 	RoleModel,
 	ActivityLogModel,
-} from "@/models";
+} from '@/models';
 
 export interface UserModel {
     user_id: string;

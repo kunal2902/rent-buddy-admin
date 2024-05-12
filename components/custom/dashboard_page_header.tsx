@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { twMerge } from "tailwind-merge";
-import { ButtonComponent, ButtonComponentProps } from "@/components";
+import { twMerge } from 'tailwind-merge';
+import { ButtonComponent, ButtonComponentProps } from '@/components';
 
 export type DashboardPageHeaderProps = {
 	heading: string;
@@ -23,13 +23,13 @@ export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
 	return (
 		<div
 			className={twMerge(
-				"flex w-full items-center justify-between font-public-sans px-2",
+				'flex w-full items-center justify-between font-public-sans px-2',
 				className
 			)}
 		>
 			<h1
 				className={twMerge(
-					"text-2xl font-semibold text-light-primary-text",
+					'text-2xl font-semibold text-light-primary-text',
 					headingClassName
 				)}
 			>
@@ -39,7 +39,7 @@ export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
 			{button && (
 				<ButtonComponent
 					className={twMerge(
-						"bg-grey-900 ml-2 w-fit text-grey-100",
+						'bg-grey-900 ml-2 w-fit text-grey-100',
 						props.buttonProps.className
 					)}
 					{...props.buttonProps} />

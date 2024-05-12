@@ -18,8 +18,11 @@ export const MainNavbar = () => {
 
 	return (
 		<div
-			className="w-full px-4 pt-3 pb-3 flex fixed top-0 left-0 bg-light-background-natural items-center justify-between z-30 shadow">
+			className="w-full pt-3 pb-3 flex fixed top-0 left-0 bg-light-background-natural items-center justify-between z-30 shadow">
 			<div className="flex items-center">
+
+				<SpaceComponent width />
+
 				<ActionIconComponent
 					onClick={toggleSidebar}
 					aria-label="Drawer button"
@@ -63,6 +66,8 @@ export const MainNavbar = () => {
 				<AvatarComponent src={null} alt={getName()}>
 					{getName()[0]}
 				</AvatarComponent>
+
+				<SpaceComponent width />
 
 			</div>
 		</div>

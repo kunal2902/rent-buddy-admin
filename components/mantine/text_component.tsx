@@ -5,7 +5,7 @@ import {
 
 /** Props list of Mantine's Text component - https://mantine.dev/core/text/?t=props */
 export interface TextComponentProps extends TextProps {
- bold?: boolean,
+	bold?: boolean,
 	text: string,
 }
 

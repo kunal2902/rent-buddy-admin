@@ -11,160 +11,247 @@ import {
 	List,
 	LayoutPanelTop,
 	BookOpenText,
-	CreditCard,
 	Mail,
 	LucideIcon,
 	Bookmark,
 	Blocks,
-} from "lucide-react";
-import { IconType } from "react-icons";
-import { PiWarehouse, PiWarehouseFill } from "react-icons/pi";
-import { RiSettingsFill, RiSettingsLine } from "react-icons/ri";
+} from 'lucide-react';
+import { IconType } from 'react-icons';
+import { PiBookOpenTextFill, PiWarehouse, PiWarehouseFill } from 'react-icons/pi';
+import { RiSettingsFill, RiSettingsLine } from 'react-icons/ri';
+import {
+	aboutName,
+	aboutRoute,
+	addOnsName,
+	addOnsRoute,
+	categoriesName,
+	categoriesRoute, contactName, contactRoute,
+	customAttributesName,
+	customAttributesRoute,
+	customersName,
+	customersRoute,
+	dashboardName,
+	dashboardRoute,
+	emailRoute, emailSettingsName,
+	generalSettingsName,
+	generalSettingsRoute,
+	inventoryName,
+	itemsName,
+	itemsRoute,
+	itemTypesName,
+	itemTypesRoute,
+	pageLayoutName,
+	pageLayoutRoute,
+	pagesName, privacyPolicyName, privacyPolicyRoute,
+	reportsName,
+	reportsRoute, rolesName, rolesRoute,
+	settingsName,
+	subCategoriesName,
+	subCategoriesRoute,
+	tagsName,
+	tagsRoute, taxesName,
+	taxesRoute, tncName, tncRoute,
+	usersName,
+	usersRoute,
+} from '@/utils';
 
-type SidebarElement = {
-  id: number;
-  title: string;
-  Icon: IconType | LucideIcon;
-} & (
-  | {
-      type: "sub-menu";
-      ActiveIcon: IconType | LucideIcon;
-      subMenu: Array<{
-        id: number;
-        title: string;
-        Icon: IconType | LucideIcon;
-        link: string;
-      }>;
-    }
-  | {
-      type: "simple";
-      link: string;
-    }
-);
+export enum SideBarType {
+	// eslint-disable-next-line no-unused-vars
+	Simple = 'simple',
+	// eslint-disable-next-line no-unused-vars
+	Nested = 'nested',
+}
 
-export const SidebarItems: Array<SidebarElement> = [
+export interface SubMenuType {
+	ActiveIcon: IconType | LucideIcon,
+	options: Array<SideBarProps<SideBarType>>,
+}
+
+export interface LinkType {
+	link: string,
+}
+
+export interface SideBarProps<T extends SideBarType> {
+	id: number,
+	type: T,
+	link?: string,
+	title: string,
+	Icon: IconType | LucideIcon,
+	other: T extends SideBarType.Nested ? SubMenuType : LinkType,
+}
+
+export const SidebarItems: Array<SideBarProps<SideBarType>> = [
 	{
 		id: 1,
-		title: "Dashboard",
-		link: "/",
+		title: dashboardName,
 		Icon: BarChart3,
-		type: "simple",
+		type: SideBarType.Simple,
+		other: { link: dashboardRoute },
 	},
 	{
 		id: 2,
-		title: "Inventory",
+		title: inventoryName,
 		Icon: PiWarehouse,
-		ActiveIcon: PiWarehouseFill,
-		type: "sub-menu",
-		subMenu: [
-			{
-				id: 1,
-				title: "Items",
-				link: "/inventory/items",
-				Icon: ScanLine,
-			},
-			{
-				id: 2,
-				title: "Item Types",
-				link: "/inventory/item-types",
-				Icon: ScanBarcode,
-			},
-			{
-				id: 3,
-				title: "Categories",
-				link: "/inventory/categories",
-				Icon: Tag,
-			},
-			{
-				id: 4,
-				title: "Sub Categories",
-				link: "/inventory/sub-categories",
-				Icon: Tags,
-			},
-			{
-				id: 5,
-				title: "Custom Attributes",
-				link: "/inventory/custom-attributes",
-				Icon: List,
-			},
-			{
-				id: 6,
-				title: "Tags",
-				link: "/inventory/tags",
-				Icon: Bookmark,
-			},
-			{
-				id: 7,
-				title: "Add Ons",
-				link: "/inventory/add-ons",
-				Icon: Blocks,
-			},
-		],
+		type: SideBarType.Nested,
+		other: {
+			ActiveIcon: PiWarehouseFill,
+			options: [
+				{
+					id: 1,
+					title: itemsName,
+					type: SideBarType.Simple,
+					other: { link: itemsRoute },
+					Icon: ScanLine,
+				},
+				{
+					id: 2,
+					title: itemTypesName,
+					other: { link: itemTypesRoute },
+					Icon: ScanBarcode,
+					type: SideBarType.Simple,
+				},
+				{
+					id: 3,
+					title: categoriesName,
+					other: { link: categoriesRoute },
+					Icon: Tag,
+					type: SideBarType.Simple,
+				},
+				{
+					id: 4,
+					title: subCategoriesName,
+					other: { link: subCategoriesRoute },
+					Icon: Tags,
+					type: SideBarType.Simple,
+				},
+				{
+					id: 5,
+					title: customAttributesName,
+					other: { link: customAttributesRoute },
+					Icon: List,
+					type: SideBarType.Simple,
+				},
+				{
+					id: 6,
+					title: tagsName,
+					other: { link: tagsRoute },
+					Icon: Bookmark,
+					type: SideBarType.Simple,
+				},
+				{
+					id: 7,
+					title: addOnsName,
+					other: { link: addOnsRoute },
+					Icon: Blocks,
+					type: SideBarType.Simple,
+				},
+			],
+		},
 	},
 	{
 		id: 3,
-		title: "Customers",
-		link: "/page.tsx",
+		title: customersName,
+		other: { link: customersRoute },
 		Icon: Users,
-		type: "simple",
+		type: SideBarType.Simple,
 	},
 	{
 		id: 4,
-		title: "Team",
-		link: "/team",
+		title: usersName,
+		other: { link: usersRoute },
 		Icon: ShieldCheck,
-		type: "simple",
+		type: SideBarType.Simple,
 	},
 	{
 		id: 5,
-		title: "Reports",
-		link: "/reports",
+		title: reportsName,
+		other: { link: reportsRoute },
 		Icon: Clipboard,
-		type: "simple",
+		type: SideBarType.Simple,
 	},
 	{
 		id: 6,
-		title: "Settings",
+		title: settingsName,
 		Icon: RiSettingsLine,
-		ActiveIcon: RiSettingsFill,
-		type: "sub-menu",
-		subMenu: [
-			{
-				id: 1,
-				title: "General Setting",
-				link: "/settings/general-setting",
-				Icon: Settings,
-			},
-			{
-				id: 2,
-				title: "Page Layout",
-				link: "/settings/page-layout",
-				Icon: LayoutPanelTop,
-			},
-			{
-				id: 3,
-				title: "Pages",
-				link: "/settings/pages",
-				Icon: BookOpenText,
-			},
-			{
-				id: 4,
-				title: "Payment Gateway",
-				link: "/settings/payment-gateway",
-				Icon: CreditCard,
-			},
-			{
-				id: 5,
-				title: "Email Setting",
-				link: "/settings/email-setting",
-				Icon: Mail,
-			},
-			{
-				id: 6,
-				title: "Taxes",
-				link: "/settings/taxes",
-				Icon: Mail,
-			},
-		],
+		type: SideBarType.Nested,
+		other: {
+			ActiveIcon: RiSettingsFill,
+			options: [
+				{
+					id: 1,
+					title: generalSettingsName,
+					type: SideBarType.Simple,
+					other: { link: generalSettingsRoute },
+					Icon: Settings,
+				},
+				{
+					id: 2,
+					title: rolesName,
+					type: SideBarType.Simple,
+					other: { link: rolesRoute },
+					Icon: Settings,
+				},
+				{
+					id: 2,
+					title: pageLayoutName,
+					other: { link: pageLayoutRoute },
+					Icon: LayoutPanelTop,
+					type: SideBarType.Simple,
+				},
+				{
+					id: 3,
+					title: pagesName,
+					Icon: BookOpenText,
+					type: SideBarType.Nested,
+					other: {
+						ActiveIcon: PiBookOpenTextFill,
+						options: [
+							{
+								id: 1,
+								title: aboutName,
+								other: { link: aboutRoute },
+								Icon: Mail,
+								type: SideBarType.Simple,
+							},
+							{
+								id: 2,
+								title: contactName,
+								other: { link: contactRoute },
+								Icon: Mail,
+								type: SideBarType.Simple,
+							},
+							{
+								id: 3,
+								title: privacyPolicyName,
+								other: { link: privacyPolicyRoute },
+								Icon: Mail,
+								type: SideBarType.Simple,
+							},
+							{
+								id: 4,
+								title: tncName,
+								other: { link: tncRoute },
+								Icon: Mail,
+								type: SideBarType.Simple,
+							},
+						],
+					},
+				},
+				{
+					id: 4,
+					title: emailSettingsName,
+					other: { link: emailRoute },
+					Icon: Mail,
+					type: SideBarType.Simple,
+				},
+				{
+					id: 5,
+					title: taxesName,
+					other: { link: taxesRoute },
+					Icon: Mail,
+					type: SideBarType.Simple,
+				},
+			],
+		},
 	},
 ];

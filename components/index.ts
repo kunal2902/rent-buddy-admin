@@ -1,2 +1,2 @@
-export * from "@/components/custom";
-export * from "@/components/mantine";
+export * from '@/components/custom';
+export * from '@/components/mantine';

@@ -1,5 +1,5 @@
-import { LoginContainer } from "@/containers";
-import { AuthNavbar } from "@/components";
+import { LoginContainer } from '@/containers';
+import { AuthNavbar } from '@/components';
 
 const LoginPage = () => (
 	<>
