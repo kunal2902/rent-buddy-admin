@@ -1,11 +1,31 @@
 'use client';
 
 import { Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { DashboardPageHeader } from '@/components';
 import { useActivityLogsContainer } from './hook';
+import { ActivityLogModel } from '@/models';
+import { getActivityLogsApi } from '@/utils';
 
 const ActivityLogsContainer = () => {
 	const { isSidebarOpen } = useActivityLogsContainer();
+	const [activityLogsList, setActivityLogsList] = useState<ActivityLogModel[]>([]);
+	const [callApi, setCallApi] = useState(true);
+
+	useEffect(() => {
+		if (callApi) {
+			getActivityLogsApi((data: any) => {
+				setActivityLogsList(data);
+				setCallApi(false);
+			}, () => {
+				console.log('Error occurred.');
+				setCallApi(false);
+			}, () => {
+				console.log('Logout.');
+				setCallApi(false);
+			}).then();
+		}
+	}, [callApi]);
 
 	return (
 		<main

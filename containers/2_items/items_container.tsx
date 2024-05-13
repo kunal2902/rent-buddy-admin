@@ -4,11 +4,8 @@ import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { DashboardPageHeader } from '@/components';
 import { useItemsContainer } from './hook';
-import {
-	deleteItemTypeByIdApi,
-	getItemTypeApi,
-} from '@/utils';
 import { ItemTypeModel } from '@/models';
+import { deleteItemApi, getItemApi } from '@/utils';
 
 const ItemsContainer = () => {
 	const { isSidebarOpen } = useItemsContainer();
@@ -17,51 +14,29 @@ const ItemsContainer = () => {
 
 	useEffect(() => {
 		if (callApi) {
-			const successCallback = (data: any) => {
-				console.log('Success:', data);
-				setItemList(data.tags);
+			getItemApi((data: any) => {
+				setItemList(data);
 				setCallApi(false);
-			};
-
-			const errorCallback = () => {
+			}, () => {
 				console.log('Error occurred.');
 				setCallApi(false);
-			};
-
-			const logoutCallback = () => {
+			}, () => {
 				console.log('Logout.');
 				setCallApi(false);
-			};
-
-			getItemTypeApi(
-				null,
-				successCallback,
-				errorCallback,
-				logoutCallback
-			);
+			}).then();
 		}
 	}, [callApi]);
 
-	const handleDeleteItem = (id: number) => {
-		const successCallback = (data: any) => {
+	const handleDeleteItem = (id: string) => {
+		deleteItemApi(id, () => {
 			setCallApi(true);
-		};
-
-		const errorCallback = () => {
+		}, () => {
 			console.log('Error occurred.');
 			setCallApi(false);
-		};
-
-		const logoutCallback = () => {
+		}, () => {
 			console.log('Logout.');
 			setCallApi(false);
-		};
-		deleteItemTypeByIdApi(
-			null,
-			successCallback,
-			errorCallback,
-			logoutCallback
-		);
+		});
 	};
 
 	return (

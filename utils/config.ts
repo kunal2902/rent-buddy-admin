@@ -40,60 +40,44 @@ export const loginPath: string = `${apiUrl}/auth/login`;
 export const getPermissionPath: string = `${apiUrl}/permission`;
 
 // Tag path
-/** get all tags based on filtter, sorting and search */
-export const tagsPath: string = `${apiUrl}/tags`;
-/** add or insert tag route */
-export const upsertTagPath: string = `${apiUrl}/upsert-tag`;
-/** enable/disable tag, get tag by id and delete tag*/
-export const tagByIdPath: string = `${apiUrl}/tag/:id`;
+/** get all tags based on filtter, sorting and search, add or insert */
+export const tagPath: string = `${apiUrl}/tag`;
 
 // Role path
-/** get all roles based on filtter, sorting and search */
-export const rolesPath: string = `${apiUrl}/roles`;
-/** add or insert role route */
-export const upsertRolePath: string = `${apiUrl}/upsert-role`;
-/** enable/disable role, get role by id and delete role*/
-export const roleByIdPath: string = `${apiUrl}/role/:id`;
+/** get all roles based on filtter, sorting and search, add or insert */
+export const rolePath: string = `${apiUrl}/role`;
 
 // Custom Attributes path
-/** get all attributes based on filtter, sorting and search */
-export const attributesPath: string = `${apiUrl}/attributes`;
-/** add or insert attribute route */
-export const upsertAttributePath: string = `${apiUrl}/upsert-attribute`;
-/** enable/disable attribute, get attribute by id and delete attribute*/
-export const attributeByIdPath: string = `${apiUrl}/attribute/:id`;
+/** get all attributes based on filtter, sorting and search, add or insert */
+export const attributePath: string = `${apiUrl}/attribute`;
 
 // Category path
-/** get all Categories based on filtter, sorting and search */
-export const categoriesPath: string = `${apiUrl}/categories`;
-/** add or insert Category route */
-export const upsertCategoryPath: string = `${apiUrl}/upsert-category`;
-/** enable/disable category, get category by id and delete category*/
-export const categoryByIdPath: string = `${apiUrl}/category/:id`;
+/** get all Category based on filtter, sorting and search, add or insert */
+export const categoryPath: string = `${apiUrl}/category`;
 
 // Sub category api path
-/** get all Sub categories based on filtter, sorting and search */
-export const subCategoriesPath: string = `${apiUrl}/sub-categories`;
-/** add or insert Sub category route */
-export const upsertSubCategoryPath: string = `${apiUrl}/upsert-sub-category`;
-/** enable/disable Sub category, get Sub category by id and delete Sub category*/
-export const subCategoryByIdPath: string = `${apiUrl}/sub-category/:id`;
+/** get all Sub category based on filtter, sorting and search, add or insert */
+export const subCategoryPath: string = `${apiUrl}/sub-category`;
 
 // Item type path
-/** get all Item Type based on filtter, sorting and search */
-export const itemTypesPath: string = `${apiUrl}/item-types`;
-/** add or insert item type route */
-export const upsertItemTypePath: string = `${apiUrl}/upsert-item-type`;
-/** enable/disable item type, get item type by id and delete item type*/
-export const itemTypeByIdPath: string = `${apiUrl}/item-type/:id`;
+/** get all Item Type based on filtter, sorting and search, add or insert */
+export const itemTypePath: string = `${apiUrl}/item-type`;
+
+// Item path
+/** get all Item Type based on filtter, sorting and search, add or insert */
+export const itemPath: string = `${apiUrl}/item`;
 
 // Add-on path
-/** get all add on based on filtter, sorting and search */
-export const addOnsPath: string = `${apiUrl}/add-Ons`;
-/** add or insert Add On route */
-export const upsertAddOnPath: string = `${apiUrl}/upsert-add-on`;
-/** enable/disable add on, get add on by id and delete add on*/
-export const addOnByIdPath: string = `${apiUrl}/add-on/:id`;
+/** get all add on based on filtter, sorting and search, add or insert */
+export const addOnPath: string = `${apiUrl}/add-on`;
+
+// Activity logs path
+/** get all add on based on filtter, sorting and search, add or insert */
+export const activityLogsPath: string = `${apiUrl}/activity-logs`;
+
+// Activity logs path
+/** get all add on based on filtter, sorting and search, add or insert */
+export const usersPath: string = `${apiUrl}/users`;
 
 /** Constant Functions */
 /** To get the CRM JWT stored in Cookies */
