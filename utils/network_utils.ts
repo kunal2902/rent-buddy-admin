@@ -1,25 +1,19 @@
 import { toast } from 'react-toastify';
 import {
-	createRolePath,
-	deleteRolePath,
 	getCrmJWT,
-	getPermissionsAPIPath,
-	tagAPIPath,
 	isDebug,
 	loginAPIPath,
-	updateRolePath,
-	attributePath,
-	restoreAttributePath,
-	attributeByIdPath,
-	tagByIdPath,
-	categoryByIdPath,
-	categoryPath,
-	itemTypeByIdPath,
-	itemTypePath,
-	subCategoryPath,
-	subCategoryByIdPath,
-	addOnPath,
-	addOnByIdPath,
+	permissionAPIPath,
+	tagAPIPath,
+	roleAPIPath,
+	attributeAPIPath,
+	categoryAPIPath,
+	subCategoryAPIPath,
+	itemTypeAPIPath,
+	addOnAPIPath,
+	itemAPIPath,
+	activityLogsAPIPath,
+	usersAPIPath,
 } from '@/utils';
 
 const makeGetRequest = async (
@@ -117,11 +111,11 @@ export const getPermissionApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(getPermissionsAPIPath, {
+	const response = await makeGetRequest(permissionAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -133,7 +127,7 @@ export const getPermissionApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -143,14 +137,13 @@ export const getPermissionApi = async (
 };
 
 // Tag Api
-export const getTagsApi = async (
-	body: any,
+export const getTagApi = async (
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -166,7 +159,7 @@ export const getTagsApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -175,15 +168,46 @@ export const getTagsApi = async (
 	}
 };
 
-/** post and put api function */
-export const tagApi = async (
+export const getTagByIdApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makeGetRequest(`${tagAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+export const upsertTagApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -199,7 +223,7 @@ export const tagApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -208,18 +232,17 @@ export const tagApi = async (
 	}
 };
 
-export const getTagApi = async (
-	body: any,
+export const disableTagApi = async (
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(tagAPIPath, {
+	const response = await makePutRequest(tagAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -231,7 +254,7 @@ export const getTagApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -240,94 +263,30 @@ export const getTagApi = async (
 	}
 };
 
-export const deleteTagByIdApi = async (
-	body: any,
+export const deleteTagApi = async (
+	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
-	const response = await makeDeleteRequest(tagByIdPath, {
+	const response = await makeDeleteRequest(`${tagAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
 		console.log(response);
 	}
-	switch (response.status) {
+	switch (response.code) {
 		case 200:
 			successCallback(response.data);
 			break;
 		case 420:
 		case 498:
-		case 491:
-			logoutCallback();
-			break;
-		default:
-			errorCallback();
-			toast.error(response.message);
-	}
-};
-
-export const getTagByIdApi = async (
-	body: any,
-	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
-	logoutCallback: () => void
-) => {
-	const token = getCrmJWT();
-	if (token === null) {
-		logoutCallback();
-		return;
-	}
-	const response = await makeGetRequest(tagByIdPath, {
-		authorization: `Bearer ${token}`,
-	});
-	if (isDebug) {
-		console.log(response);
-	}
-	switch (response.status) {
-		case 200:
-			successCallback(response.data);
-			break;
-		case 420:
-		case 498:
-		case 491:
-			logoutCallback();
-			break;
-		default:
-			errorCallback();
-			toast.error(response.message);
-	}
-};
-
-export const enableDisableTagByIdApi = async (
-	body: any,
-	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
-	logoutCallback: () => void
-) => {
-	const token = getCrmJWT();
-	if (token === null) {
-		logoutCallback();
-		return;
-	}
-	const response = await makePutRequest(tagByIdPath, {
-		authorization: `Bearer ${token}`,
-	});
-	if (isDebug) {
-		console.log(response);
-	}
-	switch (response.status) {
-		case 200:
-			successCallback(response.data);
-			break;
-		case 420:
-		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -337,30 +296,125 @@ export const enableDisableTagByIdApi = async (
 };
 
 // Role Api
-export const createRoleApi = async (
+export const getRolesApi = async (
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makeGetRequest(roleAPIPath, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+export const getRoleByIdApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makeGetRequest(`${roleAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+export const upsertRoleApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(createRolePath, {
+	const response = await makePostRequest(roleAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
 		console.log(response);
 	}
-	switch (response.status) {
+	switch (response.code) {
 		case 200:
 			successCallback(response.data);
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+export const disableRoleApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makePutRequest(`${roleAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -370,93 +424,29 @@ export const createRoleApi = async (
 };
 
 export const deleteRoleApi = async (
-	body: any,
+	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
-	const response = await makeDeleteRequest(deleteRolePath, {
+	const response = await makeDeleteRequest(`${roleAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
 		console.log(response);
 	}
-	switch (response.status) {
+	switch (response.code) {
 		case 200:
 			successCallback(response.data);
 			break;
 		case 420:
 		case 498:
-		case 491:
-			logoutCallback();
-			break;
-		default:
-			errorCallback();
-			toast.error(response.message);
-	}
-};
-
-export const updateRoleApi = async (
-	body: any,
-	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
-	logoutCallback: () => void
-) => {
-	const token = getCrmJWT();
-	if (token === null) {
-		logoutCallback();
-		return;
-	}
-	const response = await makePutRequest(updateRolePath, {
-		authorization: `Bearer ${token}`,
-	});
-	if (isDebug) {
-		console.log(response);
-	}
-	switch (response.status) {
-		case 200:
-			successCallback(response.data);
-			break;
-		case 420:
-		case 498:
-		case 491:
-			logoutCallback();
-			break;
-		default:
-			errorCallback();
-			toast.error(response.message);
-	}
-};
-
-export const getRoleApi = async (
-	body: any,
-	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
-	logoutCallback: () => void
-) => {
-	const token = getCrmJWT();
-	if (token === null) {
-		logoutCallback();
-		return;
-	}
-	const response = await makeGetRequest(updateRolePath, {
-		authorization: `Bearer ${token}`,
-	});
-	if (isDebug) {
-		console.log(response);
-	}
-	switch (response.status) {
-		case 200:
-			successCallback(response.data);
-			break;
-		case 420:
-		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -467,29 +457,28 @@ export const getRoleApi = async (
 
 // custom-attribute api
 export const getAttributeApi = async (
-	body: any,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(attributePath, {
+	const response = await makeGetRequest(attributeAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
 		console.log(response);
 	}
-	switch (response.status) {
+	switch (response.code) {
 		case 200:
 			successCallback(response.data);
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -498,30 +487,30 @@ export const getAttributeApi = async (
 	}
 };
 
-export const postAttributeApi = async (
-	body: any,
+export const getAttributeByIdApi = async (
+	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
-	const response = await makePostRequest(attributePath, {
+	const response = await makeGetRequest(`${attributeAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
 		console.log(response);
 	}
-	switch (response.status) {
+	switch (response.code) {
 		case 200:
 			successCallback(response.data);
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -530,30 +519,30 @@ export const postAttributeApi = async (
 	}
 };
 
-export const restoreAttributeApi = async (
+export const upsertAttributeApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
-	const response = await makePutRequest(restoreAttributePath, {
+	const response = await makePostRequest(attributeAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
 		console.log(response);
 	}
-	switch (response.status) {
+	switch (response.code) {
 		case 200:
 			successCallback(response.data);
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -562,30 +551,30 @@ export const restoreAttributeApi = async (
 	}
 };
 
-export const enableDisableAttributebyIdApi = async (
-	body: any,
+export const disableAttributeApi = async (
+	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
-	const response = await makePutRequest(attributeByIdPath, {
+	const response = await makePutRequest(`${attributeAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
 		console.log(response);
 	}
-	switch (response.status) {
+	switch (response.code) {
 		case 200:
 			successCallback(response.data);
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -594,62 +583,30 @@ export const enableDisableAttributebyIdApi = async (
 	}
 };
 
-export const getAttributebyIdApi = async (
-	body: any,
+export const deleteAttributeApi = async (
+	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(attributeByIdPath, {
+	const response = await makeDeleteRequest(`${attributeAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
 		console.log(response);
 	}
-	switch (response.status) {
+	switch (response.code) {
 		case 200:
 			successCallback(response.data);
 			break;
 		case 420:
 		case 498:
-		case 491:
-			logoutCallback();
-			break;
-		default:
-			errorCallback();
-			toast.error(response.message);
-	}
-};
-
-export const deleteAttributebyIdApi = async (
-	body: any,
-	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
-	logoutCallback: () => void
-) => {
-	const token = getCrmJWT();
-	if (token === null) {
-		logoutCallback();
-		return;
-	}
-	const response = await makeDeleteRequest(attributeByIdPath, {
-		authorization: `Bearer ${token}`,
-	});
-	if (isDebug) {
-		console.log(response);
-	}
-	switch (response.status) {
-		case 200:
-			successCallback(response.data);
-			break;
-		case 420:
-		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -659,62 +616,29 @@ export const deleteAttributebyIdApi = async (
 };
 
 // category api
-export const postCategoryApi = async (
-	body: any,
-	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
-	logoutCallback: () => void
-) => {
-	const token = getCrmJWT();
-	if (token === null) {
-		logoutCallback();
-		return;
-	}
-	const response = await makePostRequest(categoryPath, {
-		authorization: `Bearer ${token}`,
-	});
-	if (isDebug) {
-		console.log(response);
-	}
-	switch (response.status) {
-		case 200:
-			successCallback(response.data);
-			break;
-		case 420:
-		case 498:
-		case 491:
-			logoutCallback();
-			break;
-		default:
-			errorCallback();
-			toast.error(response.message);
-	}
-};
-
 export const getCategoryApi = async (
-	body: any,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(categoryPath, {
+	const response = await makeGetRequest(categoryAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
 		console.log(response);
 	}
-	switch (response.status) {
+	switch (response.code) {
 		case 200:
 			successCallback(response.data);
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -723,30 +647,30 @@ export const getCategoryApi = async (
 	}
 };
 
-export const getCategoryByIdApi = async (
-	body: any,
+export const getcategoryByIdApi = async (
+	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(categoryByIdPath, {
+	const response = await makeGetRequest(`${categoryAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
 		console.log(response);
 	}
-	switch (response.status) {
+	switch (response.code) {
 		case 200:
 			successCallback(response.data);
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -755,30 +679,30 @@ export const getCategoryByIdApi = async (
 	}
 };
 
-export const deleteCategoryByIdApi = async (
+export const upsertCategoryApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
-	const response = await makeDeleteRequest(categoryByIdPath, {
+	const response = await makePostRequest(categoryAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
 		console.log(response);
 	}
-	switch (response.status) {
+	switch (response.code) {
 		case 200:
 			successCallback(response.data);
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -787,30 +711,30 @@ export const deleteCategoryByIdApi = async (
 	}
 };
 
-export const updateCategoryByIdApi = async (
-	body: any,
+export const disableCategoryApi = async (
+	id:string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
-	const response = await makePutRequest(categoryByIdPath, {
+	const response = await makePutRequest(`${categoryAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
 		console.log(response);
 	}
-	switch (response.status) {
+	switch (response.code) {
 		case 200:
 			successCallback(response.data);
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -819,159 +743,30 @@ export const updateCategoryByIdApi = async (
 	}
 };
 
-// Item type api
-export const getItemTypeApi = async (
-	body: any,
+export const deleteCategoryApi = async (
+	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(itemTypePath, {
+	const response = await makeDeleteRequest(`${categoryAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
 		console.log(response);
 	}
-	switch (response.status) {
+	switch (response.code) {
 		case 200:
 			successCallback(response.data);
 			break;
 		case 420:
 		case 498:
-		case 491:
-			logoutCallback();
-			break;
-		default:
-			errorCallback();
-			toast.error(response.message);
-	}
-};
-
-export const postItemTypeApi = async (
-	body: any,
-	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
-	logoutCallback: () => void
-) => {
-	const token = getCrmJWT();
-	if (token === null) {
-		logoutCallback();
-		return;
-	}
-	const response = await makePostRequest(itemTypePath, {
-		authorization: `Bearer ${token}`,
-	});
-	if (isDebug) {
-		console.log(response);
-	}
-	switch (response.status) {
-		case 200:
-			successCallback(response.data);
-			break;
-		case 420:
-		case 498:
-		case 491:
-			logoutCallback();
-			break;
-		default:
-			errorCallback();
-			toast.error(response.message);
-	}
-};
-
-export const getItemTypeByIdApi = async (
-	body: any,
-	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
-	logoutCallback: () => void
-) => {
-	const token = getCrmJWT();
-	if (token === null) {
-		logoutCallback();
-		return;
-	}
-	const response = await makeGetRequest(itemTypeByIdPath, {
-		authorization: `Bearer ${token}`,
-	});
-	if (isDebug) {
-		console.log(response);
-	}
-	switch (response.status) {
-		case 200:
-			successCallback(response.data);
-			break;
-		case 420:
-		case 498:
-		case 491:
-			logoutCallback();
-			break;
-		default:
-			errorCallback();
-			toast.error(response.message);
-	}
-};
-
-export const deleteItemTypeByIdApi = async (
-	body: any,
-	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
-	logoutCallback: () => void
-) => {
-	const token = getCrmJWT();
-	if (token === null) {
-		logoutCallback();
-		return;
-	}
-	const response = await makeDeleteRequest(itemTypeByIdPath, {
-		authorization: `Bearer ${token}`,
-	});
-	if (isDebug) {
-		console.log(response);
-	}
-	switch (response.status) {
-		case 200:
-			successCallback(response.data);
-			break;
-		case 420:
-		case 498:
-		case 491:
-			logoutCallback();
-			break;
-		default:
-			errorCallback();
-			toast.error(response.message);
-	}
-};
-
-export const updateItemTypeByIdApi = async (
-	body: any,
-	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
-	logoutCallback: () => void
-) => {
-	const token = getCrmJWT();
-	if (token === null) {
-		logoutCallback();
-		return;
-	}
-	const response = await makePutRequest(itemTypeByIdPath, {
-		authorization: `Bearer ${token}`,
-	});
-	if (isDebug) {
-		console.log(response);
-	}
-	switch (response.status) {
-		case 200:
-			successCallback(response.data);
-			break;
-		case 420:
-		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -982,125 +777,28 @@ export const updateItemTypeByIdApi = async (
 
 // Sub categery api
 export const getSubCategoryApi = async (
-	body: any,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(subCategoryPath, {
+	const response = await makeGetRequest(subCategoryAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
 		console.log(response);
 	}
-	switch (response.status) {
+	switch (response.code) {
 		case 200:
 			successCallback(response.data);
 			break;
 		case 420:
 		case 498:
-		case 491:
-			logoutCallback();
-			break;
-		default:
-			errorCallback();
-			toast.error(response.message);
-	}
-};
-
-export const postSubCategoryApi = async (
-	body: any,
-	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
-	logoutCallback: () => void
-) => {
-	const token = getCrmJWT();
-	if (token === null) {
-		logoutCallback();
-		return;
-	}
-	const response = await makePostRequest(subCategoryPath, {
-		authorization: `Bearer ${token}`,
-	});
-	if (isDebug) {
-		console.log(response);
-	}
-	switch (response.status) {
-		case 200:
-			successCallback(response.data);
-			break;
-		case 420:
-		case 498:
-		case 491:
-			logoutCallback();
-			break;
-		default:
-			errorCallback();
-			toast.error(response.message);
-	}
-};
-
-export const updateSubCategoryByIdApi = async (
-	body: any,
-	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
-	logoutCallback: () => void
-) => {
-	const token = getCrmJWT();
-	if (token === null) {
-		logoutCallback();
-		return;
-	}
-	const response = await makePutRequest(subCategoryByIdPath, {
-		authorization: `Bearer ${token}`,
-	});
-	if (isDebug) {
-		console.log(response);
-	}
-	switch (response.status) {
-		case 200:
-			successCallback(response.data);
-			break;
-		case 420:
-		case 498:
-		case 491:
-			logoutCallback();
-			break;
-		default:
-			errorCallback();
-			toast.error(response.message);
-	}
-};
-
-export const deleteSubCategoryByIdApi = async (
-	body: any,
-	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
-	logoutCallback: () => void
-) => {
-	const token = getCrmJWT();
-	if (token === null) {
-		logoutCallback();
-		return;
-	}
-	const response = await makeDeleteRequest(subCategoryByIdPath, {
-		authorization: `Bearer ${token}`,
-	});
-	if (isDebug) {
-		console.log(response);
-	}
-	switch (response.status) {
-		case 200:
-			successCallback(response.data);
-			break;
-		case 420:
-		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -1110,29 +808,29 @@ export const deleteSubCategoryByIdApi = async (
 };
 
 export const getSubCategoryByIdApi = async (
-	body: any,
+	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(subCategoryByIdPath, {
+	const response = await makeGetRequest(`${subCategoryAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
 		console.log(response);
 	}
-	switch (response.status) {
+	switch (response.code) {
 		case 200:
 			successCallback(response.data);
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -1141,127 +839,446 @@ export const getSubCategoryByIdApi = async (
 	}
 };
 
-// Sub categery api
+export const upsertSubCategoryApi = async (
+	body: any,
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makePostRequest(subCategoryAPIPath, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+export const disableSubCategoryApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makePutRequest(`${subCategoryAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+export const deleteSubCategoryApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makeDeleteRequest(`${subCategoryAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+// Item type api
+export const getItemTypeApi = async (
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makeGetRequest(itemTypeAPIPath, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+export const getItemTypeByIdApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makeGetRequest(`${itemTypeAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+export const upsertItemTypeApi = async (
+	body: any,
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makePostRequest(itemTypeAPIPath, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+export const disableItemTypeApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makePutRequest(`${itemTypeAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+export const deleteItemTypeApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makeDeleteRequest(`${itemTypeAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+// Item api
+export const getItemApi = async (
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makeGetRequest(itemAPIPath, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+export const getItemByIdApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makeGetRequest(`${itemAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+export const upsertItemApi = async (
+	body: any,
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makePostRequest(itemAPIPath, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+export const disableItemApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makePutRequest(`${itemAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+export const deleteItemApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makeDeleteRequest(`${itemAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+// Add on api
 export const getAddOnApi = async (
-	body: any,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(addOnPath, {
+	const response = await makeGetRequest(addOnAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
 		console.log(response);
 	}
-	switch (response.status) {
+	switch (response.code) {
 		case 200:
 			successCallback(response.data);
 			break;
 		case 420:
 		case 498:
-		case 491:
-			logoutCallback();
-			break;
-		default:
-			errorCallback();
-			toast.error(response.message);
-	}
-};
-
-export const postAddOnApi = async (
-	body: any,
-	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
-	logoutCallback: () => void
-) => {
-	const token = getCrmJWT();
-	if (token === null) {
-		logoutCallback();
-		return;
-	}
-	const response = await makePostRequest(addOnPath, {
-		authorization: `Bearer ${token}`,
-	});
-	if (isDebug) {
-		console.log(response);
-	}
-	switch (response.status) {
-		case 200:
-			successCallback(response.data);
-			break;
-		case 420:
-		case 498:
-		case 491:
-			logoutCallback();
-			break;
-		default:
-			errorCallback();
-			toast.error(response.message);
-	}
-};
-
-export const updateAddOnByIdApi = async (
-	body: any,
-	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
-	logoutCallback: () => void
-) => {
-	const token = getCrmJWT();
-	if (token === null) {
-		logoutCallback();
-		return;
-	}
-	const response = await makePutRequest(addOnByIdPath, {
-		authorization: `Bearer ${token}`,
-	});
-	if (isDebug) {
-		console.log(response);
-	}
-	switch (response.status) {
-		case 200:
-			successCallback(response.data);
-			break;
-		case 420:
-		case 498:
-		case 491:
-			logoutCallback();
-			break;
-		default:
-			errorCallback();
-			toast.error(response.message);
-	}
-};
-
-export const deleteAddOnByIdApi = async (
-	body: any,
-	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
-	logoutCallback: () => void
-) => {
-	const token = getCrmJWT();
-	if (token === null) {
-		logoutCallback();
-		return;
-	}
-	const response = await makeDeleteRequest(addOnByIdPath, {
-		authorization: `Bearer ${token}`,
-	});
-	if (isDebug) {
-		console.log(response);
-	}
-	switch (response.status) {
-		case 200:
-			successCallback(response.data);
-			break;
-		case 420:
-		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -1271,29 +1288,253 @@ export const deleteAddOnByIdApi = async (
 };
 
 export const getAddOnByIdApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makeGetRequest(`${addOnAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+export const upsertAddOnApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(addOnByIdPath, {
+	const response = await makePostRequest(addOnAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
 		console.log(response);
 	}
-	switch (response.status) {
+	switch (response.code) {
 		case 200:
 			successCallback(response.data);
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+export const disableAddOnApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makePutRequest(`${addOnAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+export const deleteAddOnApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makeDeleteRequest(`${addOnAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+// Activity logs api
+export const getActivityLogsApi = async (
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makeGetRequest(activityLogsAPIPath, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+export const getActivityLogsByIdApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makeGetRequest(`${activityLogsAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+// Users api
+export const getUsersApi = async (
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makeGetRequest(usersAPIPath, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+export const getUsersByIdApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makeGetRequest(`${usersAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
 			logoutCallback();
 			break;
 		default:

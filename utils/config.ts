@@ -40,56 +40,51 @@ export const userNameConstant: string = 'username';
 export const roleIdConstant: string = 'role_id';
 
 /** API Constants */
-export const apiUrl: string = 'http://localhost:8000/api/v1/';
-export const loginAPIPath: string = `${apiUrl}auth/login`;
+export const apiUrl: string = 'http://localhost:8000/api/v1';
+export const loginAPIPath: string = `${apiUrl}/auth/login`;
 
 // Permission path
-export const getPermissionsAPIPath: string = `${apiUrl}permission`;
+export const permissionAPIPath: string = `${apiUrl}/permission`;
 
 // Tag path
-/** get, post and put api path */
-export const tagAPIPath: string = `${apiUrl}tag`;
-/** enable / disable, delete, get api path */
-export const tagByIdPath: string = `${apiUrl}tag/:id`;
+/** get all tags based on filter, sorting and search, add or insert */
+export const tagAPIPath: string = `${apiUrl}/tag`;
 
 // Role path
-/** post and get api path */
-export const createRolePath: string = `${apiUrl}role`;
-/**delete api path */
-export const deleteRolePath: string = `${apiUrl}role/delete/:id`;
-export const updateRolePath: string = `${apiUrl}role/:id`;
+/** get all roles based on filter, sorting and search, add or insert */
+export const roleAPIPath: string = `${apiUrl}/role`;
 
 // Custom Attributes path
-/** post and get api path */
-export const attributePath: string = `${apiUrl}custom-attribute`;
-/** restore api path */
-export const restoreAttributePath: string = `${apiUrl}custom-attribute/restore/:id`;
-/** enable / disable, get and delete api path */
-export const attributeByIdPath: string = `${apiUrl}custom-attribute/:id`;
+/** get all attributes based on filter, sorting and search, add or insert */
+export const attributeAPIPath: string = `${apiUrl}/custom-attribute`;
 
 // Category path
-/**post and get api path */
-export const categoryPath: string = `${apiUrl}category`;
-/** put, delete and get by id path */
-export const categoryByIdPath: string = `${apiUrl}category/:id`;
+/** get all Category based on filter, sorting and search, add or insert */
+export const categoryAPIPath: string = `${apiUrl}/category`;
 
 // Sub category api path
-/** get and post api path */
-export const subCategoryPath: string = `${apiUrl}sub-category`;
-/** get, put and delete path */
-export const subCategoryByIdPath: string = `${apiUrl}sub-category/:id`;
+/** get all Sub category based on filter, sorting and search, add or insert */
+export const subCategoryAPIPath: string = `${apiUrl}/sub-category`;
 
 // Item type path
-/**post and get api path */
-export const itemTypePath: string = `${apiUrl}item-type`;
-/** get, put and delete path */
-export const itemTypeByIdPath: string = `${apiUrl}item-type/:id`;
+/** get all Item Type based on filter, sorting and search, add or insert */
+export const itemTypeAPIPath: string = `${apiUrl}/item-type`;
+
+// Item path
+/** get all Item Type based on filter, sorting and search, add or insert */
+export const itemAPIPath: string = `${apiUrl}/item`;
 
 // Add-on path
-/** post and get api path */
-export const addOnPath: string = `${apiUrl}add-on`;
-/** get, put and delete path */
-export const addOnByIdPath: string = `${apiUrl}add-on/:id`;
+/** get all add on based on filter, sorting and search, add or insert */
+export const addOnAPIPath: string = `${apiUrl}/add-on`;
+
+// Activity logs path
+/** get all add on based on filter, sorting and search, add or insert */
+export const activityLogsAPIPath: string = `${apiUrl}/activity-logs`;
+
+// Activity logs path
+/** get all add on based on filter, sorting and search, add or insert */
+export const usersAPIPath: string = `${apiUrl}/users`;
 
 /** Constant Functions */
 /** To get the CRM JWT stored in Cookies */
@@ -149,9 +144,9 @@ export const generalSettingsName: string = 'General Settings';
 export const rolesName: string = 'Roles';
 export const pageLayoutName: string = 'Page Layout';
 export const pagesName: string = 'Pages';
-export const aboutName: string = 'Pos';
-export const contactName: string = 'Pos';
-export const privacyPolicyName: string = 'Pos';
-export const tncName: string = 'Pos';
+export const aboutName: string = 'About';
+export const contactName: string = 'Contact';
+export const privacyPolicyName: string = 'Privacy Policy';
+export const tncName: string = 'Terms & Conditions';
 export const emailSettingsName: string = 'Email Settings';
 export const taxesName: string = 'Taxes';
