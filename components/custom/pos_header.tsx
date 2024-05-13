@@ -6,6 +6,7 @@ import { Expand, ShoppingBag } from 'lucide-react';
 import { useState } from 'react';
 import Logo from '@/public/images/logo.png';
 import { ActionIconComponent, ButtonComponent, DraftModal } from '@/components';
+import { appLogoHeight, appLogoWidth, dashboardRoute, posRoute } from '@/utils';
 
 export const PosHeader = () => {
 	function toggleFullScreen() {
@@ -23,11 +24,11 @@ export const PosHeader = () => {
 				}}
 			/>
 			<div className="flex items-center m-3">
-				<Link href="/">
+				<Link href={dashboardRoute}>
 					<Image
 						src={Logo.src}
-						width={50}
-						height={50}
+						width={appLogoWidth}
+						height={appLogoHeight}
 						alt="main logo"
 						className="w-8 h-8 object-contain"
 					/>
@@ -50,7 +51,7 @@ export const PosHeader = () => {
 					<Expand />
 				</ActionIconComponent>
 
-				<ButtonComponent title="LogOut" href="/pos" fullWidth px={5} py={1.5} />
+				<ButtonComponent title="LogOut" href={posRoute} fullWidth px={5} py={1.5} />
 
 			</div>
 		</>

@@ -19,13 +19,13 @@ export const useSubMenuBlock = (args: Args) => {
 
 	const isBlockOpen = useMemo(
 		() => openSubMenus.includes(subMenuId),
-		[openSubMenus, subMenuId]
+		[openSubMenus, subMenuId],
 	);
 
 	const toggleBlockState = () => {
 		if (isBlockOpen) {
 			setOpenSideMenus((prev) =>
-				prev.filter((item) => item !== subMenuId)
+				prev.filter((item) => item !== subMenuId),
 			);
 
 			return;

@@ -1,8 +1,7 @@
 'use client';
 
-import { SidebarItems } from '@/constants';
-import { useMainSidebar } from './hook';
-import { SidebarButton, SubMenuBlock } from '@/components';
+import { SidebarItems, SideBarType } from '@/constants';
+import { SidebarButton, SubMenuBlock, useMainSidebar } from '@/components';
 
 export const MainSidebar = () => {
 	const { isSidebarOpen, currentPathname } = useMainSidebar();
@@ -11,7 +10,7 @@ export const MainSidebar = () => {
 		<div
 			className={`${
 				isSidebarOpen ? 'lg:w-64 w-56 items-center' : 'w-16'
-			} h-screen flex flex-col fixed z-20 top-0 left-0 bg-light-background-natural pb-3 pt-14 px-2 border-r border-gray-300/80 border-dashed`}
+			} h-screen flex flex-col fixed z-20 top-0 left-0 bg-light-background-natural pb-3 pt-20 px-2 shadow`}
 		>
 			<div className="flex-grow flex flex-col w-full px-2 overflow-y-auto pb-2">
 				{SidebarItems.map((item) => (
@@ -24,10 +23,10 @@ export const MainSidebar = () => {
 							/>
 						)}
 
-						{item.type === 'sub-menu' && (
+						{item.type === SideBarType.Nested && (
 							<SubMenuBlock
 								isSidebarOpen={isSidebarOpen}
-								options={item.subMenu}
+								options={item.other}
 								{...item}
 							/>
 						)}

@@ -1,54 +1,73 @@
 'use client';
 
 import { Menu } from 'lucide-react';
-import Link from 'next/link';
 import Image from 'next/image';
 import Logo from '@/public/images/logo.png';
-import { useMainNavbar } from './hook';
-import { appAccentColor, appName, getName } from '@/utils';
-import { ButtonComponent, ActionIconComponent, AvatarComponent } from '@/components';
+import {
+	useMainNavbar,
+	ButtonComponent,
+	ActionIconComponent,
+	AvatarComponent,
+	UnstyledButtonComponent, SpaceComponent, CenterComponent,
+} from '@/components';
+import { appAccentColor, appLogoHeight, appLogoWidth, appName, dashboardRoute, getName, posRoute } from '@/utils';
+import { TextComponent } from '@/components/mantine/text_component';
 
 export const MainNavbar = () => {
 	const { toggleSidebar } = useMainNavbar();
 
 	return (
 		<div
-			className="w-full px-4 pt-3 pb-3 flex fixed top-0 left-0 bg-light-background-natural items-center justify-between z-30 shadow">
+			className="w-full pt-3 pb-3 flex fixed top-0 left-0 bg-light-background-natural items-center justify-between z-30 shadow">
 			<div className="flex items-center">
+
+				<SpaceComponent width />
+
 				<ActionIconComponent
 					onClick={toggleSidebar}
-					aria-label="drawer button"
-					className="flex items-center justify-center mr-3"
+					aria-label="Drawer button"
+					className="accent-primary-lighter"
 				>
-					<Menu size={22} className="text-light-primary-text" />
+					<Menu size={22} />
 				</ActionIconComponent>
 
-				<Link href="/public">
+				<SpaceComponent width />
+
+				<UnstyledButtonComponent
+					display="flex"
+					href={dashboardRoute}>
 					<Image
 						src={Logo.src}
-						width={50}
-						height={50}
 						alt="main logo"
-						className="w-10 h-10 object-contain"
+						width={appLogoWidth}
+						height={appLogoHeight}
 					/>
-				</Link>
-				<div
-					className="ml-3 text-xl"
-					style={{ color: appAccentColor }}
-				>
-					{appName}
-				</div>
+
+					<SpaceComponent width />
+
+					<CenterComponent>
+						<TextComponent bold text={appName} c={appAccentColor} />
+					</CenterComponent>
+				</UnstyledButtonComponent>
 			</div>
 
 			<div className="flex items-center">
 				<ButtonComponent
+					px={5}
+					w={80}
+					mr={3}
+					py={1.5}
 					title="POS"
-					href="/pos"
-					className="w-24 px-5 mr-3 py-1.5 rounded-md" />
+					href={posRoute}
+				/>
+
+				<SpaceComponent width />
 
 				<AvatarComponent src={null} alt={getName()}>
 					{getName()[0]}
 				</AvatarComponent>
+
+				<SpaceComponent width />
 
 			</div>
 		</div>
