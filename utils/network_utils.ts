@@ -111,7 +111,7 @@ export const getPermissionApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -127,7 +127,7 @@ export const getPermissionApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -143,7 +143,7 @@ export const getTagApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -159,7 +159,7 @@ export const getTagApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -175,7 +175,7 @@ export const gettagByIdPathApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -191,7 +191,7 @@ export const gettagByIdPathApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -207,7 +207,7 @@ export const upsertTagApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -223,7 +223,7 @@ export const upsertTagApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -238,7 +238,7 @@ export const disableTagApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -254,7 +254,7 @@ export const disableTagApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -270,7 +270,7 @@ export const deleteTagApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -286,7 +286,7 @@ export const deleteTagApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -302,7 +302,7 @@ export const getRolesApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -318,7 +318,7 @@ export const getRolesApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -334,7 +334,7 @@ export const getroleByIdPathApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -350,7 +350,7 @@ export const getroleByIdPathApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -366,7 +366,7 @@ export const upsertRoleApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -382,7 +382,7 @@ export const upsertRoleApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -398,7 +398,7 @@ export const disableRoleApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -414,7 +414,7 @@ export const disableRoleApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -430,7 +430,7 @@ export const deleteRoleApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -446,7 +446,7 @@ export const deleteRoleApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -462,7 +462,7 @@ export const getAttributeApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -478,7 +478,7 @@ export const getAttributeApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -494,7 +494,7 @@ export const getAttributeByIdApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -510,7 +510,7 @@ export const getAttributeByIdApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -526,7 +526,7 @@ export const upsertAttributeApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -542,7 +542,7 @@ export const upsertAttributeApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -558,7 +558,7 @@ export const disableAttributeApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -574,7 +574,7 @@ export const disableAttributeApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -590,7 +590,7 @@ export const deleteAttributeApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -606,7 +606,7 @@ export const deleteAttributeApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -622,7 +622,7 @@ export const getCategoryApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -638,7 +638,7 @@ export const getCategoryApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -654,7 +654,7 @@ export const getcategoryByIdApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -670,7 +670,7 @@ export const getcategoryByIdApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -686,7 +686,7 @@ export const upsertCategoryApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -702,7 +702,7 @@ export const upsertCategoryApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -718,7 +718,7 @@ export const disableCategoryApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -734,7 +734,7 @@ export const disableCategoryApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -750,7 +750,7 @@ export const deleteCategoryApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -766,7 +766,7 @@ export const deleteCategoryApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -782,7 +782,7 @@ export const getSubCategoryApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -798,7 +798,7 @@ export const getSubCategoryApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -814,7 +814,7 @@ export const getSubCategoryByIdApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -830,7 +830,7 @@ export const getSubCategoryByIdApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -846,7 +846,7 @@ export const upsertSubCategoryApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -862,7 +862,7 @@ export const upsertSubCategoryApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -878,7 +878,7 @@ export const disableSubCategoryApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -894,7 +894,7 @@ export const disableSubCategoryApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -910,7 +910,7 @@ export const deleteSubCategoryApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -926,7 +926,7 @@ export const deleteSubCategoryApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -942,7 +942,7 @@ export const getItemTypeApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -958,7 +958,7 @@ export const getItemTypeApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -974,7 +974,7 @@ export const getItemTypeByIdApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -990,7 +990,7 @@ export const getItemTypeByIdApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -1006,7 +1006,7 @@ export const upsertItemTypeApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -1022,7 +1022,7 @@ export const upsertItemTypeApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -1038,7 +1038,7 @@ export const disableItemTypeApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -1054,7 +1054,7 @@ export const disableItemTypeApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -1070,7 +1070,7 @@ export const deleteItemTypeApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -1086,7 +1086,7 @@ export const deleteItemTypeApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -1102,7 +1102,7 @@ export const getItemApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -1118,7 +1118,7 @@ export const getItemApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -1134,7 +1134,7 @@ export const getItemByIdApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -1150,7 +1150,7 @@ export const getItemByIdApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -1166,7 +1166,7 @@ export const upsertItemApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -1182,7 +1182,7 @@ export const upsertItemApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -1198,7 +1198,7 @@ export const disableItemApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -1214,7 +1214,7 @@ export const disableItemApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -1230,7 +1230,7 @@ export const deleteItemApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -1246,7 +1246,7 @@ export const deleteItemApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -1262,7 +1262,7 @@ export const getAddOnApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -1278,7 +1278,7 @@ export const getAddOnApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -1294,7 +1294,7 @@ export const getAddOnByIdApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -1310,7 +1310,7 @@ export const getAddOnByIdApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -1326,7 +1326,7 @@ export const upsertAddOnApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -1342,7 +1342,7 @@ export const upsertAddOnApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -1358,7 +1358,7 @@ export const disableAddOnApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -1374,7 +1374,7 @@ export const disableAddOnApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -1390,7 +1390,7 @@ export const deleteAddOnApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -1406,7 +1406,7 @@ export const deleteAddOnApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -1422,7 +1422,7 @@ export const getActivityLogsApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -1438,7 +1438,7 @@ export const getActivityLogsApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -1454,7 +1454,7 @@ export const getActivityLogsByIdApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -1470,7 +1470,7 @@ export const getActivityLogsByIdApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -1486,7 +1486,7 @@ export const getUsersApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -1502,7 +1502,7 @@ export const getUsersApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:
@@ -1518,7 +1518,7 @@ export const getUsersByIdApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null) {
+	if (token === null || token === '' || token === 'null') {
 		logoutCallback();
 		return;
 	}
@@ -1534,7 +1534,7 @@ export const getUsersByIdApi = async (
 			break;
 		case 420:
 		case 498:
-		case 491:
+		case 499:
 			logoutCallback();
 			break;
 		default:

@@ -49,7 +49,7 @@ export const rolePath: string = `${apiUrl}/role`;
 
 // Custom Attributes path
 /** get all attributes based on filtter, sorting and search, add or insert */
-export const attributePath: string = `${apiUrl}/attribute`;
+export const attributePath: string = `${apiUrl}/custom-attribute`;
 
 // Category path
 /** get all Category based on filtter, sorting and search, add or insert */
