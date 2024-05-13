@@ -2,18 +2,18 @@ import { toast } from 'react-toastify';
 import {
 	getCrmJWT,
 	isDebug,
-	loginPath,
-	getPermissionPath,
-	tagPath,
-	rolePath,
-	attributePath,
-	categoryPath,
-	subCategoryPath,
-	itemTypePath,
-	addOnPath,
-	itemPath,
-	activityLogsPath,
-	usersPath,
+	loginAPIPath,
+	permissionAPIPath,
+	tagAPIPath,
+	roleAPIPath,
+	attributeAPIPath,
+	categoryAPIPath,
+	subCategoryAPIPath,
+	itemTypeAPIPath,
+	addOnAPIPath,
+	itemAPIPath,
+	activityLogsAPIPath,
+	usersAPIPath,
 } from '@/utils';
 
 const makeGetRequest = async (
@@ -87,7 +87,7 @@ export const loginApi = async (
 	successCallback: (arg0: any) => void,
 	errorCallback: (arg0: any) => void
 ) => {
-	const response = await makePostRequest(loginPath, {
+	const response = await makePostRequest(loginAPIPath, {
 		email,
 		password,
 	});
@@ -115,7 +115,7 @@ export const getPermissionApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(getPermissionPath, {
+	const response = await makeGetRequest(permissionAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -147,7 +147,7 @@ export const getTagApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(tagPath, {
+	const response = await makeGetRequest(tagAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -168,7 +168,7 @@ export const getTagApi = async (
 	}
 };
 
-export const gettagByIdPathApi = async (
+export const getTagByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
@@ -179,7 +179,7 @@ export const gettagByIdPathApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(`${tagPath}/${id}`, {
+	const response = await makeGetRequest(`${tagAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -211,7 +211,7 @@ export const upsertTagApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePostRequest(tagPath, {
+	const response = await makePostRequest(tagAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -242,7 +242,7 @@ export const disableTagApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePutRequest(tagPath, {
+	const response = await makePutRequest(tagAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -274,7 +274,7 @@ export const deleteTagApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeDeleteRequest(`${tagPath}/${id}`, {
+	const response = await makeDeleteRequest(`${tagAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -306,7 +306,7 @@ export const getRolesApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(rolePath, {
+	const response = await makeGetRequest(roleAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -327,7 +327,7 @@ export const getRolesApi = async (
 	}
 };
 
-export const getroleByIdPathApi = async (
+export const getRoleByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
@@ -338,7 +338,7 @@ export const getroleByIdPathApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(`${rolePath}/${id}`, {
+	const response = await makeGetRequest(`${roleAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -370,7 +370,7 @@ export const upsertRoleApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePostRequest(rolePath, {
+	const response = await makePostRequest(roleAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -402,7 +402,7 @@ export const disableRoleApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePutRequest(`${rolePath}/${id}`, {
+	const response = await makePutRequest(`${roleAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -434,7 +434,7 @@ export const deleteRoleApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeDeleteRequest(`${rolePath}/${id}`, {
+	const response = await makeDeleteRequest(`${roleAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -466,7 +466,7 @@ export const getAttributeApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(attributePath, {
+	const response = await makeGetRequest(attributeAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -498,7 +498,7 @@ export const getAttributeByIdApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(`${attributePath}/${id}`, {
+	const response = await makeGetRequest(`${attributeAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -530,7 +530,7 @@ export const upsertAttributeApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePostRequest(attributePath, {
+	const response = await makePostRequest(attributeAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -562,7 +562,7 @@ export const disableAttributeApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePutRequest(`${attributePath}/${id}`, {
+	const response = await makePutRequest(`${attributeAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -594,7 +594,7 @@ export const deleteAttributeApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeDeleteRequest(`${attributePath}/${id}`, {
+	const response = await makeDeleteRequest(`${attributeAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -626,7 +626,7 @@ export const getCategoryApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(categoryPath, {
+	const response = await makeGetRequest(categoryAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -658,7 +658,7 @@ export const getcategoryByIdApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(`${categoryPath}/${id}`, {
+	const response = await makeGetRequest(`${categoryAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -690,7 +690,7 @@ export const upsertCategoryApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePostRequest(categoryPath, {
+	const response = await makePostRequest(categoryAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -722,7 +722,7 @@ export const disableCategoryApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePutRequest(`${categoryPath}/${id}`, {
+	const response = await makePutRequest(`${categoryAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -754,7 +754,7 @@ export const deleteCategoryApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeDeleteRequest(`${categoryPath}/${id}`, {
+	const response = await makeDeleteRequest(`${categoryAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -786,7 +786,7 @@ export const getSubCategoryApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(subCategoryPath, {
+	const response = await makeGetRequest(subCategoryAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -818,7 +818,7 @@ export const getSubCategoryByIdApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(`${subCategoryPath}/${id}`, {
+	const response = await makeGetRequest(`${subCategoryAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -850,7 +850,7 @@ export const upsertSubCategoryApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePostRequest(subCategoryPath, {
+	const response = await makePostRequest(subCategoryAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -882,7 +882,7 @@ export const disableSubCategoryApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePutRequest(`${subCategoryPath}/${id}`, {
+	const response = await makePutRequest(`${subCategoryAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -914,7 +914,7 @@ export const deleteSubCategoryApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeDeleteRequest(`${subCategoryPath}/${id}`, {
+	const response = await makeDeleteRequest(`${subCategoryAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -946,7 +946,7 @@ export const getItemTypeApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(itemTypePath, {
+	const response = await makeGetRequest(itemTypeAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -978,7 +978,7 @@ export const getItemTypeByIdApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(`${itemTypePath}/${id}`, {
+	const response = await makeGetRequest(`${itemTypeAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1010,7 +1010,7 @@ export const upsertItemTypeApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePostRequest(itemTypePath, {
+	const response = await makePostRequest(itemTypeAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1042,7 +1042,7 @@ export const disableItemTypeApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePutRequest(`${itemTypePath}/${id}`, {
+	const response = await makePutRequest(`${itemTypeAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1074,7 +1074,7 @@ export const deleteItemTypeApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeDeleteRequest(`${itemTypePath}/${id}`, {
+	const response = await makeDeleteRequest(`${itemTypeAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1106,7 +1106,7 @@ export const getItemApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(itemPath, {
+	const response = await makeGetRequest(itemAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1138,7 +1138,7 @@ export const getItemByIdApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(`${itemPath}/${id}`, {
+	const response = await makeGetRequest(`${itemAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1170,7 +1170,7 @@ export const upsertItemApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePostRequest(itemPath, {
+	const response = await makePostRequest(itemAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1202,7 +1202,7 @@ export const disableItemApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePutRequest(`${itemPath}/${id}`, {
+	const response = await makePutRequest(`${itemAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1234,7 +1234,7 @@ export const deleteItemApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeDeleteRequest(`${itemPath}/${id}`, {
+	const response = await makeDeleteRequest(`${itemAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1266,7 +1266,7 @@ export const getAddOnApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(addOnPath, {
+	const response = await makeGetRequest(addOnAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1298,7 +1298,7 @@ export const getAddOnByIdApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(`${addOnPath}/${id}`, {
+	const response = await makeGetRequest(`${addOnAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1330,7 +1330,7 @@ export const upsertAddOnApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePostRequest(addOnPath, {
+	const response = await makePostRequest(addOnAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1362,7 +1362,7 @@ export const disableAddOnApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePutRequest(`${addOnPath}/${id}`, {
+	const response = await makePutRequest(`${addOnAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1394,7 +1394,7 @@ export const deleteAddOnApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeDeleteRequest(`${addOnPath}/${id}`, {
+	const response = await makeDeleteRequest(`${addOnAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1426,7 +1426,7 @@ export const getActivityLogsApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(activityLogsPath, {
+	const response = await makeGetRequest(activityLogsAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1458,7 +1458,7 @@ export const getActivityLogsByIdApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(`${activityLogsPath}/${id}`, {
+	const response = await makeGetRequest(`${activityLogsAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1490,7 +1490,7 @@ export const getUsersApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(usersPath, {
+	const response = await makeGetRequest(usersAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1522,7 +1522,7 @@ export const getUsersByIdApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(`${usersPath}/${id}`, {
+	const response = await makeGetRequest(`${usersAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
