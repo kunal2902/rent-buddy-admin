@@ -5,10 +5,7 @@ import { useEffect, useState } from 'react';
 import { useSubCategoriesContainer } from './hook';
 import { DashboardPageHeader } from '@/components';
 import { SubCategoryModel } from '@/models';
-import {
-	deleteSubCategoryByIdApi,
-	getSubCategoryApi,
-} from '@/utils';
+import { deleteSubCategoryApi, getSubCategoryApi } from '@/utils';
 
 const SubCategoriesContainer = () => {
 	const { isSidebarOpen } = useSubCategoriesContainer();
@@ -18,51 +15,29 @@ const SubCategoriesContainer = () => {
 
 	useEffect(() => {
 		if (callApi) {
-			const successCallback = (data: any) => {
-				console.log('Success:', data);
-				setSubCategoryList(data.tags);
+			getSubCategoryApi((data: any) => {
+				setSubCategoryList(data);
 				setCallApi(false);
-			};
-
-			const errorCallback = () => {
+			}, () => {
 				console.log('Error occurred.');
 				setCallApi(false);
-			};
-
-			const logoutCallback = () => {
+			}, () => {
 				console.log('Logout.');
 				setCallApi(false);
-			};
-
-			getSubCategoryApi(
-				null,
-				successCallback,
-				errorCallback,
-				logoutCallback
-			);
+			}).then();
 		}
 	}, [callApi]);
 
-	const handleDeleteSubCategory = (id: number) => {
-		const successCallback = (data: any) => {
+	const handleDeleteSubCategory = (id: string) => {
+		deleteSubCategoryApi(id, () => {
 			setCallApi(true);
-		};
-
-		const errorCallback = () => {
+		}, () => {
 			console.log('Error occurred.');
 			setCallApi(false);
-		};
-
-		const logoutCallback = () => {
+		}, () => {
 			console.log('Logout.');
 			setCallApi(false);
-		};
-		deleteSubCategoryByIdApi(
-			null,
-			successCallback,
-			errorCallback,
-			logoutCallback
-		);
+		});
 	};
 
 	return (

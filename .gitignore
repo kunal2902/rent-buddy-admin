@@ -133,6 +133,7 @@ dist
 
 #Lock files
 yarn.lock
+*.lock
 package-lock.json
 
 .idea

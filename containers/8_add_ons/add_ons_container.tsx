@@ -6,10 +6,7 @@ import { useAddOnsContainer } from './hook';
 import { DashboardPageHeader } from '@/components';
 import AddAddOnModal from './add_add_on_modal';
 import { AddOnModel } from '@/models';
-import {
-	deleteAddOnByIdApi,
-	getAddOnApi,
-} from '@/utils';
+import { deleteAddOnApi, getAddOnApi } from '@/utils';
 
 const AddOnsContainer = () => {
 	const {
@@ -23,46 +20,29 @@ const AddOnsContainer = () => {
 
 	useEffect(() => {
 		if (callApi) {
-			const successCallback = (data: any) => {
-				console.log('Success:', data);
-				setAddOnList(data.tags);
+			getAddOnApi((data: any) => {
+				setAddOnList(data);
 				setCallApi(false);
-			};
-
-			const errorCallback = () => {
+			}, () => {
 				console.log('Error occurred.');
 				setCallApi(false);
-			};
-
-			const logoutCallback = () => {
+			}, () => {
 				console.log('Logout.');
 				setCallApi(false);
-			};
-
-			getAddOnApi(null, successCallback, errorCallback, logoutCallback);
+			}).then();
 		}
 	}, [callApi]);
 
-	const handleDeleteAddOn = (id: number) => {
-		const successCallback = (data: any) => {
+	const handleDeleteAddOn = (id: string) => {
+		deleteAddOnApi(id, () => {
 			setCallApi(true);
-		};
-
-		const errorCallback = () => {
+		}, () => {
 			console.log('Error occurred.');
 			setCallApi(false);
-		};
-
-		const logoutCallback = () => {
+		}, () => {
 			console.log('Logout.');
 			setCallApi(false);
-		};
-		deleteAddOnByIdApi(
-			null,
-			successCallback,
-			errorCallback,
-			logoutCallback
-		);
+		});
 	};
 
 	return (

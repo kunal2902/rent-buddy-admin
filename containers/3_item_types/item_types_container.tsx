@@ -1,11 +1,43 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { useItemTypesContainer } from './hook';
 import { DashboardPageHeader } from '@/components';
+import { ItemTypeModel } from '@/models';
+import { deleteItemTypeApi, getItemTypeApi } from '@/utils';
 
 const ItemTypesContainer = () => {
 	const { isSidebarOpen } = useItemTypesContainer();
+	const [itemTypeList, setItemTypeList] = useState<ItemTypeModel[]>([]);
+	const [callApi, setCallApi] = useState(true);
+
+	useEffect(() => {
+		if (callApi) {
+			getItemTypeApi((data: any) => {
+				setItemTypeList(data);
+				setCallApi(false);
+			}, () => {
+				console.log('Error occurred.');
+				setCallApi(false);
+			}, () => {
+				console.log('Logout.');
+				setCallApi(false);
+			}).then();
+		}
+	}, [callApi]);
+
+	const handleDeleteItemType = (id: string) => {
+		deleteItemTypeApi(id, () => {
+			setCallApi(true);
+		}, () => {
+			console.log('Error occurred.');
+			setCallApi(false);
+		}, () => {
+			console.log('Logout.');
+			setCallApi(false);
+		});
+	};
 
 	return (
 		<main

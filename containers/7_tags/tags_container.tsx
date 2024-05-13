@@ -7,7 +7,7 @@ import { useTagsContainer } from './hook';
 import { DashboardPageHeader, TableComponent } from '@/components';
 import AddTagModal from './add_tag_modal';
 import { TagModel } from '@/models';
-import { deleteTagByIdApi, getTagApi } from '@/utils';
+import { deleteTagApi, getTagApi } from '@/utils';
 
 const TagsContainer = () => {
 	const { isSidebarOpen, isCreateTagModalOpen, toggleCreateModalTagOpen } =
@@ -18,70 +18,30 @@ const TagsContainer = () => {
 
 	useEffect(() => {
 		if (callApi) {
-			const successCallback = (data: any) => {
-				console.log('Success:', data);
+			getTagApi((data: any) => {
 				setTagsList(data.tags);
 				setCallApi(false);
-			};
-
-			const errorCallback = () => {
+			}, () => {
 				console.log('Error occurred.');
 				setCallApi(false);
-			};
-
-			const logoutCallback = () => {
+			}, () => {
 				console.log('Logout.');
 				setCallApi(false);
-			};
-
-			getTagApi(null, successCallback, errorCallback, logoutCallback).then();
+			}).then();
 		}
 	}, [callApi]);
 
-	const handleDeleteTag = (id: number) => {
-		const successCallback = (data: any) => {
+	const handleDeleteTag = (id: string) => {
+		deleteTagApi(id, () => {
 			setCallApi(true);
-		};
-
-		const errorCallback = () => {
+		}, () => {
 			console.log('Error occurred.');
 			setCallApi(false);
-		};
-
-		const logoutCallback = () => {
+		}, () => {
 			console.log('Logout.');
 			setCallApi(false);
-		};
-		deleteTagByIdApi(null, successCallback, errorCallback, logoutCallback);
+		});
 	};
-
-	const rows = [
-		{
-			title: 'Name',
-		},
-		{
-			title: 'Icon',
-		},
-		{
-			title: 'Is disabled',
-		},
-		{
-			title: 'Is deleted',
-		},
-		{
-			title: 'Action',
-		},
-	];
-
-	const columns = tagsList.map((item) => [
-		{ content: item.tag_id },
-		{ content: item.name },
-		{ content: item.created_by_id },
-		{ content: new Date(item.created_at).toLocaleString() }, // Format date if needed
-		{ content: item.is_disabled ? 'Yes' : 'No' },
-		{ content: item.is_deleted ? 'Yes' : 'No' },
-		{ content: 'Delete' },
-	]);
 
 	const tableData: TableData = {
 		caption: 'Some elements from periodic table',

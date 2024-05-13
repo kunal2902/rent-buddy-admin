@@ -5,11 +5,8 @@ import { useEffect, useState } from 'react';
 import { DashboardPageHeader } from '@/components';
 import { useCategoriesContainer } from './hook';
 import CreateCategoryModal from './add_category';
-import {
-	deleteCategoryByIdApi,
-	getCategoryApi,
-} from '@/utils';
 import { category } from '@/models';
+import { deleteCategoryApi, getCategoryApi } from '@/utils';
 
 const CategoriesContainer = () => {
 	const {
@@ -23,50 +20,29 @@ const CategoriesContainer = () => {
 
 	useEffect(() => {
 		if (callApi) {
-			const successCallback = (data: any) => {
-				setCategoryList(data.tags);
+			getCategoryApi((data: any) => {
+				setCategoryList(data);
 				setCallApi(false);
-			};
-
-			const errorCallback = () => {
+			}, () => {
 				console.log('Error occurred.');
 				setCallApi(false);
-			};
-
-			const logoutCallback = () => {
+			}, () => {
 				console.log('Logout.');
 				setCallApi(false);
-			};
-
-			getCategoryApi(
-				null,
-				successCallback,
-				errorCallback,
-				logoutCallback
-			);
+			}).then();
 		}
 	}, [callApi]);
 
-	const handleDeleteCategory = (id: number) => {
-		const successCallback = (data: any) => {
+	const handleDeleteCategory = (id: string) => {
+		deleteCategoryApi(id, () => {
 			setCallApi(true);
-		};
-
-		const errorCallback = () => {
+		}, () => {
 			console.log('Error occurred.');
 			setCallApi(false);
-		};
-
-		const logoutCallback = () => {
+		}, () => {
 			console.log('Logout.');
 			setCallApi(false);
-		};
-		deleteCategoryByIdApi(
-			null,
-			successCallback,
-			errorCallback,
-			logoutCallback
-		);
+		});
 	};
 
 	return (

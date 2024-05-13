@@ -6,10 +6,7 @@ import { useCustomAttributesContainer } from './hook';
 import { DashboardPageHeader } from '@/components';
 import AddCustomAttributeModal from './add_custom_attribute';
 import { CustomAttributeModel } from '@/models';
-import {
-	deleteAttributebyIdApi,
-	getAttributeApi,
-} from '@/utils';
+import { deleteAttributeApi, getAttributeApi } from '@/utils';
 
 const CustomAttributesContainer = () => {
 	const {
@@ -24,51 +21,29 @@ const CustomAttributesContainer = () => {
 
 	useEffect(() => {
 		if (callApi) {
-			const successCallback = (data: any) => {
-				console.log('Success:', data);
-				setCustomAttributesList(data.tags);
+			getAttributeApi((data: any) => {
+				setCustomAttributesList(data);
 				setCallApi(false);
-			};
-
-			const errorCallback = () => {
+			}, () => {
 				console.log('Error occurred.');
 				setCallApi(false);
-			};
-
-			const logoutCallback = () => {
+			}, () => {
 				console.log('Logout.');
 				setCallApi(false);
-			};
-
-			getAttributeApi(
-				null,
-				successCallback,
-				errorCallback,
-				logoutCallback
-			);
+			}).then();
 		}
 	}, [callApi]);
 
-	const handleDeleteAttribute = (id: number) => {
-		const successCallback = (data: any) => {
+	const handleDeleteAttribute = (id: string) => {
+		deleteAttributeApi(id, () => {
 			setCallApi(true);
-		};
-
-		const errorCallback = () => {
+		}, () => {
 			console.log('Error occurred.');
 			setCallApi(false);
-		};
-
-		const logoutCallback = () => {
+		}, () => {
 			console.log('Logout.');
 			setCallApi(false);
-		};
-		deleteAttributebyIdApi(
-			null,
-			successCallback,
-			errorCallback,
-			logoutCallback
-		);
+		});
 	};
 
 	return (
