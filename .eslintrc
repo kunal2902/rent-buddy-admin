@@ -26,7 +26,7 @@
     "react/jsx-indent-props": [2, "tab"],
     "no-console": "off",
     "quotes": ["error", "single"],
-    //"linebreak-style": ["error", "windows"],
+    "linebreak-style": ["error", "windows"],
     "@typescript-eslint/quotes": "off"
   }
 }
