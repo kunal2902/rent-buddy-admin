@@ -2,7 +2,7 @@ import { getCookie } from 'cookies-next';
 import { ActionIconVariant, AvatarVariant, InputVariant, MantineColor, MantineRadius, MantineSize } from '@mantine/core';
 
 /** Global variables */
-export const isDebug: boolean = true;
+export const isDebug: boolean = false;
 export const appName: string = 'NCA CRM';
 export const appTitle: string = 'NCA CRM';
 export const appDescription: string = 'NCM ';

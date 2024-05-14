@@ -65,7 +65,6 @@ const makePostRequest = async (
 
 const makePutRequest = async (
 	url: string | URL | Request,
-	body: any,
 	additionalHeaders = {}
 ) => {
 	const rawResponse = await fetch(url, {
@@ -75,7 +74,6 @@ const makePutRequest = async (
 			'X-localization': 'en',
 			...additionalHeaders,
 		},
-		body: JSON.stringify(body),
 	});
 	return rawResponse.json();
 };
@@ -203,15 +201,10 @@ export const getTagByIdApi = async (
 export const upsertTagApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
-	logoutCallback: () => void
+	errorCallback: (arg0: any) => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
-		logoutCallback();
-		return;
-	}
-	const response = await makePostRequest(tagAPIPath, {
+	const response = await makePostRequest(tagAPIPath, body, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -224,8 +217,6 @@ export const upsertTagApi = async (
 		case 420:
 		case 498:
 		case 499:
-			logoutCallback();
-			break;
 		default:
 			errorCallback();
 			toast.error(response.message);
@@ -233,6 +224,7 @@ export const upsertTagApi = async (
 };
 
 export const disableTagApi = async (
+	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void
@@ -242,7 +234,7 @@ export const disableTagApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePutRequest(tagAPIPath, {
+	const response = await makePutRequest(`${tagAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
