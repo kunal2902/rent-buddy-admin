@@ -15,7 +15,6 @@ interface Props {
 
 const ActionTagModal = (props: Props) => {
 	const { isOpen, onClose, handleActionTag, tagType, isDisable } = props;
-	console.log('check', isDisable === true && tagType === 'disable');
 
 	return (
 		<ModalComponent opened={isOpen} onClose={onClose} className="border-grey-800" title="Action tag">
