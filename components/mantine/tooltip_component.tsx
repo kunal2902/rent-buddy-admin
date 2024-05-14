@@ -11,5 +11,7 @@ export const TooltipComponent = (props: TooltipComponentProps) => props.label ?
 	<Tooltip
 		{...props}
 	>
-		{props.children}
+		<div>
+			{props.children}
+		</div>
 	</Tooltip> : props.children;

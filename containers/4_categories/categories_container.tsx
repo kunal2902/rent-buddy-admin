@@ -8,7 +8,7 @@ import { Switch, Table } from '@mantine/core';
 import { DashboardPageHeader } from '@/components';
 import { useCategoriesContainer } from './hook';
 import CreateCategoryModal from './add_category';
-import { category } from '@/models';
+import { CategoryModel } from '@/models';
 import { deleteCategoryApi, disableCategoryApi, getCategoryApi } from '@/utils';
 import ActionCategoryModal from './action_category_modal';
 
@@ -19,7 +19,7 @@ const CategoriesContainer = () => {
 		toggleCreateCategoryModalOpen,
 	} = useCategoriesContainer();
 
-	const [categoryList, setCategoryList] = useState<category[]>([]);
+	const [categoryList, setCategoryList] = useState<CategoryModel[]>([]);
 	const [callApi, setCallApi] = useState(true);
 	const [catId, setCatId] = useState<string>('');
 	const [catType, setCatType] = useState<string>('');
