@@ -3,6 +3,7 @@ export * from '@/components/mantine/action_icon_component';
 export * from '@/components/mantine/button_component';
 export * from '@/components/mantine/center_component';
 export * from '@/components/mantine/modal_component';
+export * from '@/components/mantine/navlink_component';
 export * from '@/components/mantine/password_input_component';
 export * from '@/components/mantine/select_component';
 export * from '@/components/mantine/space_component';

@@ -8,6 +8,7 @@ import { appColorRGBA, mantineActionIconVariant } from '@/utils';
 import { TextComponent } from '@/components/mantine/text_component';
 
 export interface SidebarButtonProps {
+	id: number,
 	link: string;
 	title: string;
 	Icon: LucideIcon | IconType;

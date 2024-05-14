@@ -4,8 +4,10 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 import React from 'react';
 import { useSubMenuBlock } from './hook';
-import { ActionIconComponent, SidebarButton, TooltipComponent } from '@/components';
+import { ActionIconComponent, ButtonComponent, SidebarButton, TooltipComponent } from '@/components';
 import { LinkType, SideBarProps, SideBarType, SubMenuType } from '@/constants';
+import { appColorRGBA, mantineActionIconVariant } from '@/utils';
+import { TextComponent } from '@/components/mantine/text_component';
 
 export interface SubMenuBlockProps extends SideBarProps<SideBarType> {
 	iconSize?: number;
@@ -17,8 +19,6 @@ export interface SubMenuBlockProps extends SideBarProps<SideBarType> {
 export const SubMenuBlock = (props: SubMenuBlockProps) => {
 	const {
 		id,
-		link,
-		type,
 		Icon,
 		title,
 		other,
@@ -54,16 +54,45 @@ export const SubMenuBlock = (props: SubMenuBlockProps) => {
 				label={!isSidebarOpen ? title : ''}
 				// className="transition-none bg-light-background-paper border border-gray-800 font-public-sans"
 			>
-				<ActionIconComponent
-					className={twMerge(
+				{
+				isSidebarOpen ?
+					<ButtonComponent
+						fullWidth
+						justify="start"
+						color={isBlockOpen ? appColorRGBA : undefined}
+						variant={isBlockOpen ? 'filled' : mantineActionIconVariant}
+						onClick={toggleBlockState}
+						className={twMerge(
 						'py-2.5 items-center transition-none my-1.5 flex rounded-md',
 						isSidebarOpen
 							? 'justify-start px-3 hover:bg-light-background-paper'
 							: 'justify-center'
 					)}
-					onClick={toggleBlockState}
 				>
-					{
+						<Icon
+							size={iconSize ?? 22}
+							className={twMerge(
+							`${
+								isSidebarOpen ? 'mr-2.5' : ''
+							} transition-none`,
+							iconClassName
+						)}
+					/>
+
+						<TextComponent c={isBlockOpen ? 'white' : appColorRGBA} text={title} />
+
+					</ButtonComponent>
+				:
+					<ActionIconComponent
+						className={twMerge(
+						'py-2.5 items-center transition-none my-1.5 flex rounded-md',
+						isSidebarOpen
+							? 'justify-start px-3 hover:bg-light-background-paper'
+							: 'justify-center'
+					)}
+						onClick={toggleBlockState}
+				>
+						{
 						isBlockOpen ? (
 							<ActiveIconComponent />
 						) : (
@@ -78,7 +107,7 @@ export const SubMenuBlock = (props: SubMenuBlockProps) => {
 							/>
 						)}
 
-					{isSidebarOpen && (
+						{isSidebarOpen && (
 						<>
 							<p
 								className={twMerge(
@@ -96,24 +125,29 @@ export const SubMenuBlock = (props: SubMenuBlockProps) => {
 							)}
 						</>
 					)}
-				</ActionIconComponent>
+					</ActionIconComponent>
+				}
 			</TooltipComponent>
 
-			{isBlockOpen && (
-				<div className={`${isSidebarOpen ? 'pl-2' : ''}`}>
-					{/*{type == SideBarType.Nested?
-						<SubMenuBlock isSidebarOpen={isSidebarOpen} id={} type={} title={} Icon={} other={}
-
-					{options.map((option) => (
-						<SidebarButton
-							key={option.id}
-							isActive={option.link === currentPathname}
-							isSidebarOpen={isSidebarOpen}
-							{...option}
-						/>
-					))}*/}
-				</div>
-			)}
+			{/*{isBlockOpen && (*/}
+			<div className={`${isSidebarOpen ? 'pl-2' : ''}`} style={{ backgroundColor: '#eee' }}>
+				{(other as SubMenuType).options.map((item: SideBarProps<SideBarType>) =>
+						item.type === SideBarType.Nested ?
+							<SubMenuBlock
+								isSidebarOpen={isSidebarOpen}
+								{...item}
+							/> :
+							<SidebarButton
+								id={item.id}
+								Icon={item.Icon}
+								title={item.title}
+								isSidebarOpen={isSidebarOpen}
+								link={(item.other as LinkType).link}
+								isActive={(item.other as LinkType).link === currentPathname}
+							/>)
+					}
+			</div>
+			{/*)}*/}
 		</div>
 	);
 };

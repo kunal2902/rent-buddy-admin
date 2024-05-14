@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { DashboardPageHeader } from '@/components';
 import { useCategoriesContainer } from './hook';
 import CreateCategoryModal from './add_category';
-import { category } from '@/models';
+import { CategoryModel } from '@/models';
 import { deleteCategoryApi, getCategoryApi } from '@/utils';
 
 const CategoriesContainer = () => {
@@ -15,7 +15,7 @@ const CategoriesContainer = () => {
 		toggleCreateCategoryModalOpen,
 	} = useCategoriesContainer();
 
-	const [categoryList, setCategoryList] = useState<category[]>([]);
+	const [categoryList, setCategoryList] = useState<CategoryModel[]>([]);
 	const [callApi, setCallApi] = useState(true);
 
 	useEffect(() => {

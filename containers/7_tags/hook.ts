@@ -20,12 +20,8 @@ export const useCreateTagModal = () => {
 
 	const hanldeTag = async (event: { preventDefault: () => void }) => {
 		event.preventDefault();
-		const body = {
-			tag: tagName,
-		};
 		try {
 			await getTagApi(
-				body.tag,
 				(result: any) => {
 					if (result.code === 200) {
 						console.log('success');

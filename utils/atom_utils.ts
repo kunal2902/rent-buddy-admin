@@ -2,10 +2,11 @@
 
 import { atom } from 'recoil';
 import { Theme } from '@/types/common';
+import { getSidebarState } from '@/utils/config';
 
 export const sidebarStateAtom = atom<boolean>({
 	key: 'sidebarStateAtom',
-	default: false,
+	default: getSidebarState() === 'true',
 });
 
 export const openSubMenuAtom = atom<Array<number>>({

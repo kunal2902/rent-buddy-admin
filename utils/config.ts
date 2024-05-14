@@ -10,23 +10,24 @@ export const appLogoWidth: number = 40;
 export const appLogoHeight: number = 40;
 
 /** App colors */
-export const appColor: string = '#6cd2d5';
-export const appAccentColor: string = '#e88e7c';
+export const appColor: string = '#007F73';
+export const appAccentColor: string = '#EE4266';
 export const whiteColor: string = '#ffffff';
 export const blackColor: string = '#000000';
 
 /** Mantine Variables */
-export const appColorRGBA: MantineColor = 'rgba(108, 210, 213, 1)';
-export const appAccentColorRGBA: MantineColor = 'rgba(232,142,124,1)';
+export const appColorRGBA: MantineColor = 'rgba(0, 127, 115, 1)';
+export const appAccentColorRGBA: MantineColor = 'rgba(238,66,102,1)';
 export const mantineSize: MantineSize = 'md';
 export const mantineButtonSize: MantineSize = 'sm';
 export const mantineActionIconSize: MantineSize = 'lg';
 export const mantineActionIconVariant: ActionIconVariant = 'light';
-export const mantineRadius: MantineRadius = 'lg';
+export const mantineRadius: MantineRadius = 'xl';
 export const mantineInputVariant: InputVariant = 'filled';
 export const mantineAvatarVariant: AvatarVariant = 'filled';
 export const mantineSpaceHeight: MantineSize = 'sm';
 export const mantineSpaceWidth: MantineSize = 'md';
+export const mantineNavLinkChildOffset: MantineSize = 'md';
 
 /** Cookie constants */
 export const cookieOptions = {
@@ -38,6 +39,7 @@ export const nameConstant: string = 'name';
 export const emailConstant: string = 'email';
 export const userNameConstant: string = 'username';
 export const roleIdConstant: string = 'role_id';
+export const sidebarStateConstant: string = 'sidebar_state';
 
 /** API Constants */
 export const apiUrl: string = 'http://localhost:8000/api/v1';
@@ -99,6 +101,8 @@ export const getEmail = (): string => getCookie(emailConstant) ?? '';
 export const getUserName = (): string => getCookie(userNameConstant) ?? '';
 /** To get the Role id stored in Cookies */
 export const getRoleId = (): string => getCookie(roleIdConstant) ?? '';
+/** To get the Sidebar state stored in Cookies */
+export const getSidebarState = (): string => getCookie(sidebarStateConstant) ?? 'true';
 
 /** Route Constants */
 export const dashboardRoute: string = '/';
