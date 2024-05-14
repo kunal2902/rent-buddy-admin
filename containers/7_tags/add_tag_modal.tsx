@@ -28,8 +28,8 @@ const AddTagModal = (props: Props) => {
 					onClose();
 					setCallApi(true);
                 },
-                (err: any) => {
-                    toast.error(err);
+                (message: string) => {
+                    toast.error(message);
                 }
             );
         } catch (error) {

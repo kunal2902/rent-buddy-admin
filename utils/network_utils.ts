@@ -201,7 +201,7 @@ export const getTagByIdApi = async (
 export const upsertTagApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
-	errorCallback: (arg0: any) => void,
+	errorCallback: (message: string) => void,
 ) => {
 	const token = getCrmJWT();
 	const response = await makePostRequest(tagAPIPath, body, {
@@ -218,7 +218,7 @@ export const upsertTagApi = async (
 		case 498:
 		case 499:
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
