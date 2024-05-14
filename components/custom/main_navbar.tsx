@@ -21,7 +21,7 @@ export const MainNavbar = () => {
 			className="w-full pt-3 pb-3 flex fixed top-0 left-0 bg-light-background-natural items-center justify-between z-30 shadow">
 			<div className="flex items-center">
 
-				<SpaceComponent width />
+				<SpaceComponent showWidth />
 
 				<ActionIconComponent
 					onClick={toggleSidebar}
@@ -31,7 +31,7 @@ export const MainNavbar = () => {
 					<Menu size={22} />
 				</ActionIconComponent>
 
-				<SpaceComponent width />
+				<SpaceComponent showWidth />
 
 				<UnstyledButtonComponent
 					display="flex"
@@ -43,7 +43,7 @@ export const MainNavbar = () => {
 						height={appLogoHeight}
 					/>
 
-					<SpaceComponent width />
+					<SpaceComponent showWidth />
 
 					<CenterComponent>
 						<TextComponent bold text={appName} c={appAccentColor} />
@@ -61,13 +61,13 @@ export const MainNavbar = () => {
 					href={posRoute}
 				/>
 
-				<SpaceComponent width />
+				<SpaceComponent showWidth />
 
 				<AvatarComponent src={null} alt={getName()}>
 					{getName()[0]}
 				</AvatarComponent>
 
-				<SpaceComponent width />
+				<SpaceComponent showWidth />
 
 			</div>
 		</div>

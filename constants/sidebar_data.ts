@@ -1,8 +1,6 @@
 import {
-	BarChart3,
 	ShieldCheck,
 	Users,
-	Clipboard,
 	Settings,
 	ScanLine,
 	ScanBarcode,
@@ -10,14 +8,19 @@ import {
 	Tags,
 	List,
 	LayoutPanelTop,
-	BookOpenText,
-	Mail,
 	LucideIcon,
 	Bookmark,
 	Blocks,
 } from 'lucide-react';
+import { MdOutlineAdminPanelSettings, MdOutlinePrivacyTip, MdOutlineContactPage } from 'react-icons/md';
+import { LuMail, LuBadgeInfo } from 'react-icons/lu';
+import { HiOutlineDocumentReport } from 'react-icons/hi';
+import { RxDashboard } from 'react-icons/rx';
+import { TbReceiptTax } from 'react-icons/tb';
+import { CgFileDocument } from 'react-icons/cg';
 import { IconType } from 'react-icons';
-import { PiBookOpenTextFill, PiWarehouse, PiWarehouseFill } from 'react-icons/pi';
+import { VscDashboard } from 'react-icons/vsc';
+import { PiWarehouse, PiWarehouseFill } from 'react-icons/pi';
 import { RiSettingsFill, RiSettingsLine } from 'react-icons/ri';
 import {
 	aboutName,
@@ -74,7 +77,6 @@ export interface LinkType {
 export interface SideBarProps<T extends SideBarType> {
 	id: number,
 	type: T,
-	link?: string,
 	title: string,
 	Icon: IconType | LucideIcon,
 	other: T extends SideBarType.Nested ? SubMenuType : LinkType,
@@ -84,7 +86,7 @@ export const SidebarItems: Array<SideBarProps<SideBarType>> = [
 	{
 		id: 1,
 		title: dashboardName,
-		Icon: BarChart3,
+		Icon: VscDashboard,
 		type: SideBarType.Simple,
 		other: { link: dashboardRoute },
 	},
@@ -166,7 +168,7 @@ export const SidebarItems: Array<SideBarProps<SideBarType>> = [
 		id: 5,
 		title: reportsName,
 		other: { link: reportsRoute },
-		Icon: Clipboard,
+		Icon: HiOutlineDocumentReport,
 		type: SideBarType.Simple,
 	},
 	{
@@ -189,7 +191,7 @@ export const SidebarItems: Array<SideBarProps<SideBarType>> = [
 					title: rolesName,
 					type: SideBarType.Simple,
 					other: { link: rolesRoute },
-					Icon: Settings,
+					Icon: MdOutlineAdminPanelSettings,
 				},
 				{
 					id: 2,
@@ -201,37 +203,37 @@ export const SidebarItems: Array<SideBarProps<SideBarType>> = [
 				{
 					id: 3,
 					title: pagesName,
-					Icon: BookOpenText,
+					Icon: RxDashboard,
 					type: SideBarType.Nested,
 					other: {
-						ActiveIcon: PiBookOpenTextFill,
+						ActiveIcon: RxDashboard,
 						options: [
 							{
 								id: 1,
 								title: aboutName,
 								other: { link: aboutRoute },
-								Icon: Mail,
+								Icon: LuBadgeInfo,
 								type: SideBarType.Simple,
 							},
 							{
 								id: 2,
 								title: contactName,
 								other: { link: contactRoute },
-								Icon: Mail,
+								Icon: MdOutlineContactPage,
 								type: SideBarType.Simple,
 							},
 							{
 								id: 3,
 								title: privacyPolicyName,
 								other: { link: privacyPolicyRoute },
-								Icon: Mail,
+								Icon: MdOutlinePrivacyTip,
 								type: SideBarType.Simple,
 							},
 							{
 								id: 4,
 								title: tncName,
 								other: { link: tncRoute },
-								Icon: Mail,
+								Icon: CgFileDocument,
 								type: SideBarType.Simple,
 							},
 						],
@@ -241,14 +243,14 @@ export const SidebarItems: Array<SideBarProps<SideBarType>> = [
 					id: 4,
 					title: emailSettingsName,
 					other: { link: emailRoute },
-					Icon: Mail,
+					Icon: LuMail,
 					type: SideBarType.Simple,
 				},
 				{
 					id: 5,
 					title: taxesName,
 					other: { link: taxesRoute },
-					Icon: Mail,
+					Icon: TbReceiptTax,
 					type: SideBarType.Simple,
 				},
 			],
