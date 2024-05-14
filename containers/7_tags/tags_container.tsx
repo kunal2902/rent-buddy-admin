@@ -1,11 +1,10 @@
 'use client';
 
 import { Plus } from 'lucide-react';
-import { TableData } from '@mantine/core/lib/components';
 import { FaRegEdit } from 'react-icons/fa';
+import { IoTrashOutline } from 'react-icons/io5';
 import { Switch, Table } from '@mantine/core';
 import { useEffect, useState } from 'react';
-import { IoTrashOutline } from 'react-icons/io5';
 import { useTagsContainer } from './hook';
 import { DashboardPageHeader } from '@/components';
 import AddTagModal from './add_tag_modal';
@@ -85,7 +84,7 @@ const TagsContainer = () => {
 				</div>
 			</Table.Td>
 		</Table.Tr>
-  ));
+	));
 
 	return (
 		<main
