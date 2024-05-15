@@ -1,9 +1,14 @@
-'use client';
+"use client";
 
-import { usePathname } from 'next/navigation';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { useMemo } from 'react';
-import { sidebarStateAtom, toggleBooleanState, openSubMenuAtom } from '@/utils';
+import { usePathname } from "next/navigation";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+	sidebarStateAtom,
+	toggleBooleanState,
+	openSubMenuAtom,
+	getName,
+} from "@/utils";
 
 interface Args {
 	subMenuId: number;
@@ -54,8 +59,22 @@ export const useMainSidebar = () => {
 
 export const useMainNavbar = () => {
 	const setSidebarState = useSetRecoilState<boolean>(sidebarStateAtom);
+	const [userName, setUserName] = useState<string>("");
+	const isMounted = useRef<boolean>(false);
+
+	useEffect(() => {
+		if (isMounted.current) return;
+
+		isMounted.current = true;
+		const name = getName();
+
+		if (name && name.charAt(0)) {
+			setUserName(name.charAt(0));
+		}
+	}, []);
 
 	return {
 		toggleSidebar: toggleBooleanState(setSidebarState),
+		userName,
 	};
 };
