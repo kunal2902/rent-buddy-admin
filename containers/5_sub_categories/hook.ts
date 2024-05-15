@@ -22,11 +22,46 @@ export const useSubCategoriesContainer = () => {
 
 export const useCreateSubCategoryModal = () => {
 	const [subCategoryName, setSubCategoryName] = useState<string>("");
-	const fileInputRef = useRef<HTMLButtonElement>(null);
+	const [selectedFileToUpload, setSelectedFileToUpload] =
+		useState<File | null>(null);
+	const [selectedFile, setSelectedFile] = useState<string | null>(null);
+	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
+
+	const onChooseIconClick = () => {
+		if (fileInputTriggerRef) {
+			fileInputTriggerRef.current?.click();
+		}
+	};
+
+	const onResetIconClick = () => {
+		setSelectedFile(null);
+		setSelectedFileToUpload(null);
+	};
+
+	const onFilePick = (file: File | null) => {
+		if (file) {
+			const fileReader = new FileReader();
+
+			fileReader.readAsDataURL(file);
+			setSelectedFileToUpload(file);
+
+			fileReader.onload = (readerEvent) => {
+				if (
+					readerEvent.target &&
+					typeof readerEvent.target.result === "string"
+				)
+					setSelectedFile(readerEvent.target.result);
+			};
+		}
+	};
 
 	return {
 		subCategoryName,
 		onSubCategoryNameChange: onTextInputChange(setSubCategoryName),
-		fileInputRef,
+		onChooseIconClick,
+		fileInputTriggerRef,
+		selectedFile,
+		onFilePick,
+		onResetIconClick,
 	};
 };
