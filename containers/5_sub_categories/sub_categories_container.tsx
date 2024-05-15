@@ -5,10 +5,15 @@ import { useEffect, useState } from 'react';
 import { useSubCategoriesContainer } from './hook';
 import { DashboardPageHeader } from '@/components';
 import { SubCategoryModel } from '@/models';
-import { deleteSubCategoryApi, getSubCategoryApi } from '@/utils';
+import { getSubCategoryApi } from '@/utils';
+import CreateSubCategoryModal from './add_sub_category_modal';
 
 const SubCategoriesContainer = () => {
-	const { isSidebarOpen } = useSubCategoriesContainer();
+	const {
+		isSidebarOpen,
+		isCreateSubCategoryModalOpen,
+		toggleCreateSubCategoryModalOpen,
+	} = useSubCategoriesContainer();
 
 	const [subCategoryList, setSubCategoryList] = useState<SubCategoryModel[]>([]);
 	const [callApi, setCallApi] = useState(true);
@@ -19,26 +24,12 @@ const SubCategoriesContainer = () => {
 				setSubCategoryList(data);
 				setCallApi(false);
 			}, () => {
-				console.log('Error occurred.');
 				setCallApi(false);
 			}, () => {
-				console.log('Logout.');
 				setCallApi(false);
 			}).then();
 		}
 	}, [callApi]);
-
-	const handleDeleteSubCategory = (id: string) => {
-		deleteSubCategoryApi(id, () => {
-			setCallApi(true);
-		}, () => {
-			console.log('Error occurred.');
-			setCallApi(false);
-		}, () => {
-			console.log('Logout.');
-			setCallApi(false);
-		});
-	};
 
 	return (
 		<main
@@ -53,9 +44,16 @@ const SubCategoriesContainer = () => {
 				buttonProps={{
 					title: 'New Sub Category',
 					titleClassName: 'sm:flex hidden',
+					onClick: toggleCreateSubCategoryModalOpen,
 					className: 'rounded-md w-fit text-grey-100 text-sm',
 					children: <Plus size={20} className="sm:mr-2 mr-0" />,
 				}}
+			/>
+
+			<CreateSubCategoryModal
+				isOpen={isCreateSubCategoryModalOpen}
+				onClose={toggleCreateSubCategoryModalOpen}
+				setCallApi={setCallApi}
 			/>
 		</main>
 	);

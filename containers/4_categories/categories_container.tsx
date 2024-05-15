@@ -32,26 +32,12 @@ const CategoriesContainer = () => {
 				setCategoryList(data.categories);
 				setCallApi(false);
 			}, () => {
-				console.log('Error occurred.');
 				setCallApi(false);
 			}, () => {
-				console.log('Logout.');
 				setCallApi(false);
 			}).then();
 		}
 	}, [callApi]);
-
-	const handleDeleteCategory = (id: string) => {
-		deleteCategoryApi(id, () => {
-			setCallApi(true);
-		}, () => {
-			console.log('Error occurred.');
-			setCallApi(false);
-		}, () => {
-			console.log('Logout.');
-			setCallApi(false);
-		});
-	};
 
 	const handleOpenModal = (id: string, type: string, disableType: boolean) => {
 		setCatId(id);
@@ -137,6 +123,7 @@ const CategoriesContainer = () => {
 			<CreateCategoryModal
 				isOpen={isCreateCategoryModalOpen}
 				onClose={toggleCreateCategoryModalOpen}
+				setCallApi={setCallApi}
 			/>
 
 			<ActionCategoryModal

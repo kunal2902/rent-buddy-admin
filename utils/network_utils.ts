@@ -202,6 +202,7 @@ export const upsertTagApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
 	errorCallback: (message: string) => void,
+	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
 	const response = await makePostRequest(tagAPIPath, body, {
@@ -217,6 +218,8 @@ export const upsertTagApi = async (
 		case 420:
 		case 498:
 		case 499:
+			logoutCallback();
+			break;
 		default:
 			errorCallback(response.message);
 			toast.error(response.message);
@@ -578,7 +581,7 @@ export const disableAttributeApi = async (
 export const deleteAttributeApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (message: string) => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
@@ -602,7 +605,7 @@ export const deleteAttributeApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -674,7 +677,7 @@ export const getcategoryByIdApi = async (
 export const upsertCategoryApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (message: string) => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
@@ -682,7 +685,7 @@ export const upsertCategoryApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePostRequest(categoryAPIPath, {
+	const response = await makePostRequest(categoryAPIPath, body, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -834,7 +837,7 @@ export const getSubCategoryByIdApi = async (
 export const upsertSubCategoryApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (message: string) => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
@@ -842,7 +845,7 @@ export const upsertSubCategoryApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePostRequest(subCategoryAPIPath, {
+	const response = await makePostRequest(subCategoryAPIPath, body, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -858,7 +861,7 @@ export const upsertSubCategoryApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };

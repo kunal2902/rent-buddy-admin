@@ -1,6 +1,5 @@
 'use client';
 
-import { toast } from 'react-toastify';
 import { Dispatch, SetStateAction } from 'react';
 import { ButtonComponent, ModalComponent } from '@/components';
 

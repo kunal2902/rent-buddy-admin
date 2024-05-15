@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { toast } from 'react-toastify';
-import { getTagApi, onTextInputChange, sidebarStateAtom, toggleBooleanState } from '@/utils';
+import { onTextInputChange, sidebarStateAtom, toggleBooleanState } from '@/utils';
 
 export const useTagsContainer = () => {
 	const isSidebarOpen = useRecoilValue<boolean>(sidebarStateAtom);
@@ -17,27 +16,6 @@ export const useTagsContainer = () => {
 
 export const useCreateTagModal = () => {
 	const [tagName, setTagName] = useState<string>('');
-
-	const hanldeTag = async (event: { preventDefault: () => void }) => {
-		event.preventDefault();
-		try {
-			await getTagApi(
-				(result: any) => {
-					if (result.code === 200) {
-						console.log('success');
-						toast.success('Tag name added');
-					} else {
-						console.log({ result });
-						console.log('Error');
-					}
-				},
-				() => {},
-				() => {}
-			);
-		} catch (error) {
-			console.error('Login failed:', error);
-		}
-	};
 
 	return {
 		tagName,
