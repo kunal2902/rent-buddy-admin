@@ -18,7 +18,7 @@ export const MainNavbar = () => {
 
 	return (
 		<div
-			className="w-full pt-3 pb-3 flex fixed top-0 left-0 bg-light-background-natural items-center justify-between z-30 shadow">
+			className="w-full h-14 pt-3 pb-3 flex fixed top-0 left-0 bg-light-background-natural items-center justify-between z-30 shadow">
 			<div className="flex items-center">
 
 				<SpaceComponent showWidth />

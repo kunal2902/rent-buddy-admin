@@ -8,6 +8,7 @@ export const appTitle: string = 'NCA CRM';
 export const appDescription: string = 'NCM ';
 export const appLogoWidth: number = 40;
 export const appLogoHeight: number = 40;
+export const currenySign: string = '₹';
 
 /** App colors */
 export const appColor: string = '#007F73';
@@ -26,7 +27,7 @@ export const mantineRadius: MantineRadius = 'xl';
 export const mantineInputVariant: InputVariant = 'filled';
 export const mantineAvatarVariant: AvatarVariant = 'filled';
 export const mantineSpaceHeight: MantineSize = 'sm';
-export const mantineSpaceWidth: MantineSize = 'md';
+export const mantineSpaceWidth: MantineSize = 'sm';
 export const mantineNavLinkChildOffset: MantineSize = 'md';
 
 /** Cookie constants */
@@ -42,7 +43,7 @@ export const roleIdConstant: string = 'role_id';
 export const sidebarStateConstant: string = 'sidebar_state';
 
 /** API Constants */
-export const apiUrl: string = 'http://localhost:8000/api/v1';
+export const apiUrl: string = 'https://pos-backend.unlockvelocity.in/api/v1';//http://localhost:8000/api/v1';
 export const loginAPIPath: string = `${apiUrl}/auth/login`;
 
 // Permission path

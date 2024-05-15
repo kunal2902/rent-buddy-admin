@@ -20,6 +20,7 @@ export const ButtonComponent = (props: ButtonComponentProps) => {
 	// @ts-ignore
 	return <Button
 		{...props}
+		px={props.px ?? 20}
 		size={props.size ?? mantineButtonSize}
 		color={props.color ?? appColorRGBA}
 		radius={props.radius ?? mantineRadius}
