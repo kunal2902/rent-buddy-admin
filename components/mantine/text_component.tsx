@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 import {
 	Text, TextProps,
-} from '@mantine/core';
+} from "@mantine/core";
 
 /** Props list of Mantine's Text component - https://mantine.dev/core/text/?t=props */
 export interface TextComponentProps extends TextProps {

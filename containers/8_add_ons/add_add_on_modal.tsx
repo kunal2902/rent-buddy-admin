@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { SimpleGrid } from '@mantine/core';
-import { useCreateAddOnModal } from './hook';
-import { ButtonComponent, ModalComponent, TextInputComponent } from '@/components';
+import { SimpleGrid } from "@mantine/core";
+import { useCreateAddOnModal } from "./hook";
+import { ButtonComponent, ModalComponent, TextInputComponent } from "@/components";
 
 interface Props {
 	isOpen: boolean;

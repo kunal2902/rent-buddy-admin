@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { Minus, Plus, SearchIcon } from 'lucide-react';
-import React, { useRef, useState } from 'react';
+import { Minus, Plus, SearchIcon } from "lucide-react";
+import React, { useRef, useState } from "react";
 import {
 	Card,
 	Chip,
@@ -12,16 +12,17 @@ import {
 	NumberInput,
 	NumberInputHandlers, ScrollArea,
 	SimpleGrid,
-} from '@mantine/core';
-import { ButtonComponent, TextInputComponent } from '@/components';
-import { GroupComponent } from '@/components/mantine/group_component';
-import { TextComponent } from '@/components/mantine/text_component';
-import { currenySign } from '@/utils';
+} from "@mantine/core";
+import { ButtonComponent, TextInputComponent } from "@/components";
+import { GroupComponent } from "@/components/mantine/group_component";
+import { TextComponent } from "@/components/mantine/text_component";
+import { currenySign } from "@/utils";
 
 const theme = createTheme({
 	components: {
 		Input: Input.extend({
-			vars: (theme, props) => ({ input: { '--input-text-align': 'center' } }),
+			// @ts-ignore
+			vars: () => ({ input: { "--input-text-align": "center" } }),
 		}),
 	},
 });
@@ -54,7 +55,7 @@ export const PosProductSection = () => (
 				<Chip value="10">Meals</Chip>
 			</GroupComponent>
 		</Chip.Group>
-		<ScrollArea style={{ display: 'grid', height: '80vh' }}>
+		<ScrollArea style={{ display: "grid", height: "80vh" }}>
 			<SimpleGrid cols={4} className="m-3">
 				<ProductCard index={1} />
 				<ProductCard index={2} />
@@ -84,6 +85,7 @@ export const PosProductSection = () => (
 	</div>
 );
 
+// @ts-ignore
 const ProductCard = ({ index }) => {
 	const [add, setAdd] = useState(false);
 	const [quantity, setQuantity] = useState<string | number>(1);
@@ -129,15 +131,15 @@ const ProductCard = ({ index }) => {
 					<div className="w-[50%] h-[40px] rounded-[20px] flex bg-gray-200 justify-between items-center">
 						<ButtonComponent
 							style={{
-								height: '40px',
-								width: '30%',
+								height: "40px",
+								width: "30%",
 								fontSize: 30,
-								alignContent: 'center',
-								backgroundColor: 'bg-gr',
-								justifyContent: 'center',
-								display: 'flex',
-								border: '1px solid gray',
-								borderRadius: '20px 0 0 20px',
+								alignContent: "center",
+								backgroundColor: "bg-gr",
+								justifyContent: "center",
+								display: "flex",
+								border: "1px solid gray",
+								borderRadius: "20px 0 0 20px",
 							}}
 							px={5}
 							onClick={() => numberInputRef.current?.decrement()}
@@ -162,27 +164,27 @@ const ProductCard = ({ index }) => {
 								variant="unstyled"
 								handlersRef={numberInputRef}
 								style={{
-									width: '40%',
-									height: '38px',
-									border: 'none',
-									display: 'flex',
-									fontWeight: 'bold',
-									backgroundColor: 'white',
+									width: "40%",
+									height: "38px",
+									border: "none",
+									display: "flex",
+									fontWeight: "bold",
+									backgroundColor: "white",
 								}}
 							/>
 						</MantineProvider>
 
 						<ButtonComponent
 							style={{
-								height: '40px',
-								width: '30%',
+								height: "40px",
+								width: "30%",
 								fontSize: 30,
-								alignContent: 'center',
-								backgroundColor: 'bg-gr',
-								justifyContent: 'center',
-								display: 'flex',
-								border: '1px solid gray',
-								borderRadius: '0 20px 20px 0',
+								alignContent: "center",
+								backgroundColor: "bg-gr",
+								justifyContent: "center",
+								display: "flex",
+								border: "1px solid gray",
+								borderRadius: "0 20px 20px 0",
 							}}
 							px={5}
 							onClick={() => numberInputRef.current?.increment()}

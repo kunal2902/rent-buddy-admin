@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 import { UnstyledButton, UnstyledButtonProps,
-} from '@mantine/core';
-import Link from 'next/link';
-import { mantineSize } from '@/utils';
+} from "@mantine/core";
+import Link from "next/link";
+import { mantineSize } from "@/utils";
 
 /** Props list of Mantine's Unstyled Button component - https://mantine.dev/core/unstyled-button/?t=props */
 export interface UnstyledButtonComponentProps extends UnstyledButtonProps {

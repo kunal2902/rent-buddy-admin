@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Table } from '@mantine/core';
-import { DashboardPageHeader } from '@/components';
-import { useCustomersContainer } from './hook';
-import { CustomerModel } from '@/models';
-import { formatDate, getCustomerApi } from '@/utils';
+import { useEffect, useState } from "react";
+import { Table } from "@mantine/core";
+import { DashboardPageHeader } from "@/components";
+import { useCustomersContainer } from "./hook";
+import { CustomerModel } from "@/models";
+import { formatDate, getCustomerApi } from "@/utils";
 
 const CustomersContainer = () => {
 	const { isSidebarOpen } = useCustomersContainer();
@@ -42,7 +42,7 @@ const CustomersContainer = () => {
 	return (
 		<main
 			className={`flex min-h-screen w-full bg-light-background-natural flex-col pt-14 ${
-				isSidebarOpen ? 'lg:pl-64 pl-0' : 'pl-16'
+				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-16"
 			}`}
 		>
 			<DashboardPageHeader

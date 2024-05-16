@@ -1,4 +1,4 @@
-import { UserModel } from '@/models';
+import { UserModel } from "@/models";
 
 export interface TagModel {
     tag_id: string;

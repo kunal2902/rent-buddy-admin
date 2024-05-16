@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { DashboardPageHeader } from '@/components';
-import { useLayoutSettingsContainer } from './hook';
+import { DashboardPageHeader } from "@/components";
+import { useLayoutSettingsContainer } from "./hook";
 
 const LayoutSettingsContainer = () => {
 	const { isSidebarOpen } = useLayoutSettingsContainer();
@@ -9,7 +9,7 @@ const LayoutSettingsContainer = () => {
 	return (
 		<main
 			className={`flex min-h-screen w-full bg-light-background-natural flex-col pt-14 ${
-				isSidebarOpen ? 'lg:pl-64 pl-0' : 'pl-16'
+				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-16"
 			}`}
 		>
 			<DashboardPageHeader

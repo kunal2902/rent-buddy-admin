@@ -1,5 +1,5 @@
-import { MainNavbar, MainSidebar } from '@/components';
-import { SubCategoriesContainer } from '@/containers';
+import { MainNavbar, MainSidebar } from "@/components";
+import { SubCategoriesContainer } from "@/containers";
 
 const SubCategories = () => (
 	<>

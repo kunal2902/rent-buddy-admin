@@ -1,5 +1,5 @@
-import { MainNavbar, MainSidebar } from '@/components';
-import { CategoriesContainer } from '@/containers';
+import { MainNavbar, MainSidebar } from "@/components";
+import { CategoriesContainer } from "@/containers";
 
 const CategoriesPage = () => (
 	<>
