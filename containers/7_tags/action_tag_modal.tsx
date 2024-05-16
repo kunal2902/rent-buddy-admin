@@ -17,7 +17,7 @@ const ActionTagModal = (props: Props) => {
 
 	return (
 		<ModalComponent opened={isOpen} onClose={onClose} className="border-grey-800" title="Action tag">
-			Are you sure want to {isDisable === true && tagType === 'disable' ? 'disable' : tagType === 'delete' ? 'delete' : 'enable'} this tag?
+			Are you sure want to {isDisable && tagType === 'disable' ? 'disable' : tagType === 'delete' ? 'delete' : 'enable'} this tag?
 			<div className="mt-1 flex items-center justify-end">
 				<ButtonComponent size="md" variant="subtle" title="No" color="red" px={5} mr={5} onClick={onClose} />
 				<ButtonComponent title="Yes" size="md" px={5} ml={5} onClick={handleActionTag} />

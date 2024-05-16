@@ -1,7 +1,7 @@
 'use client';
 
 import { toast } from 'react-toastify';
-import { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import { useCreateTagModal } from './hook';
 import { ButtonComponent, ModalComponent, TextInputComponent } from '@/components';
 import { upsertTagApi } from '@/utils';

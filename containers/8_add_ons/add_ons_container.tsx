@@ -2,11 +2,15 @@
 
 import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Switch, Table } from '@mantine/core';
+import { FaRegEdit } from 'react-icons/fa';
+import { IoTrashOutline } from 'react-icons/io5';
 import { useAddOnsContainer } from './hook';
 import { DashboardPageHeader } from '@/components';
 import AddAddOnModal from './add_add_on_modal';
 import { AddOnModel } from '@/models';
-import { deleteAddOnApi, getAddOnApi } from '@/utils';
+import { deleteAddOnApi, disableAddOnApi, formatDate, getAddOnApi } from '@/utils';
+import ActionAddOnModal from './action_add_on_modal';
 
 const AddOnsContainer = () => {
 	const {
@@ -17,33 +21,76 @@ const AddOnsContainer = () => {
 
 	const [addOnList, setAddOnList] = useState<AddOnModel[]>([]);
 	const [callApi, setCallApi] = useState(true);
+	const [addOnId, setAddOnId] = useState<string>('');
+	const [addOnType, setaddOnType] = useState<string>('');
+	const [isDisable, setIsDisable] = useState<boolean>(true);
+	const [isActionAddOneModalOpen, setIsActionAddOneModalOpen] =
+		useState<boolean>(false);
 
 	useEffect(() => {
 		if (callApi) {
 			getAddOnApi((data: any) => {
-				setAddOnList(data);
+				setAddOnList(data.addOns);
 				setCallApi(false);
 			}, () => {
-				console.log('Error occurred.');
 				setCallApi(false);
 			}, () => {
-				console.log('Logout.');
 				setCallApi(false);
 			}).then();
 		}
 	}, [callApi]);
 
-	const handleDeleteAddOn = (id: string) => {
-		deleteAddOnApi(id, () => {
+	const handleOpenModal = (id: string, type: string, disableType: boolean) => {
+		setAddOnId(id);
+		setaddOnType(type);
+		setIsDisable(disableType);
+		setIsActionAddOneModalOpen(true);
+	};
+
+	const handleActionAddOn = () => {
+		if (addOnType === 'disable') {
+			disableAddOnApi(addOnId, () => {
 			setCallApi(true);
+			setIsActionAddOneModalOpen(false);
 		}, () => {
-			console.log('Error occurred.');
 			setCallApi(false);
 		}, () => {
-			console.log('Logout.');
 			setCallApi(false);
 		});
+		} else {
+			deleteAddOnApi(addOnId, () => {
+			setCallApi(true);
+			setIsActionAddOneModalOpen(false);
+		}, () => {
+			setCallApi(false);
+		}, () => {
+			setCallApi(false);
+		});
+		}
 	};
+
+	const rows = addOnList.map((element, index) => (
+		<Table.Tr key={index}>
+			<Table.Td>{element.add_on_id}</Table.Td>
+			<Table.Td>{element.add_on_id}</Table.Td>
+			<Table.Td>{element.icon}</Table.Td>
+			<Table.Td>{element.name}</Table.Td>
+			<Table.Td>{element.price}</Table.Td>
+			<Table.Td>{formatDate(element.created_at)}</Table.Td>
+			<Table.Td>
+				<Switch
+					checked={element.is_disabled === true}
+					onClick={() => handleOpenModal(element.add_on_id, 'disable', element.is_disabled)}
+				/>
+			</Table.Td>
+			<Table.Td>
+				<div className="flex">
+					<IoTrashOutline color="red" size={25} style={{ marginRight: '10px' }} onClick={() => handleOpenModal(element.add_on_id, 'delete', element.is_disabled)} />
+					<FaRegEdit color="rgba(108, 210, 213, 1)" size={25} />
+				</div>
+			</Table.Td>
+		</Table.Tr>
+	));
 
 	return (
 		<main
@@ -64,10 +111,36 @@ const AddOnsContainer = () => {
 				}}
 			/>
 
+			<Table striped highlightOnHover withTableBorder>
+				<Table.Thead>
+					<Table.Tr>
+						<Table.Th>Index</Table.Th>
+						<Table.Th>Add on Id</Table.Th>
+						<Table.Th>Icon</Table.Th>
+						<Table.Th>Name</Table.Th>
+						<Table.Th>Price</Table.Th>
+						<Table.Th>Created at</Table.Th>
+						<Table.Th>Disable</Table.Th>
+						<Table.Th>Action</Table.Th>
+					</Table.Tr>
+				</Table.Thead>
+				<Table.Tbody>{rows}</Table.Tbody>
+			</Table>
+
 			<AddAddOnModal
 				isOpen={isCreateAddOnModalOpen}
 				onClose={toggleCreateAddOnModalOpen}
 			/>
+
+			<ActionAddOnModal
+				isOpen={isActionAddOneModalOpen}
+				onClose={() => setIsActionAddOneModalOpen(false)}
+				setCallApi={setCallApi}
+				handleActionAddOn={handleActionAddOn}
+				addOnType={addOnType}
+				isDisable={isDisable}
+			/>
+
 		</main>
 	);
 };

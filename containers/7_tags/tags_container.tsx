@@ -73,7 +73,7 @@ const TagsContainer = () => {
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>
 				<Switch
-					checked={element.is_disabled === true}
+					checked={element.is_disabled}
 					onClick={() => handleOpenModal(element.tag_id, 'disable', element.is_disabled)}
 				/>
 			</Table.Td>
