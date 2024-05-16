@@ -1,5 +1,5 @@
-import { MainNavbar, MainSidebar } from '@/components';
-import { AboutPageContainer } from '@/containers';
+import { MainNavbar, MainSidebar } from "@/components";
+import { AboutPageContainer } from "@/containers";
 
 const Roles = () => (
 	<>

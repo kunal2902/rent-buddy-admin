@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { Dispatch, SetStateAction } from 'react';
-import { toast } from 'react-toastify';
-import { useCreateCategoryModal } from './hook';
-import { ButtonComponent, ModalComponent, TextInputComponent } from '@/components';
-import { upsertCategoryApi } from '@/utils';
+import { Dispatch, SetStateAction } from "react";
+import { toast } from "react-toastify";
+import { useCreateCategoryModal } from "./hook";
+import { ButtonComponent, ModalComponent, TextInputComponent } from "@/components";
+import { upsertCategoryApi } from "@/utils";
 
 interface Props {
     isOpen: boolean;
@@ -34,7 +34,7 @@ const CreateCategoryModal = (props: Props) => {
 				() => {}
             );
         } catch (error) {
-            console.error('Error:', error);
+            console.error("Error:", error);
         }
     };
 

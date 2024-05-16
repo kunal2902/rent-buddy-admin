@@ -2,6 +2,8 @@
 
 import { Dispatch, SetStateAction } from "react";
 import { toast } from "react-toastify";
+import { Image as ImageIcon, Trash } from "lucide-react";
+import Image from "next/image";
 import {
 	ButtonComponent,
 	ModalComponent,
@@ -10,8 +12,6 @@ import {
 import { FileInputComponent } from "@/components/mantine/file_input_component";
 import { mantineLargeModalWidth, upsertSubCategoryApi } from "@/utils";
 import { useCreateSubCategoryModal } from "./hook";
-import { Image as ImageIcon, Trash } from "lucide-react";
-import Image from "next/image";
 
 interface Props {
 	isOpen: boolean;

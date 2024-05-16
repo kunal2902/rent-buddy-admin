@@ -1,4 +1,4 @@
-import { UserModel } from '@/models';
+import { UserModel } from "@/models";
 
 export interface RoleModel {
     role_id: string;

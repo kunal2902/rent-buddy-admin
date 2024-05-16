@@ -11,17 +11,17 @@ import {
 	LucideIcon,
 	Bookmark,
 	Blocks,
-} from 'lucide-react';
-import { MdOutlineAdminPanelSettings, MdOutlinePrivacyTip, MdOutlineContactPage } from 'react-icons/md';
-import { LuMail, LuBadgeInfo } from 'react-icons/lu';
-import { HiOutlineDocumentReport } from 'react-icons/hi';
-import { RxDashboard } from 'react-icons/rx';
-import { TbReceiptTax } from 'react-icons/tb';
-import { CgFileDocument } from 'react-icons/cg';
-import { IconType } from 'react-icons';
-import { VscDashboard } from 'react-icons/vsc';
-import { PiWarehouse, PiWarehouseFill } from 'react-icons/pi';
-import { RiSettingsFill, RiSettingsLine } from 'react-icons/ri';
+} from "lucide-react";
+import { MdOutlineAdminPanelSettings, MdOutlinePrivacyTip, MdOutlineContactPage } from "react-icons/md";
+import { LuMail, LuBadgeInfo } from "react-icons/lu";
+import { HiOutlineDocumentReport } from "react-icons/hi";
+import { RxDashboard } from "react-icons/rx";
+import { TbReceiptTax } from "react-icons/tb";
+import { CgFileDocument } from "react-icons/cg";
+import { IconType } from "react-icons";
+import { VscDashboard } from "react-icons/vsc";
+import { PiWarehouse, PiWarehouseFill } from "react-icons/pi";
+import { RiSettingsFill, RiSettingsLine } from "react-icons/ri";
 import {
 	aboutName,
 	aboutRoute,
@@ -56,13 +56,13 @@ import {
 	taxesRoute, tncName, tncRoute,
 	usersName,
 	usersRoute,
-} from '@/utils';
+} from "@/utils";
 
 export enum SideBarType {
 	// eslint-disable-next-line no-unused-vars
-	Simple = 'simple',
+	Simple = "simple",
 	// eslint-disable-next-line no-unused-vars
-	Nested = 'nested',
+	Nested = "nested",
 }
 
 export interface SubMenuType {

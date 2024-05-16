@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { Plus } from 'lucide-react';
-import { Switch, Table } from '@mantine/core';
-import { FaRegEdit } from 'react-icons/fa';
-import { IoTrashOutline } from 'react-icons/io5';
-import { useEffect, useState } from 'react';
-import { useCustomAttributesContainer } from './hook';
-import { DashboardPageHeader } from '@/components';
-import AddCustomAttributeModal from './add_custom_attribute';
-import { CustomAttributeModel } from '@/models';
-import { deleteAttributeApi, disableAttributeApi, formatDate, getAttributeApi } from '@/utils';
-import ActionCustomAttributeModal from './action_custom_attribute_modal';
+import { Plus } from "lucide-react";
+import { Switch, Table } from "@mantine/core";
+import { FaRegEdit } from "react-icons/fa";
+import { IoTrashOutline } from "react-icons/io5";
+import { useEffect, useState } from "react";
+import { useCustomAttributesContainer } from "./hook";
+import { DashboardPageHeader } from "@/components";
+import AddCustomAttributeModal from "./add_custom_attribute";
+import { CustomAttributeModel } from "@/models";
+import { deleteAttributeApi, disableAttributeApi, formatDate, getAttributeApi } from "@/utils";
+import ActionCustomAttributeModal from "./action_custom_attribute_modal";
 
 const CustomAttributesContainer = () => {
 	const {
@@ -22,8 +22,8 @@ const CustomAttributesContainer = () => {
 	const [customAttributesList, setCustomAttributesList] =
 		useState<CustomAttributeModel[]>([]);
 	const [callApi, setCallApi] = useState(true);
-	const [customAttributeId, setCustomAttributeId] = useState<string>('');
-	const [customAttributeType, setCustomAttributeType] = useState<string>('');
+	const [customAttributeId, setCustomAttributeId] = useState<string>("");
+	const [customAttributeType, setCustomAttributeType] = useState<string>("");
 	const [isDisable, setIsDisable] = useState<boolean>(true);
 	const [isActionCustomAttributeModalOpen, setIsActionCustomAttributeModalOpen] =
 		useState<boolean>(false);
@@ -49,7 +49,7 @@ const CustomAttributesContainer = () => {
 	};
 
 	const handleActionCustomAttribute = () => {
-		if (customAttributeType === 'disable') {
+		if (customAttributeType === "disable") {
 			disableAttributeApi(customAttributeId, () => {
 			setCallApi(true);
 			setIsActionCustomAttributeModalOpen(false);
@@ -80,12 +80,12 @@ const CustomAttributesContainer = () => {
 			<Table.Td>
 				<Switch
 					checked={element.is_disabled === true}
-					onClick={() => handleOpenModal(element.custom_attribute_id, 'disable', element.is_disabled)}
+					onClick={() => handleOpenModal(element.custom_attribute_id, "disable", element.is_disabled)}
 				/>
 			</Table.Td>
 			<Table.Td>
 				<div className="flex">
-					<IoTrashOutline color="red" size={25} style={{ marginRight: '10px' }} onClick={() => handleOpenModal(element.custom_attribute_id, 'delete', element.is_disabled)} />
+					<IoTrashOutline color="red" size={25} style={{ marginRight: "10px" }} onClick={() => handleOpenModal(element.custom_attribute_id, "delete", element.is_disabled)} />
 					<FaRegEdit color="rgba(108, 210, 213, 1)" size={25} />
 				</div>
 			</Table.Td>
@@ -95,7 +95,7 @@ const CustomAttributesContainer = () => {
 	return (
 		<main
 			className={`flex min-h-screen w-full bg-light-background-natural flex-col pt-14 ${
-				isSidebarOpen ? 'lg:pl-64 pl-0' : 'pl-16'
+				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-16"
 			}`}
 		>
 			<DashboardPageHeader
@@ -103,10 +103,10 @@ const CustomAttributesContainer = () => {
 				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
 				button
 				buttonProps={{
-					title: 'New Attribute',
-					titleClassName: 'sm:flex hidden',
+					title: "New Attribute",
+					titleClassName: "sm:flex hidden",
 					onClick: toggleCreateCustomAttributeModalOpen,
-					className: 'rounded-md w-fit text-grey-100 text-sm',
+					className: "rounded-md w-fit text-grey-100 text-sm",
 					children: <Plus size={20} className="sm:mr-2 mr-0" />,
 				}}
 			/>

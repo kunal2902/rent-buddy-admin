@@ -1,16 +1,16 @@
 "use client";
 
-import { Plus } from 'lucide-react';
-import { Switch, Table } from '@mantine/core';
-import { FaRegEdit } from 'react-icons/fa';
-import { IoTrashOutline } from 'react-icons/io5';
-import { useEffect, useState } from 'react';
-import { useSubCategoriesContainer } from './hook';
-import { DashboardPageHeader } from '@/components';
-import { SubCategoryModel } from '@/models';
-import { deleteSubCategoryApi, disableSubCategoryApi, formatDate, getSubCategoryApi } from '@/utils';
-import CreateSubCategoryModal from './add_sub_category_modal';
-import ActionSubCategoryModal from './action_sub_category_modal';
+import { Plus } from "lucide-react";
+import { Switch, Table } from "@mantine/core";
+import { FaRegEdit } from "react-icons/fa";
+import { IoTrashOutline } from "react-icons/io5";
+import { useEffect, useState } from "react";
+import { useSubCategoriesContainer } from "./hook";
+import { DashboardPageHeader } from "@/components";
+import { SubCategoryModel } from "@/models";
+import { deleteSubCategoryApi, disableSubCategoryApi, formatDate, getSubCategoryApi } from "@/utils";
+import CreateSubCategoryModal from "./add_sub_category_modal";
+import ActionSubCategoryModal from "./action_sub_category_modal";
 
 const SubCategoriesContainer = () => {
 	const {
@@ -23,8 +23,8 @@ const SubCategoriesContainer = () => {
 		[],
 	);
 	const [callApi, setCallApi] = useState(true);
-	const [subCatId, setSubCatId] = useState<string>('');
-	const [subCatType, setSubCatType] = useState<string>('');
+	const [subCatId, setSubCatId] = useState<string>("");
+	const [subCatType, setSubCatType] = useState<string>("");
 	const [isDisable, setIsDisable] = useState<boolean>(true);
 	const [isActionSubCatModalOpen, setIsActionSubCatModalOpen] = useState<boolean>(false);
 
@@ -49,7 +49,7 @@ const SubCategoriesContainer = () => {
 	};
 
 		const handleActionSubCat = () => {
-		if (subCatType === 'disable') {
+		if (subCatType === "disable") {
 			disableSubCategoryApi(subCatId, () => {
 			setCallApi(true);
 			setIsActionSubCatModalOpen(false);
@@ -81,12 +81,12 @@ const SubCategoriesContainer = () => {
 			<Table.Td>
 				<Switch
 					checked={element.is_disabled === true}
-					onClick={() => handleOpenModal(element.sub_category_id, 'disable', element.is_disabled)}
+					onClick={() => handleOpenModal(element.sub_category_id, "disable", element.is_disabled)}
 				/>
 			</Table.Td>
 			<Table.Td>
 				<div className="flex">
-					<IoTrashOutline color="red" size={25} style={{ marginRight: '10px' }} onClick={() => handleOpenModal(element.category_id, 'delete', element.is_disabled)} />
+					<IoTrashOutline color="red" size={25} style={{ marginRight: "10px" }} onClick={() => handleOpenModal(element.category_id, "delete", element.is_disabled)} />
 					<FaRegEdit color="rgba(108, 210, 213, 1)" size={25} />
 				</div>
 			</Table.Td>

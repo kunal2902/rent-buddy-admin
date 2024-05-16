@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import { Plus } from 'lucide-react';
-import { Switch, Table } from '@mantine/core';
-import { useEffect, useState } from 'react';
-import { FaRegEdit } from 'react-icons/fa';
-import { IoTrashOutline } from 'react-icons/io5';
-import { DashboardPageHeader } from '@/components';
-import { useItemsContainer } from './hook';
-import { ItemTypeModel } from '@/models';
-import { deleteItemApi, disableItemApi, formatDate, getItemApi } from '@/utils';
-import ActionItemModal from './action_item_modal';
+import { Plus } from "lucide-react";
+import { Switch, Table } from "@mantine/core";
+import { useEffect, useState } from "react";
+import { FaRegEdit } from "react-icons/fa";
+import { IoTrashOutline } from "react-icons/io5";
+import { DashboardPageHeader } from "@/components";
+import { useItemsContainer } from "./hook";
+import { ItemTypeModel } from "@/models";
+import { deleteItemApi, disableItemApi, formatDate, getItemApi } from "@/utils";
+import ActionItemModal from "./action_item_modal";
 
 const ItemsContainer = () => {
 	const { isSidebarOpen } = useItemsContainer();
 	const [itemList, setItemList] = useState<ItemTypeModel[]>([]);
 	const [callApi, setCallApi] = useState(true);
-	const [itemId, setItemId] = useState<string>('');
-	const [itemType, setItemType] = useState<string>('');
+	const [itemId, setItemId] = useState<string>("");
+	const [itemType, setItemType] = useState<string>("");
 	const [isDisable, setIsDisable] = useState<boolean>(true);
 	const [isActionItemModalOpen, setIsActionItemModalOpen] = useState<boolean>(false);
 
@@ -41,7 +41,7 @@ const ItemsContainer = () => {
 	};
 
 	const handleActionItem = () => {
-		if (itemType === 'disable') {
+		if (itemType === "disable") {
 			disableItemApi(itemId, () => {
 			setCallApi(true);
 			setIsActionItemModalOpen(false);
@@ -73,12 +73,12 @@ const ItemsContainer = () => {
 			<Table.Td>
 				<Switch
 					checked={element.is_disabled === true}
-					onClick={() => handleOpenModal(element.item_id, 'disable', element.is_disabled)}
+					onClick={() => handleOpenModal(element.item_id, "disable", element.is_disabled)}
 				/>
 			</Table.Td>
 			<Table.Td>
 				<div className="flex">
-					<IoTrashOutline color="red" size={25} style={{ marginRight: '10px' }} onClick={() => handleOpenModal(element.item_id, 'delete', element.is_disabled)} />
+					<IoTrashOutline color="red" size={25} style={{ marginRight: "10px" }} onClick={() => handleOpenModal(element.item_id, "delete", element.is_disabled)} />
 					<FaRegEdit color="rgba(108, 210, 213, 1)" size={25} />
 				</div>
 			</Table.Td>
@@ -88,7 +88,7 @@ const ItemsContainer = () => {
 	return (
 		<main
 			className={`flex min-h-screen w-full bg-light-background-natural flex-col pt-14 ${
-				isSidebarOpen ? 'lg:pl-64 pl-0' : 'pl-16'
+				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-16"
 			}`}
 		>
 			<DashboardPageHeader
@@ -96,9 +96,9 @@ const ItemsContainer = () => {
 				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
 				button
 				buttonProps={{
-					title: 'New Item',
-					titleClassName: 'sm:flex hidden',
-					className: 'rounded-md w-fit text-grey-100 text-sm',
+					title: "New Item",
+					titleClassName: "sm:flex hidden",
+					className: "rounded-md w-fit text-grey-100 text-sm",
 					children: <Plus className="sm:mr-2 mr-0" size={20} />,
 				}}
 			/>

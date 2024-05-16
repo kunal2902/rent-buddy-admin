@@ -15,7 +15,7 @@ export const appTitle: string = "NCA CRM";
 export const appDescription: string = "NCM ";
 export const appLogoWidth: number = 40;
 export const appLogoHeight: number = 40;
-export const currenySign: string = '₹';
+export const currenySign: string = "₹";
 
 /** App colors */
 export const appColor: string = "#007F73";
@@ -24,20 +24,20 @@ export const whiteColor: string = "#ffffff";
 export const blackColor: string = "#000000";
 
 /** Mantine Variables */
-export const appColorRGBA: MantineColor = 'rgba(0, 127, 115, 1)';
-export const appAccentColorRGBA: MantineColor = 'rgba(238,66,102,1)';
-export const mantineSize: MantineSize = 'md';
-export const mantineButtonSize: MantineSize = 'sm';
-export const mantineActionIconSize: MantineSize = 'lg';
-export const mantineActionIconVariant: ActionIconVariant = 'light';
-export const mantineRadius: MantineRadius = 'xl';
-export const mantineInputVariant: InputVariant = 'filled';
-export const mantineAvatarVariant: AvatarVariant = 'filled';
-export const mantineSpaceHeight: MantineSize = 'sm';
-export const mantineSpaceWidth: MantineSize = 'sm';
-export const mantineNavLinkChildOffset: MantineSize = 'md';
-export const mantineLargeModalWidth: MantineSize = 'lg';
-export const mantineMediumModalWidth: MantineSize = 'md';
+export const appColorRGBA: MantineColor = "rgba(0, 127, 115, 1)";
+export const appAccentColorRGBA: MantineColor = "rgba(238,66,102,1)";
+export const mantineSize: MantineSize = "md";
+export const mantineButtonSize: MantineSize = "sm";
+export const mantineActionIconSize: MantineSize = "lg";
+export const mantineActionIconVariant: ActionIconVariant = "light";
+export const mantineRadius: MantineRadius = "xl";
+export const mantineInputVariant: InputVariant = "filled";
+export const mantineAvatarVariant: AvatarVariant = "filled";
+export const mantineSpaceHeight: MantineSize = "sm";
+export const mantineSpaceWidth: MantineSize = "sm";
+export const mantineNavLinkChildOffset: MantineSize = "md";
+export const mantineLargeModalWidth: MantineSize = "lg";
+export const mantineMediumModalWidth: MantineSize = "md";
 
 /** Cookie constants */
 export const cookieOptions = {
@@ -52,7 +52,7 @@ export const roleIdConstant: string = "role_id";
 export const sidebarStateConstant: string = "sidebar_state";
 
 /** API Constants */
-export const apiUrl: string = 'http://localhost:8000/api/v1';
+export const apiUrl: string = "http://localhost:8000/api/v1";
 export const loginAPIPath: string = `${apiUrl}/auth/login`;
 
 // Permission path
@@ -146,40 +146,38 @@ export const taxesRoute: string = `${settingsRoute}/taxes`;
 export const tncRoute: string = `${settingsRoute}/tnc`;
 
 /** Sidebar Constants */
-export const dashboardName: string = 'Dashboard';
-export const inventoryName: string = 'Inventory';
-export const itemsName: string = 'Items';
-export const itemTypesName: string = 'Item Types';
-export const categoriesName: string = 'Categories';
-export const subCategoriesName: string = 'Sub-Categories';
-export const customAttributesName: string = 'Custom Attributes';
-export const tagsName: string = 'Tags';
-export const addOnsName: string = 'Add-ons';
-export const customersName: string = 'Customers';
-export const usersName: string = 'Users';
-export const reportsName: string = 'Reports';
-export const settingsName: string = 'Settings';
-export const generalSettingsName: string = 'General Settings';
-export const rolesName: string = 'Roles';
-export const pageLayoutName: string = 'Page Layout';
-export const pagesName: string = 'Pages';
-export const aboutName: string = 'About';
-export const contactName: string = 'Contact';
-export const privacyPolicyName: string = 'Privacy Policy';
-export const tncName: string = 'Terms & Conditions';
-export const emailSettingsName: string = 'Email Settings';
-export const taxesName: string = 'Taxes';
+export const dashboardName: string = "Dashboard";
+export const inventoryName: string = "Inventory";
+export const itemsName: string = "Items";
+export const itemTypesName: string = "Item Types";
+export const categoriesName: string = "Categories";
+export const subCategoriesName: string = "Sub-Categories";
+export const customAttributesName: string = "Custom Attributes";
+export const tagsName: string = "Tags";
+export const addOnsName: string = "Add-ons";
+export const customersName: string = "Customers";
+export const usersName: string = "Users";
+export const reportsName: string = "Reports";
+export const settingsName: string = "Settings";
+export const generalSettingsName: string = "General Settings";
+export const rolesName: string = "Roles";
+export const pageLayoutName: string = "Page Layout";
+export const pagesName: string = "Pages";
+export const aboutName: string = "About";
+export const contactName: string = "Contact";
+export const privacyPolicyName: string = "Privacy Policy";
+export const tncName: string = "Terms & Conditions";
+export const emailSettingsName: string = "Email Settings";
+export const taxesName: string = "Taxes";
 
-// Date format funciton
+// Date format function
 export const formatDate = (inputDate: any) => {
 	const date = new Date(inputDate);
-	const day = String(date.getDate()).padStart(2, '0');
-	const month = String(date.getMonth() + 1).padStart(2, '0');
+	const day = String(date.getDate()).padStart(2, "0");
+	const month = String(date.getMonth() + 1).padStart(2, "0");
 	const year = date.getFullYear();
-	const hours = String(date.getHours()).padStart(2, '0');
-	const minutes = String(date.getMinutes()).padStart(2, '0');
+	const hours = String(date.getHours()).padStart(2, "0");
+	const minutes = String(date.getMinutes()).padStart(2, "0");
 
-	const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}`;
-
-	return formattedDate;
+	return `${day}/${month}/${year} ${hours}:${minutes}`;
 };

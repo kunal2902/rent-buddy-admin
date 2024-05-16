@@ -1,5 +1,5 @@
-import React from 'react';
-import { PosProductSection, PosCartSection, PosNavbar } from '@/components';
+import React from "react";
+import { PosProductSection, PosCartSection, PosNavbar } from "@/components";
 
 const POSHome = () => (
 	<main className="w-full h-screen overflow-hidden flex bg-light-background-natural font-public-sans relative flex-col">
