@@ -1,7 +1,5 @@
 import React from "react";
-import {
-	NavLink, NavLinkProps,
-} from "@mantine/core";
+import { NavLink, NavLinkProps } from "@mantine/core";
 import Link from "next/link";
 import { appColorRGBA } from "@/utils";
 
@@ -11,7 +9,7 @@ export interface NavLinkComponentProps extends NavLinkProps {
 }
 
 /** This is the Mantine Modal component - https://mantine.dev/core/modal/ */
-export const NavLinkComponent = (props: NavLinkComponentProps) =>
+export const NavLinkComponent = (props: NavLinkComponentProps) => (
 	<NavLink
 		{...props}
 		component={Link}
