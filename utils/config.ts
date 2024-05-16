@@ -84,9 +84,13 @@ export const addOnAPIPath: string = `${apiUrl}/add-on`;
 /** get all add on based on filter, sorting and search, add or insert */
 export const activityLogsAPIPath: string = `${apiUrl}/activity-logs`;
 
-// Activity logs path
+// Users path
 /** get all add on based on filter, sorting and search, add or insert */
 export const usersAPIPath: string = `${apiUrl}/users`;
+
+// Users path
+/** get all add on based on filter, sorting and search, add or insert */
+export const customerAPIPath: string = `${apiUrl}/customer`;
 
 /** Constant Functions */
 /** To get the CRM JWT stored in Cookies */
@@ -154,3 +158,17 @@ export const privacyPolicyName: string = 'Privacy Policy';
 export const tncName: string = 'Terms & Conditions';
 export const emailSettingsName: string = 'Email Settings';
 export const taxesName: string = 'Taxes';
+
+// Date format funciton
+export const formatDate = (inputDate: any) => {
+	const date = new Date(inputDate);
+	const day = String(date.getDate()).padStart(2, '0');
+	const month = String(date.getMonth() + 1).padStart(2, '0');
+	const year = date.getFullYear();
+	const hours = String(date.getHours()).padStart(2, '0');
+	const minutes = String(date.getMinutes()).padStart(2, '0');
+
+	const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}`;
+
+	return formattedDate;
+};

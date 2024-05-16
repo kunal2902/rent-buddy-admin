@@ -9,7 +9,7 @@ import { DashboardPageHeader } from '@/components';
 import { useCategoriesContainer } from './hook';
 import CreateCategoryModal from './add_category';
 import { CategoryModel } from '@/models';
-import { deleteCategoryApi, disableCategoryApi, getCategoryApi } from '@/utils';
+import { deleteCategoryApi, disableCategoryApi, formatDate, getCategoryApi } from '@/utils';
 import ActionCategoryModal from './action_category_modal';
 
 const CategoriesContainer = () => {
@@ -68,11 +68,13 @@ const CategoriesContainer = () => {
 		}
 	};
 
-	const rows = categoryList.map((element) => (
-		<Table.Tr>
-			{/* <Table.Td>{element.category_id}</Table.Td> */}
+	const rows = categoryList.map((element, index) => (
+		<Table.Tr key={index}>
 			<Table.Td>{element.category_id}</Table.Td>
+			<Table.Td>{element.category_id}</Table.Td>
+			<Table.Td>{element.icon}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
+			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 			<Table.Td>
 				<Switch
 					checked={element.is_disabled === true}
@@ -110,9 +112,11 @@ const CategoriesContainer = () => {
 			<Table striped highlightOnHover withTableBorder>
 				<Table.Thead>
 					<Table.Tr>
-						{/* <Tablec.Th>Sr No.</Table.Th> */}
+						<Table.Th>Index</Table.Th>
 						<Table.Th>Category Id</Table.Th>
+						<Table.Th>Icon</Table.Th>
 						<Table.Th>Name</Table.Th>
+						<Table.Th>Created at</Table.Th>
 						<Table.Th>Disable</Table.Th>
 						<Table.Th>Action</Table.Th>
 					</Table.Tr>
