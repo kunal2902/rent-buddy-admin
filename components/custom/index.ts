@@ -5,8 +5,5 @@ export * from '@/components/custom/hook';
 export * from '@/components/custom/main_navbar';
 export * from '@/components/custom/main_sidebar';
 export * from '@/components/custom/pos_cart_section';
-export * from '@/components/custom/pos_header';
 export * from '@/components/custom/pos_navbar';
 export * from '@/components/custom/pos_product_section';
-export * from '@/components/custom/sidebar_button';
-export * from '@/components/custom/sub_menu_block';

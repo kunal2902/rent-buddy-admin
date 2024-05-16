@@ -14,6 +14,7 @@ import {
 	itemAPIPath,
 	activityLogsAPIPath,
 	usersAPIPath,
+	customerAPIPath,
 } from '@/utils';
 
 const makeGetRequest = async (
@@ -1518,6 +1519,70 @@ export const getUsersByIdApi = async (
 		return;
 	}
 	const response = await makeGetRequest(`${usersAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+// Customer api
+export const getCustomerApi = async (
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makeGetRequest(customerAPIPath, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback();
+			toast.error(response.message);
+	}
+};
+
+export const getCustomerByIdApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: () => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === '' || token === 'null') {
+		logoutCallback();
+		return;
+	}
+	const response = await makeGetRequest(`${customerAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {

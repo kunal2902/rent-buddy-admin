@@ -1,12 +1,16 @@
 'use client';
 
 import { Plus } from 'lucide-react';
+import { Switch, Table } from '@mantine/core';
+import { FaRegEdit } from 'react-icons/fa';
+import { IoTrashOutline } from 'react-icons/io5';
 import { useEffect, useState } from 'react';
 import { useCustomAttributesContainer } from './hook';
 import { DashboardPageHeader } from '@/components';
 import AddCustomAttributeModal from './add_custom_attribute';
 import { CustomAttributeModel } from '@/models';
-import { deleteAttributeApi, getAttributeApi } from '@/utils';
+import { deleteAttributeApi, disableAttributeApi, formatDate, getAttributeApi } from '@/utils';
+import ActionCustomAttributeModal from './action_custom_attribute_modal';
 
 const CustomAttributesContainer = () => {
 	const {
@@ -18,33 +22,75 @@ const CustomAttributesContainer = () => {
 	const [customAttributesList, setCustomAttributesList] =
 		useState<CustomAttributeModel[]>([]);
 	const [callApi, setCallApi] = useState(true);
+	const [customAttributeId, setCustomAttributeId] = useState<string>('');
+	const [customAttributeType, setCustomAttributeType] = useState<string>('');
+	const [isDisable, setIsDisable] = useState<boolean>(true);
+	const [isActionCustomAttributeModalOpen, setIsActionCustomAttributeModalOpen] =
+		useState<boolean>(false);
 
 	useEffect(() => {
 		if (callApi) {
 			getAttributeApi((data: any) => {
-				setCustomAttributesList(data);
+				setCustomAttributesList(data.customAttributes);
 				setCallApi(false);
 			}, () => {
-				console.log('Error occurred.');
 				setCallApi(false);
 			}, () => {
-				console.log('Logout.');
 				setCallApi(false);
 			}).then();
 		}
 	}, [callApi]);
 
-	const handleDeleteAttribute = (id: string) => {
-		deleteAttributeApi(id, () => {
+	const handleOpenModal = (id: string, type: string, disableType: boolean) => {
+		setCustomAttributeId(id);
+		setCustomAttributeType(type);
+		setIsDisable(disableType);
+		setIsActionCustomAttributeModalOpen(true);
+	};
+
+	const handleActionCustomAttribute = () => {
+		if (customAttributeType === 'disable') {
+			disableAttributeApi(customAttributeId, () => {
 			setCallApi(true);
+			setIsActionCustomAttributeModalOpen(false);
 		}, () => {
-			console.log('Error occurred.');
 			setCallApi(false);
 		}, () => {
-			console.log('Logout.');
 			setCallApi(false);
 		});
+		} else {
+			deleteAttributeApi(customAttributeId, () => {
+			setCallApi(true);
+			setIsActionCustomAttributeModalOpen(false);
+		}, () => {
+			setCallApi(false);
+		}, () => {
+			setCallApi(false);
+		});
+		}
 	};
+
+	const rows = customAttributesList.map((element, index) => (
+		<Table.Tr key={index}>
+			<Table.Td>{element.custom_attribute_id}</Table.Td>
+			<Table.Td>{element.custom_attribute_id}</Table.Td>
+			<Table.Td>{element.name}</Table.Td>
+			<Table.Td>{element.type}</Table.Td>
+			<Table.Td>{formatDate(element.created_at)}</Table.Td>
+			<Table.Td>
+				<Switch
+					checked={element.is_disabled === true}
+					onClick={() => handleOpenModal(element.custom_attribute_id, 'disable', element.is_disabled)}
+				/>
+			</Table.Td>
+			<Table.Td>
+				<div className="flex">
+					<IoTrashOutline color="red" size={25} style={{ marginRight: '10px' }} onClick={() => handleOpenModal(element.custom_attribute_id, 'delete', element.is_disabled)} />
+					<FaRegEdit color="rgba(108, 210, 213, 1)" size={25} />
+				</div>
+			</Table.Td>
+		</Table.Tr>
+	));
 
 	return (
 		<main
@@ -65,9 +111,33 @@ const CustomAttributesContainer = () => {
 				}}
 			/>
 
+			<Table striped highlightOnHover withTableBorder>
+				<Table.Thead>
+					<Table.Tr>
+						<Table.Th>Index</Table.Th>
+						<Table.Th>Item type Id</Table.Th>
+						<Table.Th>Name</Table.Th>
+						<Table.Th>Type</Table.Th>
+						<Table.Th>Created at</Table.Th>
+						<Table.Th>Disable</Table.Th>
+						<Table.Th>Action</Table.Th>
+					</Table.Tr>
+				</Table.Thead>
+				<Table.Tbody>{rows}</Table.Tbody>
+			</Table>
+
 			<AddCustomAttributeModal
 				isOpen={isCreateCustomAttributeModalOpen}
 				onClose={toggleCreateCustomAttributeModalOpen}
+			/>
+
+			<ActionCustomAttributeModal
+				isOpen={isActionCustomAttributeModalOpen}
+				onClose={() => setIsActionCustomAttributeModalOpen(false)}
+				setCallApi={setCallApi}
+				handleActionCustomAttribute={handleActionCustomAttribute}
+				customAttributeType={customAttributeType}
+				isDisable={isDisable}
 			/>
 		</main>
 	);

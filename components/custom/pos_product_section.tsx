@@ -1,114 +1,198 @@
 'use client';
 
-import { Pizza, SearchIcon } from 'lucide-react';
-import React, { useState } from 'react';
-import Image from 'next/image';
-import { ButtonComponent } from '@/components';
+import { Minus, Plus, SearchIcon } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import {
+	Card,
+	Chip,
+	createTheme,
+	Image,
+	Input,
+	MantineProvider,
+	NumberInput,
+	NumberInputHandlers, ScrollArea,
+	SimpleGrid,
+} from '@mantine/core';
+import { ButtonComponent, TextInputComponent } from '@/components';
+import { GroupComponent } from '@/components/mantine/group_component';
+import { TextComponent } from '@/components/mantine/text_component';
+import { currenySign } from '@/utils';
+
+const theme = createTheme({
+	components: {
+		Input: Input.extend({
+			vars: (theme, props) => ({ input: { '--input-text-align': 'center' } }),
+		}),
+	},
+});
 
 export interface Categories {
 	categoryName: string;
 }
 
 export const PosProductSection = () => (
-	<div className="w-full max-h-screen overflow-y-scroll flex flex-col ">
-		<div className="flex flex-col justify-between my-4">
-			<div className="flex flex-col items-center mx-4">
-				<div className="flex p-2 bg-zinc-200 rounded-[30px] gap-3 items-center w-[60%]">
-					<SearchIcon size={16} />
-					<input
-						type="text"
-						placeholder="Search ..."
-						className="bg-transparent text-sm w-[100%] focus-visible:outline-none hover:border-none"
-					/>
-				</div>
-				<div className="flex flex-col gap-4 w-full">
-					<h1 className="text-2xl font-bold text-left w-full">
-						Categories
-					</h1>
-					<div className="flex gap-4 justify-between">
-						<CategoriesCard categoryName="All items" />
-						<CategoriesCard categoryName="Pizza" />
-						<CategoriesCard categoryName="Burger" />
-						<CategoriesCard categoryName="Fries" />
-						<CategoriesCard categoryName="Meals" />
-						<CategoriesCard categoryName="Meals" />
-						<CategoriesCard categoryName="Meals" />
-					</div>
-				</div>
-			</div>
-		</div>
-		<div className="flex flex-wrap justify-between">
-			<Card />
-			<Card />
-			<Card />
-			<Card />
-			<Card />
-			<Card />
-			<Card />
-			<Card />
-		</div>
+	<div className="w-full max-h-screen overflow-hidden">
+		<GroupComponent justify="space-between" className="mx-3 mt-1">
+			<TextComponent text="Categories" bold size="xl" />
+			<TextInputComponent
+				w={400}
+				placeholder="Search your product here"
+				leftSection={<SearchIcon size={16} />}
+			/>
+		</GroupComponent>
+		<Chip.Group defaultValue="1">
+			<GroupComponent justify="start" className="mx-3 mt-3">
+				<Chip value="1">All items</Chip>
+				<Chip value="2">Pizza</Chip>
+				<Chip value="3">Burger</Chip>
+				<Chip value="4">Fries</Chip>
+				<Chip value="5">Burger</Chip>
+				<Chip value="6">Meals</Chip>
+				<Chip value="7">Pasta</Chip>
+				<Chip value="8">Non-veg</Chip>
+				<Chip value="9">Burger</Chip>
+				<Chip value="10">Meals</Chip>
+			</GroupComponent>
+		</Chip.Group>
+		<ScrollArea style={{ display: 'grid', height: '80vh' }}>
+			<SimpleGrid cols={4} className="m-3">
+				<ProductCard index={1} />
+				<ProductCard index={2} />
+				<ProductCard index={3} />
+				<ProductCard index={4} />
+				<ProductCard index={5} />
+				<ProductCard index={6} />
+				<ProductCard index={7} />
+				<ProductCard index={8} />
+				<ProductCard index={9} />
+				<ProductCard index={10} />
+				<ProductCard index={11} />
+				<ProductCard index={12} />
+				<ProductCard index={13} />
+				<ProductCard index={14} />
+				<ProductCard index={15} />
+				<ProductCard index={16} />
+				<ProductCard index={17} />
+				<ProductCard index={18} />
+				<ProductCard index={19} />
+				<ProductCard index={21} />
+				<ProductCard index={22} />
+				<ProductCard index={23} />
+			</SimpleGrid>
+		</ScrollArea>
+
 	</div>
 );
 
-const Card = () => {
-	const [count, setCount] = useState(0);
-	const [price, setPrice] = useState(100);
-
+const ProductCard = ({ index }) => {
+	const [add, setAdd] = useState(false);
+	const [quantity, setQuantity] = useState<string | number>(1);
+	const numberInputRef = useRef<NumberInputHandlers>(null);
 	return (
-		<div className="max-w-[15rem] rounded overflow-hidden shadow-lg min-h-[10rem] auto m-5">
-			<Image
-				// width="100%"
-				width={100}
-				height={100}
-				src="https://media.istockphoto.com/id/176816406/photo/tile-flooring-samples-on-display.jpg?s=612x612&w=0&k=20&c=j3Q38Hj8eirmMn9cbncwDLGYd9e3BRQxEqTIOOE92vg="
-				alt="Sunset in the mountains"
-			/>
-			<div className="px-6 py-4 text-center">
-				<div className="font-bold text-xl mb-2">The Coldest Sunset</div>
-			</div>
-			<div className="px-6 pb-2">
-				<div className="flex justify-between items-center">
-					<div className="text-3xl text-green-500 font-bold ">
-						$ {price}
-					</div>
-					<div className="w-[40%] rounded-[20px] flex p-2 bg-gray-400 justify-between items-center mb-2">
+		<Card shadow="sm" padding="md" radius="md" withBorder>
+			<Card.Section>
+				<Image
+					src={`https://picsum.photos/id/${index}/100/60`}
+					height={160}
+					alt="Norway"
+				/>
+			</Card.Section>
+
+			<GroupComponent justify="space-between" mt="md" mb="xs">
+				<TextComponent text={`Norway Fjord Adventures ${index}`} bold className="text-justify" />
+			</GroupComponent>
+
+			<TextComponent
+				size="sm"
+				c="dimmed"
+				text="With Fjord Tours you can explore more of the magical fjord landscapes with tours." />
+
+			<GroupComponent justify="space-between" mt="md">
+				<TextComponent
+					bold
+					size="xl"
+					text={`${currenySign} ${110 * parseInt(quantity.toString(), 10)}`}
+					c="green"
+					className="text-justify" />
+
+				{!add ?
+					<ButtonComponent
+						w="50%"
+						h={40}
+						onClick={() => {
+							setAdd(true);
+						}}
+					>
+						Add
+					</ButtonComponent>
+					:
+					<div className="w-[50%] h-[40px] rounded-[20px] flex bg-gray-200 justify-between items-center">
 						<ButtonComponent
-							w="25%"
-							h="100%"
-							title="-"
-							titleClassName="font-bold"
-							onClick={() => {
-								if (price >= 200 && count >= 1) {
-									setCount(count - 1);
-									setPrice(price - 10);
-								}
+							style={{
+								height: '40px',
+								width: '30%',
+								fontSize: 30,
+								alignContent: 'center',
+								backgroundColor: 'bg-gr',
+								justifyContent: 'center',
+								display: 'flex',
+								border: '1px solid gray',
+								borderRadius: '20px 0 0 20px',
 							}}
-						/>
-						<div className="text-xl font-bold ">{count}</div>
+							px={5}
+							onClick={() => numberInputRef.current?.decrement()}
+						>
+							<Minus size={16} />
+						</ButtonComponent>
+
+						<MantineProvider theme={theme}>
+							<NumberInput
+								min={0}
+								step={1}
+								hideControls
+								placeholder="0"
+								onChange={(val: string | number) => {
+									if (parseInt(val.toString(), 10) < 1) {
+										setAdd(false);
+									} else {
+										setQuantity(val);
+									}
+								}}
+								value={quantity}
+								variant="unstyled"
+								handlersRef={numberInputRef}
+								style={{
+									width: '40%',
+									height: '38px',
+									border: 'none',
+									display: 'flex',
+									fontWeight: 'bold',
+									backgroundColor: 'white',
+								}}
+							/>
+						</MantineProvider>
+
 						<ButtonComponent
-							title="+"
-							w="25%"
-							h="100%"
-							titleClassName="font-bold"
-							onClick={() => {
-								setCount(count + 1);
-								setPrice(price + 10);
+							style={{
+								height: '40px',
+								width: '30%',
+								fontSize: 30,
+								alignContent: 'center',
+								backgroundColor: 'bg-gr',
+								justifyContent: 'center',
+								display: 'flex',
+								border: '1px solid gray',
+								borderRadius: '0 20px 20px 0',
 							}}
-						/>
+							px={5}
+							onClick={() => numberInputRef.current?.increment()}
+						>
+							<Plus size={16} />
+						</ButtonComponent>
 					</div>
-				</div>
-			</div>
-		</div>
+				}
+			</GroupComponent>
+
+		</Card>
 	);
 };
-
-const CategoriesCard: React.FC<Categories> = ({ categoryName }) => (
-	<div className="flex p-4 rounded-[10px] bg-slate-200 border border-gray-100 justify-between">
-		<div className="flex flex-col gap-2">
-			<h3 className="text-[16px] font-bold">{categoryName}</h3>
-		</div>
-		<div className="bg-slate-200 rounded-full">
-			<Pizza />
-		</div>
-	</div>
-);
