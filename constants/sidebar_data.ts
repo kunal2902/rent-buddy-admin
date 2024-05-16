@@ -194,14 +194,14 @@ export const SidebarItems: Array<SideBarProps<SideBarType>> = [
 					Icon: MdOutlineAdminPanelSettings,
 				},
 				{
-					id: 2,
+					id: 3,
 					title: pageLayoutName,
 					other: { link: pageLayoutRoute },
 					Icon: LayoutPanelTop,
 					type: SideBarType.Simple,
 				},
 				{
-					id: 3,
+					id: 4,
 					title: pagesName,
 					Icon: RxDashboard,
 					type: SideBarType.Nested,
@@ -240,14 +240,14 @@ export const SidebarItems: Array<SideBarProps<SideBarType>> = [
 					},
 				},
 				{
-					id: 4,
+					id: 5,
 					title: emailSettingsName,
 					other: { link: emailRoute },
 					Icon: LuMail,
 					type: SideBarType.Simple,
 				},
 				{
-					id: 5,
+					id: 6,
 					title: taxesName,
 					other: { link: taxesRoute },
 					Icon: TbReceiptTax,
