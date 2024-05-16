@@ -30,7 +30,8 @@ const AddTagModal = (props: Props) => {
                 },
                 (message: string) => {
                     toast.error(message);
-                }
+                },
+				() => {}
             );
         } catch (error) {
             console.error('Error:', error);
