@@ -1,10 +1,12 @@
+"use client";
+
 import {
 	ActionIcon,
 	ActionIconProps,
-} from '@mantine/core';
-import React from 'react';
-import Link from 'next/link';
-import { appColorRGBA, mantineActionIconSize, mantineActionIconVariant, mantineRadius } from '@/utils';
+} from "@mantine/core";
+import React from "react";
+import Link from "next/link";
+import { appColorRGBA, mantineActionIconSize, mantineActionIconVariant, mantineRadius } from "@/utils";
 
 /** Props list of Mantine's Action Icon component - https://mantine.dev/core/action-icon/?t=props */
 export interface ActionIconComponentProps extends ActionIconProps {

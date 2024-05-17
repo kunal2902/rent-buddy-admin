@@ -1,7 +1,7 @@
-import Image from 'next/image';
-import { AuthNavbar, ButtonComponent } from '@/components';
-import NotFoundHero from '@/public/illustrations/404.png';
-import { dashboardRoute } from '@/utils';
+import Image from "next/image";
+import { AuthNavbar, ButtonComponent } from "@/components";
+import NotFoundHero from "@/public/illustrations/404.png";
+import { dashboardRoute } from "@/utils";
 
 const NotFoundPage = () => (
 	<>

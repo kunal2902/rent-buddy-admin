@@ -1,8 +1,10 @@
+"use client";
+
 import {
 	Select, SelectProps,
-} from '@mantine/core';
-import React from 'react';
-import { appColorRGBA, mantineInputVariant, mantineRadius, mantineSize } from '@/utils';
+} from "@mantine/core";
+import React from "react";
+import { appColorRGBA, mantineInputVariant, mantineRadius, mantineSize } from "@/utils";
 
 /** Props list of Mantine's Select component - https://mantine.dev/core/select/?t=props */
 export interface SelectComponentProps extends SelectProps {

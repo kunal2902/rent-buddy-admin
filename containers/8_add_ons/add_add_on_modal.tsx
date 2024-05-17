@@ -1,3 +1,4 @@
+"use client";
 import React, { useRef, useState } from 'react';
 import { FileInputComponent } from '@/components/mantine/file_input_component';
 import { ModalComponent, TextInputComponent, ButtonComponent } from '@/components';

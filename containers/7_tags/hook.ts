@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useRecoilValue } from 'recoil';
-import { onTextInputChange, sidebarStateAtom, toggleBooleanState } from '@/utils';
+import { useState } from "react";
+import { useRecoilValue } from "recoil";
+import { onTextInputChange, sidebarStateAtom, toggleBooleanState } from "@/utils";
 
 export const useTagsContainer = () => {
 	const isSidebarOpen = useRecoilValue<boolean>(sidebarStateAtom);
@@ -15,7 +15,7 @@ export const useTagsContainer = () => {
 };
 
 export const useCreateTagModal = () => {
-	const [tagName, setTagName] = useState<string>('');
+	const [tagName, setTagName] = useState<string>("");
 
 	return {
 		tagName,

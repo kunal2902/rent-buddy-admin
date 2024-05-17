@@ -49,8 +49,7 @@ export const useCreateSubCategoryModal = () => {
 				if (
 					readerEvent.target &&
 					typeof readerEvent.target.result === "string"
-				)
-					setSelectedFile(readerEvent.target.result);
+				) setSelectedFile(readerEvent.target.result);
 			};
 		}
 	};

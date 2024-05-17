@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useEffect, useRef } from 'react';
-import { useRecoilState } from 'recoil';
-import { Theme } from '@/types';
-import { themeAtom } from '@/utils';
+import React, { useEffect, useRef } from "react";
+import { useRecoilState } from "recoil";
+import { Theme } from "@/types";
+import { themeAtom } from "@/utils";
 
 interface Props {
 	children: React.ReactNode;
@@ -14,11 +14,11 @@ export const useThemeProvider = () => {
 	const isProviderMounted = useRef<boolean>(false);
 
 	const loadTheme = () => {
-		const savedTheme = localStorage.getItem('theme');
+		const savedTheme = localStorage.getItem("theme");
 
-		if (savedTheme !== 'light' && savedTheme !== 'dark') {
-			setCurrentTheme('light');
-			localStorage.setItem('theme', 'light');
+		if (savedTheme !== "light" && savedTheme !== "dark") {
+			setCurrentTheme("light");
+			localStorage.setItem("theme", "light");
 			return;
 		}
 

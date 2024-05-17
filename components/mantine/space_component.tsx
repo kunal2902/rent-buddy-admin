@@ -1,8 +1,10 @@
-import React from 'react';
+"use client";
+
+import React from "react";
 import {
 	Space, SpaceProps,
-} from '@mantine/core';
-import { mantineSpaceHeight, mantineSpaceWidth } from '@/utils';
+} from "@mantine/core";
+import { mantineSpaceHeight, mantineSpaceWidth } from "@/utils";
 
 /** Props list of Mantine's Space component - https://mantine.dev/core/space/?t=props */
 export interface SpaceComponentProps extends SpaceProps {

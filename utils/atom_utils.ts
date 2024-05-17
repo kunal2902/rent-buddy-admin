@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { atom } from 'recoil';
-import { Theme } from '@/types/common';
-import { getSidebarState } from '@/utils/config';
+import { atom } from "recoil";
+import { Theme } from "@/types/common";
+import { getSidebarState } from "@/utils/config";
 
 export const sidebarStateAtom = atom<boolean>({
-	key: 'sidebarStateAtom',
-	default: getSidebarState() === 'true',
+	key: "sidebarStateAtom",
+	default: getSidebarState() === "true",
 });
 
 export const openSubMenuAtom = atom<Array<number>>({
-	key: 'openSubMenuAtom',
+	key: "openSubMenuAtom",
 	default: [],
 });
 
 export const themeAtom = atom<Theme>({
-	key: 'themeAtom',
-	default: 'light',
+	key: "themeAtom",
+	default: "light",
 });

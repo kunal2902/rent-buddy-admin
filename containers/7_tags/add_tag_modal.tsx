@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { toast } from 'react-toastify';
-import React, { Dispatch, SetStateAction } from 'react';
-import { useCreateTagModal } from './hook';
-import { ButtonComponent, ModalComponent, TextInputComponent } from '@/components';
-import { upsertTagApi } from '@/utils';
+import { toast } from "react-toastify";
+import React, { Dispatch, SetStateAction } from "react";
+import { useCreateTagModal } from "./hook";
+import { ButtonComponent, ModalComponent, TextInputComponent } from "@/components";
+import { upsertTagApi } from "@/utils";
 
 interface Props {
 	isOpen: boolean;
@@ -34,7 +34,7 @@ const AddTagModal = (props: Props) => {
 				() => {}
             );
         } catch (error) {
-            console.error('Error:', error);
+            console.error("Error:", error);
         }
     };
 

@@ -1,3 +1,5 @@
+"use client";
+
 import { Button, ButtonProps } from "@mantine/core";
 import React from "react";
 import Link from "next/link";
@@ -14,14 +16,15 @@ export interface ButtonComponentProps extends ButtonProps {
 /** This is the Mantine Button component - https://mantine.dev/core/button/ */
 export const ButtonComponent = (props: ButtonComponentProps) => {
 	console.log(props.children);
-	// @ts-ignore
-	return <Button
-		{...props}
-		px={props.px ?? 20}
-		size={props.size ?? mantineButtonSize}
-		color={props.color ?? appColorRGBA}
-		radius={props.radius ?? mantineRadius}
-		{...(props.href ? { component: Link, href: props.href } :
+	return (
+		// @ts-ignore
+		<Button
+			{...props}
+			px={props.px ?? 20}
+			size={props.size ?? mantineButtonSize}
+			color={props.color ?? appColorRGBA}
+			radius={props.radius ?? mantineRadius}
+			{...(props.href ? { component: Link, href: props.href } :
 			{ onClick: props.onClick })}
 		>
 			{props.children ? (
