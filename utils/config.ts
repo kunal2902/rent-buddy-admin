@@ -18,19 +18,19 @@ export const appLogoHeight: number = 40;
 export const currenySign: string = "₹";
 
 /** App colors */
-export const appColor: string = "#007F73";
+export const appColor: string = "#7469B6";
 export const appAccentColor: string = "#EE4266";
 export const whiteColor: string = "#ffffff";
 export const blackColor: string = "#000000";
 
 /** Mantine Variables */
-export const appColorRGBA: MantineColor = "rgba(0, 127, 115, 1)";
+export const appColorRGBA: MantineColor = "rgba(116, 105, 182, 1)";
 export const appAccentColorRGBA: MantineColor = "rgba(238,66,102,1)";
 export const mantineSize: MantineSize = "md";
 export const mantineButtonSize: MantineSize = "sm";
 export const mantineActionIconSize: MantineSize = "lg";
 export const mantineActionIconVariant: ActionIconVariant = "light";
-export const mantineRadius: MantineRadius = "xl";
+export const mantineRadius: MantineRadius = "md";
 export const mantineInputVariant: InputVariant = "filled";
 export const mantineAvatarVariant: AvatarVariant = "filled";
 export const mantineSpaceHeight: MantineSize = "sm";

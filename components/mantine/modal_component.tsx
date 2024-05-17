@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Modal, ModalProps } from "@mantine/core";
 import { mantineRadius } from "@/utils";

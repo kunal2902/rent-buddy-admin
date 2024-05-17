@@ -1,3 +1,5 @@
+"use client";
+
 import { PasswordInput, PasswordInputProps } from "@mantine/core";
 import React from "react";
 import { appColorRGBA, mantineInputVariant, mantineRadius, mantineSize } from "@/utils";

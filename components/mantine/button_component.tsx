@@ -1,3 +1,5 @@
+"use client";
+
 import { Button, ButtonProps } from "@mantine/core";
 import React from "react";
 import Link from "next/link";
@@ -33,5 +35,4 @@ export const ButtonComponent = (props: ButtonComponentProps) => {
 				""
 			)}
 		</Button>
-	);
 };

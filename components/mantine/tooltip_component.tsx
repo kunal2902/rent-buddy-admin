@@ -1,3 +1,5 @@
+"use client";
+
 import { Tooltip, TooltipProps } from "@mantine/core";
 
 /** Props list of Mantine's Tooltip component - https://mantine.dev/core/tooltip/?t=props */

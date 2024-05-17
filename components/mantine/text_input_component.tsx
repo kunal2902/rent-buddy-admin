@@ -1,3 +1,5 @@
+"use client";
+
 import { TextInput, TextInputProps } from "@mantine/core";
 import React from "react";
 import {

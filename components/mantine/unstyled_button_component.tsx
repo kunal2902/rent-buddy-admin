@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { UnstyledButton, UnstyledButtonProps,
 } from "@mantine/core";

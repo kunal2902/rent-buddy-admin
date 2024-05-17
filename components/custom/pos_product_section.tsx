@@ -6,17 +6,22 @@ import {
 	Card,
 	Chip,
 	createTheme,
-	Image,
 	Input,
 	MantineProvider,
-	NumberInput,
-	NumberInputHandlers, ScrollArea,
-	SimpleGrid,
+	NumberInputHandlers,
 } from "@mantine/core";
-import { ButtonComponent, TextInputComponent } from "@/components";
-import { GroupComponent } from "@/components/mantine/group_component";
-import { TextComponent } from "@/components/mantine/text_component";
+import Image from "next/image";
+import {
+	ButtonComponent,
+	CardComponent,
+	ChipComponent,
+	GroupComponent, ImageComponent, ScrollAreaComponent,
+	SimpleGridComponent,
+	TextComponent,
+	TextInputComponent,
+} from "@/components";
 import { currenySign } from "@/utils";
+import { NumberInputComponent } from "@/components/mantine/number_input_component";
 
 const theme = createTheme({
 	components: {
@@ -43,20 +48,20 @@ export const PosProductSection = () => (
 		</GroupComponent>
 		<Chip.Group defaultValue="1">
 			<GroupComponent justify="start" className="mx-3 mt-3">
-				<Chip value="1">All items</Chip>
-				<Chip value="2">Pizza</Chip>
-				<Chip value="3">Burger</Chip>
-				<Chip value="4">Fries</Chip>
-				<Chip value="5">Burger</Chip>
-				<Chip value="6">Meals</Chip>
-				<Chip value="7">Pasta</Chip>
-				<Chip value="8">Non-veg</Chip>
-				<Chip value="9">Burger</Chip>
-				<Chip value="10">Meals</Chip>
+				<ChipComponent value="1">All items</ChipComponent>
+				<ChipComponent value="2">Pizza</ChipComponent>
+				<ChipComponent value="3">Burger</ChipComponent>
+				<ChipComponent value="4">Fries</ChipComponent>
+				<ChipComponent value="5">Burger</ChipComponent>
+				<ChipComponent value="6">Meals</ChipComponent>
+				<ChipComponent value="7">Pasta</ChipComponent>
+				<ChipComponent value="8">Non-veg</ChipComponent>
+				<ChipComponent value="9">Burger</ChipComponent>
+				<ChipComponent value="10">Meals</ChipComponent>
 			</GroupComponent>
 		</Chip.Group>
-		<ScrollArea style={{ display: "grid", height: "80vh" }}>
-			<SimpleGrid cols={4} className="m-3">
+		<ScrollAreaComponent style={{ display: "grid", height: "80vh" }}>
+			<SimpleGridComponent cols={4} className="m-3">
 				<ProductCard index={1} />
 				<ProductCard index={2} />
 				<ProductCard index={3} />
@@ -79,8 +84,8 @@ export const PosProductSection = () => (
 				<ProductCard index={21} />
 				<ProductCard index={22} />
 				<ProductCard index={23} />
-			</SimpleGrid>
-		</ScrollArea>
+			</SimpleGridComponent>
+		</ScrollAreaComponent>
 
 	</div>
 );
@@ -91,12 +96,12 @@ const ProductCard = ({ index }) => {
 	const [quantity, setQuantity] = useState<string | number>(1);
 	const numberInputRef = useRef<NumberInputHandlers>(null);
 	return (
-		<Card shadow="sm" padding="md" radius="md" withBorder>
+		<CardComponent shadow="sm" padding="md" radius="md" withBorder>
 			<Card.Section>
-				<Image
-					src={`https://picsum.photos/id/${index}/100/60`}
-					height={160}
-					alt="Norway"
+				<ImageComponent
+					w={150}
+					h={100}
+					src={`https://source.unsplash.com/random/150x100?food,eat,dinner&sig=${index}`}
 				/>
 			</Card.Section>
 
@@ -148,7 +153,7 @@ const ProductCard = ({ index }) => {
 						</ButtonComponent>
 
 						<MantineProvider theme={theme}>
-							<NumberInput
+							<NumberInputComponent
 								min={0}
 								step={1}
 								hideControls
@@ -195,6 +200,6 @@ const ProductCard = ({ index }) => {
 				}
 			</GroupComponent>
 
-		</Card>
+		</CardComponent>
 	);
 };
