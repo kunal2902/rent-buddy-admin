@@ -1,4 +1,4 @@
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import {
 	getCrmJWT,
 	isDebug,
@@ -14,17 +14,17 @@ import {
 	itemAPIPath,
 	activityLogsAPIPath,
 	usersAPIPath,
-} from '@/utils';
+} from "@/utils";
 
 const makeGetRequest = async (
 	url: string | URL | Request,
-	additionalHeaders = {}
+	additionalHeaders = {},
 ) => {
 	const rawResponse = await fetch(url, {
-		method: 'GET',
+		method: "GET",
 		headers: {
-			Accept: 'application/json',
-			'Content-Type': 'application/json',
+			Accept: "application/json",
+			"Content-Type": "application/json",
 			...additionalHeaders,
 		},
 	});
@@ -33,13 +33,13 @@ const makeGetRequest = async (
 
 const makeDeleteRequest = async (
 	url: string | URL | Request,
-	additionalHeaders = {}
+	additionalHeaders = {},
 ) => {
 	const rawResponse = await fetch(url, {
-		method: 'DELETE',
+		method: "DELETE",
 		headers: {
-			Accept: 'application/json',
-			'Content-Type': 'application/json',
+			Accept: "application/json",
+			"Content-Type": "application/json",
 			...additionalHeaders,
 		},
 	});
@@ -49,13 +49,13 @@ const makeDeleteRequest = async (
 const makePostRequest = async (
 	url: string | URL | Request,
 	body: any,
-	additionalHeaders = {}
+	additionalHeaders = {},
 ) => {
 	const rawResponse = await fetch(url, {
-		method: 'POST',
+		method: "POST",
 		headers: {
-			'Content-Type': 'application/json',
-			'X-localization': 'en',
+			"Content-Type": "application/json",
+			"X-localization": "en",
 			...additionalHeaders,
 		},
 		body: JSON.stringify(body),
@@ -65,13 +65,13 @@ const makePostRequest = async (
 
 const makePutRequest = async (
 	url: string | URL | Request,
-	additionalHeaders = {}
+	additionalHeaders = {},
 ) => {
 	const rawResponse = await fetch(url, {
-		method: 'PUT',
+		method: "PUT",
 		headers: {
-			'Content-Type': 'application/json',
-			'X-localization': 'en',
+			"Content-Type": "application/json",
+			"X-localization": "en",
 			...additionalHeaders,
 		},
 	});
@@ -83,7 +83,7 @@ export const loginApi = async (
 	email: string,
 	password: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: (arg0: any) => void
+	errorCallback: (arg0: any) => void,
 ) => {
 	const response = await makePostRequest(loginAPIPath, {
 		email,
@@ -106,10 +106,10 @@ export const loginApi = async (
 export const getPermissionApi = async (
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -136,16 +136,18 @@ export const getPermissionApi = async (
 
 // Tag Api
 export const getTagApi = async (
+	query: string | undefined,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(tagAPIPath, {
+	const path = query === "" ? tagAPIPath : `${tagAPIPath}?${query}`;
+	const response = await makeGetRequest(path, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -170,10 +172,10 @@ export const getTagByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -227,10 +229,10 @@ export const disableTagApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -259,10 +261,10 @@ export const deleteTagApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -291,10 +293,10 @@ export const deleteTagApi = async (
 export const getRolesApi = async (
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -323,10 +325,10 @@ export const getRoleByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -355,10 +357,10 @@ export const upsertRoleApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -387,10 +389,10 @@ export const disableRoleApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -419,10 +421,10 @@ export const deleteRoleApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -451,10 +453,10 @@ export const deleteRoleApi = async (
 export const getAttributeApi = async (
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -483,10 +485,10 @@ export const getAttributeByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -515,10 +517,10 @@ export const upsertAttributeApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -547,10 +549,10 @@ export const disableAttributeApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -579,10 +581,10 @@ export const deleteAttributeApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -611,10 +613,10 @@ export const deleteAttributeApi = async (
 export const getCategoryApi = async (
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -643,10 +645,10 @@ export const getcategoryByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -675,10 +677,10 @@ export const upsertCategoryApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -704,13 +706,13 @@ export const upsertCategoryApi = async (
 };
 
 export const disableCategoryApi = async (
-	id:string,
+	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -739,10 +741,10 @@ export const deleteCategoryApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -771,10 +773,10 @@ export const deleteCategoryApi = async (
 export const getSubCategoryApi = async (
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -803,10 +805,10 @@ export const getSubCategoryByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -835,10 +837,10 @@ export const upsertSubCategoryApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -867,10 +869,10 @@ export const disableSubCategoryApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -899,10 +901,10 @@ export const deleteSubCategoryApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -931,10 +933,10 @@ export const deleteSubCategoryApi = async (
 export const getItemTypeApi = async (
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -963,10 +965,10 @@ export const getItemTypeByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -995,10 +997,10 @@ export const upsertItemTypeApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -1027,10 +1029,10 @@ export const disableItemTypeApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -1059,10 +1061,10 @@ export const deleteItemTypeApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -1091,10 +1093,10 @@ export const deleteItemTypeApi = async (
 export const getItemApi = async (
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -1123,10 +1125,10 @@ export const getItemByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -1155,10 +1157,10 @@ export const upsertItemApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -1187,10 +1189,10 @@ export const disableItemApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -1219,10 +1221,10 @@ export const deleteItemApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -1251,10 +1253,10 @@ export const deleteItemApi = async (
 export const getAddOnApi = async (
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -1283,10 +1285,10 @@ export const getAddOnByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -1315,10 +1317,10 @@ export const upsertAddOnApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -1347,10 +1349,10 @@ export const disableAddOnApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -1379,10 +1381,10 @@ export const deleteAddOnApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -1411,10 +1413,10 @@ export const deleteAddOnApi = async (
 export const getActivityLogsApi = async (
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -1443,10 +1445,10 @@ export const getActivityLogsByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -1475,10 +1477,10 @@ export const getActivityLogsByIdApi = async (
 export const getUsersApi = async (
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -1507,10 +1509,10 @@ export const getUsersByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
-	logoutCallback: () => void
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
