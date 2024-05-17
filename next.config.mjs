@@ -13,6 +13,6 @@ export default withBundleAnalyzer({
     optimizePackageImports: ['@mantine/core', '@mantine/hooks'],
   },
   images: {
-    domains: ['localhost', 'media.istockphoto.com'],
+    domains: ['localhost', 'source.unsplash.com'],
   },
 });

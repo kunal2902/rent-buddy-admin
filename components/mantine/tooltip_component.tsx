@@ -1,3 +1,5 @@
+"use client";
+
 import { Tooltip, TooltipProps } from "@mantine/core";
 import React from "react";
 

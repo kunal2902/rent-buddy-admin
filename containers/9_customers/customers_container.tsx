@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Table } from "@mantine/core";
+import { FaEye } from "react-icons/fa";
 import { DashboardPageHeader } from "@/components";
 import { useCustomersContainer } from "./hook";
 import { CustomerModel } from "@/models";
@@ -27,10 +28,10 @@ const CustomersContainer = () => {
 
 	const rows = usersList.map((element) => (
 		<Table.Tr>
-			<Table.Td>{element.user_id}</Table.Td>
-			<Table.Td>{element.user_id}</Table.Td>
+			{/*<Table.Td>{element.user_id}</Table.Td>*/}
+			{/*<Table.Td>{element.user_id}</Table.Td>*/}
 			<Table.Td>{element.name}</Table.Td>
-			<Table.Td>{element.username}</Table.Td>
+			{/*<Table.Td>{element.username}</Table.Td>*/}
 			<Table.Td>{element.email}</Table.Td>
 			<Table.Td>{element.phone}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>

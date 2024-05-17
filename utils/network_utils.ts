@@ -702,7 +702,7 @@ export const upsertCategoryApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };

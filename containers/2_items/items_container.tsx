@@ -64,21 +64,21 @@ const ItemsContainer = () => {
 
 	const rows = itemList.map((element, index) => (
 		<Table.Tr key={index}>
-			<Table.Td>{element.item_id}</Table.Td>
-			<Table.Td>{element.item_id}</Table.Td>
+			{/*<Table.Td>{element.item_id}</Table.Td>*/}
+			<Table.Td>{element.item_type_id}</Table.Td>
 			<Table.Td>{element.icon}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 			<Table.Td>
 				<Switch
-					checked={element.is_disabled === true}
-					onClick={() => handleOpenModal(element.item_id, "disable", element.is_disabled)}
+					checked={element.is_disabled}
+					onClick={() => handleOpenModal(element.item_type_id, "disable", element.is_disabled)}
 				/>
 			</Table.Td>
 			<Table.Td>
 				<div className="flex">
-					<IoTrashOutline color="red" size={25} style={{ marginRight: "10px" }} onClick={() => handleOpenModal(element.item_id, "delete", element.is_disabled)} />
+					<IoTrashOutline color="red" size={25} style={{ marginRight: "10px" }} onClick={() => handleOpenModal(element.item_type_id, "delete", element.is_disabled)} />
 					<FaRegEdit color="rgba(108, 210, 213, 1)" size={25} />
 				</div>
 			</Table.Td>
