@@ -47,20 +47,25 @@ const makeDeleteRequest = async (
 	return rawResponse.json();
 };
 
-const makePostRequest = async (
-	url: string | URL | Request,
-	body: any,
-	additionalHeaders = {}
-) => {
+const makePostRequest = async (url: string | URL | Request, body: any, additionalHeaders = {}) => {
+	const isFormData = body instanceof FormData;
+	
+	// Use a type assertion to inform TypeScript that `headers` can have additional properties
+	const headers: { [key: string]: string } = {
+		'X-localization': 'en',
+		...additionalHeaders,
+	};
+
+	if (!isFormData) {
+		headers['Content-Type'] = 'application/json';
+	}
+
 	const rawResponse = await fetch(url, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			"X-localization": "en",
-			...additionalHeaders,
-		},
-		body: JSON.stringify(body),
+		method: 'POST',
+		headers: headers,
+		body: isFormData ? body : JSON.stringify(body),
 	});
+
 	return rawResponse.json();
 };
 
@@ -1318,7 +1323,7 @@ export const getAddOnByIdApi = async (
 export const upsertAddOnApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (message: string) => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
@@ -1326,7 +1331,7 @@ export const upsertAddOnApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePostRequest(addOnAPIPath, {
+	const response = await makePostRequest(addOnAPIPath, body, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1342,7 +1347,7 @@ export const upsertAddOnApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };

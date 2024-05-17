@@ -29,29 +29,33 @@ const CreateSubCategoryModal = (props: Props) => {
 		onFilePick,
 		selectedFile,
 		onResetIconClick,
+		selectedFileToUpload,
 	} = useCreateSubCategoryModal();
 
-	const handleSubmitSubCat = async (event: React.FormEvent) => {
-		event.preventDefault();
-		const body = {
-			name: subCategoryName,
-		};
-		try {
-			await upsertSubCategoryApi(
-				body,
-				() => {
-					onClose();
-					setCallApi(true);
-				},
-				(message: string) => {
-					toast.error(message);
-				},
-				() => {},
-			);
-		} catch (error) {
-			console.error("Error:", error);
-		}
-	};
+const handleSubmitSubCat = async (event: React.FormEvent) => {
+	event.preventDefault();
+	const subCatData = new FormData();
+	if (selectedFileToUpload) {
+		subCatData.append('icon_file', selectedFileToUpload);
+	}
+	subCatData.append('name', subCategoryName);
+	console.log('first', subCatData);
+	try {
+		await upsertSubCategoryApi(
+			subCatData,
+			() => {
+				onClose();
+				setCallApi(true);
+			},
+			(message: string) => {
+				toast.error(message);
+			},
+			() => {},
+		);
+	} catch (error) {
+		console.error("Error:", error);
+	}
+};
 
 	return (
 		<ModalComponent
@@ -112,16 +116,12 @@ const CreateSubCategoryModal = (props: Props) => {
 					)}
 				</div>
 
-				{/* image preview */}
-
-				{/* select category */}
-
 				<div className="sm:ml-1 sm:mt-0 mt-2 flex-1 flex flex-col">
-					<p>Name*</p>
 
 					<TextInputComponent
 						mt={1}
 						required
+						label="Name"
 						title="Name"
 						value={subCategoryName}
 						placeholder="Awesome Name"
