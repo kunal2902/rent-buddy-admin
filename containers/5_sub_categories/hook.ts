@@ -63,5 +63,6 @@ export const useCreateSubCategoryModal = () => {
 		selectedFile,
 		onFilePick,
 		onResetIconClick,
+		selectedFileToUpload,
 	};
 };
