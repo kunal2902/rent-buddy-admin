@@ -1,12 +1,24 @@
 "use client";
 
-import { twMerge } from "tailwind-merge";
 import { useState } from "react";
-import { ButtonComponent } from "@/components";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { ComboboxItem, Stack } from "@mantine/core";
+import { AddIcon } from "@storybook/icons";
+import { ActionIconComponent, ButtonComponent, GroupComponent, SelectComponent, TooltipComponent } from "@/components";
 import { AddUserModal } from "@/containers/10_users/add_user_modal";
 
 export const PosCartSection = () => {
 	const [isUserModalOpen, setUserModalOpen] = useState(false);
+	const customerData: Array<ComboboxItem> = [
+		{
+			label: "User 1",
+			value: "1",
+		},
+		{
+			label: "User 2",
+			value: "2",
+		},
+	];
 
 	return (
 		<>
@@ -16,7 +28,29 @@ export const PosCartSection = () => {
 					setUserModalOpen(false);
 				}}
 			/>
-			<div className="w-[30%] p-2">
+			<Stack className="w-[30%] pr-3 mt-1" style={{ height: "calc(100vh - 56px)" }}>
+				<GroupComponent>
+					<SelectComponent
+						required
+						// value={type}
+						// onChange={onTypeChange}
+						placeholder="Select Customer"
+						data={customerData}
+						style={{ width: "calc(100% - 60px)" }}
+					/>
+					<TooltipComponent label="Add Customer">
+						<ActionIconComponent
+							w={40}
+							h={40}
+							variant="filled"
+							onClick={() => {
+								setUserModalOpen(true);
+							}}
+						>
+							<AddIcon />
+						</ActionIconComponent>
+					</TooltipComponent>
+				</GroupComponent>
 				<div className="flex py-2">
 					<select
 						id="countries"
@@ -28,15 +62,7 @@ export const PosCartSection = () => {
 						<option value="FR">User 3</option>
 						<option value="DE">User 4</option>
 					</select>
-					<ButtonComponent
-						className={twMerge(
-							"bg-grey-900 ml-2 w-16 text-grey-100"
-						)}
-						title="+"
-						onClick={() => {
-							setUserModalOpen(true);
-						}}
-					/>
+
 				</div>
 				<h1 className="text-2xl font-bold text-left w-full">
 					Order Details
@@ -162,11 +188,16 @@ export const PosCartSection = () => {
 					</div>
 				</div>
 				<div className="flex">
-					<ButtonComponent title="Clear" mt={3} mb={2} />
-					<ButtonComponent title="Keep" mt={3} mb={2} />
 				</div>
-				<ButtonComponent title="Checkout" mt={3} />
-			</div>
+				<GroupComponent justify="space-evenly" mx={2}>
+					<TooltipComponent label="Clear cart">
+						<ActionIconComponent c="red" w={30} maw={30}>
+							<RiDeleteBin6Line />
+						</ActionIconComponent>
+					</TooltipComponent>
+					<ButtonComponent w="calc(100% - 50px)" title="Checkout" />
+				</GroupComponent>
+			</Stack>
 		</>
 	);
 };

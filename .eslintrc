@@ -14,7 +14,7 @@
     "react/react-in-jsx-scope": "off",
     "import/extensions": "off",
     "no-unused-vars": [
-      "error",
+      1,
       {
         "args": "none"
       }

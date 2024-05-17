@@ -2,21 +2,16 @@
 
 import { Minus, Plus, SearchIcon } from "lucide-react";
 import React, { useRef, useState } from "react";
-import {
-	Card,
-	Chip,
-	createTheme,
-	Input,
-	MantineProvider,
-	NumberInputHandlers,
-} from "@mantine/core";
-import Image from "next/image";
+import { Box, Card, Chip, createTheme, Input, MantineProvider, NumberInputHandlers, Spoiler } from "@mantine/core";
 import {
 	ButtonComponent,
 	CardComponent,
 	ChipComponent,
-	GroupComponent, ImageComponent, ScrollAreaComponent,
+	GroupComponent,
+	ImageComponent,
+	ScrollAreaComponent,
 	SimpleGridComponent,
+	SpaceComponent,
 	TextComponent,
 	TextInputComponent,
 } from "@/components";
@@ -36,59 +31,95 @@ export interface Categories {
 	categoryName: string;
 }
 
-export const PosProductSection = () => (
-	<div className="w-full max-h-screen overflow-hidden">
-		<GroupComponent justify="space-between" className="mx-3 mt-1">
-			<TextComponent text="Categories" bold size="xl" />
-			<TextInputComponent
-				w={400}
-				placeholder="Search your product here"
-				leftSection={<SearchIcon size={16} />}
-			/>
-		</GroupComponent>
-		<Chip.Group defaultValue="1">
-			<GroupComponent justify="start" className="mx-3 mt-3">
-				<ChipComponent value="1">All items</ChipComponent>
-				<ChipComponent value="2">Pizza</ChipComponent>
-				<ChipComponent value="3">Burger</ChipComponent>
-				<ChipComponent value="4">Fries</ChipComponent>
-				<ChipComponent value="5">Burger</ChipComponent>
-				<ChipComponent value="6">Meals</ChipComponent>
-				<ChipComponent value="7">Pasta</ChipComponent>
-				<ChipComponent value="8">Non-veg</ChipComponent>
-				<ChipComponent value="9">Burger</ChipComponent>
-				<ChipComponent value="10">Meals</ChipComponent>
-			</GroupComponent>
-		</Chip.Group>
-		<ScrollAreaComponent style={{ display: "grid", height: "80vh" }}>
-			<SimpleGridComponent cols={4} className="m-3">
-				<ProductCard index={1} />
-				<ProductCard index={2} />
-				<ProductCard index={3} />
-				<ProductCard index={4} />
-				<ProductCard index={5} />
-				<ProductCard index={6} />
-				<ProductCard index={7} />
-				<ProductCard index={8} />
-				<ProductCard index={9} />
-				<ProductCard index={10} />
-				<ProductCard index={11} />
-				<ProductCard index={12} />
-				<ProductCard index={13} />
-				<ProductCard index={14} />
-				<ProductCard index={15} />
-				<ProductCard index={16} />
-				<ProductCard index={17} />
-				<ProductCard index={18} />
-				<ProductCard index={19} />
-				<ProductCard index={21} />
-				<ProductCard index={22} />
-				<ProductCard index={23} />
-			</SimpleGridComponent>
-		</ScrollAreaComponent>
+export const PosProductSection = () => {
+	const [subCategories, setSubCategories] = useState([]);
 
-	</div>
-);
+	return (
+		<div className="w-[70%] max-h-screen overflow-hidden">
+			<Box h={40} className="px-3 mt-1">
+				<GroupComponent justify="space-between">
+					<TextComponent text="Categories" bold size="xl" />
+					<TextInputComponent
+						w={400}
+						placeholder="Search your product here"
+						leftSection={<SearchIcon size={16} />}
+					/>
+				</GroupComponent>
+			</Box>
+			<Box h={30} className="px-3 mt-3">
+				<Chip.Group defaultValue="1">
+					<GroupComponent justify="start">
+						<ChipComponent value="1">All items</ChipComponent>
+						<ChipComponent value="2">Pizza</ChipComponent>
+						<ChipComponent value="3">Burger</ChipComponent>
+						<ChipComponent value="4">Fries</ChipComponent>
+						<ChipComponent value="5">Burger</ChipComponent>
+						<ChipComponent value="6">Meals</ChipComponent>
+						<ChipComponent value="7">Pasta</ChipComponent>
+						<ChipComponent value="8">Non-veg</ChipComponent>
+						<ChipComponent value="9">Burger</ChipComponent>
+						<ChipComponent value="10">Meals</ChipComponent>
+					</GroupComponent>
+				</Chip.Group>
+			</Box>
+
+			{subCategories.length > 0 && (
+				<Box h={70} className="px-3 mt-1">
+					<TextComponent text="Categories" bold size="xl" />
+					<SpaceComponent showHeight />
+					<Chip.Group defaultValue="1">
+						<GroupComponent justify="start">
+							<ChipComponent value="1">All items</ChipComponent>
+							<ChipComponent value="2">Pizza</ChipComponent>
+							<ChipComponent value="3">Burger</ChipComponent>
+							<ChipComponent value="4">Fries</ChipComponent>
+							<ChipComponent value="5">Burger</ChipComponent>
+							<ChipComponent value="6">Meals</ChipComponent>
+							<ChipComponent value="7">Pasta</ChipComponent>
+							<ChipComponent value="8">Non-veg</ChipComponent>
+							<ChipComponent value="9">Burger</ChipComponent>
+							<ChipComponent value="10">Meals</ChipComponent>
+						</GroupComponent>
+					</Chip.Group>
+				</Box>
+			)}
+			<ScrollAreaComponent
+				style={{
+					display: "grid",
+					height: subCategories.length > 0 ? "calc(100vh - 250px)" : "calc(100vh - 180px)",
+				}}
+				className="my-3">
+				<SimpleGridComponent
+					className="mx-3"
+					cols={{ base: 1, sm: 2, md: 3, lg: 4, xl: 4 }}
+				>
+					<ProductCard index={1} />
+					<ProductCard index={2} />
+					<ProductCard index={3} />
+					<ProductCard index={4} />
+					<ProductCard index={5} />
+					<ProductCard index={6} />
+					<ProductCard index={7} />
+					<ProductCard index={8} />
+					<ProductCard index={9} />
+					<ProductCard index={10} />
+					<ProductCard index={11} />
+					<ProductCard index={12} />
+					<ProductCard index={13} />
+					<ProductCard index={14} />
+					<ProductCard index={15} />
+					<ProductCard index={16} />
+					<ProductCard index={17} />
+					<ProductCard index={18} />
+					<ProductCard index={19} />
+					<ProductCard index={21} />
+					<ProductCard index={22} />
+					<ProductCard index={23} />
+				</SimpleGridComponent>
+			</ScrollAreaComponent>
+		</div>
+	);
+};
 
 // @ts-ignore
 const ProductCard = ({ index }) => {
@@ -99,20 +130,23 @@ const ProductCard = ({ index }) => {
 		<CardComponent shadow="sm" padding="md" radius="md" withBorder>
 			<Card.Section>
 				<ImageComponent
-					w={150}
-					h={100}
+					h={150}
+					fit="fill"
 					src={`https://source.unsplash.com/random/150x100?food,eat,dinner&sig=${index}`}
 				/>
 			</Card.Section>
 
 			<GroupComponent justify="space-between" mt="md" mb="xs">
-				<TextComponent text={`Norway Fjord Adventures ${index}`} bold className="text-justify" />
+				<TextComponent text={`Product Name ${index}`} bold className="text-justify" />
 			</GroupComponent>
 
-			<TextComponent
-				size="sm"
-				c="dimmed"
-				text="With Fjord Tours you can explore more of the magical fjord landscapes with tours." />
+			<Spoiler maxHeight={45} showLabel="more" hideLabel="less">
+				<TextComponent
+					size="sm"
+					c="dimmed"
+					className="text-justify"
+					text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
+			</Spoiler>
 
 			<GroupComponent justify="space-between" mt="md">
 				<TextComponent
@@ -144,7 +178,7 @@ const ProductCard = ({ index }) => {
 								justifyContent: "center",
 								display: "flex",
 								border: "1px solid gray",
-								borderRadius: "20px 0 0 20px",
+								borderRadius: "8px 0 0 8px",
 							}}
 							px={5}
 							onClick={() => numberInputRef.current?.decrement()}
@@ -189,7 +223,7 @@ const ProductCard = ({ index }) => {
 								justifyContent: "center",
 								display: "flex",
 								border: "1px solid gray",
-								borderRadius: "0 20px 20px 0",
+								borderRadius: "0 8px 8px 0",
 							}}
 							px={5}
 							onClick={() => numberInputRef.current?.increment()}

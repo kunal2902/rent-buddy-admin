@@ -49,20 +49,20 @@ const makeDeleteRequest = async (
 
 const makePostRequest = async (url: string | URL | Request, body: any, additionalHeaders = {}) => {
 	const isFormData = body instanceof FormData;
-	
+
 	// Use a type assertion to inform TypeScript that `headers` can have additional properties
 	const headers: { [key: string]: string } = {
-		'X-localization': 'en',
+		"X-localization": "en",
 		...additionalHeaders,
 	};
 
 	if (!isFormData) {
-		headers['Content-Type'] = 'application/json';
+		headers["Content-Type"] = "application/json";
 	}
 
 	const rawResponse = await fetch(url, {
-		method: 'POST',
-		headers: headers,
+		method: "POST",
+		headers,
 		body: isFormData ? body : JSON.stringify(body),
 	});
 

@@ -35,4 +35,5 @@ export const ButtonComponent = (props: ButtonComponentProps) => {
 				""
 			)}
 		</Button>
+	);
 };

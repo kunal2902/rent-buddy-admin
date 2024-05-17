@@ -36,10 +36,10 @@ const handleSubmitSubCat = async (event: React.FormEvent) => {
 	event.preventDefault();
 	const subCatData = new FormData();
 	if (selectedFileToUpload) {
-		subCatData.append('icon_file', selectedFileToUpload);
+		subCatData.append("icon_file", selectedFileToUpload);
 	}
-	subCatData.append('name', subCategoryName);
-	console.log('first', subCatData);
+	subCatData.append("name", subCategoryName);
+	console.log("first", subCatData);
 	try {
 		await upsertSubCategoryApi(
 			subCatData,

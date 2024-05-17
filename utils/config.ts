@@ -27,6 +27,7 @@ export const blackColor: string = "#000000";
 export const appColorRGBA: MantineColor = "rgba(116, 105, 182, 1)";
 export const appAccentColorRGBA: MantineColor = "rgba(238,66,102,1)";
 export const mantineSize: MantineSize = "md";
+export const mantineChipSize: MantineSize = "sm";
 export const mantineButtonSize: MantineSize = "sm";
 export const mantineActionIconSize: MantineSize = "lg";
 export const mantineActionIconVariant: ActionIconVariant = "light";
