@@ -1,19 +1,16 @@
 "use client";
 
 import { Tooltip, TooltipProps } from "@mantine/core";
-import React from "react";
 
 /** Props list of Mantine's Tooltip component - https://mantine.dev/core/tooltip/?t=props */
-export interface TooltipComponentProps extends TooltipProps {
-
-}
+export interface TooltipComponentProps extends TooltipProps {}
 
 /** This is the Mantine Tooltip component - https://mantine.dev/core/tooltip/ */
-export const TooltipComponent = (props: TooltipComponentProps) => props.label ?
-	<Tooltip
-		{...props}
-	>
-		<div>
-			{props.children}
-		</div>
-	</Tooltip> : props.children;
+export const TooltipComponent = (props: TooltipComponentProps) =>
+	props.label ? (
+		<Tooltip {...props}>
+			<div>{props.children}</div>
+		</Tooltip>
+	) : (
+		props.children
+	);

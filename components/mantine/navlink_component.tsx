@@ -1,9 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-	NavLink, NavLinkProps,
-} from "@mantine/core";
+import { NavLink, NavLinkProps } from "@mantine/core";
 import Link from "next/link";
 import { appColorRGBA } from "@/utils";
 
@@ -21,4 +19,5 @@ export const NavLinkComponent = (props: NavLinkComponentProps) =>
 		color={props.color ?? appColorRGBA}
 	>
 		{props.children}
-	</NavLink>;
+	</NavLink>
+);
