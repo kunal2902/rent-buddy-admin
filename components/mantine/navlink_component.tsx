@@ -11,7 +11,7 @@ export interface NavLinkComponentProps extends NavLinkProps {
 }
 
 /** This is the Mantine Modal component - https://mantine.dev/core/nav-link/ */
-export const NavLinkComponent = (props: NavLinkComponentProps) =>
+export const NavLinkComponent = (props: NavLinkComponentProps) => (
 	<NavLink
 		{...props}
 		component={Link}
@@ -19,4 +19,5 @@ export const NavLinkComponent = (props: NavLinkComponentProps) =>
 		color={props.color ?? appColorRGBA}
 	>
 		{props.children}
-	</NavLink>;
+	</NavLink>
+);
