@@ -1,12 +1,14 @@
-import React, { useRef, useState } from 'react';
-import { FileInputComponent } from '@/components/mantine/file_input_component';
-import { ModalComponent, TextInputComponent, ButtonComponent } from '@/components';
-import { Group } from '@mantine/core';
-import { Image as ImageIcon, Trash } from 'lucide-react';
-import Image from 'next/image';
-import { upsertAddOnApi } from '@/utils';
-import { toast } from 'react-toastify';
-import { useCreateAddOnModal } from './hook';
+"use client";
+
+import React, { useRef, useState } from "react";
+import { Group } from "@mantine/core";
+import { Image as ImageIcon, Trash } from "lucide-react";
+import Image from "next/image";
+import { toast } from "react-toastify";
+import { ModalComponent, TextInputComponent, ButtonComponent } from "@/components";
+import { FileInputComponent } from "@/components/mantine/file_input_component";
+import { upsertAddOnApi } from "@/utils";
+import { useCreateAddOnModal } from "./hook";
 
 interface Props {
   isOpen: boolean;
@@ -19,8 +21,7 @@ const AddAddOnModal: React.FC<Props> = ({ isOpen, onClose, setCallApi }) => {
   const [selectedFileToUpload, setSelectedFileToUpload] = useState<File | null>(null);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
 
-  	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
-
+  const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
 
 	const onChooseIconClick = () => {
 		if (fileInputTriggerRef) {
@@ -41,7 +42,7 @@ const AddAddOnModal: React.FC<Props> = ({ isOpen, onClose, setCallApi }) => {
       setSelectedFileToUpload(file);
 
       fileReader.onload = (readerEvent) => {
-        if (readerEvent.target && typeof readerEvent.target.result === 'string') {
+        if (readerEvent.target && typeof readerEvent.target.result === "string") {
           setSelectedFile(readerEvent.target.result);
         }
       };
@@ -52,16 +53,16 @@ const AddAddOnModal: React.FC<Props> = ({ isOpen, onClose, setCallApi }) => {
     event.preventDefault();
 
     if (!addOnName || !addOnPrice) {
-      toast.error('Please provide name and price.');
+      toast.error("Please provide name and price.");
       return;
     }
 
     const addOnData = new FormData();
     if (selectedFileToUpload) {
-      addOnData.append('icon_file', selectedFileToUpload);
+      addOnData.append("icon_file", selectedFileToUpload);
     }
-    addOnData.append('name', addOnName);
-    addOnData.append('price', addOnPrice);
+    addOnData.append("name", addOnName);
+    addOnData.append("price", addOnPrice);
 
     try {
       await upsertAddOnApi(
@@ -76,8 +77,8 @@ const AddAddOnModal: React.FC<Props> = ({ isOpen, onClose, setCallApi }) => {
 		() => {}
       );
     } catch (error) {
-      console.error('Error:', error);
-      toast.error('An error occurred while saving.');
+      console.error("Error:", error);
+      toast.error("An error occurred while saving.");
     }
   };
 
@@ -95,6 +96,7 @@ const AddAddOnModal: React.FC<Props> = ({ isOpen, onClose, setCallApi }) => {
 
           <p className="text-base font-public-sans">Icon*</p>
 
+          {/* eslint-disable-next-line react/button-has-type */}
           <button className="mt-1 flex items-center justify-center w-full" onClick={onChooseIconClick}>
             {selectedFile ? (
               <div className="w-full flex flex-col items-center justify-center h-40">
@@ -110,7 +112,7 @@ const AddAddOnModal: React.FC<Props> = ({ isOpen, onClose, setCallApi }) => {
 
           {selectedFile && (
             <div className="w-full mt-1 flex items-center justify-end">
-              <button className="flex items-center justify-center" onClick={onResetIconClick} aria-label="on reset icon click">
+                <button className="flex items-center justify-center" onClick={onResetIconClick} aria-label="on reset icon click">
                 <Trash size={24} className="text-error-dark" />
               </button>
             </div>

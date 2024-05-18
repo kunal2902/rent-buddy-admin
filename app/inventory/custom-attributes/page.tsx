@@ -1,5 +1,5 @@
-import { MainNavbar, MainSidebar } from '@/components';
-import { CustomAttributesContainer } from '@/containers';
+import { MainNavbar, MainSidebar } from "@/components";
+import { CustomAttributesContainer } from "@/containers";
 
 const CustomAttributesPage = () => (
 	<>

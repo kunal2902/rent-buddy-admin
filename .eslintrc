@@ -14,7 +14,7 @@
     "react/react-in-jsx-scope": "off",
     "import/extensions": "off",
     "no-unused-vars": [
-      "error",
+      1,
       {
         "args": "none"
       }
@@ -22,10 +22,10 @@
     // "indent": [4, "tab", { "SwitchCase": 1, "VariableDeclarator": 1 }],
     "no-tabs": 0,
     "react/prop-types": 0,
-    "react/jsx-indent": [4, "tab"],
-    "react/jsx-indent-props": [4, "tab"],
+    "react/jsx-indent": [1, "tab"],
+    "react/jsx-indent-props": [1, "tab"],
     "no-console": "off",
-    // "quotes": ["warn", "single"],
+    "quotes": [2, "double"],
 //    "linebreak-style": ["error", "windows"],
     "@typescript-eslint/quotes": "off"
   }

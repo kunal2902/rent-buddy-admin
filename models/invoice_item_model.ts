@@ -1,4 +1,4 @@
-import { ItemModel } from '@/models';
+import { ItemModel } from "@/models";
 
 export interface InvoiceItemModel {
     invoice_item_id: string;

@@ -15,7 +15,7 @@ import {
 	activityLogsAPIPath,
 	usersAPIPath,
 	customerAPIPath,
-} from '@/utils';
+} from "@/utils";
 
 const makeGetRequest = async (
 	url: string | URL | Request,
@@ -49,25 +49,24 @@ const makeDeleteRequest = async (
 
 const makePostRequest = async (url: string | URL | Request, body: any, additionalHeaders = {}) => {
 	const isFormData = body instanceof FormData;
-	
+
 	const headers: { [key: string]: string } = {
-		'X-localization': 'en',
+		"X-localization": "en",
 		...additionalHeaders,
 	};
 
 	if (!isFormData) {
-		headers['Content-Type'] = 'application/json';
+		headers["Content-Type"] = "application/json";
 	}
 
 	const rawResponse = await fetch(url, {
-		method: 'POST',
-		headers: headers,
+		method: "POST",
+		headers,
 		body: isFormData ? body : JSON.stringify(body),
 	});
 
 	return rawResponse.json();
 };
-
 
 const makePutRequest = async (
 	url: string | URL | Request,
@@ -1005,7 +1004,7 @@ export const getItemTypeByIdApi = async (
 export const upsertItemTypeApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (message: string) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -1013,7 +1012,7 @@ export const upsertItemTypeApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePostRequest(itemTypeAPIPath, {
+	const response = await makePostRequest(itemTypeAPIPath, body, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1029,7 +1028,7 @@ export const upsertItemTypeApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -1553,7 +1552,7 @@ export const getCustomerApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
@@ -1585,7 +1584,7 @@ export const getCustomerByIdApi = async (
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
-	if (token === null || token === '' || token === 'null') {
+	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}

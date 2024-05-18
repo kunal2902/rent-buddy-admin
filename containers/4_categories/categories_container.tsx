@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { Plus } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { FaRegEdit } from 'react-icons/fa';
-import { IoTrashOutline } from 'react-icons/io5';
-import { Switch, Table } from '@mantine/core';
-import { DashboardPageHeader } from '@/components';
-import { useCategoriesContainer } from './hook';
-import CreateCategoryModal from './add_category';
-import { CategoryModel } from '@/models';
-import { deleteCategoryApi, disableCategoryApi, formatDate, getCategoryApi } from '@/utils';
-import ActionCategoryModal from './action_category_modal';
+import { Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { FaRegEdit } from "react-icons/fa";
+import { IoTrashOutline } from "react-icons/io5";
+import { Switch, Table } from "@mantine/core";
+import { DashboardPageHeader } from "@/components";
+import { useCategoriesContainer } from "./hook";
+import CreateCategoryModal from "./add_category";
+import { CategoryModel } from "@/models";
+import { deleteCategoryApi, disableCategoryApi, formatDate, getCategoryApi } from "@/utils";
+import ActionCategoryModal from "./action_category_modal";
 
 const CategoriesContainer = () => {
 	const {
@@ -21,8 +21,8 @@ const CategoriesContainer = () => {
 
 	const [categoryList, setCategoryList] = useState<CategoryModel[]>([]);
 	const [callApi, setCallApi] = useState(true);
-	const [catId, setCatId] = useState<string>('');
-	const [catType, setCatType] = useState<string>('');
+	const [catId, setCatId] = useState<string>("");
+	const [catType, setCatType] = useState<string>("");
 	const [isDisable, setIsDisable] = useState<boolean>(true);
 	const [isActionCatModalOpen, setIsActionCatModalOpen] = useState<boolean>(false);
 
@@ -47,7 +47,7 @@ const CategoriesContainer = () => {
 	};
 
 	const handleActionCat = () => {
-		if (catType === 'disable') {
+		if (catType === "disable") {
 			disableCategoryApi(catId, () => {
 			setCallApi(true);
 			setIsActionCatModalOpen(false);
@@ -70,7 +70,7 @@ const CategoriesContainer = () => {
 
 	const rows = categoryList.map((element, index) => (
 		<Table.Tr key={index}>
-			<Table.Td>{element.category_id}</Table.Td>
+			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.category_id}</Table.Td>
 			<Table.Td>{element.icon}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
@@ -78,12 +78,12 @@ const CategoriesContainer = () => {
 			<Table.Td>
 				<Switch
 					checked={element.is_disabled === true}
-					onClick={() => handleOpenModal(element.category_id, 'disable', element.is_disabled)}
+					onClick={() => handleOpenModal(element.category_id, "disable", element.is_disabled)}
 				/>
 			</Table.Td>
 			<Table.Td>
 				<div className="flex">
-					<IoTrashOutline color="red" size={25} style={{ marginRight: '10px' }} onClick={() => handleOpenModal(element.category_id, 'delete', element.is_disabled)} />
+					<IoTrashOutline color="red" size={25} style={{ marginRight: "10px" }} onClick={() => handleOpenModal(element.category_id, "delete", element.is_disabled)} />
 					<FaRegEdit color="rgba(108, 210, 213, 1)" size={25} />
 				</div>
 			</Table.Td>
@@ -93,7 +93,7 @@ const CategoriesContainer = () => {
 	return (
 		<main
 			className={`flex min-h-screen w-full bg-light-background-natural flex-col pt-14 ${
-				isSidebarOpen ? 'lg:pl-64 pl-0' : 'pl-16'
+				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-16"
 			}`}
 		>
 			<DashboardPageHeader
@@ -101,10 +101,10 @@ const CategoriesContainer = () => {
 				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
 				button
 				buttonProps={{
-					title: 'New Category',
-					titleClassName: 'sm:flex hidden',
+					title: "New Category",
+					titleClassName: "sm:flex hidden",
 					onClick: toggleCreateCategoryModalOpen,
-					className: 'rounded-md w-fit text-grey-100 text-sm',
+					className: "rounded-md w-fit text-grey-100 text-sm",
 					children: <Plus size={20} className="sm:mr-2 mr-0" />,
 				}}
 			/>

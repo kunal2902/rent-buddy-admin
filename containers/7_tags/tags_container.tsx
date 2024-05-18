@@ -1,10 +1,10 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { Center, Group, Loader, Pagination, Select, Button, Box, Text } from "@mantine/core";
+import { Center, Group, Loader, Pagination, Select, Box, Switch, Table, TextInput } from "@mantine/core";
 import { FaRegEdit } from "react-icons/fa";
 import { IoTrashOutline } from "react-icons/io5";
-import { Switch, Table, TextInput } from "@mantine/core";
+import { useDebouncedCallback } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { useTagsContainer } from "./hook";
 import { DashboardPageHeader } from "@/components";
@@ -12,7 +12,6 @@ import AddTagModal from "./add_tag_modal";
 import { TagModel } from "@/models";
 import { deleteTagApi, disableTagApi, getTagApi } from "@/utils";
 import ActionTagModal from "./action_tag_modal";
-import { useDebouncedCallback } from "@mantine/hooks";
 
 const TagsContainer = () => {
 	const { isSidebarOpen, isCreateTagModalOpen, toggleCreateModalTagOpen } =
@@ -51,7 +50,7 @@ const TagsContainer = () => {
 	const handleSearch = useDebouncedCallback(async (query: string) => {
 		setLoading(true);
 		if (searchValue === "") {
-			setCallApi(true)
+			setCallApi(true);
 			setLoading(false);
 		} else {
 			getTagApi(
@@ -196,7 +195,7 @@ const TagsContainer = () => {
 				}}
 			/>
 
-			<Box style={{ overflow: 'hidden' }}>
+			<Box style={{ overflow: "hidden" }}>
 				<Box maw={1300} p="md" mx="auto" bg="var(--mantine-color-blue-light)">
 					<Group grow justify="center" gap="lg">
 						<TextInput
@@ -210,7 +209,7 @@ const TagsContainer = () => {
 							searchable
 							data={["Name", "Tag Id"]}
 							onSearchChange={(value) => {
-								if (value == "Name") {
+								if (value === "Name") {
 									setFilter("name");
 								} else {
 									setFilter("tag_id");
@@ -244,7 +243,7 @@ const TagsContainer = () => {
 					</Center>
 				</Box>
 			</Box>
-			
+
 			<AddTagModal
 				isOpen={isCreateTagModalOpen}
 				onClose={toggleCreateModalTagOpen}

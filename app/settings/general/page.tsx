@@ -1,5 +1,5 @@
-import { MainNavbar, MainSidebar } from '@/components';
-import { GeneralSettingsContainer } from '@/containers';
+import { MainNavbar, MainSidebar } from "@/components";
+import { GeneralSettingsContainer } from "@/containers";
 
 const GeneralSettingsPage = () => (
 	<>

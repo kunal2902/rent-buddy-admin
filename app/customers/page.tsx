@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { CustomerContainer } from '@/containers';
-import { MainNavbar, MainSidebar } from '@/components';
+import { CustomerContainer } from "@/containers";
+import { MainNavbar, MainSidebar } from "@/components";
 
 const CustomersPage = () => (
 	<>

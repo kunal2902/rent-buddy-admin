@@ -1,1 +1,1 @@
-export { default as ActivityLogsContainer } from './activity_logs_container';
+export { default as ActivityLogsContainer } from "./activity_logs_container";

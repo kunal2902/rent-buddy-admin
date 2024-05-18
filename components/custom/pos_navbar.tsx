@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { Expand, Shrink, ShoppingBag } from 'lucide-react';
-import { useState } from 'react';
-import { useFullscreen } from '@mantine/hooks';
-import Logo from '@/public/images/logo.png';
+import Image from "next/image";
+import { Expand, Shrink, ShoppingBag } from "lucide-react";
+import { useState } from "react";
+import { useFullscreen } from "@mantine/hooks";
+import Logo from "@/public/images/logo.png";
 import {
 	ActionIconComponent,
 	ButtonComponent, CenterComponent,
@@ -12,9 +12,9 @@ import {
 	SpaceComponent,
 	TooltipComponent,
 	UnstyledButtonComponent,
-} from '@/components';
-import { appLogoHeight, appLogoWidth, dashboardRoute, posRoute } from '@/utils';
-import { TextComponent } from '@/components/mantine/text_component';
+} from "@/components";
+import { appLogoHeight, appLogoWidth, dashboardRoute, posRoute } from "@/utils";
+import { TextComponent } from "@/components/mantine/text_component";
 
 export const PosNavbar = () => {
 	const { toggle, fullscreen } = useFullscreen();
@@ -63,7 +63,7 @@ export const PosNavbar = () => {
 					<SpaceComponent showWidth />
 
 					<TooltipComponent
-						label={fullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+						label={fullscreen ? "Exit fullscreen" : "Enter fullscreen"}
 					>
 						<ActionIconComponent
 							onClick={toggle}

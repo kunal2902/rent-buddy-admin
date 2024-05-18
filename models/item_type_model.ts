@@ -1,4 +1,4 @@
-import { UserModel, ItemModel } from '@/models';
+import { UserModel, ItemModel } from "@/models";
 
 export interface ItemTypeModel {
     item_type_id: string;

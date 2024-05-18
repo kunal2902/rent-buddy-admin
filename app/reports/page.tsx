@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { ReportsContainer } from '@/containers';
-import { MainNavbar, MainSidebar } from '@/components';
+import { ReportsContainer } from "@/containers";
+import { MainNavbar, MainSidebar } from "@/components";
 
 const ReportsPage = () => (
 	<>

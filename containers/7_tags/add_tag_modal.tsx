@@ -29,7 +29,6 @@ const AddTagModal = (props: Props) => {
 			name: tagName,
 			id: tagId,
 		};
-
 		try {
 			await upsertTagApi(
 				body,

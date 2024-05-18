@@ -1,1 +1,1 @@
-export { default as AboutPageContainer } from './about_page_container';
+export { default as AboutPageContainer } from "./about_page_container";

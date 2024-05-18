@@ -1,5 +1,5 @@
-import { MainNavbar, MainSidebar } from '@/components';
-import { EmailSettingsContainer } from '@/containers';
+import { MainNavbar, MainSidebar } from "@/components";
+import { EmailSettingsContainer } from "@/containers";
 
 const EmailPage = () => (
 	<>

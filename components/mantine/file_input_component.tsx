@@ -1,7 +1,9 @@
+"use client";
+
 import { FileInput, FileInputProps } from "@mantine/core";
 import { forwardRef, useEffect } from "react";
 
-/** Props list of Mantine's TextInput component - https://mantine.dev/core/text-input/?t=props */
+/** Props list of Mantine's TextInput component - https://mantine.dev/core/file-input/?t=props */
 
 export interface FileInputComponentProps extends FileInputProps {}
 
