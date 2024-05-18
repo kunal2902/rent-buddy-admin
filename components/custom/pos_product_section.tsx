@@ -15,7 +15,7 @@ import {
 	TextComponent,
 	TextInputComponent,
 } from "@/components";
-import { currenySign } from "@/utils";
+import { currencySign } from "@/utils";
 import { NumberInputComponent } from "@/components/mantine/number_input_component";
 
 const theme = createTheme({
@@ -86,7 +86,7 @@ export const PosProductSection = () => {
 			<ScrollAreaComponent
 				style={{
 					display: "grid",
-					height: subCategories.length > 0 ? "calc(100vh - 250px)" : "calc(100vh - 180px)",
+					height: subCategories.length > 0 ? "calc(100vh - 250px)" : "calc(100vh - 173px)",
 				}}
 				className="my-3">
 				<SimpleGridComponent
@@ -127,7 +127,7 @@ const ProductCard = ({ index }) => {
 	const [quantity, setQuantity] = useState<string | number>(1);
 	const numberInputRef = useRef<NumberInputHandlers>(null);
 	return (
-		<CardComponent shadow="sm" padding="md" radius="md" withBorder>
+		<CardComponent shadow="sm" padding="sm" radius="md" withBorder>
 			<Card.Section>
 				<ImageComponent
 					h={150}
@@ -152,7 +152,7 @@ const ProductCard = ({ index }) => {
 				<TextComponent
 					bold
 					size="xl"
-					text={`${currenySign} ${110 * parseInt(quantity.toString(), 10)}`}
+					text={`${currencySign} ${110 * parseInt(quantity.toString(), 10)}`}
 					c="green"
 					className="text-justify" />
 
