@@ -5,15 +5,15 @@ import { Group } from "@mantine/core";
 import { Image as ImageIcon, Trash } from "lucide-react";
 import Image from "next/image";
 import { toast } from "react-toastify";
-import { ModalComponent, TextInputComponent, ButtonComponent } from "@/components";
-import { FileInputComponent } from "@/components/mantine/file_input_component";
 import { upsertAddOnApi } from "@/utils";
+import { ButtonComponent, ModalComponent, TextInputComponent } from "@/components";
+import { FileInputComponent } from "@/components/mantine/file_input_component";
 import { useCreateAddOnModal } from "./hook";
 
 interface Props {
-  isOpen: boolean;
-  onClose: () => void;
-  setCallApi: (value: boolean) => void;
+	isOpen: boolean;
+	onClose: () => void;
+	setCallApi: (value: boolean) => void;
 }
 
 const AddAddOnModal: React.FC<Props> = ({ isOpen, onClose, setCallApi }) => {
