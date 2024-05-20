@@ -9,7 +9,7 @@ import { useAddOnsContainer } from "./hook";
 import { DashboardPageHeader } from "@/components";
 import AddAddOnModal from "./add_add_on_modal";
 import { AddOnModel } from "@/models";
-import { deleteAddOnApi, disableAddOnApi, formatDate, getAddOnApi } from "@/utils";
+import { addOnsName, deleteAddOnApi, disableAddOnApi, formatDate, getAddOnApi } from "@/utils";
 import ActionAddOnModal from "./action_add_on_modal";
 
 const AddOnsContainer = () => {
@@ -22,7 +22,7 @@ const AddOnsContainer = () => {
 	const [addOnList, setAddOnList] = useState<AddOnModel[]>([]);
 	const [callApi, setCallApi] = useState(true);
 	const [addOnId, setAddOnId] = useState<string>("");
-	const [addOnType, setaddOnType] = useState<string>("");
+	const [addOnType, setAddOnType] = useState<string>("");
 	const [isDisable, setIsDisable] = useState<boolean>(true);
 	const [isActionAddOneModalOpen, setIsActionAddOneModalOpen] =
 		useState<boolean>(false);
@@ -42,13 +42,16 @@ const AddOnsContainer = () => {
 
 	const handleOpenModal = (id: string, type: string, disableType: boolean) => {
 		setAddOnId(id);
-		setaddOnType(type);
+		setAddOnType(type);
 		setIsDisable(disableType);
 		setIsActionAddOneModalOpen(true);
 	};
 
 	const handleActionAddOn = () => {
-		if (addOnType === "disable") {
+		if (addOnType === "edit") {
+			toggleCreateAddOnModalOpen();
+			setIsActionAddOneModalOpen(false);
+		} else if (addOnType === "disable") {
 			disableAddOnApi(addOnId, () => {
 			setCallApi(true);
 			setIsActionAddOneModalOpen(false);
@@ -71,7 +74,7 @@ const AddOnsContainer = () => {
 
 	const rows = addOnList.map((element, index) => (
 		<Table.Tr key={index}>
-			<Table.Td>{element.add_on_id}</Table.Td>
+			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.add_on_id}</Table.Td>
 			<Table.Td>{element.icon}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
@@ -130,6 +133,7 @@ const AddOnsContainer = () => {
 			<AddAddOnModal
 				isOpen={isCreateAddOnModalOpen}
 				onClose={toggleCreateAddOnModalOpen}
+				setCallApi={setCallApi}
 			/>
 
 			<ActionAddOnModal

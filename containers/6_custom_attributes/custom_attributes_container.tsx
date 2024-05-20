@@ -72,7 +72,7 @@ const CustomAttributesContainer = () => {
 
 	const rows = customAttributesList.map((element, index) => (
 		<Table.Tr key={index}>
-			<Table.Td>{element.custom_attribute_id}</Table.Td>
+			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.custom_attribute_id}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{element.type}</Table.Td>

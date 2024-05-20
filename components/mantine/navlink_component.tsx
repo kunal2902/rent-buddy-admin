@@ -20,4 +20,3 @@ export const NavLinkComponent = (props: NavLinkComponentProps) => (
 	>
 		{props.children}
 	</NavLink>
-);

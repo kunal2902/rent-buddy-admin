@@ -1,9 +1,10 @@
 "use client";
 
 import { Plus } from "lucide-react";
+import { Center, Group, Loader, Pagination, Select, Box, Switch, Table, TextInput } from "@mantine/core";
 import { FaRegEdit } from "react-icons/fa";
 import { IoTrashOutline } from "react-icons/io5";
-import { Switch, Table } from "@mantine/core";
+import { useDebouncedCallback } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { useTagsContainer } from "./hook";
 import { DashboardPageHeader } from "@/components";
@@ -13,31 +14,78 @@ import { deleteTagApi, disableTagApi, getTagApi } from "@/utils";
 import ActionTagModal from "./action_tag_modal";
 
 const TagsContainer = () => {
-	const { isSidebarOpen,
-			isCreateTagModalOpen,
-			toggleCreateModalTagOpen,
-		} = useTagsContainer();
+	const { isSidebarOpen, isCreateTagModalOpen, toggleCreateModalTagOpen } =
+		useTagsContainer();
 	const [tagsList, setTagsList] = useState<TagModel[]>([]);
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [tagId, setTagId] = useState<string>("");
 	const [tagType, setTagType] = useState<string>("");
 	const [isDisable, setIsDisable] = useState<boolean>(true);
-	const [isActionTagModalOpen, setIsActionTagModalOpen] = useState<boolean>(false);
+	const [tagName, setTagName] = useState<string>("");
+	const [searchValue, setSearchValue] = useState<string>("");
+	const [loading, setLoading] = useState<boolean>(false);
+	const [page, setPage] = useState<number>(1);
+	const [filter, setFilter] = useState<string>("tag_id");
+	const [isActionTagModalOpen, setIsActionTagModalOpen] =
+		useState<boolean>(false);
 
 	useEffect(() => {
 		if (callApi) {
-			getTagApi((data: any) => {
+		getTagApi(
+			`orderBy=${filter}&page=${page}&order=asc`,
+			(data: any) => {
 				setTagsList(data.tags);
 				setCallApi(false);
-			}, () => {
+			},
+			() => {
 				setCallApi(false);
-			}, () => {
+			},
+			() => {
 				setCallApi(false);
-			}).then();
+			},
+		).then();
 		}
-	}, [callApi]);
+	}, [filter, page, callApi]);
 
-	const handleOpenModal = (id: string, type: string, disableType: boolean) => {
+	const handleSearch = useDebouncedCallback(async (query: string) => {
+		setLoading(true);
+		if (searchValue === "") {
+			setCallApi(true);
+			setLoading(false);
+		} else {
+			getTagApi(
+				`name=${searchValue}`,
+				(data: any) => {
+					setTagsList(data.tags);
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				},
+			).then();
+			setLoading(false);
+		}
+	}, 500);
+
+	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setSearchValue(event.currentTarget.value);
+		handleSearch(event.currentTarget.value);
+	};
+
+	const handleAddOpenModal = () => {
+		setTagId("");
+		setTagName("");
+		toggleCreateModalTagOpen();
+	};
+
+	const handleOpenModal = (
+		id: string,
+		type: string,
+		disableType: boolean,
+	) => {
 		setTagId(id);
 		setTagType(type);
 		setIsDisable(disableType);
@@ -45,42 +93,84 @@ const TagsContainer = () => {
 	};
 
 	const handleActionTag = () => {
-		if (tagType === "disable") {
-			disableTagApi(tagId, () => {
-			setCallApi(true);
+		if (tagType === "edit") {
+			toggleCreateModalTagOpen();
 			setIsActionTagModalOpen(false);
-		}, () => {
-			setCallApi(false);
-		}, () => {
-			setCallApi(false);
-		});
+		} else if (tagType === "disable") {
+			disableTagApi(
+				tagId,
+				() => {
+					setCallApi(true);
+					setIsActionTagModalOpen(false);
+				},
+				() => {
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				},
+			);
 		} else {
-			deleteTagApi(tagId, () => {
-			setCallApi(true);
-			setIsActionTagModalOpen(false);
-		}, () => {
-			setCallApi(false);
-		}, () => {
-			setCallApi(false);
-		});
+			deleteTagApi(
+				tagId,
+				() => {
+					setCallApi(true);
+					setIsActionTagModalOpen(false);
+				},
+				() => {
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				},
+			);
 		}
 	};
 
-	const rows = tagsList.map((element) => (
+	const rows = tagsList.map((element, index) => (
 		<Table.Tr>
-			{/* <Table.Td>{element.tag_id}</Table.Td> */}
+			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.tag_id}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>
 				<Switch
-					checked={element.is_disabled}
-					onClick={() => handleOpenModal(element.tag_id, "disable", element.is_disabled)}
+					checked={element.is_disabled === true}
+					onClick={() =>
+						handleOpenModal(
+							element.tag_id,
+							"disable",
+							element.is_disabled,
+						)
+					}
 				/>
 			</Table.Td>
 			<Table.Td>
 				<div className="flex">
-					<IoTrashOutline color="red" size={25} style={{ marginRight: "10px" }} onClick={() => handleOpenModal(element.tag_id, "delete", element.is_disabled)} />
-					<FaRegEdit color="rgba(108, 210, 213, 1)" size={25} />
+					<IoTrashOutline
+						color="red"
+						size={25}
+						style={{ marginRight: "10px" }}
+						onClick={() =>
+							handleOpenModal(
+								element.tag_id,
+								"delete",
+								element.is_disabled,
+							)
+						}
+					/>
+					<FaRegEdit
+						color="rgba(108, 210, 213, 1)"
+						size={25}
+						onClick={() => {
+							handleOpenModal(
+								element.tag_id,
+								"edit",
+								element.is_disabled,
+							);
+							setTagName(element.name);
+							setTagId(element.tag_id);
+						}}
+					/>
 				</div>
 			</Table.Td>
 		</Table.Tr>
@@ -99,29 +189,67 @@ const TagsContainer = () => {
 				buttonProps={{
 					title: "New Tag",
 					titleClassName: "sm:flex hidden",
-					onClick: toggleCreateModalTagOpen,
+					onClick: handleAddOpenModal,
 					className: "rounded-md w-fit text-grey-100 text-sm",
 					children: <Plus size={20} className="sm:mr-2 mr-0" />,
 				}}
 			/>
 
-			<Table striped highlightOnHover withTableBorder>
-				<Table.Thead>
-					<Table.Tr>
-						{/* <Table.Th>Sr No.</Table.Th> */}
-						<Table.Th>Tag Id</Table.Th>
-						<Table.Th>Name</Table.Th>
-						<Table.Th>Disable</Table.Th>
-						<Table.Th>Action</Table.Th>
-					</Table.Tr>
-				</Table.Thead>
-				<Table.Tbody>{rows}</Table.Tbody>
-			</Table>
+			<Box style={{ overflow: "hidden" }}>
+				<Box maw={1300} p="md" mx="auto" bg="var(--mantine-color-blue-light)">
+					<Group grow justify="center" gap="lg">
+						<TextInput
+							placeholder="Enter Tag Name"
+							value={searchValue}
+							onChange={handleChange}
+							rightSection={loading && <Loader size={20} />}
+						/>
+						<Select
+							placeholder="Order By"
+							searchable
+							data={["Name", "Tag Id"]}
+							onSearchChange={(value) => {
+								if (value === "Name") {
+									setFilter("name");
+								} else {
+									setFilter("tag_id");
+								}
+							}}
+						/>
+					</Group>
+					<Table striped highlightOnHover withTableBorder>
+						<Table.Thead>
+							<Table.Tr>
+								<Table.Th>Index</Table.Th>
+								<Table.Th>Tag Id</Table.Th>
+								<Table.Th>Name</Table.Th>
+								<Table.Th>Disable</Table.Th>
+								<Table.Th>Action</Table.Th>
+							</Table.Tr>
+						</Table.Thead>
+						<Table.Tbody>{rows}</Table.Tbody>
+					</Table>
+					<Center>
+						<Pagination
+							total={10}
+							value={page}
+							onChange={(pageNumber) => {
+								setPage(pageNumber);
+							}}
+							mt="sm"
+							radius="lg"
+							color="teal"
+						/>
+					</Center>
+				</Box>
+			</Box>
 
 			<AddTagModal
 				isOpen={isCreateTagModalOpen}
 				onClose={toggleCreateModalTagOpen}
 				setCallApi={setCallApi}
+				initialTagValue={tagName}
+				tagId={tagId}
 			/>
 
 			<ActionTagModal
@@ -129,8 +257,7 @@ const TagsContainer = () => {
 				onClose={() => setIsActionTagModalOpen(false)}
 				setCallApi={setCallApi}
 				handleActionTag={handleActionTag}
-				tagType={tagType}
-				isDisable={isDisable}
+				tagAction={tagType}
 			/>
 		</main>
 	);

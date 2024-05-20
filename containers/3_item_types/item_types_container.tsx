@@ -10,9 +10,13 @@ import { DashboardPageHeader } from "@/components";
 import { ItemTypeModel } from "@/models";
 import { deleteItemApi, disableItemTypeApi, formatDate, getItemTypeApi } from "@/utils";
 import ActionItemTypeModal from "./action_item_type_modal";
+import AddItemTypeModal from "@/containers/3_item_types/add_item_type_modal";
 
 const ItemTypesContainer = () => {
-	const { isSidebarOpen } = useItemTypesContainer();
+	const { isSidebarOpen,
+		isCreateItemTypeModalOpen,
+		toggleCreateItemTypeModalOpen,
+	} = useItemTypesContainer();
 	const [itemTypeList, setItemTypeList] = useState<ItemTypeModel[]>([]);
 	const [callApi, setCallApi] = useState(true);
 	const [itemTypeId, setItemTypeId] = useState<string>("");
@@ -64,7 +68,7 @@ const ItemTypesContainer = () => {
 
 	const rows = itemTypeList.map((element, index) => (
 		<Table.Tr key={index}>
-			<Table.Td>{element.item_type_id}</Table.Td>
+			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.item_type_id}</Table.Td>
 			<Table.Td>{element.icon}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
@@ -97,6 +101,7 @@ const ItemTypesContainer = () => {
 				buttonProps={{
 					title: "New Item Type",
 					titleClassName: "sm:flex hidden",
+					onClick: toggleCreateItemTypeModalOpen,
 					className: "rounded-md w-fit text-grey-100 text-sm",
 					children: <Plus className="sm:mr-2 mr-0" size={20} />,
 				}}
@@ -116,6 +121,12 @@ const ItemTypesContainer = () => {
 				</Table.Thead>
 				<Table.Tbody>{rows}</Table.Tbody>
 			</Table>
+
+			<AddItemTypeModal
+				isOpen={isCreateItemTypeModalOpen}
+				onClose={toggleCreateItemTypeModalOpen}
+				setCallApi={setCallApi}
+			/>
 
 			<ActionItemTypeModal
 				isOpen={isActionItemTypeModalOpen}

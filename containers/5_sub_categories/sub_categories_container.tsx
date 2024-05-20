@@ -72,7 +72,7 @@ const SubCategoriesContainer = () => {
 
 	const rows = subCategoryList.map((element, index) => (
 		<Table.Tr key={index}>
-			<Table.Td>{element.sub_category_id}</Table.Td>
+			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.sub_category_id}</Table.Td>
 			<Table.Td>{element.icon}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
