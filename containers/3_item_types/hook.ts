@@ -1,6 +1,6 @@
 import { useRecoilValue } from "recoil";
-import { useState } from "react";
-import { onTextInputChange, sidebarStateAtom, toggleBooleanState } from "@/utils";
+import { useEffect, useState } from "react";
+import { sidebarStateAtom, toggleBooleanState } from "@/utils";
 
 export const useItemTypesContainer = () => {
 	const isSidebarOpen = useRecoilValue<boolean>(sidebarStateAtom);
@@ -16,11 +16,16 @@ export const useItemTypesContainer = () => {
 	};
 };
 
-export const useCreateItemTypeModal = () => {
-	const [itemTypeName, setItemTypeName] = useState<string>("");
+export const useCreateItemTypeModal = (name?: string) => {
+	const [itemTypeName, setItemTypeName] = useState<string>(name ?? "");
+
+	useEffect(() => {
+		setItemTypeName(name ?? "");
+	}, [name]);
 
 	return {
 		itemTypeName,
-		onItemTypeNameChange: onTextInputChange(setItemTypeName),
+		onItemTypeNameChange: (value: string) => setItemTypeName(value),
+		setItemTypeName,
 	};
 };

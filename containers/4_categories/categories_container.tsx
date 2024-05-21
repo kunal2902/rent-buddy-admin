@@ -4,12 +4,12 @@ import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FaRegEdit } from "react-icons/fa";
 import { IoTrashOutline } from "react-icons/io5";
-import { Switch, Table } from "@mantine/core";
+import { Image, Switch, Table } from "@mantine/core";
 import { DashboardPageHeader } from "@/components";
 import { useCategoriesContainer } from "./hook";
 import CreateCategoryModal from "./add_category";
 import { CategoryModel } from "@/models";
-import { deleteCategoryApi, disableCategoryApi, formatDate, getCategoryApi } from "@/utils";
+import { deleteCategoryApi, disableCategoryApi, formatDate, getCategoryApi, imageUrl } from "@/utils";
 import ActionCategoryModal from "./action_category_modal";
 
 const CategoriesContainer = () => {
@@ -72,7 +72,14 @@ const CategoriesContainer = () => {
 		<Table.Tr key={index}>
 			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.category_id}</Table.Td>
-			<Table.Td>{element.icon}</Table.Td>
+			<Table.Td>
+				<Image
+					radius="md"
+					h={50}
+					w="auto"
+					src={`${imageUrl}/${element.icon}`}
+				/>
+			</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 			<Table.Td>

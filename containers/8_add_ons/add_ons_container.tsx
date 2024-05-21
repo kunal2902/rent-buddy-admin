@@ -2,14 +2,14 @@
 
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Switch, Table } from "@mantine/core";
+import { Image, Switch, Table } from "@mantine/core";
 import { FaRegEdit } from "react-icons/fa";
 import { IoTrashOutline } from "react-icons/io5";
 import { useAddOnsContainer } from "./hook";
 import { DashboardPageHeader } from "@/components";
 import AddAddOnModal from "./add_add_on_modal";
 import { AddOnModel } from "@/models";
-import { addOnsName, deleteAddOnApi, disableAddOnApi, formatDate, getAddOnApi } from "@/utils";
+import { addOnsName, deleteAddOnApi, disableAddOnApi, formatDate, getAddOnApi, imageUrl } from "@/utils";
 import ActionAddOnModal from "./action_add_on_modal";
 
 const AddOnsContainer = () => {
@@ -76,7 +76,14 @@ const AddOnsContainer = () => {
 		<Table.Tr key={index}>
 			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.add_on_id}</Table.Td>
-			<Table.Td>{element.icon}</Table.Td>
+			<Table.Td>
+				<Image
+					radius="md"
+					h={50}
+					w="auto"
+					src={`${imageUrl}/${element.icon}`}
+				/>
+			</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{element.price}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>

@@ -2,5 +2,5 @@ import React from "react";
 
 export const onTextInputChange =
 	(setState: React.Dispatch<React.SetStateAction<string>>) =>
-		(e: React.ChangeEvent<HTMLInputElement>) =>
+		(e: string) =>
 			setState(e.target.value);

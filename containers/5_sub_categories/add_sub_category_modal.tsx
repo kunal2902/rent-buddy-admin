@@ -13,7 +13,6 @@ import {
 import { FileInputComponent } from "@/components/mantine/file_input_component";
 import { getCategoryApi, mantineLargeModalWidth, upsertSubCategoryApi } from "@/utils";
 import { useCreateSubCategoryModal } from "./hook";
-import { CategoryModel } from "@/models";
 
 interface Props {
 	isOpen: boolean;
@@ -34,6 +33,7 @@ const CreateSubCategoryModal = (props: Props) => {
 		selectedFileToUpload,
 	} = useCreateSubCategoryModal();
 	const [categories, setCategories] = useState<any>([]);
+	const [catId, setCatId] = useState<string | null>("");
 
 	useEffect(() => {
 		getCategoryApi((data: any) => {
@@ -43,7 +43,7 @@ const CreateSubCategoryModal = (props: Props) => {
 				value: category.category_id,
 				label: category.name,
 			}));
-			setCategories(formattedCategories)
+			setCategories(formattedCategories);
 			setCallApi(false);
 		}, () => {
 			setCallApi(false);
@@ -59,6 +59,8 @@ const CreateSubCategoryModal = (props: Props) => {
 			subCatData.append("icon_file", selectedFileToUpload);
 		}
 		subCatData.append("name", subCategoryName);
+		// @ts-ignore
+		subCatData.append("category_id", catId);
 		try {
 			await upsertSubCategoryApi(
 				subCatData,
@@ -76,6 +78,9 @@ const CreateSubCategoryModal = (props: Props) => {
 		}
 	};
 
+	// @ts-ignore
+	// @ts-ignore
+	// @ts-ignore
 	return (
 		<ModalComponent
 			opened={isOpen}
@@ -97,6 +102,7 @@ const CreateSubCategoryModal = (props: Props) => {
 
 					<p className="text-base font-public-sans">Icon*</p>
 
+					{/* eslint-disable-next-line react/button-has-type */}
 					<button
 						className="mt-1 flex items-center justify-center w-full"
 						onClick={onChooseIconClick}
@@ -124,6 +130,7 @@ const CreateSubCategoryModal = (props: Props) => {
 
 					{selectedFile && (
 						<div className="w-full mt-1 flex items-center justify-end">
+							{/* eslint-disable-next-line react/button-has-type */}
 							<button
 								className="flex items-center justify-center"
 								onClick={onResetIconClick}
@@ -153,9 +160,12 @@ const CreateSubCategoryModal = (props: Props) => {
 							placeholder="Select category"
 							data={categories}
 							clearable
+							value={catId}
+							onChange={setCatId}
+							checkIconPosition="right"
 						/>
 					</Group>
-				</div>a
+				</div>
 			</div>
 			<div className="mt-3 flex items-center justify-end">
 				<ButtonComponent
