@@ -15,9 +15,9 @@ export interface SelectComponentProps extends SelectProps {
 export const SelectComponent = (props: SelectComponentProps) =>
 	<Select
 		{...props}
-		size={mantineSize}
-		radius={mantineRadius}
-		variant={mantineInputVariant}
+		size={props.size ?? mantineSize}
+		radius={props.radius ?? mantineRadius}
+		variant={props.variant ?? mantineInputVariant}
 		allowDeselect={props.allowDeselect ?? false}
 	>
 		{props.children}
