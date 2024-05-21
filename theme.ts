@@ -2,7 +2,7 @@
 
 import { createTheme, MantineColorsTuple } from "@mantine/core";
 
-const appColor: MantineColorsTuple = [
+export const appColor: MantineColorsTuple = [
 	"#f2f0ff",
 	"#e1def4",
 	"#c1bce0",

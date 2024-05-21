@@ -16,6 +16,7 @@ export * from "@/components/mantine/simple_grid_component";
 export * from "@/components/mantine/space_component";
 export * from "@/components/mantine/table_component";
 export * from "@/components/mantine/text_component";
+export * from "@/components/mantine/title_component";
 export * from "@/components/mantine/text_input_component";
 export * from "@/components/mantine/tooltip_component";
 export * from "@/components/mantine/unstyled_button_component";

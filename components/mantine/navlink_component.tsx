@@ -19,4 +19,5 @@ export const NavLinkComponent = (props: NavLinkComponentProps) => (
 		color={props.color ?? appColorRGBA}
 	>
 		{props.children}
-	</NavLink>;
+	</NavLink>
+);

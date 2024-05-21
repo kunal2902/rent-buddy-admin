@@ -32,7 +32,7 @@ export const mantineButtonSize: MantineSize = "sm";
 export const mantineActionIconSize: MantineSize = "lg";
 export const mantineActionIconVariant: ActionIconVariant = "light";
 export const mantineRadius: MantineRadius = "md";
-export const mantineInputVariant: InputVariant = "filled";
+export const mantineInputVariant: InputVariant = "default";
 export const mantineAvatarVariant: AvatarVariant = "filled";
 export const mantineSpaceHeight: MantineSize = "sm";
 export const mantineSpaceWidth: MantineSize = "sm";
@@ -53,8 +53,12 @@ export const roleIdConstant: string = "role_id";
 export const sidebarStateConstant: string = "sidebar_state";
 
 /** API Constants */
-export const apiUrl: string = "https://nca-crm-api-peggi.ondigitalocean.app/api/v1";
-export const imageUrl: string = "https://nca-crm-api-peggi.ondigitalocean.app/image";
+export const apiUrl: string = process.env.NODE_ENV === "production" ?
+	"https://nca-crm-api-peggi.ondigitalocean.app/api/v1" :
+	"http://localhost:8000/api/v1";
+export const imageUrl: string = process.env.NODE_ENV === "production" ?
+  "https://nca-crm-api-peggi.ondigitalocean.app/image" :
+  "http://localhost:8000/api/v1";
 export const loginAPIPath: string = `${apiUrl}/auth/login`;
 
 // Permission path

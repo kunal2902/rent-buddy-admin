@@ -1,17 +1,29 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { Center, Group, Loader, Pagination, Select, Box, Switch, Table, TextInput } from "@mantine/core";
+import { Box, Loader, Pagination, Switch, Table } from "@mantine/core";
 import { FaRegEdit } from "react-icons/fa";
 import { IoTrashOutline } from "react-icons/io5";
 import { useDebouncedCallback } from "@mantine/hooks";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { GoSortAsc, GoSortDesc } from "react-icons/go";
 import { useTagsContainer } from "./hook";
-import { DashboardPageHeader } from "@/components";
+import {
+	ButtonComponent,
+	CenterComponent,
+	GroupComponent,
+	SelectComponent,
+	SortButtonComponent,
+	SortButtonComponentItemProps,
+	SortItemDirection,
+	TextComponent,
+	TextInputComponent,
+} from "@/components";
 import AddTagModal from "./add_tag_modal";
 import { TagModel } from "@/models";
 import { deleteTagApi, disableTagApi, getTagApi } from "@/utils";
 import ActionTagModal from "./action_tag_modal";
+import { TitleComponent } from "@/components/mantine/title_component";
 
 const TagsContainer = () => {
 	const { isSidebarOpen, isCreateTagModalOpen, toggleCreateModalTagOpen } =
@@ -31,19 +43,19 @@ const TagsContainer = () => {
 
 	useEffect(() => {
 		if (callApi) {
-		getTagApi(
-			`orderBy=${filter}&page=${page}&order=asc`,
-			(data: any) => {
-				setTagsList(data.tags);
-				setCallApi(false);
-			},
-			() => {
-				setCallApi(false);
-			},
-			() => {
-				setCallApi(false);
-			},
-		).then();
+			getTagApi(
+				`orderBy=${filter}&page=${page}&order=asc`,
+				(data: any) => {
+					setTagsList(data.tags);
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				}
+			).then();
 		}
 	}, [filter, page, callApi]);
 
@@ -64,7 +76,7 @@ const TagsContainer = () => {
 				},
 				() => {
 					setCallApi(false);
-				},
+				}
 			).then();
 			setLoading(false);
 		}
@@ -84,7 +96,7 @@ const TagsContainer = () => {
 	const handleOpenModal = (
 		id: string,
 		type: string,
-		disableType: boolean,
+		disableType: boolean
 	) => {
 		setTagId(id);
 		setTagType(type);
@@ -108,8 +120,8 @@ const TagsContainer = () => {
 				},
 				() => {
 					setCallApi(false);
-				},
-			);
+				}
+			).then();
 		} else {
 			deleteTagApi(
 				tagId,
@@ -122,8 +134,8 @@ const TagsContainer = () => {
 				},
 				() => {
 					setCallApi(false);
-				},
-			);
+				}
+			).then();
 		}
 	};
 
@@ -134,12 +146,12 @@ const TagsContainer = () => {
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>
 				<Switch
-					checked={element.is_disabled === true}
+					checked={element.is_disabled}
 					onClick={() =>
 						handleOpenModal(
 							element.tag_id,
 							"disable",
-							element.is_disabled,
+							element.is_disabled
 						)
 					}
 				/>
@@ -154,7 +166,7 @@ const TagsContainer = () => {
 							handleOpenModal(
 								element.tag_id,
 								"delete",
-								element.is_disabled,
+								element.is_disabled
 							)
 						}
 					/>
@@ -165,7 +177,7 @@ const TagsContainer = () => {
 							handleOpenModal(
 								element.tag_id,
 								"edit",
-								element.is_disabled,
+								element.is_disabled
 							);
 							setTagName(element.name);
 							setTagId(element.tag_id);
@@ -179,44 +191,94 @@ const TagsContainer = () => {
 	return (
 		<main
 			className={`flex min-h-screen w-full bg-light-background-natural flex-col pt-14 ${
-				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-16"
+				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-14"
 			}`}
 		>
-			<DashboardPageHeader
-				heading="Tags"
-				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
-				button
-				buttonProps={{
-					title: "New Tag",
-					titleClassName: "sm:flex hidden",
-					onClick: handleAddOpenModal,
-					className: "rounded-md w-fit text-grey-100 text-sm",
-					children: <Plus size={20} className="sm:mr-2 mr-0" />,
-				}}
-			/>
 
-			<Box style={{ overflow: "hidden" }}>
-				<Box maw={1300} p="md" mx="auto" bg="var(--mantine-color-blue-light)">
-					<Group grow justify="center" gap="lg">
-						<TextInput
-							placeholder="Enter Tag Name"
-							value={searchValue}
-							onChange={handleChange}
-							rightSection={loading && <Loader size={20} />}
-						/>
-						<Select
-							placeholder="Order By"
-							searchable
-							data={["Name", "Tag Id"]}
-							onSearchChange={(value) => {
-								if (value === "Name") {
-									setFilter("name");
-								} else {
-									setFilter("tag_id");
-								}
-							}}
-						/>
-					</Group>
+			<GroupComponent className="mx-3 my-2" align="center" justify="space-between">
+				<TitleComponent title="Tags" />
+				<GroupComponent>
+					<SelectComponent
+						placeholder="Searching In"
+						searchable
+						size="sm"
+						defaultValue={filter}
+						data={["Name", "Tag Id"]}
+						onSearchChange={(value) => {
+							if (value === "Name") {
+								setFilter("name");
+							} else {
+								setFilter("tag_id");
+							}
+						}}
+					/>
+					<TextInputComponent
+						size="sm"
+						value={searchValue}
+						onChange={handleChange}
+						placeholder="Search"
+						rightSection={loading && <Loader size={20} />}
+					/>
+
+					<SortButtonComponent
+						items={
+							[
+								{
+									id: 1,
+									label: "Id - ascending",
+									icon: GoSortAsc,
+									direction: SortItemDirection.ascending,
+								},
+								{
+									id: 2,
+									label: "Id - descending",
+									icon: GoSortDesc,
+									direction: SortItemDirection.descending,
+								},
+								{
+									id: 3,
+									label: "Name - ascending",
+									icon: GoSortAsc,
+									direction: SortItemDirection.ascending,
+								},
+								{
+									id: 4,
+									label: "Name - descending",
+									icon: GoSortDesc,
+									direction: SortItemDirection.descending,
+								},
+								{
+									id: 5,
+									label: "Date - ascending",
+									icon: GoSortAsc,
+									direction: SortItemDirection.ascending,
+								},
+								{
+									id: 6,
+									label: "Date - descending",
+									icon: GoSortDesc,
+									direction: SortItemDirection.descending,
+								},
+							]
+						}
+						onSelected={(selected: SortButtonComponentItemProps) => {
+							console.log(selected.label);
+						}}
+					/>
+
+					<ButtonComponent
+						variant="light"
+						onClick={handleAddOpenModal}
+					>
+						<Plus size={20} className="sm:mr-2 mr-0" />
+						<TextComponent text="Add Tag" />
+					</ButtonComponent>
+				</GroupComponent>
+
+			</GroupComponent>
+
+			<Box style={{ overflow: "hidden" }} className="mx-3">
+				<Box mx="auto">
 					<Table striped highlightOnHover withTableBorder>
 						<Table.Thead>
 							<Table.Tr>
@@ -229,7 +291,7 @@ const TagsContainer = () => {
 						</Table.Thead>
 						<Table.Tbody>{rows}</Table.Tbody>
 					</Table>
-					<Center>
+					<CenterComponent>
 						<Pagination
 							total={10}
 							value={page}
@@ -238,9 +300,8 @@ const TagsContainer = () => {
 							}}
 							mt="sm"
 							radius="lg"
-							color="teal"
 						/>
-					</Center>
+					</CenterComponent>
 				</Box>
 			</Box>
 
