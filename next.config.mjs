@@ -13,6 +13,7 @@ export default withBundleAnalyzer({
     optimizePackageImports: ['@mantine/core', '@mantine/hooks'],
   },
   images: {
-    domains: ['localhost', 'source.unsplash.com'],
+    // domains: ['localhost', 'source.unsplash.com'],
+    domains: ['nca-crm-api-peggi.ondigitalocean.app'],
   },
 });

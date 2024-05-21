@@ -1,14 +1,14 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { Switch, Table } from "@mantine/core";
+import { Image, Switch, Table } from "@mantine/core";
 import { FaRegEdit } from "react-icons/fa";
 import { IoTrashOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import { useSubCategoriesContainer } from "./hook";
 import { DashboardPageHeader } from "@/components";
 import { SubCategoryModel } from "@/models";
-import { deleteSubCategoryApi, disableSubCategoryApi, formatDate, getSubCategoryApi } from "@/utils";
+import { deleteSubCategoryApi, disableSubCategoryApi, formatDate, getSubCategoryApi, imageUrl } from "@/utils";
 import CreateSubCategoryModal from "./add_sub_category_modal";
 import ActionSubCategoryModal from "./action_sub_category_modal";
 
@@ -74,7 +74,14 @@ const SubCategoriesContainer = () => {
 		<Table.Tr key={index}>
 			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.sub_category_id}</Table.Td>
-			<Table.Td>{element.icon}</Table.Td>
+			<Table.Td>
+				<Image
+					radius="md"
+					h={50}
+					w="auto"
+					src={`${imageUrl}/${element.icon}`}
+				/>
+			</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>

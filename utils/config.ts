@@ -52,7 +52,8 @@ export const roleIdConstant: string = "role_id";
 export const sidebarStateConstant: string = "sidebar_state";
 
 /** API Constants */
-export const apiUrl: string = "http://localhost:8000/api/v1";
+export const apiUrl: string = "https://nca-crm-api-peggi.ondigitalocean.app/api/v1";
+export const imageUrl: string = "https://nca-crm-api-peggi.ondigitalocean.app/image";
 export const loginAPIPath: string = `${apiUrl}/auth/login`;
 
 // Permission path

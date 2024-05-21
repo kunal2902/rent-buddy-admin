@@ -22,9 +22,7 @@ export const useCreateCustomAttributeModal = () => {
 	const [customAttributeName, setCustomAttributeName] = useState<string>("");
 	const [type, setType] = useState<string | null>("");
 
-	useEffect(() => {
-		console.log("type", type);
-	}, [type]);
+	useEffect(() => {}, [type]);
 
 	return {
 		customAttributeName,

@@ -1,11 +1,11 @@
 import { MainNavbar, MainSidebar } from "@/components";
-import { AboutPageContainer } from "@/containers";
+import { RolesSettingsContainer } from "@/containers";
 
 const Roles = () => (
 	<>
 		<MainNavbar />
 		<MainSidebar />
-		<AboutPageContainer />
+		<RolesSettingsContainer />
 	</>
 );
 
