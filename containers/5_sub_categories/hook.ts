@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import { useRecoilValue } from "recoil";
 import {
-	onTextInputChange,
 	sidebarStateAtom,
 	toggleBooleanState,
 } from "@/utils";
@@ -21,7 +20,6 @@ export const useSubCategoriesContainer = () => {
 };
 
 export const useCreateSubCategoryModal = () => {
-	const [subCategoryName, setSubCategoryName] = useState<string>("");
 	const [selectedFileToUpload, setSelectedFileToUpload] =
 		useState<File | null>(null);
 	const [selectedFile, setSelectedFile] = useState<string | null>(null);
@@ -55,8 +53,6 @@ export const useCreateSubCategoryModal = () => {
 	};
 
 	return {
-		subCategoryName,
-		onSubCategoryNameChange: onTextInputChange(setSubCategoryName),
 		onChooseIconClick,
 		fileInputTriggerRef,
 		selectedFile,

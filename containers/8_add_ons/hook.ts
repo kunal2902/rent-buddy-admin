@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRecoilValue } from "recoil";
-import { onTextInputChange, sidebarStateAtom, toggleBooleanState } from "@/utils";
+import { sidebarStateAtom, toggleBooleanState } from "@/utils";
 
 export const useAddOnsContainer = () => {
 	const isSidebarOpen = useRecoilValue<boolean>(sidebarStateAtom);
@@ -13,17 +13,5 @@ export const useAddOnsContainer = () => {
 		toggleCreateAddOnModalOpen: toggleBooleanState(
 			setIsCreateAddOnModalOpen
 		),
-	};
-};
-
-export const useCreateAddOnModal = () => {
-	const [addOnName, setAddOnName] = useState<string>("");
-	const [addOnPrice, setAddOnPrice] = useState<string>("");
-
-	return {
-		addOnName,
-		onAddOnNameChange: onTextInputChange(setAddOnName),
-		addOnPrice,
-		onAddOnPriceChange: onTextInputChange(setAddOnPrice),
 	};
 };

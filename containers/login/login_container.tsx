@@ -4,6 +4,7 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { setCookie } from "cookies-next";
+import { useState } from "react";
 import {
 	loginApi,
 	crmJwtConstant,
@@ -13,21 +14,15 @@ import {
 	userIdConstant,
 	userNameConstant, cookieOptions,
 } from "@/utils";
-import { useLoginContainer } from "./hook";
 import {
 	TextInputComponent,
 	PasswordInputComponent, ButtonComponent,
 } from "@/components";
 
 const LoginContainer = () => {
-	const {
-		email,
-		password,
-		onEmailChange,
-		onPasswordChange,
-		isPasswordVisible,
-		togglePasswordVisibility,
-	} = useLoginContainer();
+	const [email, setEmail] = useState<string>("simon@admin.com");
+	const [password, setPassword] = useState<string>("bulai002");
+	const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 	const router = useRouter();
 
 	const handleLogin = async (event: { preventDefault: () => void }) => {
@@ -87,7 +82,7 @@ const LoginContainer = () => {
 					label="Email"
 					value={email}
 					variant="filled"
-					onChange={onEmailChange}
+					setValue={setEmail}
 					placeholder="abc@gmail.com"
 				/>
 
@@ -96,9 +91,9 @@ const LoginContainer = () => {
 					label="Password"
 					value={password}
 					placeholder="******"
-					onChange={onPasswordChange}
+					setValue={setPassword}
 					visible={isPasswordVisible}
-					onVisibilityChange={togglePasswordVisibility}
+					onVisibilityChange={setIsPasswordVisible}
 				/>
 
 				<div className="w-full flex justify-end">

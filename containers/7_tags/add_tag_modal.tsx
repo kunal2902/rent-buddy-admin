@@ -1,8 +1,7 @@
 "use client";
 
 import { toast } from "react-toastify";
-import { Dispatch, SetStateAction } from "react";
-import { useCreateTagModal } from "./hook";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import {
 	ButtonComponent,
 	ModalComponent,
@@ -20,7 +19,7 @@ interface Props {
 
 const AddTagModal = (props: Props) => {
 	const { isOpen, onClose, setCallApi, initialTagValue, tagId } = props;
-	const { tagName, onTagNameChange } = useCreateTagModal(initialTagValue);
+	const [tagName, setTagName] = useState<string>(initialTagValue);
 	const isEditModal: boolean = initialTagValue !== "";
 
 	const handleSubmitTag = async (event: React.FormEvent) => {
@@ -58,8 +57,8 @@ const AddTagModal = (props: Props) => {
 				required
 				title="Name"
 				value={tagName}
+				setValue={setTagName}
 				placeholder="Awesome Name"
-				onChange={onTagNameChange}
 				className="border-grey-600 font-barlow font-base text-base"
 			/>
 

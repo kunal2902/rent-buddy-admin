@@ -1,6 +1,6 @@
 "use client";
 
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Image as ImageIcon, Trash } from "lucide-react";
 import Image from "next/image";
@@ -22,9 +22,8 @@ interface Props {
 
 const CreateSubCategoryModal = (props: Props) => {
 	const { isOpen, onClose, setCallApi } = props;
+	const [subCategoryName, setSubCategoryName] = useState<string>("");
 	const {
-		subCategoryName,
-		onSubCategoryNameChange,
 		onChooseIconClick,
 		fileInputTriggerRef,
 		onFilePick,
@@ -151,7 +150,7 @@ const CreateSubCategoryModal = (props: Props) => {
 							title="Name"
 							value={subCategoryName}
 							placeholder="Awesome Name"
-							onChange={onSubCategoryNameChange}
+							setValue={setSubCategoryName}
 							className="border-grey-600 font-barlow font-base text-base"
 						/>
 						<Select

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCreateCustomAttributeModal } from "./hook";
+import React, { useState } from "react";
 import { ButtonComponent, ModalComponent, SelectComponent, TextInputComponent } from "@/components";
 import { CustomAttributeTypeOptions } from "@/constants";
 
@@ -11,13 +11,8 @@ interface Props {
 
 const AddCustomAttributeModal = (props: Props) => {
 	const { isOpen, onClose } = props;
-
-	const {
-		customAttributeName,
-		onCustomAttributeNameChange,
-		type,
-		onTypeChange,
-	} = useCreateCustomAttributeModal();
+	const [customAttributeName, setCustomAttributeName] = useState<string>("");
+	const [type, setType] = useState<string | null>(null);
 
 	return (
 		<ModalComponent opened={isOpen} onClose={onClose} className="border-grey-800" title="New Attribute">
@@ -28,15 +23,15 @@ const AddCustomAttributeModal = (props: Props) => {
 				title="Name"
 				placeholder="Awesome Name"
 				value={customAttributeName}
-				onChange={onCustomAttributeNameChange}
+				setValue={setCustomAttributeName}
 				className="border-grey-600 font-barlow font-base text-base"
 			/>
 
 			<SelectComponent
 				required
-				value={type}
 				label="Type"
-				onChange={onTypeChange}
+				value={type}
+				setValue={setType}
 				placeholder="Select a type"
 				data={CustomAttributeTypeOptions}
 			/>
