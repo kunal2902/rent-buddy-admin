@@ -3,8 +3,6 @@ export * from "@/utils/config";
 export * from "@/utils/get_query_client";
 export * from "@/utils/lib_utils";
 export * from "@/utils/network_utils";
-export * from "@/utils/on_select_input_change";
-export * from "@/utils/on_text_input_change";
 export * from "@/utils/react-query-provider";
 export * from "@/utils/recoil-provider";
 export * from "@/utils/theme-provider";

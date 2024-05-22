@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { Box, Loader, Pagination, Switch, Table } from "@mantine/core";
+import { Box, ComboboxItem, Loader, Pagination, Switch, Table } from "@mantine/core";
 import { FaRegEdit } from "react-icons/fa";
 import { IoTrashOutline } from "react-icons/io5";
 import { useDebouncedCallback } from "@mantine/hooks";
@@ -37,7 +37,7 @@ const TagsContainer = () => {
 	const [searchValue, setSearchValue] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(false);
 	const [page, setPage] = useState<number>(1);
-	const [filter, setFilter] = useState<string>("tag_id");
+	const [filter, setFilter] = useState<string | null>("tag_id");
 	const [isActionTagModalOpen, setIsActionTagModalOpen] =
 		useState<boolean>(false);
 
@@ -59,14 +59,20 @@ const TagsContainer = () => {
 		}
 	}, [filter, page, callApi]);
 
+	useEffect(() => {
+		if (searchValue) {
+			handleSearch(searchValue);
+		}
+	}, [searchValue]);
+
 	const handleSearch = useDebouncedCallback(async (query: string) => {
 		setLoading(true);
-		if (searchValue === "") {
+		if (query === "") {
 			setCallApi(true);
 			setLoading(false);
 		} else {
 			getTagApi(
-				`name=${searchValue}`,
+				`name=${query}`,
 				(data: any) => {
 					setTagsList(data.tags);
 					setCallApi(false);
@@ -81,11 +87,6 @@ const TagsContainer = () => {
 			setLoading(false);
 		}
 	}, 500);
-
-	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setSearchValue(event.currentTarget.value);
-		handleSearch(event.currentTarget.value);
-	};
 
 	const handleAddOpenModal = () => {
 		setTagId("");
@@ -188,6 +189,17 @@ const TagsContainer = () => {
 		</Table.Tr>
 	));
 
+	const searchItems: Array<ComboboxItem> = [
+		{
+			label: "Name",
+			value: "name",
+		},
+		{
+			label: "Tag Id",
+			value: "tag_id",
+		},
+	];
+
 	return (
 		<main
 			className={`flex min-h-screen w-full bg-light-background-natural flex-col pt-14 ${
@@ -202,20 +214,17 @@ const TagsContainer = () => {
 						placeholder="Searching In"
 						searchable
 						size="sm"
-						defaultValue={filter}
-						data={["Name", "Tag Id"]}
-						onSearchChange={(value) => {
-							if (value === "Name") {
-								setFilter("name");
-							} else {
-								setFilter("tag_id");
-							}
+						data={searchItems}
+						setValue={setFilter}
+						setOption={(option) => {
+								setFilter(option.value);
 						}}
 					/>
+
 					<TextInputComponent
 						size="sm"
 						value={searchValue}
-						onChange={handleChange}
+						setValue={setSearchValue}
 						placeholder="Search"
 						rightSection={loading && <Loader size={20} />}
 					/>

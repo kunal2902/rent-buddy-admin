@@ -2,12 +2,11 @@
 
 import React, { Dispatch, SetStateAction, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { useCreateCategoryModal } from "./hook";
-import { ButtonComponent, FileInputComponent, ModalComponent, TextInputComponent } from "@/components";
-import { upsertCategoryApi } from "@/utils";
 import Image from "next/image";
 import { Image as ImageIcon, Trash } from "lucide-react";
 import { Group } from "@mantine/core";
+import { ButtonComponent, FileInputComponent, ModalComponent, TextInputComponent } from "@/components";
+import { upsertCategoryApi } from "@/utils";
 
 interface Props {
     isOpen: boolean;
@@ -17,7 +16,7 @@ interface Props {
 
 const CreateCategoryModal = (props: Props) => {
 	const { isOpen, onClose, setCallApi } = props;
-	const { categoryName, onCategoryNameChange } = useCreateCategoryModal();
+	const [categoryName, setCategoryName] = useState<string>("");
 	const [selectedFileToUpload, setSelectedFileToUpload] = useState<File | null>(null);
 	const [selectedFile, setSelectedFile] = useState<string | null>(null);
 	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
@@ -136,7 +135,7 @@ const CreateCategoryModal = (props: Props) => {
 							title="Name"
 							value={categoryName}
 							placeholder="Awesome Name"
-							onChange={onCategoryNameChange}
+							setValue={setCategoryName}
 							className="border-grey-600 font-barlow font-base text-base"
 						/>
 					</Group>

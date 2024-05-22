@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { Image, Switch, Table } from "@mantine/core";
+import { IoTrashOutline } from "react-icons/io5";
+import { FaRegEdit } from "react-icons/fa";
 import { DashboardPageHeader } from "@/components";
 import { useRolesSettingsContainer } from "./hook";
 import { formatDate, getRolesApi, imageUrl } from "@/utils";
 import { RoleModel } from "@/models";
-import { IoTrashOutline } from "react-icons/io5";
-import { FaRegEdit } from "react-icons/fa";
 
 const RolesSettingsContainer = () => {
 	const { isSidebarOpen } = useRolesSettingsContainer();
