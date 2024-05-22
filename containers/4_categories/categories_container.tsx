@@ -25,6 +25,8 @@ const CategoriesContainer = () => {
 	const [catType, setCatType] = useState<string>("");
 	const [isDisable, setIsDisable] = useState<boolean>(true);
 	const [isActionCatModalOpen, setIsActionCatModalOpen] = useState<boolean>(false);
+	const [itemCatName, setCatName] = useState<string>("");
+	const [itemCatImage, setCatImage] = useState<string | undefined>("");
 
 	useEffect(() => {
 		if (callApi) {
@@ -68,6 +70,15 @@ const CategoriesContainer = () => {
 		}
 	};
 
+	const handleUpsertItemTypeModal = (
+		id: string, name: string, image: string | undefined, type: string) => {
+		setCatId(id);
+		setCatName(name);
+		setCatImage(image);
+		toggleCreateCategoryModalOpen();
+		setCatType(type);
+	};
+
 	const rows = categoryList.map((element, index) => (
 		<Table.Tr key={index}>
 			<Table.Td>{index + 1}</Table.Td>
@@ -91,7 +102,7 @@ const CategoriesContainer = () => {
 			<Table.Td>
 				<div className="flex">
 					<IoTrashOutline color="red" size={25} style={{ marginRight: "10px" }} onClick={() => handleOpenModal(element.category_id, "delete", element.is_disabled)} />
-					<FaRegEdit color="rgba(108, 210, 213, 1)" size={25} />
+					<FaRegEdit color="rgba(108, 210, 213, 1)" size={25} onClick={() => handleUpsertItemTypeModal(element.category_id, element.name, element.icon, "Edit")} />
 				</div>
 			</Table.Td>
 		</Table.Tr>

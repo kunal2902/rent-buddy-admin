@@ -66,11 +66,11 @@ const ItemTypesContainer = () => {
 		}
 	};
 
-	const handleUpsertItemTypeModal = (id: string, name: string, image: string | undefined, type: string) => {
+	const handleUpsertItemTypeModal = (
+		id: string, name: string, image: string | undefined, type: string) => {
 		setItemTypeId(id);
 		setItemTypeName(name);
 		setItemTypeImage(image);
-		setItemTypeId(id);
 		toggleCreateItemTypeModalOpen();
 		setItemType(type);
 	};

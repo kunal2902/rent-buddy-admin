@@ -2,12 +2,12 @@
 
 import React, { Dispatch, SetStateAction, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { useCreateCategoryModal } from "./hook";
-import { ButtonComponent, FileInputComponent, ModalComponent, TextInputComponent } from "@/components";
-import { upsertCategoryApi } from "@/utils";
 import Image from "next/image";
 import { Image as ImageIcon, Trash } from "lucide-react";
 import { Group } from "@mantine/core";
+import { useCreateCategoryModal } from "./hook";
+import { ButtonComponent, FileInputComponent, ModalComponent, TextInputComponent } from "@/components";
+import { upsertCategoryApi } from "@/utils";
 
 interface Props {
     isOpen: boolean;
