@@ -13,7 +13,6 @@ import {
 	CenterComponent,
 } from "@/components";
 import {
-	appAccentColor,
 	appLogoHeight,
 	appLogoWidth,
 	appName,
@@ -52,7 +51,7 @@ export const MainNavbar = () => {
 					<SpaceComponent showWidth />
 
 					<CenterComponent>
-						<TextComponent bold text={appName} c={appAccentColor} />
+						<TextComponent bold text={appName} />
 					</CenterComponent>
 				</UnstyledButtonComponent>
 			</div>

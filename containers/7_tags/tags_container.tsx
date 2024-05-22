@@ -1,17 +1,19 @@
 "use client";
 
-import { Plus } from "lucide-react";
-import { Box, ComboboxItem, Loader, Pagination, Switch, Table } from "@mantine/core";
-import { FaRegEdit } from "react-icons/fa";
-import { IoTrashOutline } from "react-icons/io5";
+import { Delete, Plus } from "lucide-react";
+import { Box, ComboboxItem, Container, Loader, LoadingOverlay, Pagination, Stack, Table } from "@mantine/core";
+import { MdOutlineEdit } from "react-icons/md";
 import { useDebouncedCallback } from "@mantine/hooks";
 import React, { useEffect, useState } from "react";
 import { GoSortAsc, GoSortDesc } from "react-icons/go";
 import { useTagsContainer } from "./hook";
 import {
+	ActionIconComponent, BoxComponent,
 	ButtonComponent,
 	CenterComponent,
-	GroupComponent,
+	GroupComponent, PaperComponent,
+	PopConfirmComponent,
+	PopConfirmType,
 	SelectComponent,
 	SortButtonComponent,
 	SortButtonComponentItemProps,
@@ -21,8 +23,7 @@ import {
 } from "@/components";
 import AddTagModal from "./add_tag_modal";
 import { TagModel } from "@/models";
-import { deleteTagApi, disableTagApi, getTagApi } from "@/utils";
-import ActionTagModal from "./action_tag_modal";
+import { deleteTagApi, disableTagApi, getTagApi, mantineRadius } from "@/utils";
 import { TitleComponent } from "@/components/mantine/title_component";
 
 const TagsContainer = () => {
@@ -30,16 +31,62 @@ const TagsContainer = () => {
 		useTagsContainer();
 	const [tagsList, setTagsList] = useState<TagModel[]>([]);
 	const [callApi, setCallApi] = useState<boolean>(true);
-	const [tagId, setTagId] = useState<string>("");
-	const [tagType, setTagType] = useState<string>("");
-	const [isDisable, setIsDisable] = useState<boolean>(true);
+	const [tagId, setTagId] = useState("");
 	const [tagName, setTagName] = useState<string>("");
 	const [searchValue, setSearchValue] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(false);
 	const [page, setPage] = useState<number>(1);
 	const [filter, setFilter] = useState<string | null>("tag_id");
-	const [isActionTagModalOpen, setIsActionTagModalOpen] =
-		useState<boolean>(false);
+
+	const searchItems: Array<ComboboxItem> = [
+		{
+			label: "Name",
+			value: "name",
+		},
+		{
+			label: "Tag Id",
+			value: "tag_id",
+		},
+	];
+
+	const sortItems: Array<SortButtonComponentItemProps> = [
+		{
+			id: 1,
+			label: "Id - ascending",
+			icon: GoSortAsc,
+			direction: SortItemDirection.ascending,
+		},
+		{
+			id: 2,
+			label: "Id - descending",
+			icon: GoSortDesc,
+			direction: SortItemDirection.descending,
+		},
+		{
+			id: 3,
+			label: "Name - ascending",
+			icon: GoSortAsc,
+			direction: SortItemDirection.ascending,
+		},
+		{
+			id: 4,
+			label: "Name - descending",
+			icon: GoSortDesc,
+			direction: SortItemDirection.descending,
+		},
+		{
+			id: 5,
+			label: "Date - ascending",
+			icon: GoSortAsc,
+			direction: SortItemDirection.ascending,
+		},
+		{
+			id: 6,
+			label: "Date - descending",
+			icon: GoSortDesc,
+			direction: SortItemDirection.descending,
+		},
+	];
 
 	useEffect(() => {
 		if (callApi) {
@@ -88,33 +135,18 @@ const TagsContainer = () => {
 		}
 	}, 500);
 
-	const handleAddOpenModal = () => {
-		setTagId("");
-		setTagName("");
+	const handleAddOpenModal = (id: string, name: string) => {
+		setTagId(id);
+		setTagName(name);
 		toggleCreateModalTagOpen();
 	};
 
-	const handleOpenModal = (
-		id: string,
-		type: string,
-		disableType: boolean
-	) => {
-		setTagId(id);
-		setTagType(type);
-		setIsDisable(disableType);
-		setIsActionTagModalOpen(true);
-	};
-
-	const handleActionTag = () => {
-		if (tagType === "edit") {
-			toggleCreateModalTagOpen();
-			setIsActionTagModalOpen(false);
-		} else if (tagType === "disable") {
-			disableTagApi(
-				tagId,
+	const handleActionTag = async (id: string, tagType: string) => {
+		if (tagType === "disable") {
+			await disableTagApi(
+				id,
 				() => {
 					setCallApi(true);
-					setIsActionTagModalOpen(false);
 				},
 				() => {
 					setCallApi(false);
@@ -122,13 +154,12 @@ const TagsContainer = () => {
 				() => {
 					setCallApi(false);
 				}
-			).then();
+			);
 		} else {
-			deleteTagApi(
-				tagId,
+			await deleteTagApi(
+				id,
 				() => {
 					setCallApi(true);
-					setIsActionTagModalOpen(false);
 				},
 				() => {
 					setCallApi(false);
@@ -136,7 +167,7 @@ const TagsContainer = () => {
 				() => {
 					setCallApi(false);
 				}
-			).then();
+			);
 		}
 	};
 
@@ -145,60 +176,31 @@ const TagsContainer = () => {
 			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.tag_id}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
-			<Table.Td>
-				<Switch
-					checked={element.is_disabled}
-					onClick={() =>
-						handleOpenModal(
-							element.tag_id,
-							"disable",
-							element.is_disabled
-						)
-					}
+			<Table.Td w={60}>
+				<PopConfirmComponent
+					entityName="tag"
+					type={PopConfirmType.switch}
+					isDisabled={element.is_disabled}
+					actionName={element.is_disabled ? "enable" : "disable"}
+					onConfirm={async () => handleActionTag(element.tag_id, "disable")}
 				/>
 			</Table.Td>
-			<Table.Td>
-				<div className="flex">
-					<IoTrashOutline
-						color="red"
-						size={25}
-						style={{ marginRight: "10px" }}
-						onClick={() =>
-							handleOpenModal(
-								element.tag_id,
-								"delete",
-								element.is_disabled
-							)
-						}
+			<Table.Td w={100}>
+				<GroupComponent>
+					<PopConfirmComponent
+						entityName="tag"
+						actionName="delete"
+						onConfirm={async () => handleActionTag(element.tag_id, "delete")}
 					/>
-					<FaRegEdit
-						color="rgba(108, 210, 213, 1)"
-						size={25}
-						onClick={() => {
-							handleOpenModal(
-								element.tag_id,
-								"edit",
-								element.is_disabled
-							);
-							setTagName(element.name);
-							setTagId(element.tag_id);
-						}}
-					/>
-				</div>
+					<ActionIconComponent
+						onClick={() => handleAddOpenModal(element.tag_id, element.name)}
+						size="md">
+						<MdOutlineEdit size={18} />
+					</ActionIconComponent>
+				</GroupComponent>
 			</Table.Td>
 		</Table.Tr>
 	));
-
-	const searchItems: Array<ComboboxItem> = [
-		{
-			label: "Name",
-			value: "name",
-		},
-		{
-			label: "Tag Id",
-			value: "tag_id",
-		},
-	];
 
 	return (
 		<main
@@ -207,7 +209,7 @@ const TagsContainer = () => {
 			}`}
 		>
 
-			<GroupComponent className="mx-3 my-2" align="center" justify="space-between">
+			<GroupComponent className="m-3" align="center" justify="space-between">
 				<TitleComponent title="Tags" />
 				<GroupComponent>
 					<SelectComponent
@@ -218,8 +220,8 @@ const TagsContainer = () => {
 						setValue={setFilter}
 						setOption={(option) => {
 								setFilter(option.value);
-						}}
-					/>
+							}}
+						/>
 
 					<TextInputComponent
 						size="sm"
@@ -227,108 +229,77 @@ const TagsContainer = () => {
 						setValue={setSearchValue}
 						placeholder="Search"
 						rightSection={loading && <Loader size={20} />}
-					/>
+						/>
 
 					<SortButtonComponent
-						items={
-							[
-								{
-									id: 1,
-									label: "Id - ascending",
-									icon: GoSortAsc,
-									direction: SortItemDirection.ascending,
-								},
-								{
-									id: 2,
-									label: "Id - descending",
-									icon: GoSortDesc,
-									direction: SortItemDirection.descending,
-								},
-								{
-									id: 3,
-									label: "Name - ascending",
-									icon: GoSortAsc,
-									direction: SortItemDirection.ascending,
-								},
-								{
-									id: 4,
-									label: "Name - descending",
-									icon: GoSortDesc,
-									direction: SortItemDirection.descending,
-								},
-								{
-									id: 5,
-									label: "Date - ascending",
-									icon: GoSortAsc,
-									direction: SortItemDirection.ascending,
-								},
-								{
-									id: 6,
-									label: "Date - descending",
-									icon: GoSortDesc,
-									direction: SortItemDirection.descending,
-								},
-							]
-						}
+						items={sortItems}
 						onSelected={(selected: SortButtonComponentItemProps) => {
-							console.log(selected.label);
-						}}
-					/>
+								console.log(selected.label);
+							}}
+						/>
 
 					<ButtonComponent
 						variant="light"
-						onClick={handleAddOpenModal}
-					>
-						<Plus size={20} className="sm:mr-2 mr-0" />
+						onClick={() => handleAddOpenModal("", "")}
+						>
+						<Plus size={18} className="sm:mr-2 mr-0" />
 						<TextComponent text="Add Tag" />
 					</ButtonComponent>
 				</GroupComponent>
-
 			</GroupComponent>
 
-			<Box style={{ overflow: "hidden" }} className="mx-3">
-				<Box mx="auto">
-					<Table striped highlightOnHover withTableBorder>
-						<Table.Thead>
-							<Table.Tr>
-								<Table.Th>Index</Table.Th>
-								<Table.Th>Tag Id</Table.Th>
-								<Table.Th>Name</Table.Th>
-								<Table.Th>Disable</Table.Th>
-								<Table.Th>Action</Table.Th>
-							</Table.Tr>
-						</Table.Thead>
-						<Table.Tbody>{rows}</Table.Tbody>
-					</Table>
-					<CenterComponent>
-						<Pagination
-							total={10}
-							value={page}
-							onChange={(pageNumber) => {
-								setPage(pageNumber);
-							}}
-							mt="sm"
-							radius="lg"
-						/>
-					</CenterComponent>
-				</Box>
-			</Box>
+			{
+				tagsList.length === 0 ?
+					<LoadingOverlay
+						mt={116}
+						mr={12}
+						ml={68}
+						mb={12}
+						zIndex={10}
+						visible={tagsList.length === 0}
+						overlayProps={{ radius: mantineRadius, backgroundOpacity: 0.1, color: "#000" }}
+						/> :
+					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
+						<BoxComponent mx="auto">
+							<PaperComponent withBorder radius={mantineRadius}>
+								<Table highlightOnHover>
+									<Table.Thead>
+										<Table.Tr>
+											<Table.Th>Index</Table.Th>
+											<Table.Th>Tag Id</Table.Th>
+											<Table.Th>Name</Table.Th>
+											<Table.Th>Disable</Table.Th>
+											<Table.Th>Action</Table.Th>
+										</Table.Tr>
+									</Table.Thead>
+									<Table.Tbody>{rows}</Table.Tbody>
+								</Table>
+							</PaperComponent>
+							<CenterComponent>
+								<Pagination
+									mt={12}
+									total={10}
+									value={page}
+									radius={mantineRadius}
+									onChange={(pageNumber) => {
+										setPage(pageNumber);
+									}}
+								/>
+							</CenterComponent>
+						</BoxComponent>
+					</BoxComponent>
 
+			}
+
+			{isCreateTagModalOpen &&
 			<AddTagModal
-				isOpen={isCreateTagModalOpen}
-				onClose={toggleCreateModalTagOpen}
+				tagId={tagId}
 				setCallApi={setCallApi}
 				initialTagValue={tagName}
-				tagId={tagId}
+				isOpen={isCreateTagModalOpen}
+				onClose={toggleCreateModalTagOpen}
 			/>
-
-			<ActionTagModal
-				isOpen={isActionTagModalOpen}
-				onClose={() => setIsActionTagModalOpen(false)}
-				setCallApi={setCallApi}
-				handleActionTag={handleActionTag}
-				tagAction={tagType}
-			/>
+			}
 		</main>
 	);
 };
