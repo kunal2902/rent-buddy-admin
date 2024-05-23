@@ -5,6 +5,7 @@ import { ComboboxItem, Image, Loader, Switch, Table } from "@mantine/core";
 import { FaRegEdit } from "react-icons/fa";
 import { IoTrashOutline } from "react-icons/io5";
 import React, { useEffect, useState } from "react";
+import { GoSortAsc, GoSortDesc } from "react-icons/go";
 import { useSubCategoriesContainer } from "./hook";
 import {
 	ButtonComponent,
@@ -13,13 +14,12 @@ import {
 	SelectComponent,
 	SortButtonComponent, SortButtonComponentItemProps, SortItemDirection, TextComponent,
 	TextInputComponent,
-	TitleComponent
+	TitleComponent,
 } from "@/components";
 import { SubCategoryModel } from "@/models";
 import { deleteSubCategoryApi, disableSubCategoryApi, formatDate, getSubCategoryApi, imageUrl } from "@/utils";
 import CreateSubCategoryModal from "./add_sub_category_modal";
 import ActionSubCategoryModal from "./action_sub_category_modal";
-import { GoSortAsc, GoSortDesc } from "react-icons/go";
 
 const SubCategoriesContainer = () => {
 	const {
