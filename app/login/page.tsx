@@ -1,13 +1,14 @@
 import { LoginContainer } from "@/containers";
-import { AuthNavbar } from "@/components";
+import { getBackgroundColor, getDarkMode } from "@/utils";
 
 const LoginPage = () => (
 	<>
-		<AuthNavbar />
-		<main className="w-full min-h-screen flex bg-gradient-to-r from-light-background-natural to-light-background-default flex-col items-center justify-center font-public-sans px-4 pt-8">
+		<main
+			className="w-full min-h-screen flex flex-col items-center justify-center font-public-sans px-4 pt-8"
+			style={getBackgroundColor(getDarkMode() === "dark")}>
 			<LoginContainer />
 		</main>
 	</>
-);
+	);
 
 export default LoginPage;

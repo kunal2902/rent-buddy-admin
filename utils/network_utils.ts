@@ -1100,6 +1100,7 @@ export const deleteItemTypeApi = async (
 
 // Item api
 export const getItemApi = async (
+	query: string | undefined,
 	successCallback: (arg0: any) => void,
 	errorCallback: () => void,
 	logoutCallback: () => void,
@@ -1109,7 +1110,8 @@ export const getItemApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(itemAPIPath, {
+	const path = query === "" ? tagAPIPath : `${tagAPIPath}?${query}`;
+	const response = await makeGetRequest(path, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1165,7 +1167,7 @@ export const getItemByIdApi = async (
 export const upsertItemApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -1189,7 +1191,7 @@ export const upsertItemApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };

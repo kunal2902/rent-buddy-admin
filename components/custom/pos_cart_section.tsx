@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { Box, ComboboxItem, Divider, Stack } from "@mantine/core";
+import { Box, Divider, Stack } from "@mantine/core";
 import { AddIcon } from "@storybook/icons";
 import {
 	ActionIconComponent,
@@ -16,18 +16,21 @@ import {
 } from "@/components";
 import { AddUserModal } from "@/containers/10_users/add_user_modal";
 import { appAccentColorRGBA, currencySign } from "@/utils";
+import { ComboBoxProps } from "@/types";
 
 export const PosCartSection = () => {
 	const [isUserModalOpen, setUserModalOpen] = useState(false);
 	const [selectedCustomer, setSelectedCustomer] = useState<string | null>("");
-	const customerData: Array<ComboboxItem> = [
+	const customerData: Array<ComboBoxProps> = [
 		{
-			label: "User 1",
+			id: "1",
 			value: "1",
+			label: "User 1",
 		},
 		{
-			label: "User 2",
+			id: "2",
 			value: "2",
+			label: "User 2",
 		},
 	];
 

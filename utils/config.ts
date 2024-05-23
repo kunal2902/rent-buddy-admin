@@ -5,12 +5,13 @@ import {
 	InputVariant,
 	MantineColor,
 	MantineRadius,
-	MantineSize,
+	MantineSize
 } from "@mantine/core";
 import moment from "moment";
 
 /** Global variables */
 export const isDebug: boolean = false;
+export const isProduction: boolean = true;
 export const appName: string = "NCA CRM";
 export const appTitle: string = "NCA CRM";
 export const appDescription: string = "NCM ";
@@ -23,27 +24,39 @@ export const appColor: string = "#7469B6";
 export const appAccentColor: string = "#EE4266";
 export const whiteColor: string = "#ffffff";
 export const blackColor: string = "#000000";
+export const backgroundColorLight: string = "#e0e0e0";
+export const backgroundColorDark: string = "#333";
+export const surfaceColorLight: string = "#fff";
+export const surfaceColorDark: string = "#222";
+export const backgroundColorTailwind: string = "bg-[#e0e0e0] dark:bg-[#333333]";
+export const surfaceColorTailwind: string = "bg-[#ff0000] dark:bg-[#000000]";
+export const textColorPrimaryLight: string = "#000";
+export const textColorPrimaryDark: string = "#fff";
+export const textColorSecondaryLight: string = "#e0e0e0";
+export const textColorSecondaryDark: string = "#222";
+export const commonColor: string = "#777";
 
 /** Mantine Variables */
 export const appColorRGBA: MantineColor = "rgba(116, 105, 182, 1)";
 export const appAccentColorRGBA: MantineColor = "rgba(238,66,102,1)";
 export const mantineSize: MantineSize = "md";
+export const mantineButtonHeight: number = 36;
 export const mantineChipSize: MantineSize = "sm";
-export const mantineButtonSize: MantineSize = "sm";
-export const mantineActionIconSize: MantineSize = "lg";
-export const mantineActionIconVariant: ActionIconVariant = "light";
 export const mantineRadius: MantineRadius = "md";
-export const mantineInputVariant: InputVariant = "default";
-export const mantineAvatarVariant: AvatarVariant = "filled";
-export const mantineSpaceHeight: MantineSize = "sm";
+export const mantineButtonSize: MantineSize = "sm";
 export const mantineSpaceWidth: MantineSize = "sm";
-export const mantineNavLinkChildOffset: MantineSize = "md";
+export const mantineSpaceHeight: MantineSize = "sm";
+export const mantineActionIconSize: MantineSize = "lg";
 export const mantineLargeModalWidth: MantineSize = "lg";
 export const mantineMediumModalWidth: MantineSize = "md";
+export const mantineNavLinkChildOffset: MantineSize = "md";
+export const mantineInputVariant: InputVariant = "default";
+export const mantineAvatarVariant: AvatarVariant = "filled";
+export const mantineActionIconVariant: ActionIconVariant = "light";
 
 /** Cookie constants */
 export const cookieOptions = {
-	secure: true,
+	secure: true
 };
 export const crmJwtConstant: string = "crm_jwt";
 export const userIdConstant: string = "user_id";
@@ -52,14 +65,16 @@ export const emailConstant: string = "email";
 export const userNameConstant: string = "username";
 export const roleIdConstant: string = "role_id";
 export const sidebarStateConstant: string = "sidebar_state";
+export const themeModeConstant: string = "theme_mode";
 
 /** API Constants */
-export const apiUrl: string = process.env.NODE_ENV === "production" ?
+export const apiUrl: string = process.env.NODE_ENV === "production" ||
+isProduction ?
 	"https://nca-crm-api-peggi.ondigitalocean.app/api/v1" :
 	"http://localhost:8000/api/v1";
 export const imageUrl: string = process.env.NODE_ENV === "production" ?
-  "https://nca-crm-api-peggi.ondigitalocean.app/image" :
-  "http://localhost:8000/api/v1";
+	"https://nca-crm-api-peggi.ondigitalocean.app/image" :
+	"http://localhost:8000/api/v1";
 export const loginAPIPath: string = `${apiUrl}/auth/login`;
 
 // Permission path
@@ -125,6 +140,9 @@ export const getRoleId = (): string => getCookie(roleIdConstant) ?? "";
 /** To get the Sidebar state stored in Cookies */
 export const getSidebarState = (): string =>
 	getCookie(sidebarStateConstant) ?? "true";
+/** To get the Sidebar state stored in Cookies */
+export const getDarkMode = (): string =>
+	getCookie(themeModeConstant) ?? "none";
 
 /** Route Constants */
 export const dashboardRoute: string = "/";
@@ -182,6 +200,14 @@ export const formatDate = (inputDate: any) => moment(inputDate).format("dd/MM/YY
 
 /** Converts passed string to Title case */
 export const toTitleCase = (str: string) => str.replace(
-		/\w\S*/g,
-		(txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
-	);
+	/\w\S*/g,
+	(txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
+);
+
+/** Returns Background Color for Surface */
+export const getBackgroundColor = (darkMode: boolean) =>
+	({ backgroundColor: darkMode ? backgroundColorDark : backgroundColorLight });
+
+/** Returns Surface Color for Surface */
+export const getSurfaceColor = (darkMode: boolean) =>
+	({ backgroundColor: darkMode ? surfaceColorDark : surfaceColorLight });

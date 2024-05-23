@@ -6,7 +6,13 @@ import {
 } from "@mantine/core";
 import React from "react";
 import Link from "next/link";
-import { appColorRGBA, mantineActionIconSize, mantineActionIconVariant, mantineRadius } from "@/utils";
+import {
+	appColorRGBA,
+	mantineActionIconSize,
+	mantineActionIconVariant,
+	mantineButtonHeight,
+	mantineRadius,
+} from "@/utils";
 
 /** Props list of Mantine's Action Icon component - https://mantine.dev/core/action-icon/?t=props */
 export interface ActionIconComponentProps extends ActionIconProps {
@@ -19,6 +25,8 @@ export const ActionIconComponent = (props: ActionIconComponentProps) =>
 // @ts-ignore
 	<ActionIcon
 		{...props}
+		h={props.h ?? mantineButtonHeight}
+		w={props.h ?? mantineButtonHeight}
 		color={props.color ?? appColorRGBA}
 		radius={props.radius ?? mantineRadius}
 		size={props.size ?? mantineActionIconSize}
