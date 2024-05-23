@@ -1,26 +1,47 @@
 "use client";
 
-import React, { Dispatch, SetStateAction, useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import Image from "next/image";
 import { Image as ImageIcon, Trash } from "lucide-react";
 import { Group } from "@mantine/core";
-import { useCreateCategoryModal } from "./hook";
 import { ButtonComponent, FileInputComponent, ModalComponent, TextInputComponent } from "@/components";
-import { upsertCategoryApi } from "@/utils";
+import { imageUrl, upsertCategoryApi } from "@/utils";
 
 interface Props {
     isOpen: boolean;
     onClose: () => void;
 	setCallApi: Dispatch<SetStateAction<boolean>>;
+	catType: string;
+	name: string;
+	id: string;
+	image: string | undefined;
 }
 
 const CreateCategoryModal = (props: Props) => {
-	const { isOpen, onClose, setCallApi } = props;
-	const { categoryName, onCategoryNameChange } = useCreateCategoryModal();
+	const {
+		isOpen,
+		onClose,
+		setCallApi,
+		catType,
+		image,
+		name,
+		id,
+	} = props;
+	const [categoryName, setCategoryName] = useState<string>(name ?? "");
 	const [selectedFileToUpload, setSelectedFileToUpload] = useState<File | null>(null);
 	const [selectedFile, setSelectedFile] = useState<string | null>(null);
 	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
+
+	useEffect(() => {
+		if (image && name) {
+			const imgUrl = `${imageUrl}/${image}`;
+			setSelectedFile(imgUrl);
+			setCategoryName(name);
+		} else {
+			setSelectedFile(null);
+		}
+	}, [id, name, image]);
 
 	const onChooseIconClick = () => {
 		if (fileInputTriggerRef) {
@@ -61,6 +82,10 @@ const CreateCategoryModal = (props: Props) => {
 			categoryData.append("icon_file", selectedFileToUpload);
 		}
 		categoryData.append("name", categoryName);
+		if (catType === "Edit") {
+			// Edit item type
+			categoryData.append("id", id);
+		}
 
         try {
             await upsertCategoryApi(
@@ -79,8 +104,19 @@ const CreateCategoryModal = (props: Props) => {
         }
     };
 
+	const handleCloseModal = () => {
+		if (catType !== "Edit") {
+			setCategoryName("");
+			setSelectedFile(null);
+			setSelectedFileToUpload(null);
+			onClose();
+		} else {
+			onClose();
+		}
+	};
+
 	return (
-		<ModalComponent opened={isOpen} onClose={onClose} className="border-grey-800" title="New Category">
+		<ModalComponent opened={isOpen} onClose={handleCloseModal} className="border-grey-800" title="New Category">
 			<div className="w-full flex sm:flex-row flex-col font-public-sans">
 				<div className="sm:w-1/2 w-full flex flex-col sm:mr-1">
 					<FileInputComponent
@@ -136,7 +172,7 @@ const CreateCategoryModal = (props: Props) => {
 							title="Name"
 							value={categoryName}
 							placeholder="Awesome Name"
-							onChange={onCategoryNameChange}
+							setValue={setCategoryName}
 							className="border-grey-600 font-barlow font-base text-base"
 						/>
 					</Group>

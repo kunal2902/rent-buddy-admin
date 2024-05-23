@@ -1,7 +1,7 @@
 "use client";
 
 import { Minus, Plus, SearchIcon } from "lucide-react";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Box, Card, Chip, createTheme, Input, MantineProvider, NumberInputHandlers, Spoiler } from "@mantine/core";
 import {
 	ButtonComponent,
@@ -33,6 +33,11 @@ export interface Categories {
 
 export const PosProductSection = () => {
 	const [subCategories, setSubCategories] = useState([]);
+	const [searchQuery, setSearchQuery] = useState("");
+
+	useEffect(() => {
+		setSubCategories([]);
+	}, []);
 
 	return (
 		<div className="w-[70%] max-h-screen overflow-hidden">
@@ -41,6 +46,8 @@ export const PosProductSection = () => {
 					<TextComponent text="Categories" bold size="xl" />
 					<TextInputComponent
 						w={400}
+						value={searchQuery}
+						setValue={setSearchQuery}
 						placeholder="Search your product here"
 						leftSection={<SearchIcon size={16} />}
 					/>

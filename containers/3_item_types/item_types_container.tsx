@@ -1,12 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
-import { Switch, Table, Image } from "@mantine/core";
+import { Switch, Table, Image, Loader, ComboboxItem, Box, Pagination } from "@mantine/core";
 import { FaRegEdit } from "react-icons/fa";
 import { IoTrashOutline } from "react-icons/io5";
+import { GoSortAsc, GoSortDesc } from "react-icons/go";
 import { useItemTypesContainer } from "./hook";
-import { DashboardPageHeader } from "@/components";
+import {
+	ButtonComponent, CenterComponent,
+	GroupComponent,
+	SelectComponent,
+	SortButtonComponent, SortButtonComponentItemProps, SortItemDirection, TextComponent,
+	TextInputComponent,
+	TitleComponent,
+} from "@/components";
 import { ItemTypeModel } from "@/models";
 import { deleteItemTypeApi, disableItemTypeApi, formatDate, getItemTypeApi, imageUrl } from "@/utils";
 import ActionItemTypeModal from "./action_item_type_modal";
@@ -24,6 +32,10 @@ const ItemTypesContainer = () => {
 	const [itemTypeName, setItemTypeName] = useState<string>("");
 	const [itemTypeImage, setItemTypeImage] = useState<string | undefined>("");
 	const [isActionItemTypeModalOpen, setIsActionItemTypeModalOpen] = useState<boolean>(false);
+	const [searchValue, setSearchValue] = useState<string>("");
+	const [filter, setFilter] = useState<string | null>("tag_id");
+	const [loading, setLoading] = useState<boolean>(false);
+	const [page, setPage] = useState<number>(1);
 
 	useEffect(() => {
 		if (callApi) {
@@ -104,39 +116,130 @@ const ItemTypesContainer = () => {
 		</Table.Tr>
 	));
 
+	const searchItems: Array<ComboboxItem> = [
+		{
+			label: "Name",
+			value: "name",
+		},
+		{
+			label: "Tag Id",
+			value: "tag_id",
+		},
+	];
+
 	return (
 		<main
 			className={`flex min-h-screen w-full bg-light-background-natural flex-col pt-14 ${
 				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-16"
 			}`}
 		>
-			<DashboardPageHeader
-				heading="Item Types"
-				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
-				button
-				buttonProps={{
-					title: "New Item Type",
-					titleClassName: "sm:flex hidden",
-					onClick: () => handleUpsertItemTypeModal("", "", "", "Add"),
-					className: "rounded-md w-fit text-grey-100 text-sm",
-					children: <Plus className="sm:mr-2 mr-0" size={20} />,
-				}}
-			/>
+			<GroupComponent className="mx-3 my-2" align="center" justify="space-between">
+				<TitleComponent title="Item Types" />
+				<GroupComponent>
+					<SelectComponent
+						placeholder="Searching In"
+						searchable
+						size="sm"
+						data={searchItems}
+						setValue={setFilter}
+						setOption={(option) => {
+							setFilter(option.value);
+						}}
+					/>
 
-			<Table striped highlightOnHover withTableBorder>
-				<Table.Thead>
-					<Table.Tr>
-						<Table.Th>Index</Table.Th>
-						<Table.Th>Item type Id</Table.Th>
-						<Table.Th>Icon</Table.Th>
-						<Table.Th>Name</Table.Th>
-						<Table.Th>Created at</Table.Th>
-						<Table.Th>Disable</Table.Th>
-						<Table.Th>Action</Table.Th>
-					</Table.Tr>
-				</Table.Thead>
-				<Table.Tbody>{rows}</Table.Tbody>
-			</Table>
+					<TextInputComponent
+						size="sm"
+						value={searchValue}
+						setValue={setSearchValue}
+						placeholder="Search"
+						rightSection={loading && <Loader size={20} />}
+					/>
+
+					<SortButtonComponent
+						items={
+							[
+								{
+									id: 1,
+									label: "Id - ascending",
+									icon: GoSortAsc,
+									direction: SortItemDirection.ascending,
+								},
+								{
+									id: 2,
+									label: "Id - descending",
+									icon: GoSortDesc,
+									direction: SortItemDirection.descending,
+								},
+								{
+									id: 3,
+									label: "Name - ascending",
+									icon: GoSortAsc,
+									direction: SortItemDirection.ascending,
+								},
+								{
+									id: 4,
+									label: "Name - descending",
+									icon: GoSortDesc,
+									direction: SortItemDirection.descending,
+								},
+								{
+									id: 5,
+									label: "Date - ascending",
+									icon: GoSortAsc,
+									direction: SortItemDirection.ascending,
+								},
+								{
+									id: 6,
+									label: "Date - descending",
+									icon: GoSortDesc,
+									direction: SortItemDirection.descending,
+								},
+							]
+						}
+						onSelected={(selected: SortButtonComponentItemProps) => {
+							console.log(selected.label);
+						}}
+					/>
+
+					<ButtonComponent
+						variant="light"
+						onClick={() => handleUpsertItemTypeModal("", "", "", "Add")}
+					>
+						<Plus size={20} className="sm:mr-2 mr-0" />
+						<TextComponent text="Add Item Type" />
+					</ButtonComponent>
+				</GroupComponent>
+
+			</GroupComponent>
+			<Box style={{ overflow: "hidden" }} className="mx-3">
+				<Box mx="auto">
+					<Table striped highlightOnHover withTableBorder>
+						<Table.Thead>
+							<Table.Tr>
+								<Table.Th>Index</Table.Th>
+								<Table.Th>Item type Id</Table.Th>
+								<Table.Th>Icon</Table.Th>
+								<Table.Th>Name</Table.Th>
+								<Table.Th>Created at</Table.Th>
+								<Table.Th>Disable</Table.Th>
+								<Table.Th>Action</Table.Th>
+							</Table.Tr>
+						</Table.Thead>
+						<Table.Tbody>{rows}</Table.Tbody>
+					</Table>
+					<CenterComponent>
+						<Pagination
+							total={10}
+							value={page}
+							onChange={(pageNumber) => {
+								setPage(pageNumber);
+							}}
+							mt="sm"
+							radius="lg"
+						/>
+					</CenterComponent>
+				</Box>
+			</Box>
 
 			<AddItemTypeModal
 				isOpen={isCreateItemTypeModalOpen}

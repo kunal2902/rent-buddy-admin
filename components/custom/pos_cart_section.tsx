@@ -19,6 +19,7 @@ import { appAccentColorRGBA, currencySign } from "@/utils";
 
 export const PosCartSection = () => {
 	const [isUserModalOpen, setUserModalOpen] = useState(false);
+	const [selectedCustomer, setSelectedCustomer] = useState<string | null>("");
 	const customerData: Array<ComboboxItem> = [
 		{
 			label: "User 1",
@@ -46,10 +47,10 @@ export const PosCartSection = () => {
 					<GroupComponent>
 						<SelectComponent
 							required
-							// value={type}
-							// onChange={onTypeChange}
-							placeholder="Select Customer"
 							data={customerData}
+							value={selectedCustomer}
+							placeholder="Select Customer"
+							setValue={setSelectedCustomer}
 							style={{ width: "calc(100% - 60px)" }}
 						/>
 						<TooltipComponent label="Add Customer">
