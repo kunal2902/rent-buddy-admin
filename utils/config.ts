@@ -5,7 +5,7 @@ import {
 	InputVariant,
 	MantineColor,
 	MantineRadius,
-	MantineSize
+	MantineSize,
 } from "@mantine/core";
 import moment from "moment";
 
@@ -56,7 +56,7 @@ export const mantineActionIconVariant: ActionIconVariant = "light";
 
 /** Cookie constants */
 export const cookieOptions = {
-	secure: true
+	secure: true,
 };
 export const crmJwtConstant: string = "crm_jwt";
 export const userIdConstant: string = "user_id";

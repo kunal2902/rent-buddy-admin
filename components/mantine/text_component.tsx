@@ -27,7 +27,7 @@ export const TextComponent = (props: TextComponentProps) => {
 		<Text
 			{...rest}
 			fw={bold ? 700 : 0}
-			c={rest.c? rest.c: darkMode ? textColorPrimaryDark : textColorPrimaryLight}
+			c={rest.c ? rest.c : darkMode ? textColorPrimaryDark : textColorPrimaryLight}
 	>
 			{text}
 		</Text>

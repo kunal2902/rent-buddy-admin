@@ -19,7 +19,7 @@ import {
 	roleIdConstant,
 	userIdConstant,
 	userNameConstant,
-	useThemeProvider
+	useThemeProvider,
 } from "@/utils";
 import {
 	ButtonComponent,
@@ -28,7 +28,7 @@ import {
 	PasswordInputComponent,
 	SpaceComponent,
 	TextInputComponent,
-	TitleComponent
+	TitleComponent,
 } from "@/components";
 import Logo from "@/public/images/logo.png";
 import { StackComponent } from "@/components/mantine/stack_component";
@@ -44,7 +44,7 @@ const LoginContainer = () => {
 		event.preventDefault();
 		const body = {
 			email,
-			password
+			password,
 		};
 		try {
 			await loginApi(
