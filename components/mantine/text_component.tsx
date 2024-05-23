@@ -4,12 +4,9 @@ import React from "react";
 import {
 	Text, TextProps,
 } from "@mantine/core";
-import { useRecoilState } from "recoil";
 import {
 	textColorPrimaryDark,
 	textColorPrimaryLight,
-	textColorSecondaryDark,
-	textColorSecondaryLight,
 	useThemeProvider,
 } from "@/utils";
 
