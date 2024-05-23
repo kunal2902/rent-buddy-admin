@@ -27,6 +27,7 @@ export const TextInputComponent = (props: TextInputComponentProps) => {
 			onChange={handleChange}
 			{...rest}
 			size={rest.size ?? mantineSize}
+			c={rest.c}
 			color={rest.color ?? appColorRGBA}
 			radius={rest.radius ?? mantineRadius}
 			variant={rest.variant ?? mantineInputVariant}
