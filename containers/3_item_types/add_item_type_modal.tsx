@@ -1,49 +1,47 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import { Group } from "@mantine/core";
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { Button, Group, Select, Stack } from "@mantine/core";
+import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
 import { Image as ImageIcon, Trash } from "lucide-react";
 import Image from "next/image";
 import { toast } from "react-toastify";
-import { ButtonComponent, ModalComponent, TextInputComponent } from "@/components";
+import {
+	ActionIconComponent,
+	ButtonComponent,
+	GroupComponent,
+	ModalComponent,
+	TextInputComponent,
+	TitleComponent,
+} from "@/components";
 import { FileInputComponent } from "@/components/mantine/file_input_component";
 import { imageUrl, upsertItemTypeApi } from "@/utils";
 
 interface Props {
 	isOpen: boolean;
 	onClose: () => void;
-	setCallApi: (value: boolean) => void;
-	itemType: string;
-	name: string;
-	id: string;
+	setCallApi: Dispatch<SetStateAction<boolean>>;
+	initialItemTypeValue: string;
+	itemTypeId: string;
 	image: string | undefined;
 }
 
-const AddItemTypeModal: React.FC<Props> = (
-	{
-		isOpen,
-		onClose,
-		setCallApi,
-		itemType,
-		image,
-		name,
-		id,
-	}
-) => {
-	const [itemTypeName, setItemTypeName] = useState<string>(name ?? "");
+const AddItemTypeModal: React.FC<Props> = (props: Props) => {
+	const { isOpen, onClose, setCallApi, initialItemTypeValue, itemTypeId, image } = props;
+	const [itemTypeName, setItemTypeName] = useState<string>(initialItemTypeValue);
 	const [selectedFileToUpload, setSelectedFileToUpload] = useState<File | null>(null);
 	const [selectedFile, setSelectedFile] = useState<string | null>(null);
 	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
+	const [inputError, setInputError] = useState<string | null>(null);
+	const isEditModal: boolean = initialItemTypeValue !== "";
 
 	useEffect(() => {
-		if (image && name) {
+		if (itemTypeName && image) {
 			const imgUrl = `${imageUrl}/${image}`;
 			setSelectedFile(imgUrl);
-			setItemTypeName(name);
-		} else {
-			setSelectedFile(null);
+			setInputError(null);
 		}
-	}, [id, name, image]);
+	}, [itemTypeId, itemTypeName, image]);
 
 	const onChooseIconClick = () => {
 		if (fileInputTriggerRef) {
@@ -56,12 +54,12 @@ const AddItemTypeModal: React.FC<Props> = (
 		setSelectedFileToUpload(null);
 	};
 
-	const onFilePick = (file: File | null) => {
+	const onFilePick = async (file: File | null) => {
 		if (file) {
 			const fileReader = new FileReader();
 
 			fileReader.readAsDataURL(file);
-			setSelectedFileToUpload(file);
+			await setSelectedFileToUpload(file);
 
 			fileReader.onload = (readerEvent) => {
 				if (readerEvent.target && typeof readerEvent.target.result === "string") {
@@ -76,8 +74,7 @@ const AddItemTypeModal: React.FC<Props> = (
 		event.preventDefault();
 
 		if (!itemTypeName) {
-			toast.error("Please provide a name.");
-			return;
+			setInputError("Please enter the name first");
 		}
 
 		const itemTypeData = new FormData();
@@ -85,10 +82,7 @@ const AddItemTypeModal: React.FC<Props> = (
 			itemTypeData.append("icon_file", selectedFileToUpload);
 		}
 		itemTypeData.append("name", itemTypeName);
-		if (itemType === "Edit") {
-			// Edit item type
-			itemTypeData.append("id", id);
-		}
+		itemTypeData.append("id", itemTypeId);
 
 		try {
 			await upsertItemTypeApi(
@@ -105,85 +99,84 @@ const AddItemTypeModal: React.FC<Props> = (
 			);
 		} catch (error) {
 			console.error("Error:", error);
-			toast.error("An error occurred while saving.");
-		}
-	};
-
-	const handleCloseModal = () => {
-		if (itemType !== "Edit") {
-			setItemTypeName("");
-			setSelectedFile(null);
-			setSelectedFileToUpload(null);
-			onClose();
-		} else {
-			onClose();
 		}
 	};
 
 	return (
 		<ModalComponent
 			opened={isOpen}
-			onClose={handleCloseModal}
+			onClose={onClose}
 			className="border-grey-800"
-			title={`${itemType === "Edit" ? "Edit" : "Add"} Item type`}>
-			<div className="w-full flex sm:flex-row flex-col font-public-sans">
-				<div className="sm:w-1/2 w-full flex flex-col sm:mr-1">
+			title={<TitleComponent title={isEditModal ? "Edit Item Type" : "New Item Type"} />}
+		>
+			<GroupComponent grow align="start">
+				<Stack>
 					<FileInputComponent
-						label="Please select sub category icon"
-						placeholder="Sub category icon"
+						required
+						label="Please select category icon"
+						placeholder="C 111ategory icon"
 						className="hidden"
 						onChange={onFilePick}
 						ref={fileInputTriggerRef}
 					/>
-
-					<p className="text-base font-public-sans">Icon*</p>
-
 					{selectedFile ? (
 						<div className="w-full flex flex-col items-center justify-center h-40">
 							<Image
-								onClick={onChooseIconClick}
 								src={selectedFile}
 								width={500}
 								height={500}
 								alt="Selected Icon"
-								className="w-full h-full object-contain cursor-pointer" />
+								className="w-full h-full object-contain" />
 						</div>
 					) : (
 						<div
 							onClick={onChooseIconClick}
 							className="w-full cursor-pointer border border-dashed flex flex-col items-center justify-center h-40 rounded-md border-primary-darker text-primary-darker">
 							<ImageIcon size={50} />
-							<p className="text-center mt-0.5">Choose an image</p>
+							<p className="text-center mt-0.5">Choose an Icon</p>
 						</div>
 					)}
+
 					{selectedFile && (
-						<div className="w-full mt-1 flex items-center justify-end">
-							<ButtonComponent
+						<GroupComponent grow>
+							<ActionIconComponent
 								onClick={onResetIconClick}
-								aria-label="on reset icon click">
-								<Trash size={24} className="text-error-dark" />
-							</ButtonComponent>
-						</div>
+								size="md"
+								color="red"
+							>
+								<MdOutlineDeleteForever size={18} />
+							</ActionIconComponent>
+
+							<ActionIconComponent
+								onClick={onChooseIconClick}
+								size="md"
+							>
+								<MdOutlineEdit size={18} />
+							</ActionIconComponent>
+
+						</GroupComponent>
 					)}
-				</div>
+				</Stack>
 
-				<div className="sm:ml-1 sm:mt-0 mt-2 flex-1 flex flex-col">
-					<Group>
-						<TextInputComponent
-							required
-							label="Name"
-							value={itemTypeName}
-							placeholder="Awesome Name"
-							setValue={setItemTypeName}
-							className="border-grey-600 font-barlow font-base text-base"
-						/>
-					</Group>
-				</div>
-			</div>
+				<TextInputComponent
+					required
+					title="Name"
+					label="Item Type Name"
+					value={itemTypeName}
+					error={inputError}
+					setValue={setItemTypeName}
+					placeholder="Enter Item Type Name"
+				/>
 
-			<div className="mt-3 flex items-center justify-end">
-				<ButtonComponent title="Save" size="md" px="lg" ml={5} onClick={handleSubmitItemType} />
-			</div>
+			</GroupComponent>
+
+			<GroupComponent justify="end">
+				<ButtonComponent
+					title="Save"
+					w={100}
+					onClick={handleSubmitItemType}
+				/>
+			</GroupComponent>
 		</ModalComponent>
 	);
 };

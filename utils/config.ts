@@ -178,7 +178,7 @@ export const emailSettingsName: string = "Email Settings";
 export const taxesName: string = "Taxes";
 
 /** To format date according to the respective output */
-export const formatDate = (inputDate: any) => moment(inputDate).format("dd/MM/YYYY hh:mm a");
+export const formatDate = (inputDate: any) => moment(inputDate).format("DD/MM/YYYY hh:mm a");
 
 /** Converts passed string to Title case */
 export const toTitleCase = (str: string) => str.replace(

@@ -29,10 +29,10 @@ const CategoriesContainer = () => {
 
 	const [categoryList, setCategoryList] = useState<CategoryModel[]>([]);
 	const [callApi, setCallApi] = useState(true);
-	const [catId, setCatId] = useState<string>("");
-	const [catType, setCatType] = useState<string>("");
 	const [isDisable, setIsDisable] = useState<boolean>(true);
 	const [isActionCatModalOpen, setIsActionCatModalOpen] = useState<boolean>(false);
+	const [catId, setCatId] = useState<string>("");
+	const [catType, setCatType] = useState<string>("");
 	const [catName, setCatName] = useState<string>("");
 	const [catImage, setCatImage] = useState<string | undefined>("");
 	const [searchValue, setSearchValue] = useState<string>("");
@@ -134,10 +134,10 @@ const CategoriesContainer = () => {
 	return (
 		<main
 			className={`flex min-h-screen w-full bg-light-background-natural flex-col pt-14 ${
-				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-16"
+				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-14"
 			}`}
 		>
-			<GroupComponent className="mx-3 my-2" align="center" justify="space-between">
+			<GroupComponent className="m-3" align="center" justify="space-between">
 				<TitleComponent title="Categories" />
 				<GroupComponent>
 					<SelectComponent
@@ -210,7 +210,7 @@ const CategoriesContainer = () => {
 						onClick={() => handleUpsertItemTypeModal("", "", "", "Add")}
 					>
 						<Plus size={20} className="sm:mr-2 mr-0" />
-						<TextComponent text="Add Categories" />
+						<TextComponent text="Add Category" />
 					</ButtonComponent>
 				</GroupComponent>
 
