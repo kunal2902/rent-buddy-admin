@@ -7,6 +7,7 @@ import {
 	MantineRadius,
 	MantineSize,
 } from "@mantine/core";
+import moment from "moment";
 
 /** Global variables */
 export const isDebug: boolean = false;
@@ -176,14 +177,11 @@ export const tncName: string = "Terms & Conditions";
 export const emailSettingsName: string = "Email Settings";
 export const taxesName: string = "Taxes";
 
-// Date format function
-export const formatDate = (inputDate: any) => {
-	const date = new Date(inputDate);
-	const day = String(date.getDate()).padStart(2, "0");
-	const month = String(date.getMonth() + 1).padStart(2, "0");
-	const year = date.getFullYear();
-	const hours = String(date.getHours()).padStart(2, "0");
-	const minutes = String(date.getMinutes()).padStart(2, "0");
+/** To format date according to the respective output */
+export const formatDate = (inputDate: any) => moment(inputDate).format("dd/MM/YYYY hh:mm a");
 
-	return `${day}/${month}/${year} ${hours}:${minutes}`;
-};
+/** Converts passed string to Title case */
+export const toTitleCase = (str: string) => str.replace(
+		/\w\S*/g,
+		(txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
+	);

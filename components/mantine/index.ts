@@ -1,5 +1,6 @@
 export * from "@/components/mantine/action_icon_component";
 export * from "@/components/mantine/avatar_component";
+export * from "@/components/mantine/box_component";
 export * from "@/components/mantine/button_component";
 export * from "@/components/mantine/card_component";
 export * from "@/components/mantine/center_component";
@@ -9,6 +10,7 @@ export * from "@/components/mantine/group_component";
 export * from "@/components/mantine/image_component";
 export * from "@/components/mantine/modal_component";
 export * from "@/components/mantine/navlink_component";
+export * from "@/components/mantine/paper_component";
 export * from "@/components/mantine/password_input_component";
 export * from "@/components/mantine/scroll_area_component";
 export * from "@/components/mantine/select_component";

@@ -15,6 +15,7 @@ export interface TitleComponentProps extends TitleProps {
 export const TitleComponent = (props: TitleComponentProps) =>
 	<Title
 		{...props}
+		order={props.order ?? 4}
 		fw={props.bold ? 700 : 0}
 	>
 		{props.title}

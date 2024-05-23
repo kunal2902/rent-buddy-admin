@@ -1,11 +1,11 @@
 "use client";
 
 import { toast } from "react-toastify";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
-	ButtonComponent,
-	ModalComponent,
-	TextInputComponent,
+	ButtonComponent, GroupComponent,
+	ModalComponent, SpaceComponent,
+	TextInputComponent, TitleComponent,
 } from "@/components";
 import { upsertTagApi } from "@/utils";
 
@@ -20,10 +20,20 @@ interface Props {
 const AddTagModal = (props: Props) => {
 	const { isOpen, onClose, setCallApi, initialTagValue, tagId } = props;
 	const [tagName, setTagName] = useState<string>(initialTagValue);
+	const [inputError, setInputError] = useState<string | null>(null);
 	const isEditModal: boolean = initialTagValue !== "";
+
+	useEffect(() => {
+		if (tagName) {
+			setInputError(null);
+		}
+	}, [tagName]);
 
 	const handleSubmitTag = async (event: React.FormEvent) => {
 		event.preventDefault();
+		if (!tagName) {
+			setInputError("Please enter the name first");
+		}
 		const body = {
 			name: tagName,
 			id: tagId,
@@ -49,27 +59,27 @@ const AddTagModal = (props: Props) => {
 		<ModalComponent
 			opened={isOpen}
 			onClose={onClose}
-			className="border-grey-800"
-			title={isEditModal ? "Edit Tag" : "New Tag"}
+			title={<TitleComponent title={isEditModal ? "Edit Tag" : "New Tag"} />}
 		>
 			<TextInputComponent
-				mt={1}
 				required
 				title="Name"
+				label="Tag Name"
 				value={tagName}
+				error={inputError}
 				setValue={setTagName}
-				placeholder="Awesome Name"
-				className="border-grey-600 font-barlow font-base text-base"
+				placeholder="Enter tag Name"
 			/>
 
-			<div className="mt-1 flex items-center justify-end">
+			<SpaceComponent showHeight />
+
+			<GroupComponent justify="end">
 				<ButtonComponent
 					title="Save"
-					fullWidth
-					px={5}
+					w={100}
 					onClick={handleSubmitTag}
 				/>
-			</div>
+			</GroupComponent>
 		</ModalComponent>
 	);
 };
