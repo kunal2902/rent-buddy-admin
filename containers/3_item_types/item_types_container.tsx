@@ -1,14 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
-import { Switch, Table, Image } from "@mantine/core";
-import { FaRegEdit } from "react-icons/fa";
-import { IoTrashOutline } from "react-icons/io5";
+import { Table, Image, Loader, ComboboxItem, Box, Pagination, LoadingOverlay } from "@mantine/core";
+import { GoSortAsc, GoSortDesc } from "react-icons/go";
+import { MdOutlineEdit } from "react-icons/md";
 import { useItemTypesContainer } from "./hook";
-import { DashboardPageHeader } from "@/components";
+import {
+	ActionIconComponent,
+	BoxComponent,
+	ButtonComponent, CenterComponent,
+	GroupComponent, PaperComponent, PopConfirmComponent, PopConfirmType,
+	SelectComponent,
+	SortButtonComponent, SortButtonComponentItemProps, SortItemDirection, TextComponent,
+	TextInputComponent,
+	TitleComponent,
+} from "@/components";
 import { ItemTypeModel } from "@/models";
-import { deleteItemTypeApi, disableItemTypeApi, formatDate, getItemTypeApi, imageUrl } from "@/utils";
+import { deleteItemTypeApi, disableItemTypeApi, formatDate, getItemTypeApi, imageUrl, mantineRadius } from "@/utils";
 import ActionItemTypeModal from "./action_item_type_modal";
 import AddItemTypeModal from "@/containers/3_item_types/add_item_type_modal";
 
@@ -20,10 +29,13 @@ const ItemTypesContainer = () => {
 	const [itemTypeList, setItemTypeList] = useState<ItemTypeModel[]>([]);
 	const [callApi, setCallApi] = useState(true);
 	const [itemTypeId, setItemTypeId] = useState<string>("");
-	const [itemType, setItemType] = useState<string>("");
 	const [itemTypeName, setItemTypeName] = useState<string>("");
 	const [itemTypeImage, setItemTypeImage] = useState<string | undefined>("");
 	const [isActionItemTypeModalOpen, setIsActionItemTypeModalOpen] = useState<boolean>(false);
+	const [searchValue, setSearchValue] = useState<string>("");
+	const [filter, setFilter] = useState<string | null>("tag_id");
+	const [loading, setLoading] = useState<boolean>(false);
+	const [page, setPage] = useState<number>(1);
 
 	useEffect(() => {
 		if (callApi) {
@@ -38,15 +50,9 @@ const ItemTypesContainer = () => {
 		}
 	}, [callApi]);
 
-	const handleOpenModal = (id: string, type: string) => {
-		setItemTypeId(id);
-		setItemType(type);
-		setIsActionItemTypeModalOpen(true);
-	};
-
-	const handleActionItemType = () => {
-		if (itemType === "disable") {
-			disableItemTypeApi(itemTypeId, () => {
+	const handleActionItemType = async (id: string, type: string) => {
+		if (type === "disable") {
+			await disableItemTypeApi(id, () => {
 			setCallApi(true);
 			setIsActionItemTypeModalOpen(false);
 		}, () => {
@@ -55,7 +61,7 @@ const ItemTypesContainer = () => {
 			setCallApi(false);
 		});
 		} else {
-			deleteItemTypeApi(itemTypeId, () => {
+			await deleteItemTypeApi(id, () => {
 			setCallApi(true);
 			setIsActionItemTypeModalOpen(false);
 		}, () => {
@@ -66,17 +72,15 @@ const ItemTypesContainer = () => {
 		}
 	};
 
-	const handleUpsertItemTypeModal = (id: string, name: string, image: string | undefined, type: string) => {
+	const handleAddOpenModal = (id: string, name: string, image: string | undefined) => {
 		setItemTypeId(id);
 		setItemTypeName(name);
-		setItemTypeImage(image);
-		setItemTypeId(id);
 		toggleCreateItemTypeModalOpen();
-		setItemType(type);
+		setItemTypeImage(image);
 	};
 
 	const rows = itemTypeList.map((element, index) => (
-		<Table.Tr key={index}>
+		<Table.Tr>
 			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.item_type_id}</Table.Td>
 			<Table.Td>
@@ -89,78 +93,186 @@ const ItemTypesContainer = () => {
 			</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
-			<Table.Td>
-				<Switch
-					checked={element.is_disabled === true}
-					onClick={() => handleOpenModal(element.item_type_id, "disable")}
+			<Table.Td w={60}>
+				<PopConfirmComponent
+					entityName="item type"
+					type={PopConfirmType.switch}
+					isDisabled={element.is_disabled}
+					actionName={element.is_disabled ? "enable" : "disable"}
+					onConfirm={async () => handleActionItemType(element.item_type_id, "disable")}
 				/>
 			</Table.Td>
-			<Table.Td>
-				<div className="flex">
-					<IoTrashOutline color="red" size={25} style={{ marginRight: "10px" }} onClick={() => handleOpenModal(element.item_type_id, "delete")} />
-					<FaRegEdit color="rgba(108, 210, 213, 1)" size={25} onClick={() => handleUpsertItemTypeModal(element.item_type_id, element.name, element.icon, "Edit")} />
-				</div>
+			<Table.Td w={100}>
+				<GroupComponent>
+					<PopConfirmComponent
+						entityName="tag"
+						actionName="delete"
+						onConfirm={async () => handleActionItemType(element.item_type_id, "delete")}
+					/>
+					<ActionIconComponent
+						onClick={() => handleAddOpenModal(
+							element.item_type_id,
+							element.name,
+							element.icon)}
+						size="md">
+						<MdOutlineEdit size={18} />
+					</ActionIconComponent>
+				</GroupComponent>
 			</Table.Td>
 		</Table.Tr>
 	));
 
+	const searchItems: Array<ComboboxItem> = [
+		{
+			label: "Name",
+			value: "name",
+		},
+		{
+			label: "Tag Id",
+			value: "tag_id",
+		},
+	];
+
 	return (
 		<main
 			className={`flex min-h-screen w-full bg-light-background-natural flex-col pt-14 ${
-				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-16"
+				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-14"
 			}`}
 		>
-			<DashboardPageHeader
-				heading="Item Types"
-				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
-				button
-				buttonProps={{
-					title: "New Item Type",
-					titleClassName: "sm:flex hidden",
-					onClick: () => handleUpsertItemTypeModal("", "", "", "Add"),
-					className: "rounded-md w-fit text-grey-100 text-sm",
-					children: <Plus className="sm:mr-2 mr-0" size={20} />,
-				}}
-			/>
+			<GroupComponent className="m-3" align="center" justify="space-between">
+				<TitleComponent title="Item Types" />
+				<GroupComponent>
+					<SelectComponent
+						placeholder="Searching In"
+						searchable
+						size="sm"
+						data={searchItems}
+						setValue={setFilter}
+						setOption={(option) => {
+							setFilter(option.value);
+						}}
+					/>
 
-			<Table striped highlightOnHover withTableBorder>
-				<Table.Thead>
-					<Table.Tr>
-						<Table.Th>Index</Table.Th>
-						<Table.Th>Item type Id</Table.Th>
-						<Table.Th>Icon</Table.Th>
-						<Table.Th>Name</Table.Th>
-						<Table.Th>Created at</Table.Th>
-						<Table.Th>Disable</Table.Th>
-						<Table.Th>Action</Table.Th>
-					</Table.Tr>
-				</Table.Thead>
-				<Table.Tbody>{rows}</Table.Tbody>
-			</Table>
+					<TextInputComponent
+						size="sm"
+						value={searchValue}
+						setValue={setSearchValue}
+						placeholder="Search"
+						rightSection={loading && <Loader size={20} />}
+					/>
 
-			<AddItemTypeModal
-				isOpen={isCreateItemTypeModalOpen}
-				onClose={toggleCreateItemTypeModalOpen}
-				setCallApi={setCallApi}
-				itemType={itemType}
-				name={itemTypeName}
-				id={itemTypeId}
-				image={itemTypeImage}
-			/>
+					<SortButtonComponent
+						items={
+							[
+								{
+									id: 1,
+									label: "Id - ascending",
+									icon: GoSortAsc,
+									direction: SortItemDirection.ascending,
+								},
+								{
+									id: 2,
+									label: "Id - descending",
+									icon: GoSortDesc,
+									direction: SortItemDirection.descending,
+								},
+								{
+									id: 3,
+									label: "Name - ascending",
+									icon: GoSortAsc,
+									direction: SortItemDirection.ascending,
+								},
+								{
+									id: 4,
+									label: "Name - descending",
+									icon: GoSortDesc,
+									direction: SortItemDirection.descending,
+								},
+								{
+									id: 5,
+									label: "Date - ascending",
+									icon: GoSortAsc,
+									direction: SortItemDirection.ascending,
+								},
+								{
+									id: 6,
+									label: "Date - descending",
+									icon: GoSortDesc,
+									direction: SortItemDirection.descending,
+								},
+							]
+						}
+						onSelected={(selected: SortButtonComponentItemProps) => {
+							console.log(selected.label);
+						}}
+					/>
 
-			<ActionItemTypeModal
-				isOpen={isActionItemTypeModalOpen}
-				onClose={() => {
-					setIsActionItemTypeModalOpen(false);
-					setItemType("");
-					setItemTypeImage("");
-					setItemTypeName("");
-					setItemTypeId("");
-				}}
-				setCallApi={setCallApi}
-				handleActionItemType={handleActionItemType}
-				itemType={itemType}
-			/>
+					<ButtonComponent
+						variant="light"
+						onClick={() => handleAddOpenModal("", "", "")}
+					>
+						<Plus size={20} className="sm:mr-2 mr-0" />
+						<TextComponent text="Add Item Type" />
+					</ButtonComponent>
+				</GroupComponent>
+
+			</GroupComponent>
+
+			{
+				itemTypeList.length === 0 ?
+					<LoadingOverlay
+						mt={116}
+						mr={12}
+						ml={68}
+						mb={12}
+						zIndex={10}
+						visible={itemTypeList.length === 0}
+						overlayProps={{ radius: mantineRadius, backgroundOpacity: 0.1, color: "#000" }}
+					/> :
+					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
+						<BoxComponent mx="auto">
+							<PaperComponent withBorder radius={mantineRadius}>
+								<Table highlightOnHover>
+									<Table.Thead>
+										<Table.Tr>
+											<Table.Th>Index</Table.Th>
+											<Table.Th>Item type Id</Table.Th>
+											<Table.Th>Icon</Table.Th>
+											<Table.Th>Name</Table.Th>
+											<Table.Th>Created at</Table.Th>
+											<Table.Th>Disable</Table.Th>
+											<Table.Th>Action</Table.Th>
+										</Table.Tr>
+									</Table.Thead>
+									<Table.Tbody>{rows}</Table.Tbody>
+								</Table>
+							</PaperComponent>
+							<CenterComponent>
+								<Pagination
+									mt={12}
+									total={10}
+									value={page}
+									radius={mantineRadius}
+									onChange={(pageNumber) => {
+										setPage(pageNumber);
+									}}
+								/>
+							</CenterComponent>
+						</BoxComponent>
+					</BoxComponent>
+
+			}
+
+			{isCreateItemTypeModalOpen &&
+				<AddItemTypeModal
+					itemTypeId={itemTypeId}
+					setCallApi={setCallApi}
+					initialItemTypeValue={itemTypeName}
+					image={itemTypeImage}
+					isOpen={isCreateItemTypeModalOpen}
+					onClose={toggleCreateItemTypeModalOpen}
+				/>
+			}
 
 		</main>
 	);

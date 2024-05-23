@@ -73,8 +73,8 @@ isProduction ?
 	"https://nca-crm-api-peggi.ondigitalocean.app/api/v1" :
 	"http://localhost:8000/api/v1";
 export const imageUrl: string = process.env.NODE_ENV === "production" ?
-	"https://nca-crm-api-peggi.ondigitalocean.app/image" :
-	"http://localhost:8000/api/v1";
+  "https://nca-crm-api-peggi.ondigitalocean.app/image" :
+  "http://localhost:8000/image";
 export const loginAPIPath: string = `${apiUrl}/auth/login`;
 
 // Permission path
@@ -196,7 +196,7 @@ export const emailSettingsName: string = "Email Settings";
 export const taxesName: string = "Taxes";
 
 /** To format date according to the respective output */
-export const formatDate = (inputDate: any) => moment(inputDate).format("dd/MM/YYYY hh:mm a");
+export const formatDate = (inputDate: any) => moment(inputDate).format("DD/MM/YYYY hh:mm a");
 
 /** Converts passed string to Title case */
 export const toTitleCase = (str: string) => str.replace(
