@@ -3,6 +3,8 @@
 import { Plus } from "lucide-react";
 import { Loader, LoadingOverlay, Pagination, Table } from "@mantine/core";
 import React, { useEffect, useState } from "react";
+import { useDebouncedCallback } from "@mantine/hooks";
+import { MdOutlineEdit } from "react-icons/md";
 import {
 	ActionIconComponent,
 	BoxComponent,
@@ -17,7 +19,7 @@ import {
 	SortButtonComponentItemProps,
 	TextComponent,
 	TextInputComponent,
-	TitleComponent
+	TitleComponent,
 } from "@/components";
 import { useItemsContainer } from "./hook";
 import { ItemModel } from "@/models";
@@ -30,11 +32,9 @@ import {
 	getItemApi,
 	getSurfaceColor,
 	mantineRadius,
-	useThemeProvider
+	useThemeProvider,
 } from "@/utils";
 import AddItemModal from "./add_item_modal";
-import { useDebouncedCallback } from "@mantine/hooks";
-import { MdOutlineEdit } from "react-icons/md";
 import { sortItems, tagSearchItems } from "@/constants";
 
 const ItemsContainer = () => {
@@ -57,9 +57,11 @@ const ItemsContainer = () => {
 				(data: any) => {
 					setItemList(data.item);
 					setCallApi(false);
-				}, () => {
+				},
+() => {
 					setCallApi(false);
-				}, () => {
+				},
+() => {
 					setCallApi(false);
 				}).then();
 		}
@@ -217,7 +219,7 @@ const ItemsContainer = () => {
 						overlayProps={{
 							radius: mantineRadius,
 							backgroundOpacity: 1,
-							color: getSurfaceColor(darkMode).backgroundColor
+							color: getSurfaceColor(darkMode).backgroundColor,
 						}}
 					/> :
 					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">

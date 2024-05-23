@@ -35,7 +35,7 @@ export const SortButtonComponent = (props: SortButtonComponentProps) => {
 	const SortButton = forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<"div">>((buttonProps, ref) => (
 		<div ref={ref} {...buttonProps}>
 			<ActionIconComponent
-				variant={"filled"}
+				variant="filled"
 				c={appColorRGBA}
 				color={getSurfaceColor(darkMode).backgroundColor}
 			>

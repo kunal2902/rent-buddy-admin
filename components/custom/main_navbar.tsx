@@ -11,7 +11,7 @@ import {
 	CenterComponent, ImageComponent,
 	SpaceComponent, TooltipComponent,
 	UnstyledButtonComponent,
-	useMainNavbar
+	useMainNavbar,
 } from "@/components";
 import {
 	appLogoHeight,
@@ -73,7 +73,7 @@ export const MainNavbar = () => {
 				<SpaceComponent showWidth />
 
 				<TooltipComponent
-					label={darkMode? "Change to Light mode": "Change to Dark mode"}>
+					label={darkMode ? "Change to Light mode" : "Change to Dark mode"}>
 					<ActionIconComponent
 						variant="filled"
 						onClick={toggleDarkMode}

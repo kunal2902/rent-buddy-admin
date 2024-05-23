@@ -7,10 +7,12 @@ import { useDebouncedCallback } from "@mantine/hooks";
 import React, { useEffect, useState } from "react";
 import { useTagsContainer } from "./hook";
 import {
-	ActionIconComponent, BoxComponent,
+	ActionIconComponent,
+	BoxComponent,
 	ButtonComponent,
 	CenterComponent,
-	GroupComponent, PaperComponent,
+	GroupComponent,
+	PaperComponent,
 	PopConfirmComponent,
 	PopConfirmType,
 	SelectComponent,
@@ -24,9 +26,13 @@ import { TagModel } from "@/models";
 import {
 	appColorRGBA,
 	deleteTagApi,
-	disableTagApi, formatDate, getBackgroundColor, getSurfaceColor,
+	disableTagApi,
+	formatDate,
+	getBackgroundColor,
+	getSurfaceColor,
 	getTagApi,
-	mantineRadius, useThemeProvider
+	mantineRadius,
+	useThemeProvider,
 } from "@/utils";
 import { TitleComponent } from "@/components/mantine/title_component";
 import { sortItems, tagSearchItems } from "@/constants";
@@ -179,9 +185,9 @@ const TagsContainer = () => {
 						data={tagSearchItems("Tag Id", "tag_id")}
 						setValue={setFilter}
 						setOption={(option) => {
-								setFilter(option.value);
-							}}
-						/>
+							setFilter(option.value);
+						}}
+					/>
 
 					<TextInputComponent
 						size="sm"
@@ -189,20 +195,20 @@ const TagsContainer = () => {
 						setValue={setSearchValue}
 						placeholder="Search"
 						rightSection={loading && <Loader size={20} />}
-						/>
+					/>
 
 					<SortButtonComponent
 						items={sortItems("tag_id")}
 						onSelected={(selected: SortButtonComponentItemProps) => {
-								console.log(selected.label);
-							}}
-						/>
+							console.log(selected.label);
+						}}
+					/>
 
 					<ButtonComponent
 						c={appColorRGBA}
 						color={getSurfaceColor(darkMode).backgroundColor}
 						onClick={() => handleAddOpenModal("", "")}
-						>
+					>
 						<Plus size={18} className="sm:mr-2 mr-0" />
 						<TextComponent text="Add Tag" c={appColorRGBA} />
 					</ButtonComponent>
@@ -221,9 +227,9 @@ const TagsContainer = () => {
 						overlayProps={{
 							radius: mantineRadius,
 							backgroundOpacity: 1,
-							color: getSurfaceColor(darkMode).backgroundColor
+							color: getSurfaceColor(darkMode).backgroundColor,
 						}}
-						/> :
+					/> :
 					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
 						<BoxComponent mx="auto">
 							<PaperComponent withBorder radius={mantineRadius}>
@@ -258,13 +264,13 @@ const TagsContainer = () => {
 			}
 
 			{isCreateTagModalOpen &&
-			<AddTagModal
-				tagId={tagId}
-				setCallApi={setCallApi}
-				initialTagValue={tagName}
-				isOpen={isCreateTagModalOpen}
-				onClose={toggleCreateModalTagOpen}
-			/>
+				<AddTagModal
+					tagId={tagId}
+					setCallApi={setCallApi}
+					initialTagValue={tagName}
+					isOpen={isCreateTagModalOpen}
+					onClose={toggleCreateModalTagOpen}
+				/>
 			}
 		</main>
 	);
