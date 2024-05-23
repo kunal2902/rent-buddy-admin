@@ -1,7 +1,7 @@
 "use client";
 
 import { atom } from "recoil";
-import { Theme } from "@/types/common";
+import { Theme } from "@/types";
 
 export const sidebarStateAtom = atom<boolean>({
 	key: "sidebarStateAtom",
