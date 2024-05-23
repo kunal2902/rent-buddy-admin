@@ -13,11 +13,15 @@ export interface SpaceComponentProps extends SpaceProps {
 }
 
 /** This is the Mantine Space component - https://mantine.dev/core/space/ */
-export const SpaceComponent = (props: SpaceComponentProps) =>
-	<Space
-		h={props.showHeight ? mantineSpaceHeight : undefined}
-		w={props.showWidth ? mantineSpaceWidth : undefined}
-		{...props}
+export const SpaceComponent = (props: SpaceComponentProps) => {
+	const { showHeight, showWidth, ...rest } = props;
+	return (
+		<Space
+			h={showHeight ? mantineSpaceHeight : undefined}
+			w={showWidth ? mantineSpaceWidth : undefined}
+			{...rest}
 	>
-		{props.children}
-	</Space>;
+			{rest.children}
+		</Space>
+	);
+};

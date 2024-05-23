@@ -2,31 +2,36 @@
 
 import { Menu } from "lucide-react";
 import Image from "next/image";
+import { MdOutlineDarkMode, MdOutlineLightMode } from "react-icons/md";
 import Logo from "@/public/images/logo.png";
 import {
-	useMainNavbar,
-	ButtonComponent,
 	ActionIconComponent,
 	AvatarComponent,
+	ButtonComponent,
+	CenterComponent, ImageComponent,
+	SpaceComponent, TooltipComponent,
 	UnstyledButtonComponent,
-	SpaceComponent,
-	CenterComponent,
+	useMainNavbar,
 } from "@/components";
 import {
 	appLogoHeight,
 	appLogoWidth,
 	appName,
-	dashboardRoute,
+	dashboardRoute, getSurfaceColor,
 	posRoute,
+	useThemeProvider,
 } from "@/utils";
 import { TextComponent } from "@/components/mantine/text_component";
 
 export const MainNavbar = () => {
+	const { darkMode, toggleDarkMode } = useThemeProvider();
 	const { toggleSidebar, userName } = useMainNavbar();
 
 	return (
 		<div
-			className="w-full h-[56px] pt-3 pb-3 flex fixed top-0 left-0 bg-light-background-natural items-center justify-between z-30 shadow">
+			className="w-full h-[56px] pt-3 pb-3 flex fixed top-0 left-0 items-center justify-between z-30 shadow"
+			style={getSurfaceColor(darkMode)}
+		>
 			<div className="flex items-center">
 				<SpaceComponent showWidth />
 
@@ -41,11 +46,10 @@ export const MainNavbar = () => {
 				<SpaceComponent showWidth />
 
 				<UnstyledButtonComponent display="flex" href={dashboardRoute}>
-					<Image
+					<ImageComponent
 						src={Logo.src}
-						alt="main logo"
-						width={appLogoWidth}
-						height={appLogoHeight}
+						w={appLogoWidth}
+						h={appLogoHeight}
 					/>
 
 					<SpaceComponent showWidth />
@@ -65,6 +69,18 @@ export const MainNavbar = () => {
 					title="POS"
 					href={posRoute}
 				/>
+
+				<SpaceComponent showWidth />
+
+				<TooltipComponent
+					label={darkMode ? "Change to Light mode" : "Change to Dark mode"}>
+					<ActionIconComponent
+						variant="filled"
+						onClick={toggleDarkMode}
+					>
+						{darkMode ? <MdOutlineDarkMode size={18} /> : <MdOutlineLightMode size={18} />}
+					</ActionIconComponent>
+				</TooltipComponent>
 
 				<SpaceComponent showWidth />
 

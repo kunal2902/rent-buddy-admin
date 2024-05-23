@@ -6,6 +6,7 @@ import { MdSort } from "react-icons/md";
 import { CheckIcon } from "lucide-react";
 import type { IconType } from "react-icons";
 import { ActionIconComponent } from "@/components";
+import { appColorRGBA, getSurfaceColor, mantineRadius, useThemeProvider } from "@/utils";
 
 export enum SortItemDirection {
 	ascending = "Ascending",
@@ -15,6 +16,7 @@ export enum SortItemDirection {
 export interface SortButtonComponentItemProps {
 	id: string | number,
 	label: string,
+	value: string,
 	icon: IconType,
 	direction: SortItemDirection
 }
@@ -28,10 +30,15 @@ export interface SortButtonComponentProps extends MenuProps {
 
 /** This is the Mantine Menu component - https://mantine.dev/core/menu/ */
 export const SortButtonComponent = (props: SortButtonComponentProps) => {
+	const { darkMode } = useThemeProvider();
 	const [selected, setSelected] = useState<SortButtonComponentItemProps>();
 	const SortButton = forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<"div">>((buttonProps, ref) => (
 		<div ref={ref} {...buttonProps}>
-			<ActionIconComponent>
+			<ActionIconComponent
+				variant="filled"
+				c={appColorRGBA}
+				color={getSurfaceColor(darkMode).backgroundColor}
+			>
 				<MdSort />
 			</ActionIconComponent>
 		</div>
@@ -48,6 +55,7 @@ export const SortButtonComponent = (props: SortButtonComponentProps) => {
 			closeDelay={400}
 			trigger="click-hover"
 			arrowPosition="center"
+			radius={mantineRadius}
 			{...props}
 		>
 			<Menu.Target>

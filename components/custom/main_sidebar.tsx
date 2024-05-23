@@ -7,9 +7,10 @@ import { useState } from "react";
 import { ScrollArea } from "@mantine/core";
 import { LinkType, SidebarItems, SideBarProps, SideBarType, SubMenuType } from "@/constants";
 import { NavLinkComponent, TooltipComponent, useMainSidebar } from "@/components";
-import { appColorRGBA, mantineNavLinkChildOffset } from "@/utils";
+import { appColorRGBA, getSurfaceColor, mantineNavLinkChildOffset, useThemeProvider } from "@/utils";
 
 export const MainSidebar = () => {
+	const { darkMode } = useThemeProvider();
 	const { isSidebarOpen, currentPathname } = useMainSidebar();
 	const [disableParentTooltip, setDisableParentTooltip] =
 		useState<boolean>(false);
@@ -27,7 +28,8 @@ export const MainSidebar = () => {
 		<div
 			className={`${
 				isSidebarOpen ? "lg:w-64 w-56 items-center" : "w-[56px]"
-			} h-screen flex flex-col fixed z-20 top-0 left-0 bg-light-background-natural pt-16 shadow`}
+			} h-screen flex flex-col fixed z-20 top-0 left-0 pt-16 shadow`}
+			style={getSurfaceColor(darkMode)}
 		>
 			<ScrollArea
 				scrollbars="y"

@@ -1,7 +1,7 @@
 "use client";
 
 import { twMerge } from "tailwind-merge";
-import { ButtonComponent, ButtonComponentProps } from "@/components";
+import { ButtonComponent, ButtonComponentProps, TitleComponent } from "@/components";
 
 export type DashboardPageHeaderProps = {
 	heading: string;
@@ -27,14 +27,7 @@ export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
 				className
 			)}
 		>
-			<h1
-				className={twMerge(
-					"text-2xl font-semibold text-light-primary-text",
-					headingClassName
-				)}
-			>
-				{heading}
-			</h1>
+			<TitleComponent title={heading} />
 
 			{button && (
 				<ButtonComponent
