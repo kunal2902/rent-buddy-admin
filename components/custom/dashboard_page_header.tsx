@@ -28,6 +28,7 @@ export interface DashboardPageHeaderProps {
 	setOption: ((option: ComboBoxProps) => void) | undefined
 	onClick: () => void,
 	onSortSelected: (selected: SortButtonComponentItemProps) => void,
+	showAddButton?: boolean
 }
 
 export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
@@ -43,6 +44,7 @@ export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
 		setOption,
 		onClick,
 		onSortSelected,
+		showAddButton = true,
 	} = props;
 	const { darkMode } = useThemeProvider();
 
@@ -77,14 +79,14 @@ export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
 					onSelected={onSortSelected}
 				/>
 
-				<ButtonComponent
+				{showAddButton && <ButtonComponent
 					c={appColorRGBA}
 					color={getSurfaceColor(darkMode).backgroundColor}
 					onClick={onClick}
 				>
 					<Plus size={18} className="sm:mr-2 mr-0" />
 					<TextComponent text={buttonTitle} c={appColorRGBA} />
-				</ButtonComponent>
+				</ButtonComponent>}
 			</GroupComponent>
 		</GroupComponent>
 	);

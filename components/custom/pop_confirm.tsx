@@ -2,7 +2,7 @@
 
 import React, { forwardRef, useState } from "react";
 import { Popover, PopoverProps, Switch } from "@mantine/core";
-import { MdOutlineDeleteForever } from "react-icons/md";
+import { MdDeleteOutline } from "react-icons/md";
 import { ActionIconComponent, ButtonComponent, GroupComponent, TextComponent } from "@/components";
 import { mantineRadius } from "@/utils";
 
@@ -12,6 +12,7 @@ export enum PopConfirmType {
 	// eslint-disable-next-line no-unused-vars
 	icon = "icon",
 }
+
 /** Props list of Mantine's Popover component - https://mantine.dev/core/popover/?t=props */
 export interface PopConfirmComponentProps extends PopoverProps {
 	onConfirm: () => Promise<void>,
@@ -23,7 +24,14 @@ export interface PopConfirmComponentProps extends PopoverProps {
 
 /** This is the Mantine Menu component - https://mantine.dev/core/menu/ */
 export const PopConfirmComponent = (props: PopConfirmComponentProps) => {
-	const { onConfirm, actionName, entityName, type = PopConfirmType.icon, isDisabled } = props;
+	const {
+		onConfirm,
+		actionName,
+		entityName,
+		type = PopConfirmType.icon,
+		isDisabled,
+		...rest
+	} = props;
 	const [opened, setOpened] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const PopButton = forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<"div">>((buttonProps, ref) => (
@@ -34,7 +42,7 @@ export const PopConfirmComponent = (props: PopConfirmComponentProps) => {
 					onClick={() => setOpened(true)}
 				/> :
 				<ActionIconComponent onClick={() => setOpened(true)} size="md" color="red">
-					<MdOutlineDeleteForever size={18} />
+					<MdDeleteOutline size={18} />
 				</ActionIconComponent>
 			}
 		</div>
@@ -50,7 +58,7 @@ export const PopConfirmComponent = (props: PopConfirmComponentProps) => {
 			onChange={setOpened}
 			arrowPosition="center"
 			radius={mantineRadius}
-			{...props}
+			{...rest}
 		>
 			<Popover.Target>
 				<PopButton />

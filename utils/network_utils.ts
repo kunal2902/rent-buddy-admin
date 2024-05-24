@@ -14,7 +14,7 @@ import {
 	itemAPIPath,
 	activityLogsAPIPath,
 	usersAPIPath,
-	customerAPIPath,
+	customerAPIPath, reportsAPIPath
 } from "@/utils";
 
 const makeGetRequest = async (
@@ -111,7 +111,7 @@ export const loginApi = async (
 // Permission Api
 export const getPermissionApi = async (
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -135,7 +135,7 @@ export const getPermissionApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -144,7 +144,7 @@ export const getPermissionApi = async (
 export const getTagApi = async (
 	query: string | undefined,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -169,7 +169,7 @@ export const getTagApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -177,7 +177,7 @@ export const getTagApi = async (
 export const getTagByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -201,7 +201,7 @@ export const getTagByIdApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -237,7 +237,7 @@ export const upsertTagApi = async (
 export const disableTagApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -261,7 +261,7 @@ export const disableTagApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -269,7 +269,7 @@ export const disableTagApi = async (
 export const deleteTagApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -293,15 +293,16 @@ export const deleteTagApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
 
 // Role Api
-export const getRolesApi = async (
+export const getRoleApi = async (
+	query: string | undefined,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -309,7 +310,8 @@ export const getRolesApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(roleAPIPath, {
+	const path = query === "" ? roleAPIPath : `${roleAPIPath}?${query}`;
+	const response = await makeGetRequest(path, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -325,7 +327,7 @@ export const getRolesApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -333,7 +335,7 @@ export const getRolesApi = async (
 export const getRoleByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -357,7 +359,7 @@ export const getRoleByIdApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -365,7 +367,7 @@ export const getRoleByIdApi = async (
 export const upsertRoleApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -389,7 +391,7 @@ export const upsertRoleApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -397,7 +399,7 @@ export const upsertRoleApi = async (
 export const disableRoleApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -421,7 +423,7 @@ export const disableRoleApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -429,7 +431,7 @@ export const disableRoleApi = async (
 export const deleteRoleApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -453,7 +455,7 @@ export const deleteRoleApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -461,7 +463,7 @@ export const deleteRoleApi = async (
 // custom-attribute api
 export const getAttributeApi = async (
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -485,7 +487,7 @@ export const getAttributeApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -493,7 +495,7 @@ export const getAttributeApi = async (
 export const getAttributeByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -517,7 +519,7 @@ export const getAttributeByIdApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -525,7 +527,7 @@ export const getAttributeByIdApi = async (
 export const upsertAttributeApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -549,7 +551,7 @@ export const upsertAttributeApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -557,7 +559,7 @@ export const upsertAttributeApi = async (
 export const disableAttributeApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -581,7 +583,7 @@ export const disableAttributeApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -621,7 +623,7 @@ export const deleteAttributeApi = async (
 // category api
 export const getCategoryApi = async (
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -645,7 +647,7 @@ export const getCategoryApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -653,7 +655,7 @@ export const getCategoryApi = async (
 export const getcategoryByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -677,7 +679,7 @@ export const getcategoryByIdApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -717,7 +719,7 @@ export const upsertCategoryApi = async (
 export const disableCategoryApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -741,7 +743,7 @@ export const disableCategoryApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -749,7 +751,7 @@ export const disableCategoryApi = async (
 export const deleteCategoryApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -773,7 +775,7 @@ export const deleteCategoryApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -781,7 +783,7 @@ export const deleteCategoryApi = async (
 // Sub categery api
 export const getSubCategoryApi = async (
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -805,7 +807,7 @@ export const getSubCategoryApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -813,7 +815,7 @@ export const getSubCategoryApi = async (
 export const getSubCategoryByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -837,7 +839,7 @@ export const getSubCategoryByIdApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -877,7 +879,7 @@ export const upsertSubCategoryApi = async (
 export const disableSubCategoryApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -901,7 +903,7 @@ export const disableSubCategoryApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -909,7 +911,7 @@ export const disableSubCategoryApi = async (
 export const deleteSubCategoryApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -933,7 +935,7 @@ export const deleteSubCategoryApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -941,7 +943,7 @@ export const deleteSubCategoryApi = async (
 // Item type api
 export const getItemTypeApi = async (
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -965,7 +967,7 @@ export const getItemTypeApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -973,7 +975,7 @@ export const getItemTypeApi = async (
 export const getItemTypeByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -997,7 +999,7 @@ export const getItemTypeByIdApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -1037,7 +1039,7 @@ export const upsertItemTypeApi = async (
 export const disableItemTypeApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -1061,7 +1063,7 @@ export const disableItemTypeApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -1069,7 +1071,7 @@ export const disableItemTypeApi = async (
 export const deleteItemTypeApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -1093,7 +1095,7 @@ export const deleteItemTypeApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -1102,7 +1104,7 @@ export const deleteItemTypeApi = async (
 export const getItemApi = async (
 	query: string | undefined,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -1127,7 +1129,7 @@ export const getItemApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -1135,7 +1137,7 @@ export const getItemApi = async (
 export const getItemByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -1159,7 +1161,7 @@ export const getItemByIdApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -1199,7 +1201,7 @@ export const upsertItemApi = async (
 export const disableItemApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -1223,7 +1225,7 @@ export const disableItemApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -1231,7 +1233,7 @@ export const disableItemApi = async (
 export const deleteItemApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -1255,7 +1257,7 @@ export const deleteItemApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -1263,7 +1265,7 @@ export const deleteItemApi = async (
 // Add on api
 export const getAddOnApi = async (
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -1287,7 +1289,7 @@ export const getAddOnApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -1295,7 +1297,7 @@ export const getAddOnApi = async (
 export const getAddOnByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -1319,7 +1321,7 @@ export const getAddOnByIdApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -1359,7 +1361,7 @@ successCallback: (arg0: any) => void,
 export const disableAddOnApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -1383,7 +1385,7 @@ export const disableAddOnApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -1391,7 +1393,7 @@ export const disableAddOnApi = async (
 export const deleteAddOnApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -1415,7 +1417,7 @@ export const deleteAddOnApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -1423,7 +1425,7 @@ export const deleteAddOnApi = async (
 // Activity logs api
 export const getActivityLogsApi = async (
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -1447,7 +1449,7 @@ export const getActivityLogsApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -1455,7 +1457,7 @@ export const getActivityLogsApi = async (
 export const getActivityLogsByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -1479,15 +1481,16 @@ export const getActivityLogsByIdApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
 
 // Users api
 export const getUsersApi = async (
+	query: string | undefined,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -1495,7 +1498,8 @@ export const getUsersApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(usersAPIPath, {
+	const path = query === "" ? usersAPIPath : `${usersAPIPath}?${query}`;
+	const response = await makeGetRequest(path, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1511,15 +1515,15 @@ export const getUsersApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
 
-export const getUsersByIdApi = async (
+export const getUserByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
@@ -1543,23 +1547,23 @@ export const getUsersByIdApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
 
-// Customer api
-export const getCustomerApi = async (
+export const upsertUserApi = async (
+	body: any,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
-	logoutCallback: () => void
+	errorCallback: (arg0: any) => void,
+	logoutCallback: () => void,
 ) => {
 	const token = getCrmJWT();
 	if (token === null || token === "" || token === "null") {
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(customerAPIPath, {
+	const response = await makePostRequest(usersAPIPath, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1575,7 +1579,105 @@ export const getCustomerApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
+			toast.error(response.message);
+	}
+};
+
+export const disableUserApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: (arg0: any) => void,
+	logoutCallback: () => void,
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === "" || token === "null") {
+		logoutCallback();
+		return;
+	}
+	const response = await makePutRequest(`${usersAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback(response.message);
+			toast.error(response.message);
+	}
+};
+
+export const deleteUserApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: (arg0: any) => void,
+	logoutCallback: () => void,
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === "" || token === "null") {
+		logoutCallback();
+		return;
+	}
+	const response = await makeDeleteRequest(`${usersAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback(response.message);
+			toast.error(response.message);
+	}
+};
+
+// Customer api
+export const getCustomersApi = async (
+	query: string | undefined,
+	successCallback: (arg0: any) => void,
+	errorCallback: (arg0: any) => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === "" || token === "null") {
+		logoutCallback();
+		return;
+	}
+	const path = query === "" ? customerAPIPath : `${customerAPIPath}?${query}`;
+	const response = await makeGetRequest(path, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };
@@ -1583,7 +1685,7 @@ export const getCustomerApi = async (
 export const getCustomerByIdApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
-	errorCallback: () => void,
+	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void
 ) => {
 	const token = getCrmJWT();
@@ -1607,7 +1709,41 @@ export const getCustomerByIdApi = async (
 			logoutCallback();
 			break;
 		default:
-			errorCallback();
+			errorCallback(response.message);
+			toast.error(response.message);
+	}
+};
+
+// Reports Api
+export const getReportsAPI = async (
+	query: string | undefined,
+	successCallback: (arg0: any) => void,
+	errorCallback: (arg0: any) => void,
+	logoutCallback: () => void,
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === "" || token === "null") {
+		logoutCallback();
+		return;
+	}
+	const path = query === "" ? reportsAPIPath : `${reportsAPIPath}?${query}`;
+	const response = await makeGetRequest(path, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback(response.message);
 			toast.error(response.message);
 	}
 };

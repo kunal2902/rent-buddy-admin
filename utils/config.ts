@@ -101,28 +101,32 @@ export const categoryAPIPath: string = `${apiUrl}/category`;
 export const subCategoryAPIPath: string = `${apiUrl}/sub-category`;
 
 // Item type path
-/** get all Item Type based on filter, sorting and search, add or insert */
+/** get all Item Types based on filter, sorting and search, add or insert */
 export const itemTypeAPIPath: string = `${apiUrl}/item-type`;
 
 // Item path
-/** get all Item Type based on filter, sorting and search, add or insert */
+/** get all Items based on filter, sorting and search, add or insert */
 export const itemAPIPath: string = `${apiUrl}/item`;
 
 // Add-on path
-/** get all add on based on filter, sorting and search, add or insert */
+/** get all add-ons based on filter, sorting and search, add or insert */
 export const addOnAPIPath: string = `${apiUrl}/add-on`;
 
 // Activity logs path
-/** get all add on based on filter, sorting and search, add or insert */
+/** get all activity logs based on filter, sorting and search, add or insert */
 export const activityLogsAPIPath: string = `${apiUrl}/activity-logs`;
 
 // Users path
-/** get all add on based on filter, sorting and search, add or insert */
+/** get all users based on filter, sorting and search, add or insert */
 export const usersAPIPath: string = `${apiUrl}/users`;
 
-// Users path
-/** get all add on based on filter, sorting and search, add or insert */
+// Customers path
+/** get all customers based on filter, sorting and search, add or insert */
 export const customerAPIPath: string = `${apiUrl}/customer`;
+
+// Reports path
+/** get all reports based on filter, sorting and search */
+export const reportsAPIPath: string = `${apiUrl}/reports`;
 
 /** Constant Functions */
 /** To get the CRM JWT stored in Cookies */

@@ -7,39 +7,39 @@ import {
 	ModalComponent, SpaceComponent,
 	TextInputComponent, TitleComponent,
 } from "@/components";
-import { upsertUserApi } from "@/utils";
+import { upsertRoleApi } from "@/utils";
 
 interface Props {
 	isOpen: boolean;
 	onClose: () => void;
 	setCallApi: Dispatch<SetStateAction<boolean>>;
-	initialUserValue: string;
-	userId: string;
+	initialRoleValue: string;
+	roleId: string;
 }
 
-const AddUserModal = (props: Props) => {
-	const { isOpen, onClose, setCallApi, initialUserValue, userId } = props;
-	const [userName, setUserName] = useState<string>(initialUserValue);
+const AddRoleModal = (props: Props) => {
+	const { isOpen, onClose, setCallApi, initialRoleValue, roleId } = props;
+	const [roleName, setRoleName] = useState<string>(initialRoleValue);
 	const [inputError, setInputError] = useState<string | null>(null);
-	const isEditModal: boolean = initialUserValue !== "";
+	const isEditModal: boolean = initialRoleValue !== "";
 
 	useEffect(() => {
-		if (userName) {
+		if (roleName) {
 			setInputError(null);
 		}
-	}, [userName]);
+	}, [roleName]);
 
-	const handleSubmitUser = async (event: React.FormEvent) => {
+	const handleSubmitRole = async (event: React.FormEvent) => {
 		event.preventDefault();
-		if (!userName) {
+		if (!roleName) {
 			setInputError("Please enter the name first");
 		}
 		const body = {
-			name: userName,
-			id: userId,
+			name: roleName,
+			id: roleId,
 		};
 		try {
-			await upsertUserApi(
+			await upsertRoleApi(
 				body,
 				() => {
 					onClose();
@@ -59,16 +59,16 @@ const AddUserModal = (props: Props) => {
 		<ModalComponent
 			opened={isOpen}
 			onClose={onClose}
-			title={<TitleComponent title={isEditModal ? "Edit User" : "New User"} />}
+			title={<TitleComponent title={isEditModal ? "Edit Role" : "New Role"} />}
 		>
 			<TextInputComponent
 				required
 				title="Name"
-				label="User Name"
-				value={userName}
+				label="Role Name"
+				value={roleName}
 				error={inputError}
-				setValue={setUserName}
-				placeholder="Enter user Name"
+				setValue={setRoleName}
+				placeholder="Enter role Name"
 			/>
 
 			<SpaceComponent showHeight />
@@ -77,11 +77,11 @@ const AddUserModal = (props: Props) => {
 				<ButtonComponent
 					title="Save"
 					w={100}
-					onClick={handleSubmitUser}
+					onClick={handleSubmitRole}
 				/>
 			</GroupComponent>
 		</ModalComponent>
 	);
 };
 
-export default AddUserModal;
+export default AddRoleModal;

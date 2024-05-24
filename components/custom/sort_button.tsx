@@ -9,7 +9,9 @@ import { ActionIconComponent } from "@/components";
 import { appColorRGBA, getSurfaceColor, mantineRadius, useThemeProvider } from "@/utils";
 
 export enum SortItemDirection {
+	// eslint-disable-next-line no-unused-vars
 	ascending = "Ascending",
+	// eslint-disable-next-line no-unused-vars
 	descending = "Descending",
 }
 
@@ -31,6 +33,7 @@ export interface SortButtonComponentProps extends MenuProps {
 /** This is the Mantine Menu component - https://mantine.dev/core/menu/ */
 export const SortButtonComponent = (props: SortButtonComponentProps) => {
 	const { darkMode } = useThemeProvider();
+	const { items, onSelected, ...rest } = props;
 	const [selected, setSelected] = useState<SortButtonComponentItemProps>();
 	const SortButton = forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<"div">>((buttonProps, ref) => (
 		<div ref={ref} {...buttonProps}>
@@ -56,7 +59,7 @@ export const SortButtonComponent = (props: SortButtonComponentProps) => {
 			trigger="click-hover"
 			arrowPosition="center"
 			radius={mantineRadius}
-			{...props}
+			{...rest}
 		>
 			<Menu.Target>
 				<SortButton />
@@ -64,11 +67,12 @@ export const SortButtonComponent = (props: SortButtonComponentProps) => {
 
 			<Menu.Dropdown>
 				{
-					props.items.map((menuComponentItem: SortButtonComponentItemProps) =>
+					items.map((menuComponentItem: SortButtonComponentItemProps) =>
 						<Menu.Item
+							key={menuComponentItem.id}
 							onClick={() => {
 								setSelected(menuComponentItem);
-								props.onSelected(menuComponentItem);
+								onSelected(menuComponentItem);
 							}}
 							leftSection={<menuComponentItem.icon size={22} />}
 							rightSection={selected?.id === menuComponentItem.id ?
