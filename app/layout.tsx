@@ -6,8 +6,9 @@ import React from "react";
 import { MantineProvider, ColorSchemeScript } from "@mantine/core";
 import { Metadata } from "next";
 import { ToastContainer } from "react-toastify";
-import { theme } from "@/theme";
+import { mainTheme } from "@/constants";
 import { appDescription, appTitle, ReactQueryProvider, RecoilProvider, ThemeProvider } from "@/utils";
+import { MantineProviderComponent } from "@/components";
 
 export const metadata: Metadata = {
 	title: appTitle,
@@ -29,7 +30,7 @@ export default function RootLayout({ children }: { children: any }) {
 			<body className={`${GeistSans.variable} ${GeistMono.variable}`}>
 				<ReactQueryProvider>
 					<RecoilProvider>
-						<MantineProvider theme={theme}>
+						<MantineProviderComponent theme={mainTheme}>
 							<ThemeProvider>
 								{children}
 								<ToastContainer
@@ -39,7 +40,7 @@ export default function RootLayout({ children }: { children: any }) {
 									rtl={false}
 								/>
 							</ThemeProvider>
-						</MantineProvider>
+						</MantineProviderComponent>
 					</RecoilProvider>
 				</ReactQueryProvider>
 			</body>

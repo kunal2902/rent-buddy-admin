@@ -10,6 +10,7 @@ import {
 	BoxComponent,
 	ButtonComponent,
 	CenterComponent,
+	DashboardPageHeader,
 	GroupComponent,
 	PaperComponent,
 	PopConfirmComponent,
@@ -35,7 +36,7 @@ import {
 	useThemeProvider,
 } from "@/utils";
 import AddItemModal from "./add_item_modal";
-import { sortItems, tagSearchItems } from "@/constants";
+import { searchItems, sortItems } from "@/constants";
 
 const ItemsContainer = () => {
 	const { isSidebarOpen } = useItemsContainer();
@@ -58,10 +59,10 @@ const ItemsContainer = () => {
 					setItemList(data.item);
 					setCallApi(false);
 				},
-() => {
+				() => {
 					setCallApi(false);
 				},
-() => {
+				() => {
 					setCallApi(false);
 				}).then();
 		}
@@ -167,45 +168,23 @@ const ItemsContainer = () => {
 			}`}
 			style={getBackgroundColor(darkMode)}
 		>
-			<GroupComponent className="m-3" align="center" justify="space-between">
-				<TitleComponent title="Items" />
-				<GroupComponent>
-					<SelectComponent
-						placeholder="Searching In"
-						searchable
-						size="sm"
-						data={tagSearchItems("Item Id", "item_id")}
-						setValue={setFilter}
-						setOption={(option) => {
-							setFilter(option.value);
-						}}
-					/>
-
-					<TextInputComponent
-						size="sm"
-						value={searchValue}
-						setValue={setSearchValue}
-						placeholder="Search"
-						rightSection={loading && <Loader size={20} />}
-					/>
-
-					<SortButtonComponent
-						items={sortItems("item_id")}
-						onSelected={(selected: SortButtonComponentItemProps) => {
-							console.log(selected.label);
-						}}
-					/>
-
-					<ButtonComponent
-						c={appColorRGBA}
-						color={getSurfaceColor(darkMode).backgroundColor}
-						onClick={() => handleAddOpenModal("", "")}
-					>
-						<Plus size={18} className="sm:mr-2 mr-0" />
-						<TextComponent text="Add Item" c={appColorRGBA} />
-					</ButtonComponent>
-				</GroupComponent>
-			</GroupComponent>
+			<DashboardPageHeader
+				title="Items"
+				idLabel="Item Id"
+				loading={loading}
+				idVariable="item_id"
+				setFilter={setFilter}
+				buttonTitle="Add Item"
+				searchValue={searchValue}
+				setSearchValue={setSearchValue}
+				setOption={(option) => {
+					setFilter(option.value);
+				}}
+				onClick={() => handleAddOpenModal("", "")}
+				onSortSelected={(selected: SortButtonComponentItemProps) => {
+					console.log(selected.label);
+				}}
+			/>
 
 			{
 				itemList.length === 0 ?

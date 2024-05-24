@@ -24,7 +24,7 @@ export const appColor: string = "#7469B6";
 export const appAccentColor: string = "#EE4266";
 export const whiteColor: string = "#ffffff";
 export const blackColor: string = "#000000";
-export const backgroundColorLight: string = "#e0e0e0";
+export const backgroundColorLight: string = "#efefef";
 export const backgroundColorDark: string = "#333";
 export const surfaceColorLight: string = "#fff";
 export const surfaceColorDark: string = "#222";
@@ -50,7 +50,7 @@ export const mantineActionIconSize: MantineSize = "lg";
 export const mantineLargeModalWidth: MantineSize = "lg";
 export const mantineMediumModalWidth: MantineSize = "md";
 export const mantineNavLinkChildOffset: MantineSize = "md";
-export const mantineInputVariant: InputVariant = "default";
+export const mantineInputVariant: InputVariant = "filled";
 export const mantineAvatarVariant: AvatarVariant = "filled";
 export const mantineActionIconVariant: ActionIconVariant = "light";
 

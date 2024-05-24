@@ -1,7 +1,7 @@
 import { ComboBoxProps } from "@/types";
 
 /** Search items for searching in Name, ID or Added By */
-export const tagSearchItems = (idLabel: string, idVariable: string): Array<ComboBoxProps> => [
+export const searchItems = (idLabel: string, idVariable: string): Array<ComboBoxProps> => [
 	{
 		id: "name",
 		label: "Name",

@@ -10,7 +10,7 @@ import {
 	ActionIconComponent,
 	BoxComponent,
 	ButtonComponent,
-	CenterComponent,
+	CenterComponent, DashboardPageHeader,
 	GroupComponent,
 	PaperComponent,
 	PopConfirmComponent,
@@ -19,7 +19,7 @@ import {
 	SortButtonComponent,
 	SortButtonComponentItemProps,
 	TextComponent,
-	TextInputComponent,
+	TextInputComponent
 } from "@/components";
 import AddTagModal from "./add_tag_modal";
 import { TagModel } from "@/models";
@@ -35,7 +35,7 @@ import {
 	useThemeProvider,
 } from "@/utils";
 import { TitleComponent } from "@/components/mantine/title_component";
-import { sortItems, tagSearchItems } from "@/constants";
+import { sortItems, searchItems } from "@/constants";
 
 const TagsContainer = () => {
 	const {
@@ -175,45 +175,23 @@ const TagsContainer = () => {
 			}`}
 			style={getBackgroundColor(darkMode)}
 		>
-			<GroupComponent className="m-3" align="center" justify="space-between">
-				<TitleComponent title="Tags" />
-				<GroupComponent>
-					<SelectComponent
-						placeholder="Searching In"
-						searchable
-						size="sm"
-						data={tagSearchItems("Tag Id", "tag_id")}
-						setValue={setFilter}
-						setOption={(option) => {
-							setFilter(option.value);
-						}}
-					/>
-
-					<TextInputComponent
-						size="sm"
-						value={searchValue}
-						setValue={setSearchValue}
-						placeholder="Search"
-						rightSection={loading && <Loader size={20} />}
-					/>
-
-					<SortButtonComponent
-						items={sortItems("tag_id")}
-						onSelected={(selected: SortButtonComponentItemProps) => {
-							console.log(selected.label);
-						}}
-					/>
-
-					<ButtonComponent
-						c={appColorRGBA}
-						color={getSurfaceColor(darkMode).backgroundColor}
-						onClick={() => handleAddOpenModal("", "")}
-					>
-						<Plus size={18} className="sm:mr-2 mr-0" />
-						<TextComponent text="Add Tag" c={appColorRGBA} />
-					</ButtonComponent>
-				</GroupComponent>
-			</GroupComponent>
+			<DashboardPageHeader
+				title="Tags"
+				idLabel="Tag Id"
+				loading={loading}
+				idVariable="tag_id"
+				setFilter={setFilter}
+				buttonTitle="Add Tag"
+				searchValue={searchValue}
+				setSearchValue={setSearchValue}
+				setOption={(option) => {
+					setFilter(option.value);
+				}}
+				onClick={() => handleAddOpenModal("", "")}
+				onSortSelected={(selected: SortButtonComponentItemProps) => {
+					console.log(selected.label);
+				}}
+			/>
 
 			{
 				tagsList.length === 0 ?

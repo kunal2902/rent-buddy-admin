@@ -1,9 +1,6 @@
 "use client";
 
-import {
-	ComboboxItem,
-	Select, SelectProps,
-} from "@mantine/core";
+import { ComboboxItem, Select, SelectProps } from "@mantine/core";
 import React from "react";
 import { mantineInputVariant, mantineRadius, mantineSize } from "@/utils";
 import { ComboBoxProps } from "@/types";
@@ -12,7 +9,7 @@ import { ComboBoxProps } from "@/types";
 export interface SelectComponentProps extends SelectProps {
 	setOption?: (option: ComboBoxProps) => void;
 	setValue: (val: string | null) => void;
-	data: Array<ComboBoxProps>
+	data: Array<ComboBoxProps>;
 }
 
 /** This is the Mantine Select component - https://mantine.dev/core/select/ */
@@ -36,7 +33,7 @@ export const SelectComponent = (props: SelectComponentProps) => {
 			radius={rest.radius ?? mantineRadius}
 			variant={rest.variant ?? mantineInputVariant}
 			allowDeselect={rest.allowDeselect ?? false}
-	>
+		>
 			{rest.children}
 		</Select>
 	);

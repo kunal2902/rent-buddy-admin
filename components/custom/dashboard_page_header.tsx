@@ -1,42 +1,91 @@
 "use client";
 
-import { twMerge } from "tailwind-merge";
-import { ButtonComponent, ButtonComponentProps, TitleComponent } from "@/components";
+import { Loader } from "@mantine/core";
+import { Plus } from "lucide-react";
+import React from "react";
+import {
+	ButtonComponent,
+	GroupComponent, MantineProviderComponent,
+	SelectComponent, SortButtonComponent,
+	SortButtonComponentItemProps,
+	TextComponent,
+	TextInputComponent,
+	TitleComponent,
+} from "@/components";
+import { coloredInputTheme, searchItems, sortItems } from "@/constants";
+import { appColorRGBA, getSurfaceColor, useThemeProvider } from "@/utils";
+import { ComboBoxProps } from "@/types";
 
-export type DashboardPageHeaderProps = {
-	heading: string;
-	className?: string;
-	headingClassName?: string;
-} & (
-	| {
-			button?: false;
-	}
-	| {
-			button: true;
-			buttonProps: ButtonComponentProps;
-	}
-);
+export interface DashboardPageHeaderProps {
+	title: string,
+	idLabel: string,
+	loading: boolean,
+	idVariable: string,
+	setFilter: (val: (string | null)) => void
+	buttonTitle: string,
+	searchValue: string,
+	setSearchValue: (value: string) => void,
+	setOption: ((option: ComboBoxProps) => void) | undefined
+	onClick: () => void,
+	onSortSelected: (selected: SortButtonComponentItemProps) => void,
+}
 
 export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
-	const { button, heading, className, headingClassName } = props;
+	const {
+		title,
+		idLabel,
+		loading,
+		idVariable,
+		setFilter,
+		buttonTitle,
+		searchValue,
+		setSearchValue,
+		setOption,
+		onClick,
+		onSortSelected,
+	} = props;
+	const { darkMode } = useThemeProvider();
 
 	return (
-		<div
-			className={twMerge(
-				"flex w-full items-center justify-between font-public-sans px-2",
-				className
-			)}
-		>
-			<TitleComponent title={heading} />
+		<GroupComponent className="m-3" align="center" justify="space-between">
+			<TitleComponent title={title} />
+			<GroupComponent>
 
-			{button && (
+				<MantineProviderComponent theme={coloredInputTheme(darkMode)}>
+					<SelectComponent
+						placeholder="Searching In"
+						searchable
+						size="sm"
+						data={searchItems(idLabel, idVariable)}
+						setValue={setFilter}
+						setOption={setOption}
+					/>
+				</MantineProviderComponent>
+
+				<MantineProviderComponent theme={coloredInputTheme(darkMode)}>
+					<TextInputComponent
+						size="sm"
+						value={searchValue}
+						setValue={setSearchValue}
+						placeholder="Search"
+						rightSection={loading && <Loader size={20} />}
+					/>
+				</MantineProviderComponent>
+
+				<SortButtonComponent
+					items={sortItems(idVariable)}
+					onSelected={onSortSelected}
+				/>
+
 				<ButtonComponent
-					className={twMerge(
-						"bg-grey-900 ml-2 w-fit text-grey-100",
-						props.buttonProps.className
-					)}
-					{...props.buttonProps} />
-			)}
-		</div>
+					c={appColorRGBA}
+					color={getSurfaceColor(darkMode).backgroundColor}
+					onClick={onClick}
+				>
+					<Plus size={18} className="sm:mr-2 mr-0" />
+					<TextComponent text={buttonTitle} c={appColorRGBA} />
+				</ButtonComponent>
+			</GroupComponent>
+		</GroupComponent>
 	);
 };

@@ -8,6 +8,7 @@ export * from "@/components/mantine/chip_component";
 export * from "@/components/mantine/file_input_component";
 export * from "@/components/mantine/group_component";
 export * from "@/components/mantine/image_component";
+export * from "@/components/mantine/mantine_provider_component";
 export * from "@/components/mantine/modal_component";
 export * from "@/components/mantine/navlink_component";
 export * from "@/components/mantine/paper_component";
