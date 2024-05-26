@@ -18,19 +18,7 @@ import {
  MainComponent } from "@/components";
 import AddTagModal from "./add_tag_modal";
 import { TagModel } from "@/models";
-<<<<<<< HEAD
-import {
-	appColorRGBA,
-	deleteTagApi,
-	disableTagApi, formatDate, getBackgroundColor, getSurfaceColor,
-	getTagApi,
-	mantineRadius, useThemeProvider,
-} from "@/utils";
-import { TitleComponent } from "@/components/mantine/title_component";
-import { searchItems, sortItems } from "@/constants";
-=======
 import { deleteTagApi, disableTagApi, formatDate, getTagApi } from "@/utils";
->>>>>>> 3dc6be9c6b3086fb0ce2b6922831753edcae9c80
 
 const TagsContainer = () => {
 	const [tagId, setTagId] = useState("");
@@ -168,53 +156,6 @@ const TagsContainer = () => {
 	));
 
 	return (
-<<<<<<< HEAD
-		<main
-			className={`flex min-h-screen w-full flex-col pt-14 ${
-				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-14"
-			}`}
-			style={getBackgroundColor(darkMode)}
-		>
-			<GroupComponent className="m-3" align="center" justify="space-between">
-				<TitleComponent title="Tags" />
-				<GroupComponent>
-					<SelectComponent
-						placeholder="Searching In"
-						searchable
-						size="sm"
-						data={searchItems("Tag Id", "tag_id")}
-						setValue={setFilter}
-						setOption={(option) => {
-								setFilter(option.value);
-							}}
-						/>
-
-					<TextInputComponent
-						size="sm"
-						value={searchValue}
-						setValue={setSearchValue}
-						placeholder="Search"
-						rightSection={loading && <Loader size={20} />}
-						/>
-
-					<SortButtonComponent
-						items={sortItems("tag_id")}
-						onSelected={(selected: SortButtonComponentItemProps) => {
-								console.log(selected.label);
-							}}
-						/>
-
-					<ButtonComponent
-						c={appColorRGBA}
-						color={getSurfaceColor(darkMode).backgroundColor}
-						onClick={() => handleAddOpenModal("", "")}
-						>
-						<Plus size={18} className="sm:mr-2 mr-0" />
-						<TextComponent text="Add Tag" c={appColorRGBA} />
-					</ButtonComponent>
-				</GroupComponent>
-			</GroupComponent>
-=======
 		<MainComponent>
 			<DashboardPageHeader
 				title="Tags"
@@ -233,22 +174,12 @@ const TagsContainer = () => {
 					console.log(selected.label);
 				}}
 			/>
->>>>>>> 3dc6be9c6b3086fb0ce2b6922831753edcae9c80
 
 			{
 				tagsList.length === 0 ?
 					<LoadingOverlayComponent
 						visible={tagsList.length === 0}
-<<<<<<< HEAD
-						overlayProps={{
-							radius: mantineRadius,
-							backgroundOpacity: 1,
-							color: getSurfaceColor(darkMode).backgroundColor,
-						}}
-						/> :
-=======
 					/> :
->>>>>>> 3dc6be9c6b3086fb0ce2b6922831753edcae9c80
 					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
 						<BoxComponent mx="auto">
 							<PaperComponent>
@@ -274,24 +205,15 @@ const TagsContainer = () => {
 					</BoxComponent>
 			}
 
-<<<<<<< HEAD
-			{isCreateTagModalOpen &&
-=======
 			{openAddModal &&
->>>>>>> 3dc6be9c6b3086fb0ce2b6922831753edcae9c80
 				<AddTagModal
 					tagId={tagId}
 					setCallApi={setCallApi}
 					initialTagValue={tagName}
-<<<<<<< HEAD
-					isOpen={isCreateTagModalOpen}
-					onClose={toggleCreateModalTagOpen}
-=======
 					isOpen={openAddModal}
 					onClose={() => {
 						setOpenAddModal(false);
 					}}
->>>>>>> 3dc6be9c6b3086fb0ce2b6922831753edcae9c80
 				/>
 			}
 		</MainComponent>

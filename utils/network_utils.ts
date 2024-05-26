@@ -14,7 +14,7 @@ import {
 	itemAPIPath,
 	activityLogsAPIPath,
 	usersAPIPath,
-	customerAPIPath, reportsAPIPath
+	customerAPIPath, reportsAPIPath,
 } from "@/utils";
 
 const makeGetRequest = async (

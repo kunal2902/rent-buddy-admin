@@ -45,7 +45,7 @@ const CreateCategoryModal = (props: Props) => {
 	useEffect(() => {
 		if (categoryName && image) {
 			const imgUrl = `${imageUrl}/${image}`;
-			console.log("initialCatValue", categoryName	);
+			console.log("initialCatValue", categoryName);
 			setSelectedFile(imgUrl);
 			setInputError(null);
 		}
