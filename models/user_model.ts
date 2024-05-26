@@ -29,6 +29,8 @@ export interface UserModel {
     updated_at?: Date;
     basic_pay?: string;
     role_id?: string;
+	is_deleted?: boolean;
+	is_disabled?: boolean;
     carts: CartModel[];
     item_types: ItemTypeModel[];
     categories: CategoryModel[];

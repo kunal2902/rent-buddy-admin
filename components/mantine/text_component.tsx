@@ -4,12 +4,9 @@ import React from "react";
 import {
 	Text, TextProps,
 } from "@mantine/core";
-import { useRecoilState } from "recoil";
 import {
 	textColorPrimaryDark,
 	textColorPrimaryLight,
-	textColorSecondaryDark,
-	textColorSecondaryLight,
 	useThemeProvider,
 } from "@/utils";
 
@@ -27,7 +24,7 @@ export const TextComponent = (props: TextComponentProps) => {
 		<Text
 			{...rest}
 			fw={bold ? 700 : 0}
-			c={rest.c? rest.c: darkMode ? textColorPrimaryDark : textColorPrimaryLight}
+			c={rest.c ? rest.c : darkMode ? textColorPrimaryDark : textColorPrimaryLight}
 	>
 			{text}
 		</Text>

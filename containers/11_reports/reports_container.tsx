@@ -1,29 +1,144 @@
 "use client";
 
-import { Plus } from "lucide-react";
-import { DashboardPageHeader } from "@/components";
-import { useReportsContainer } from "./hook";
+import React, { useEffect, useState } from "react";
+import { useDebouncedCallback } from "@mantine/hooks";
+import { Table } from "@mantine/core";
+import {
+	BoxComponent,
+	CenterComponent,
+	DashboardPageHeader,
+	LoadingOverlayComponent,
+	MainComponent,
+	PaginationComponent,
+	PaperComponent,
+	SortButtonComponentItemProps,
+} from "@/components";
+import { formatDate, getReportsAPI } from "@/utils";
+import { ReportModel } from "@/models";
 
 const ReportsContainer = () => {
-	const { isSidebarOpen } = useReportsContainer();
+	const [page, setPage] = useState<number>(1);
+	const [callApi, setCallApi] = useState<boolean>(true);
+	const [loading, setLoading] = useState<boolean>(false);
+	const [searchValue, setSearchValue] = useState<string>("");
+	const [reportsList, setReportsList] = useState<ReportModel[]>([]);
+	const [filter, setFilter] = useState<string | null>("report_id");
+
+	useEffect(() => {
+		if (callApi) {
+			getReportsAPI(
+				`orderBy=${filter}&page=${page}&order=asc`,
+				(data: any) => {
+					setReportsList(data.reports);
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				}
+			).then();
+		}
+	}, [filter, page, callApi]);
+
+	useEffect(() => {
+		if (searchValue) {
+			handleSearch(searchValue);
+		}
+	}, [searchValue]);
+
+	const handleSearch = useDebouncedCallback(async (query: string) => {
+		setLoading(true);
+		if (query === "") {
+			setCallApi(true);
+			setLoading(false);
+		} else {
+			getReportsAPI(
+				`name=${query}`,
+				(data: any) => {
+					setReportsList(data.reports);
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				}
+			).then();
+			setLoading(false);
+		}
+	}, 500);
+
+	const columns = [
+		"Index",
+		"Report Id",
+		"Name",
+		"Created At",
+	];
+
+	const rows = reportsList.map((element, index) => (
+		<Table.Tr>
+			<Table.Td>{index + 1}</Table.Td>
+			<Table.Td>{element.report_id}</Table.Td>
+			<Table.Td>{element.name}</Table.Td>
+			<Table.Td>{formatDate(element.created_at)}</Table.Td>
+		</Table.Tr>
+	));
 
 	return (
-		<main
-			className={`flex min-h-screen w-full bg-light-background-natural flex-col pt-14 ${
-				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-16"
-			}`}
-		>
+		<MainComponent>
 			<DashboardPageHeader
-				heading="Users"
-				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
-				button
-				buttonProps={{
-					title: "New User",
-					className: "rounded-md w-fit text-grey-100 text-sm",
-					children: <Plus size={20} />,
+				title="Reports"
+				idLabel="Report Id"
+				loading={loading}
+				idVariable="report_id"
+				setFilter={setFilter}
+				buttonTitle=""
+				searchValue={searchValue}
+				setSearchValue={setSearchValue}
+				setOption={(option) => {
+					setFilter(option.value);
 				}}
+				onClick={() => {
+				}}
+				onSortSelected={(selected: SortButtonComponentItemProps) => {
+					console.log(selected.label);
+				}}
+				showAddButton={false}
 			/>
-		</main>
+
+			{
+				reportsList.length === 0 ?
+					<LoadingOverlayComponent
+						visible={reportsList.length === 0}
+					/> :
+					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
+						<BoxComponent mx="auto">
+							<PaperComponent>
+								<Table highlightOnHover>
+									<Table.Thead>
+										<Table.Tr>
+											{columns.map((item) =>
+												(<Table.Th key={item}>{item}</Table.Th>)
+											)}
+										</Table.Tr>
+									</Table.Thead>
+									<Table.Tbody>{rows}</Table.Tbody>
+								</Table>
+							</PaperComponent>
+							<CenterComponent>
+								<PaginationComponent
+									value={page}
+									total={10}
+									onChange={setPage}
+								/>
+							</CenterComponent>
+						</BoxComponent>
+					</BoxComponent>
+			}
+		</MainComponent>
 	);
 };
 

@@ -1,7 +1,9 @@
-import { useRecoilValue } from "recoil";
-import { sidebarStateAtom } from "@/utils";
+"use client";
 
-export const useReportsContainer = () => {
+import { useRecoilValue } from "recoil";
+import { sidebarStateAtom } from "@/utils/atom_utils";
+
+export const useSidebarState = () => {
 	const isSidebarOpen = useRecoilValue<boolean>(sidebarStateAtom);
 
 	return {

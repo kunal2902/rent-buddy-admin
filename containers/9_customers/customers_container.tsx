@@ -1,73 +1,145 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Table } from "@mantine/core";
-import { FaEye } from "react-icons/fa";
-import { DashboardPageHeader } from "@/components";
-import { useCustomersContainer } from "./hook";
+import { useDebouncedCallback } from "@mantine/hooks";
+import {
+	BoxComponent, CenterComponent,
+	DashboardPageHeader,
+	LoadingOverlayComponent,
+	MainComponent, PaginationComponent, PaperComponent,
+	SortButtonComponentItemProps,
+} from "@/components";
 import { CustomerModel } from "@/models";
-import { formatDate, getCustomerApi } from "@/utils";
+import { formatDate, getCustomersApi } from "@/utils";
 
 const CustomersContainer = () => {
-	const { isSidebarOpen } = useCustomersContainer();
-	const [usersList, setUsersList] = useState<CustomerModel[]>([]);
+	const [page, setPage] = useState<number>(1);
 	const [callApi, setCallApi] = useState<boolean>(true);
+	const [loading, setLoading] = useState<boolean>(false);
+	const [searchValue, setSearchValue] = useState<string>("");
+	const [customersList, setCustomersList] = useState<CustomerModel[]>([]);
+	const [filter, setFilter] = useState<string | null>("customer_id");
 
 	useEffect(() => {
 		if (callApi) {
-			getCustomerApi((data: any) => {
-				setUsersList(data.users);
-				setCallApi(false);
-			}, () => {
-				setCallApi(false);
-			}, () => {
-				setCallApi(false);
-			}).then();
+			getCustomersApi(
+				`orderBy=${filter}&page=${page}&order=asc`,
+				(data: any) => {
+					setCustomersList(data.customers);
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				}
+			).then();
 		}
-	}, [callApi]);
+	}, [filter, page, callApi]);
 
-	const rows = usersList.map((element) => (
+	useEffect(() => {
+		if (searchValue) {
+			handleSearch(searchValue);
+		}
+	}, [searchValue]);
+
+	const handleSearch = useDebouncedCallback(async (query: string) => {
+		setLoading(true);
+		if (query === "") {
+			setCallApi(true);
+			setLoading(false);
+		} else {
+			getCustomersApi(
+				`name=${query}`,
+				(data: any) => {
+					setCustomersList(data.customers);
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				}
+			).then();
+			setLoading(false);
+		}
+	}, 500);
+
+	const columns = [
+		"Index",
+		"Customer Id",
+		"Name",
+		"Email",
+		"Phone",
+		"Created At",
+	];
+
+	const rows = customersList.map((element, index) => (
 		<Table.Tr>
-			{/*<Table.Td>{element.user_id}</Table.Td>*/}
-			{/*<Table.Td>{element.user_id}</Table.Td>*/}
+			<Table.Td>{index + 1}</Table.Td>
+			<Table.Td>{element.customer_id}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
-			{/*<Table.Td>{element.username}</Table.Td>*/}
 			<Table.Td>{element.email}</Table.Td>
 			<Table.Td>{element.phone}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
-			<Table.Td>
-				<FaEye color="rgba(108, 210, 213, 1)" size={25} />
-			</Table.Td>
 		</Table.Tr>
 	));
+
 	return (
-		<main
-			className={`flex min-h-screen w-full bg-light-background-natural flex-col pt-14 ${
-				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-16"
-			}`}
-		>
+		<MainComponent>
 			<DashboardPageHeader
-				heading="Customers"
-				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
+				title="Customers"
+				idLabel="Customer Id"
+				loading={loading}
+				idVariable="customer_id"
+				setFilter={setFilter}
+				buttonTitle=""
+				searchValue={searchValue}
+				setSearchValue={setSearchValue}
+				setOption={(option) => {
+					setFilter(option.value);
+				}}
+				onClick={() => {
+				}}
+				onSortSelected={(selected: SortButtonComponentItemProps) => {
+					console.log(selected.label);
+				}}
+				showAddButton={false}
 			/>
 
-			<Table striped highlightOnHover withTableBorder>
-				<Table.Thead>
-					<Table.Tr>
-						<Table.Th>Index</Table.Th>
-						<Table.Th>User Id</Table.Th>
-						<Table.Th>Name</Table.Th>
-						<Table.Th>User name</Table.Th>
-						<Table.Th>Email</Table.Th>
-						<Table.Th>Phone</Table.Th>
-						<Table.Th>Created at</Table.Th>
-						<Table.Th>Action</Table.Th>
-					</Table.Tr>
-				</Table.Thead>
-				<Table.Tbody>{rows}</Table.Tbody>
-			</Table>
-
-		</main>
+			{
+				customersList.length === 0 ?
+					<LoadingOverlayComponent
+						visible={customersList.length === 0}
+					/> :
+					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
+						<BoxComponent mx="auto">
+							<PaperComponent>
+								<Table highlightOnHover>
+									<Table.Thead>
+										<Table.Tr>
+											{columns.map((item) =>
+												(<Table.Th key={item}>{item}</Table.Th>)
+											)}
+										</Table.Tr>
+									</Table.Thead>
+									<Table.Tbody>{rows}</Table.Tbody>
+								</Table>
+							</PaperComponent>
+							<CenterComponent>
+								<PaginationComponent
+									value={page}
+									total={10}
+									onChange={setPage}
+								/>
+							</CenterComponent>
+						</BoxComponent>
+					</BoxComponent>
+			}
+		</MainComponent>
 	);
 };
 

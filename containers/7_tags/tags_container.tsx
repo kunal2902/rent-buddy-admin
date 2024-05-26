@@ -1,26 +1,24 @@
 "use client";
 
-import { Plus } from "lucide-react";
-import { Loader, LoadingOverlay, Pagination, Table } from "@mantine/core";
+import { Table } from "@mantine/core";
 import { MdOutlineEdit } from "react-icons/md";
 import { useDebouncedCallback } from "@mantine/hooks";
 import React, { useEffect, useState } from "react";
-import { useTagsContainer } from "./hook";
 import {
-	ActionIconComponent, BoxComponent,
-	ButtonComponent,
+	ActionIconComponent,
+	BoxComponent,
 	CenterComponent,
-	GroupComponent, PaperComponent,
+	DashboardPageHeader,
+	GroupComponent,
+	LoadingOverlayComponent, PaginationComponent,
+	PaperComponent,
 	PopConfirmComponent,
 	PopConfirmType,
-	SelectComponent,
-	SortButtonComponent,
 	SortButtonComponentItemProps,
-	TextComponent,
-	TextInputComponent,
-} from "@/components";
+ MainComponent } from "@/components";
 import AddTagModal from "./add_tag_modal";
 import { TagModel } from "@/models";
+<<<<<<< HEAD
 import {
 	appColorRGBA,
 	deleteTagApi,
@@ -30,22 +28,20 @@ import {
 } from "@/utils";
 import { TitleComponent } from "@/components/mantine/title_component";
 import { searchItems, sortItems } from "@/constants";
+=======
+import { deleteTagApi, disableTagApi, formatDate, getTagApi } from "@/utils";
+>>>>>>> 3dc6be9c6b3086fb0ce2b6922831753edcae9c80
 
 const TagsContainer = () => {
-	const {
-		isSidebarOpen,
-		isCreateTagModalOpen,
-		toggleCreateModalTagOpen,
-	} = useTagsContainer();
-	const { darkMode } = useThemeProvider();
-	const [tagsList, setTagsList] = useState<TagModel[]>([]);
-	const [callApi, setCallApi] = useState<boolean>(true);
 	const [tagId, setTagId] = useState("");
-	const [tagName, setTagName] = useState<string>("");
-	const [searchValue, setSearchValue] = useState<string>("");
-	const [loading, setLoading] = useState<boolean>(false);
 	const [page, setPage] = useState<number>(1);
+	const [tagName, setTagName] = useState<string>("");
+	const [callApi, setCallApi] = useState<boolean>(true);
+	const [loading, setLoading] = useState<boolean>(false);
+	const [searchValue, setSearchValue] = useState<string>("");
+	const [tagsList, setTagsList] = useState<TagModel[]>([]);
 	const [filter, setFilter] = useState<string | null>("tag_id");
+	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (callApi) {
@@ -97,11 +93,11 @@ const TagsContainer = () => {
 	const handleAddOpenModal = (id: string, name: string) => {
 		setTagId(id);
 		setTagName(name);
-		toggleCreateModalTagOpen();
+		setOpenAddModal(true);
 	};
 
-	const handleActionTag = async (id: string, tagType: string) => {
-		if (tagType === "disable") {
+	const handleAction = async (id: string, actionType: string) => {
+		if (actionType === "disable") {
 			await disableTagApi(
 				id,
 				() => {
@@ -130,6 +126,15 @@ const TagsContainer = () => {
 		}
 	};
 
+	const columns = [
+		"Index",
+		"Tag Id",
+		"Name",
+		"Created At",
+		"Disable",
+		"Action",
+	];
+
 	const rows = tagsList.map((element, index) => (
 		<Table.Tr>
 			<Table.Td>{index + 1}</Table.Td>
@@ -142,7 +147,7 @@ const TagsContainer = () => {
 					type={PopConfirmType.switch}
 					isDisabled={element.is_disabled}
 					actionName={element.is_disabled ? "enable" : "disable"}
-					onConfirm={async () => handleActionTag(element.tag_id, "disable")}
+					onConfirm={async () => handleAction(element.tag_id, "disable")}
 				/>
 			</Table.Td>
 			<Table.Td w={110}>
@@ -150,7 +155,7 @@ const TagsContainer = () => {
 					<PopConfirmComponent
 						entityName="tag"
 						actionName="delete"
-						onConfirm={async () => handleActionTag(element.tag_id, "delete")}
+						onConfirm={async () => handleAction(element.tag_id, "delete")}
 					/>
 					<ActionIconComponent
 						onClick={() => handleAddOpenModal(element.tag_id, element.name)}
@@ -163,6 +168,7 @@ const TagsContainer = () => {
 	));
 
 	return (
+<<<<<<< HEAD
 		<main
 			className={`flex min-h-screen w-full flex-col pt-14 ${
 				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-14"
@@ -208,64 +214,87 @@ const TagsContainer = () => {
 					</ButtonComponent>
 				</GroupComponent>
 			</GroupComponent>
+=======
+		<MainComponent>
+			<DashboardPageHeader
+				title="Tags"
+				idLabel="Tag Id"
+				loading={loading}
+				idVariable="tag_id"
+				setFilter={setFilter}
+				buttonTitle="Add Tag"
+				searchValue={searchValue}
+				setSearchValue={setSearchValue}
+				setOption={(option) => {
+					setFilter(option.value);
+				}}
+				onClick={() => handleAddOpenModal("", "")}
+				onSortSelected={(selected: SortButtonComponentItemProps) => {
+					console.log(selected.label);
+				}}
+			/>
+>>>>>>> 3dc6be9c6b3086fb0ce2b6922831753edcae9c80
 
 			{
 				tagsList.length === 0 ?
-					<LoadingOverlay
-						mt={116}
-						mr={12}
-						ml={68}
-						mb={12}
-						zIndex={10}
+					<LoadingOverlayComponent
 						visible={tagsList.length === 0}
+<<<<<<< HEAD
 						overlayProps={{
 							radius: mantineRadius,
 							backgroundOpacity: 1,
 							color: getSurfaceColor(darkMode).backgroundColor,
 						}}
 						/> :
+=======
+					/> :
+>>>>>>> 3dc6be9c6b3086fb0ce2b6922831753edcae9c80
 					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
 						<BoxComponent mx="auto">
-							<PaperComponent withBorder radius={mantineRadius}>
+							<PaperComponent>
 								<Table highlightOnHover>
 									<Table.Thead>
 										<Table.Tr>
-											<Table.Th>Index</Table.Th>
-											<Table.Th>Tag Id</Table.Th>
-											<Table.Th>Name</Table.Th>
-											<Table.Th>Created At</Table.Th>
-											<Table.Th>Disable</Table.Th>
-											<Table.Th>Action</Table.Th>
+											{columns.map((item) =>
+												(<Table.Th key={item}>{item}</Table.Th>)
+											)}
 										</Table.Tr>
 									</Table.Thead>
 									<Table.Tbody>{rows}</Table.Tbody>
 								</Table>
 							</PaperComponent>
 							<CenterComponent>
-								<Pagination
-									mt={12}
-									total={10}
+								<PaginationComponent
 									value={page}
-									radius={mantineRadius}
-									onChange={(pageNumber) => {
-										setPage(pageNumber);
-									}}
+									total={10}
+									onChange={setPage}
 								/>
 							</CenterComponent>
 						</BoxComponent>
 					</BoxComponent>
 			}
 
+<<<<<<< HEAD
 			{isCreateTagModalOpen &&
+=======
+			{openAddModal &&
+>>>>>>> 3dc6be9c6b3086fb0ce2b6922831753edcae9c80
 				<AddTagModal
 					tagId={tagId}
 					setCallApi={setCallApi}
 					initialTagValue={tagName}
+<<<<<<< HEAD
 					isOpen={isCreateTagModalOpen}
 					onClose={toggleCreateModalTagOpen}
+=======
+					isOpen={openAddModal}
+					onClose={() => {
+						setOpenAddModal(false);
+					}}
+>>>>>>> 3dc6be9c6b3086fb0ce2b6922831753edcae9c80
 				/>
 			}
-		</main>
+		</MainComponent>
 	);
 };
 

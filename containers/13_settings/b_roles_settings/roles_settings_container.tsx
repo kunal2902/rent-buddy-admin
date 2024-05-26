@@ -1,83 +1,223 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Image, Switch, Table } from "@mantine/core";
-import { IoTrashOutline } from "react-icons/io5";
-import { FaRegEdit } from "react-icons/fa";
-import { DashboardPageHeader } from "@/components";
-import { useRolesSettingsContainer } from "./hook";
-import { formatDate, getRolesApi, imageUrl } from "@/utils";
+import React, { useEffect, useState } from "react";
+import { Table } from "@mantine/core";
+import { MdOutlineEdit } from "react-icons/md";
+import { useDebouncedCallback } from "@mantine/hooks";
+import {
+	ActionIconComponent,
+	BoxComponent,
+	CenterComponent,
+	DashboardPageHeader,
+	GroupComponent,
+	LoadingOverlayComponent,
+	MainComponent,
+	PaperComponent,
+	PopConfirmComponent,
+	PopConfirmType,
+	SortButtonComponentItemProps,
+ PaginationComponent } from "@/components";
+import { deleteRoleApi, disableRoleApi, formatDate, getRoleApi } from "@/utils";
 import { RoleModel } from "@/models";
+import AddRoleModal from "./add_role_modal";
 
 const RolesSettingsContainer = () => {
-	const { isSidebarOpen } = useRolesSettingsContainer();
+	const [roleId, setRoleId] = useState("");
+	const [page, setPage] = useState<number>(1);
+	const [roleName, setRoleName] = useState<string>("");
 	const [callApi, setCallApi] = useState<boolean>(true);
-	const [roleList, setRoleList] = useState<RoleModel[]>([]);
+	const [loading, setLoading] = useState<boolean>(false);
+	const [searchValue, setSearchValue] = useState<string>("");
+	const [rolesList, setRolesList] = useState<RoleModel[]>([]);
+	const [filter, setFilter] = useState<string | null>("role_id");
+	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (callApi) {
-			getRolesApi((data: any) => {
-				setRoleList(data.roles);
-				setCallApi(false);
-			}, () => {
-				setCallApi(false);
-			}, () => {
-				setCallApi(false);
-			}).then();
+			getRoleApi(
+				`orderBy=${filter}&page=${page}&order=asc`,
+				(data: any) => {
+					setRolesList(data.roles);
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				}
+			).then();
 		}
 	}, [callApi]);
 
-	const rows = roleList.map((element, index) => (
+	useEffect(() => {
+		if (searchValue) {
+			handleSearch(searchValue);
+		}
+	}, [searchValue]);
+
+	const handleSearch = useDebouncedCallback(async (query: string) => {
+		setLoading(true);
+		if (query === "") {
+			setCallApi(true);
+			setLoading(false);
+		} else {
+			getRoleApi(
+				`name=${query}`,
+				(data: any) => {
+					setRolesList(data.roles);
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				}
+			).then();
+			setLoading(false);
+		}
+	}, 500);
+
+	const handleAddOpenModal = (id: string, name: string) => {
+		setRoleId(id);
+		setRoleName(name);
+		setOpenAddModal(true);
+	};
+
+	const handleAction = async (id: string, actionType: string) => {
+		if (actionType === "disable") {
+			await disableRoleApi(
+				id,
+				() => {
+					setCallApi(true);
+				},
+				() => {
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				}
+			);
+		} else {
+			await deleteRoleApi(
+				id,
+				() => {
+					setCallApi(true);
+				},
+				() => {
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				}
+			);
+		}
+	};
+
+	const columns = [
+		"Index",
+		"Role Id",
+		"Name",
+		"Created At",
+		"Disable",
+		"Action",
+	];
+
+	const rows = rolesList.map((element, index) => (
 		<Table.Tr key={index}>
 			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.role_id}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
-			<Table.Td>
-				<Switch
-					checked={element.is_disabled === true}
-					// onClick={() => handleOpenModal(element.role_id, "disable", element.is_disabled)}
+			<Table.Td w={60}>
+				<PopConfirmComponent
+					entityName="tag"
+					type={PopConfirmType.switch}
+					isDisabled={element.is_disabled}
+					actionName={element.is_disabled ? "enable" : "disable"}
+					onConfirm={async () => handleAction(element.role_id, "disable")}
 				/>
 			</Table.Td>
-			<Table.Td>
-				<div className="flex">
-					<IoTrashOutline
-						color="red"
-						size={25}
-						style={{ marginRight: "10px" }}
-						// onClick={() => handleOpenModal(element.role_id, "delete", element.is_disabled)}
+			<Table.Td w={110}>
+				<GroupComponent>
+					<PopConfirmComponent
+						entityName="role"
+						actionName="delete"
+						onConfirm={async () => handleAction(element.role_id, "delete")}
 					/>
-					<FaRegEdit color="rgba(108, 210, 213, 1)" size={25} />
-				</div>
+					<ActionIconComponent
+						onClick={() => handleAddOpenModal(element.role_id, element.name)}
+						size="md">
+						<MdOutlineEdit size={18} />
+					</ActionIconComponent>
+				</GroupComponent>
 			</Table.Td>
 		</Table.Tr>
 	));
 
 	return (
-		<main
-			className={`flex min-h-screen w-full bg-light-background-natural flex-col pt-14 ${
-				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-16"
-			}`}
-		>
+		<MainComponent>
 			<DashboardPageHeader
-				heading="Roles"
-				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
+				title="Roles"
+				idLabel="Role Id"
+				loading={loading}
+				idVariable="role_id"
+				setFilter={setFilter}
+				buttonTitle="Add Role"
+				searchValue={searchValue}
+				setSearchValue={setSearchValue}
+				setOption={(option) => {
+					setFilter(option.value);
+				}}
+				onClick={() => handleAddOpenModal("", "")}
+				onSortSelected={(selected: SortButtonComponentItemProps) => {
+					console.log(selected.label);
+				}}
 			/>
 
-			<Table striped highlightOnHover withTableBorder>
-				<Table.Thead>
-					<Table.Tr>
-						<Table.Th>Index</Table.Th>
-						<Table.Th>Role Id</Table.Th>
-						<Table.Th>Name</Table.Th>
-						<Table.Th>Created at</Table.Th>
-						<Table.Th>Disable</Table.Th>
-						<Table.Th>Action</Table.Th>
-					</Table.Tr>
-				</Table.Thead>
-				<Table.Tbody>{rows}</Table.Tbody>
-			</Table>
-		</main>
+			{
+				rolesList.length === 0 ?
+					<LoadingOverlayComponent
+						visible={rolesList.length === 0}
+					/> :
+					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
+						<BoxComponent mx="auto">
+							<PaperComponent>
+								<Table highlightOnHover>
+									<Table.Thead>
+										<Table.Tr>
+											{columns.map((item) =>
+												(<Table.Th key={item}>{item}</Table.Th>)
+											)}
+										</Table.Tr>
+									</Table.Thead>
+									<Table.Tbody>{rows}</Table.Tbody>
+								</Table>
+							</PaperComponent>
+							<CenterComponent>
+								<PaginationComponent
+									value={page}
+									total={10}
+									onChange={setPage}
+								/>
+							</CenterComponent>
+						</BoxComponent>
+					</BoxComponent>
+			}
+
+			{openAddModal &&
+				<AddRoleModal
+					roleId={roleId}
+					setCallApi={setCallApi}
+					initialRoleValue={roleName}
+					isOpen={openAddModal}
+					onClose={() => {
+						setOpenAddModal(false);
+					}}
+				/>
+			}
+		</MainComponent>
 	);
 };
 

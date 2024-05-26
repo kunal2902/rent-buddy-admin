@@ -3,6 +3,7 @@ export * from "@/components/custom/auth_navbar";
 export * from "@/components/custom/dashboard_page_header";
 export * from "@/components/custom/draft_modal";
 export * from "@/components/custom/hook";
+export * from "@/components/custom/main_component";
 export * from "@/components/custom/main_navbar";
 export * from "@/components/custom/main_sidebar";
 export * from "@/components/custom/pop_confirm";

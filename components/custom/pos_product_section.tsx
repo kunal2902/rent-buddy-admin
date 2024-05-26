@@ -2,13 +2,14 @@
 
 import { Minus, Plus, SearchIcon } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Card, Chip, createTheme, Input, MantineProvider, NumberInputHandlers, Spoiler } from "@mantine/core";
+import { Box, Card, Chip, NumberInputHandlers, Spoiler } from "@mantine/core";
 import {
 	ButtonComponent,
 	CardComponent,
 	ChipComponent,
 	GroupComponent,
 	ImageComponent,
+	MantineProviderComponent,
 	ScrollAreaComponent,
 	SimpleGridComponent,
 	SpaceComponent,
@@ -17,15 +18,7 @@ import {
 } from "@/components";
 import { currencySign } from "@/utils";
 import { NumberInputComponent } from "@/components/mantine/number_input_component";
-
-const theme = createTheme({
-	components: {
-		Input: Input.extend({
-			// @ts-ignore
-			vars: () => ({ input: { "--input-text-align": "center" } }),
-		}),
-	},
-});
+import { centeredInputTheme } from "@/constants";
 
 export interface Categories {
 	categoryName: string;
@@ -193,7 +186,7 @@ const ProductCard = ({ index }) => {
 							<Minus size={16} />
 						</ButtonComponent>
 
-						<MantineProvider theme={theme}>
+						<MantineProviderComponent theme={centeredInputTheme}>
 							<NumberInputComponent
 								min={0}
 								step={1}
@@ -218,7 +211,7 @@ const ProductCard = ({ index }) => {
 									backgroundColor: "white",
 								}}
 							/>
-						</MantineProvider>
+						</MantineProviderComponent>
 
 						<ButtonComponent
 							style={{
