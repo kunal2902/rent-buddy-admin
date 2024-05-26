@@ -1,20 +1,28 @@
 "use client";
 
+import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import Image from "next/image";
-import { Image as ImageIcon, Trash } from "lucide-react";
-import { Group } from "@mantine/core";
-import { ButtonComponent, FileInputComponent, ModalComponent, TextInputComponent } from "@/components";
+import { Image as ImageIcon } from "lucide-react";
+import { Stack } from "@mantine/core";
+import {
+	ActionIconComponent,
+	ButtonComponent,
+	FileInputComponent,
+	GroupComponent,
+	ModalComponent,
+	TextInputComponent,
+	TitleComponent,
+} from "@/components";
 import { imageUrl, upsertCategoryApi } from "@/utils";
 
 interface Props {
     isOpen: boolean;
     onClose: () => void;
 	setCallApi: Dispatch<SetStateAction<boolean>>;
-	catType: string;
-	name: string;
-	id: string;
+	initialCatValue: string;
+	catId: string;
 	image: string | undefined;
 }
 
@@ -23,25 +31,25 @@ const CreateCategoryModal = (props: Props) => {
 		isOpen,
 		onClose,
 		setCallApi,
-		catType,
 		image,
-		name,
-		id,
+		initialCatValue,
+		catId,
 	} = props;
-	const [categoryName, setCategoryName] = useState<string>(name ?? "");
+	const [categoryName, setCategoryName] = useState<string>(initialCatValue);
 	const [selectedFileToUpload, setSelectedFileToUpload] = useState<File | null>(null);
 	const [selectedFile, setSelectedFile] = useState<string | null>(null);
 	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
+	const [inputError, setInputError] = useState<string | null>(null);
+	const isEditModal: boolean = initialCatValue !== "";
 
 	useEffect(() => {
-		if (image && name) {
+		if (categoryName && image) {
 			const imgUrl = `${imageUrl}/${image}`;
+			console.log("initialCatValue", categoryName	);
 			setSelectedFile(imgUrl);
-			setCategoryName(name);
-		} else {
-			setSelectedFile(null);
+			setInputError(null);
 		}
-	}, [id, name, image]);
+	}, [categoryName, image]);
 
 	const onChooseIconClick = () => {
 		if (fileInputTriggerRef) {
@@ -73,8 +81,7 @@ const CreateCategoryModal = (props: Props) => {
         event.preventDefault();
 
 		if (!categoryName) {
-			toast.error("Please provide name and price.");
-			return;
+			setInputError("Please enter the name first");
 		}
 
 		const categoryData = new FormData();
@@ -82,10 +89,7 @@ const CreateCategoryModal = (props: Props) => {
 			categoryData.append("icon_file", selectedFileToUpload);
 		}
 		categoryData.append("name", categoryName);
-		if (catType === "Edit") {
-			// Edit item type
-			categoryData.append("id", id);
-		}
+		categoryData.append("id", catId);
 
         try {
             await upsertCategoryApi(
@@ -104,84 +108,81 @@ const CreateCategoryModal = (props: Props) => {
         }
     };
 
-	const handleCloseModal = () => {
-		if (catType !== "Edit") {
-			setCategoryName("");
-			setSelectedFile(null);
-			setSelectedFileToUpload(null);
-			onClose();
-		} else {
-			onClose();
-		}
-	};
-
 	return (
-		<ModalComponent opened={isOpen} onClose={handleCloseModal} className="border-grey-800" title="New Category">
-			<div className="w-full flex sm:flex-row flex-col font-public-sans">
-				<div className="sm:w-1/2 w-full flex flex-col sm:mr-1">
+		<ModalComponent
+			opened={isOpen}
+			onClose={onClose}
+			className="border-grey-800"
+			title={<TitleComponent title={isEditModal ? "Edit Category" : "New Category"} />}
+		>
+			<GroupComponent grow align="start">
+				<Stack>
 					<FileInputComponent
-						label="Please select sub category icon"
-						placeholder="Sub category icon"
+						required
+						label="Please select category icon"
+						placeholder="C 111ategory icon"
 						className="hidden"
 						onChange={onFilePick}
 						ref={fileInputTriggerRef}
 					/>
-
-					<p className="text-base font-public-sans">Icon*</p>
-
-					{/* eslint-disable-next-line react/button-has-type */}
-					<button className="mt-1 flex items-center justify-center w-full" onClick={onChooseIconClick}>
-						{selectedFile ? (
-							<div className="w-full flex flex-col items-center justify-center h-40">
-								<Image
-									className="w-full h-full object-contain"
-									src={selectedFile}
-									width={500}
-									height={500}
-									alt=""
-								/>
-							</div>
-						) : (
-							<div
-								className="w-full border border-dashed flex flex-col items-center justify-center h-40 rounded-md border-primary-darker text-primary-darker">
-								<ImageIcon size={50} />
-								<p className="text-center mt-0.5">Choose an image</p>
-							</div>
-						)}
-					</button>
-
-					{selectedFile && (
-						<div className="w-full mt-1 flex items-center justify-end">
-							{/* eslint-disable-next-line react/button-has-type */}
-							<button
-								className="flex items-center justify-center"
-								onClick={onResetIconClick}
-								aria-label="on reset icon click">
-								<Trash size={24} className="text-error-dark" />
-							</button>
+					{selectedFile ? (
+						<div className="w-full flex flex-col items-center justify-center h-40">
+							<Image
+								src={selectedFile}
+								width={500}
+								height={500}
+								alt="Selected Icon"
+								className="w-full h-full object-contain" />
+						</div>
+					) : (
+						<div
+							onClick={onChooseIconClick}
+							className="w-full cursor-pointer border border-dashed flex flex-col items-center justify-center h-40 rounded-md border-primary-darker text-primary-darker">
+							<ImageIcon size={50} />
+							<p className="text-center mt-0.5">Choose an Icon</p>
 						</div>
 					)}
-				</div>
 
-				<div className="sm:ml-1 sm:mt-0 mt-2 flex-1 flex flex-col">
-					<Group>
-						<TextInputComponent
-							mt={1}
-							required
-							label="Name"
-							title="Name"
-							value={categoryName}
-							placeholder="Awesome Name"
-							setValue={setCategoryName}
-							className="border-grey-600 font-barlow font-base text-base"
-						/>
-					</Group>
-				</div>
-			</div>
+					{selectedFile && (
+						<GroupComponent grow>
+							<ActionIconComponent
+								onClick={onResetIconClick}
+								size="md"
+								color="red"
+							>
+								<MdOutlineDeleteForever size={18} />
+							</ActionIconComponent>
 
-			<div className="mt-3 flex items-center justify-end">
-				<ButtonComponent title="Save" size="md" px="lg" ml={5} onClick={handleSubmitCat} />
-			</div>
+							<ActionIconComponent
+								onClick={onChooseIconClick}
+								size="md"
+							>
+								<MdOutlineEdit size={18} />
+							</ActionIconComponent>
+
+						</GroupComponent>
+					)}
+				</Stack>
+
+				<TextInputComponent
+					required
+					title="Name"
+					label="Category Name"
+					value={categoryName}
+					error={inputError}
+					setValue={setCategoryName}
+					placeholder="Enter Category Name"
+				/>
+
+			</GroupComponent>
+
+			<GroupComponent justify="end">
+				<ButtonComponent
+					title="Save"
+					w={100}
+					onClick={handleSubmitCat}
+				/>
+			</GroupComponent>
 		</ModalComponent>
 	);
 };

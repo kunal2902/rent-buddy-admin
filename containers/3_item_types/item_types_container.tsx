@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
-import { Table, Image, Loader, ComboboxItem, Box, Pagination, LoadingOverlay } from "@mantine/core";
-import { GoSortAsc, GoSortDesc } from "react-icons/go";
+import { Table, Image, Loader, Pagination, LoadingOverlay } from "@mantine/core";
 import { MdOutlineEdit } from "react-icons/md";
 import { useItemTypesContainer } from "./hook";
 import {
@@ -12,26 +11,35 @@ import {
 	ButtonComponent, CenterComponent,
 	GroupComponent, PaperComponent, PopConfirmComponent, PopConfirmType,
 	SelectComponent,
-	SortButtonComponent, SortButtonComponentItemProps, SortItemDirection, TextComponent,
+	SortButtonComponent, SortButtonComponentItemProps, TextComponent,
 	TextInputComponent,
 	TitleComponent,
 } from "@/components";
 import { ItemTypeModel } from "@/models";
-import { deleteItemTypeApi, disableItemTypeApi, formatDate, getItemTypeApi, imageUrl, mantineRadius } from "@/utils";
-import ActionItemTypeModal from "./action_item_type_modal";
+import {
+	appColorRGBA,
+	deleteItemTypeApi,
+	disableItemTypeApi,
+	formatDate,
+	getBackgroundColor,
+	getItemTypeApi, getSurfaceColor,
+	imageUrl,
+	mantineRadius, useThemeProvider,
+} from "@/utils";
 import AddItemTypeModal from "@/containers/3_item_types/add_item_type_modal";
+import { searchItems, sortItems } from "@/constants";
 
 const ItemTypesContainer = () => {
 	const { isSidebarOpen,
 		isCreateItemTypeModalOpen,
 		toggleCreateItemTypeModalOpen,
 	} = useItemTypesContainer();
+	const { darkMode } = useThemeProvider();
 	const [itemTypeList, setItemTypeList] = useState<ItemTypeModel[]>([]);
 	const [callApi, setCallApi] = useState(true);
 	const [itemTypeId, setItemTypeId] = useState<string>("");
 	const [itemTypeName, setItemTypeName] = useState<string>("");
 	const [itemTypeImage, setItemTypeImage] = useState<string | undefined>("");
-	const [isActionItemTypeModalOpen, setIsActionItemTypeModalOpen] = useState<boolean>(false);
 	const [searchValue, setSearchValue] = useState<string>("");
 	const [filter, setFilter] = useState<string | null>("tag_id");
 	const [loading, setLoading] = useState<boolean>(false);
@@ -54,7 +62,6 @@ const ItemTypesContainer = () => {
 		if (type === "disable") {
 			await disableItemTypeApi(id, () => {
 			setCallApi(true);
-			setIsActionItemTypeModalOpen(false);
 		}, () => {
 			setCallApi(false);
 		}, () => {
@@ -63,7 +70,6 @@ const ItemTypesContainer = () => {
 		} else {
 			await deleteItemTypeApi(id, () => {
 			setCallApi(true);
-			setIsActionItemTypeModalOpen(false);
 		}, () => {
 			setCallApi(false);
 		}, () => {
@@ -75,8 +81,8 @@ const ItemTypesContainer = () => {
 	const handleAddOpenModal = (id: string, name: string, image: string | undefined) => {
 		setItemTypeId(id);
 		setItemTypeName(name);
-		toggleCreateItemTypeModalOpen();
 		setItemTypeImage(image);
+		toggleCreateItemTypeModalOpen();
 	};
 
 	const rows = itemTypeList.map((element, index) => (
@@ -102,7 +108,7 @@ const ItemTypesContainer = () => {
 					onConfirm={async () => handleActionItemType(element.item_type_id, "disable")}
 				/>
 			</Table.Td>
-			<Table.Td w={100}>
+			<Table.Td w={110}>
 				<GroupComponent>
 					<PopConfirmComponent
 						entityName="tag"
@@ -122,31 +128,24 @@ const ItemTypesContainer = () => {
 		</Table.Tr>
 	));
 
-	const searchItems: Array<ComboboxItem> = [
-		{
-			label: "Name",
-			value: "name",
-		},
-		{
-			label: "Tag Id",
-			value: "tag_id",
-		},
-	];
-
 	return (
 		<main
-			className={`flex min-h-screen w-full bg-light-background-natural flex-col pt-14 ${
+			className={`flex min-h-screen w-full flex-col pt-14 ${
 				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-14"
 			}`}
+			style={getBackgroundColor(darkMode)}
 		>
-			<GroupComponent className="m-3" align="center" justify="space-between">
+			<GroupComponent
+				className="m-3"
+				align="center"
+				justify="space-between">
 				<TitleComponent title="Item Types" />
 				<GroupComponent>
 					<SelectComponent
 						placeholder="Searching In"
 						searchable
 						size="sm"
-						data={searchItems}
+						data={searchItems("Item Type Id", "item_type_id")}
 						setValue={setFilter}
 						setOption={(option) => {
 							setFilter(option.value);
@@ -162,57 +161,19 @@ const ItemTypesContainer = () => {
 					/>
 
 					<SortButtonComponent
-						items={
-							[
-								{
-									id: 1,
-									label: "Id - ascending",
-									icon: GoSortAsc,
-									direction: SortItemDirection.ascending,
-								},
-								{
-									id: 2,
-									label: "Id - descending",
-									icon: GoSortDesc,
-									direction: SortItemDirection.descending,
-								},
-								{
-									id: 3,
-									label: "Name - ascending",
-									icon: GoSortAsc,
-									direction: SortItemDirection.ascending,
-								},
-								{
-									id: 4,
-									label: "Name - descending",
-									icon: GoSortDesc,
-									direction: SortItemDirection.descending,
-								},
-								{
-									id: 5,
-									label: "Date - ascending",
-									icon: GoSortAsc,
-									direction: SortItemDirection.ascending,
-								},
-								{
-									id: 6,
-									label: "Date - descending",
-									icon: GoSortDesc,
-									direction: SortItemDirection.descending,
-								},
-							]
-						}
+						items={sortItems("item_type_id")}
 						onSelected={(selected: SortButtonComponentItemProps) => {
 							console.log(selected.label);
 						}}
 					/>
 
 					<ButtonComponent
-						variant="light"
+						c={appColorRGBA}
+						color={getSurfaceColor(darkMode).backgroundColor}
 						onClick={() => handleAddOpenModal("", "", "")}
 					>
 						<Plus size={20} className="sm:mr-2 mr-0" />
-						<TextComponent text="Add Item Type" />
+						<TextComponent text="Add Item Type" c={appColorRGBA} />
 					</ButtonComponent>
 				</GroupComponent>
 
@@ -227,7 +188,11 @@ const ItemTypesContainer = () => {
 						mb={12}
 						zIndex={10}
 						visible={itemTypeList.length === 0}
-						overlayProps={{ radius: mantineRadius, backgroundOpacity: 0.1, color: "#000" }}
+						overlayProps={{
+							radius: mantineRadius,
+							backgroundOpacity: 0.1,
+							color: getSurfaceColor(darkMode).backgroundColor,
+					}}
 					/> :
 					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
 						<BoxComponent mx="auto">
@@ -260,15 +225,14 @@ const ItemTypesContainer = () => {
 							</CenterComponent>
 						</BoxComponent>
 					</BoxComponent>
-
 			}
 
 			{isCreateItemTypeModalOpen &&
 				<AddItemTypeModal
 					itemTypeId={itemTypeId}
-					setCallApi={setCallApi}
 					initialItemTypeValue={itemTypeName}
 					image={itemTypeImage}
+					setCallApi={setCallApi}
 					isOpen={isCreateItemTypeModalOpen}
 					onClose={toggleCreateItemTypeModalOpen}
 				/>

@@ -1,9 +1,9 @@
 "use client";
 
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
-import { Button, Group, Select, Stack } from "@mantine/core";
+import { Stack } from "@mantine/core";
 import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
-import { Image as ImageIcon, Trash } from "lucide-react";
+import { Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { toast } from "react-toastify";
 import {
@@ -41,7 +41,7 @@ const AddItemTypeModal: React.FC<Props> = (props: Props) => {
 			setSelectedFile(imgUrl);
 			setInputError(null);
 		}
-	}, [itemTypeId, itemTypeName, image]);
+	}, [itemTypeName, image]);
 
 	const onChooseIconClick = () => {
 		if (fileInputTriggerRef) {
@@ -54,12 +54,12 @@ const AddItemTypeModal: React.FC<Props> = (props: Props) => {
 		setSelectedFileToUpload(null);
 	};
 
-	const onFilePick = async (file: File | null) => {
+	const onFilePick = (file: File | null) => {
 		if (file) {
 			const fileReader = new FileReader();
 
 			fileReader.readAsDataURL(file);
-			await setSelectedFileToUpload(file);
+			setSelectedFileToUpload(file);
 
 			fileReader.onload = (readerEvent) => {
 				if (readerEvent.target && typeof readerEvent.target.result === "string") {

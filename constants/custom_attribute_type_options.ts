@@ -1,13 +1,13 @@
-import { ComboboxItem } from "@mantine/core";
+import { ComboBoxProps } from "@/types";
 
-export const CustomAttributeTypeOptions: Array<ComboboxItem> = [
+export const CustomAttributeTypeOptions: Array<ComboBoxProps> = [
 	{
-		// id: 'bafcb49f-d6e3-4cb7-938e-251378a1272a',
+		id: "string",
 		label: "String",
 		value: "string",
 	},
 	{
-		// id: 'a80f5d53-8188-438d-a0d1-376f4a066e57',
+		id: "number",
 		label: "Number",
 		value: "number",
 	},
