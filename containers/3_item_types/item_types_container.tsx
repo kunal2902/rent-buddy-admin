@@ -15,7 +15,7 @@ import {
 	PaperComponent,
 	PopConfirmComponent,
 	PopConfirmType,
-	SortButtonComponentItemProps,
+	SortButtonComponentItemProps, TextComponent,
 } from "@/components";
 import { ItemTypeModel } from "@/models";
 import {
@@ -29,34 +29,35 @@ import AddItemTypeModal from "@/containers/3_item_types/add_item_type_modal";
 
 const ItemTypesContainer = () => {
 	const [page, setPage] = useState<number>(1);
+	const [pageSize, setPageSize] = useState<number>(15);
 	const [callApi, setCallApi] = useState<boolean>(true);
-	const [loading, setLoading] = useState<boolean>(false);
+	const [loading, setLoading] = useState<boolean>(true);
+	const [total, setTotal] = useState<number>(0);
 	const [itemTypeId, setItemTypeId] = useState<string>("");
 	const [searchValue, setSearchValue] = useState<string>("");
 	const [itemTypeName, setItemTypeName] = useState<string>("");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [filter, setFilter] = useState<string | null>("item_type_id");
+	const [orderBy, setOrderBy] = useState<string>("item_type_id");
+	const [order, setOrder] = useState<string>("asc");
 	const [itemTypesList, setItemTypesList] = useState<ItemTypeModel[]>([]);
 	const [itemTypeIcon, setItemTypeIcon] = useState<string | undefined>("");
-
 	useEffect(() => {
-		if (callApi) {
-			getItemTypeApi(
-				`orderBy=${filter}&page=${page}&order=asc`,
-				(data: any) => {
-					console.log(data);
-					setItemTypesList(data.item_types);
-					setCallApi(false);
-				},
-				() => {
-					setCallApi(false);
-				},
-				() => {
-					setCallApi(false);
-				}
-			).then();
-		}
-	}, [filter, page, callApi]);
+		getItemTypeApi(
+			`orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			(data: any) => {
+				setItemTypesList(data.item_types);
+				setTotal(data.item_types_count);
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			}
+		).then();
+	}, [page, callApi, orderBy, order]);
 
 	useEffect(() => {
 		if (searchValue) {
@@ -71,13 +72,15 @@ const ItemTypesContainer = () => {
 			setLoading(false);
 		} else {
 			getItemTypeApi(
-				`name=${query}`,
+				`filter_type=${filter}&filter_query=${query}`,
 				(data: any) => {
 					setItemTypesList(data.item_types);
 					setCallApi(false);
+					setLoading(false);
 				},
 				() => {
 					setCallApi(false);
+					setLoading(false);
 				},
 				() => {
 					setCallApi(false);
@@ -99,26 +102,26 @@ const ItemTypesContainer = () => {
 			await disableItemTypeApi(
 				id,
 				() => {
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				}
 			);
 		} else {
 			await deleteItemTypeApi(
 				id,
 				() => {
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				}
 			);
 		}
@@ -179,6 +182,7 @@ const ItemTypesContainer = () => {
 	return (
 		<MainComponent>
 			<DashboardPageHeader
+				total={total}
 				title="Item Types"
 				idLabel="Item Type Id"
 				loading={loading}
@@ -190,38 +194,45 @@ const ItemTypesContainer = () => {
 				onClick={() => handleAddOpenModal("", "", "")}
 				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
-					console.log(selected.label);
+					console.log(selected.value, selected.direction);
+					setOrderBy(selected.value);
+					setOrder(selected.direction);
+					setCallApi(true);
 				}}
 			/>
 
 			{
-				itemTypesList.length === 0 ?
+				loading ?
 					<LoadingOverlayComponent
-						visible={itemTypesList.length === 0}
+						visible={loading}
 					/> :
-					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
-						<BoxComponent mx="auto">
-							<PaperComponent>
-								<Table highlightOnHover>
-									<Table.Thead>
-										<Table.Tr>
-											{columns.map((item) =>
-												(<Table.Th key={item}>{item}</Table.Th>)
-											)}
-										</Table.Tr>
-									</Table.Thead>
-									<Table.Tbody>{rows}</Table.Tbody>
-								</Table>
-							</PaperComponent>
-							<CenterComponent>
-								<PaginationComponent
-									total={10}
-									value={page}
-									onChange={setPage}
-								/>
-							</CenterComponent>
+					itemTypesList.length === 0 ?
+						<CenterComponent>
+							<TextComponent text="No data found!" />
+						</CenterComponent> :
+						<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
+							<BoxComponent mx="auto">
+								<PaperComponent>
+									<Table highlightOnHover>
+										<Table.Thead>
+											<Table.Tr>
+												{columns.map((item) =>
+													(<Table.Th key={item}>{item}</Table.Th>)
+												)}
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>{rows}</Table.Tbody>
+									</Table>
+								</PaperComponent>
+								<CenterComponent>
+									<PaginationComponent
+										value={page}
+										onChange={setPage}
+										total={Math.ceil(total / 15)}
+									/>
+								</CenterComponent>
+							</BoxComponent>
 						</BoxComponent>
-					</BoxComponent>
 			}
 
 			{openAddModal &&

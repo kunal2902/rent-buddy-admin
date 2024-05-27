@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader } from "@mantine/core";
+import { Badge, Loader } from "@mantine/core";
 import { Plus } from "lucide-react";
 import React from "react";
 import {
@@ -10,7 +10,7 @@ import {
 	SortButtonComponentItemProps,
 	TextComponent,
 	TextInputComponent,
-	TitleComponent,
+	TitleComponent, TooltipComponent
 } from "@/components";
 import { coloredInputTheme, searchItems, sortItems } from "@/constants";
 import { appColorRGBA, getSurfaceColor, useThemeProvider } from "@/utils";
@@ -18,6 +18,7 @@ import { ComboBoxProps } from "@/types";
 
 export interface DashboardPageHeaderProps {
 	title: string,
+	total?: number,
 	idLabel: string,
 	loading: boolean,
 	idVariable: string,
@@ -34,6 +35,7 @@ export interface DashboardPageHeaderProps {
 export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
 	const {
 		title,
+		total,
 		idLabel,
 		loading,
 		idVariable,
@@ -50,7 +52,10 @@ export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
 
 	return (
 		<GroupComponent className="m-3" align="center" justify="space-between">
-			<TitleComponent title={title} />
+			<GroupComponent align="center">
+				<TitleComponent title={title} />
+				{total && <TooltipComponent label={`Total number of ${title}: ${total}`}><Badge>{total}</Badge></TooltipComponent>}
+			</GroupComponent>
 			<GroupComponent>
 
 				<MantineProviderComponent theme={coloredInputTheme(darkMode)}>
