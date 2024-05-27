@@ -1,158 +1,224 @@
 "use client";
 
-import { Plus } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Image, Switch, Table } from "@mantine/core";
-import { FaRegEdit } from "react-icons/fa";
-import { IoTrashOutline } from "react-icons/io5";
-import { useAddOnsContainer } from "./hook";
-import { DashboardPageHeader } from "@/components";
+import { Table } from "@mantine/core";
+import { MdOutlineEdit } from "react-icons/md";
+import { useDebouncedCallback } from "@mantine/hooks";
+import React, { useEffect, useState } from "react";
+import {
+	ActionIconComponent,
+	BoxComponent,
+	CenterComponent,
+	DashboardPageHeader,
+	GroupComponent,
+	LoadingOverlayComponent,
+	MainComponent, NoDataFound,
+	PaginationComponent,
+	PaperComponent,
+	PopConfirmComponent,
+	PopConfirmType,
+	SortButtonComponentItemProps,
+} from "@/components";
 import AddAddOnModal from "./add_add_on_modal";
 import { AddOnModel } from "@/models";
-import { addOnsName, deleteAddOnApi, disableAddOnApi, formatDate, getAddOnApi, imageUrl } from "@/utils";
-import ActionAddOnModal from "./action_add_on_modal";
+import { deleteAddOnApi, disableAddOnApi, formatDate, getAddOnApi } from "@/utils";
 
 const AddOnsContainer = () => {
-	const {
-		isSidebarOpen,
-		isCreateAddOnModalOpen,
-		toggleCreateAddOnModalOpen,
-	} = useAddOnsContainer();
-
-	const [addOnList, setAddOnList] = useState<AddOnModel[]>([]);
-	const [callApi, setCallApi] = useState(true);
+	const [page, setPage] = useState<number>(1);
 	const [addOnId, setAddOnId] = useState<string>("");
-	const [addOnType, setAddOnType] = useState<string>("");
-	const [isDisable, setIsDisable] = useState<boolean>(true);
-	const [isActionAddOneModalOpen, setIsActionAddOneModalOpen] =
-		useState<boolean>(false);
+	const [addOnName, setAddOnName] = useState<string>("");
+	const [addOnPrice, setAddOnPrice] = useState<string>("");
+	const [callApi, setCallApi] = useState<boolean>(true);
+	const [loading, setLoading] = useState<boolean>(true);
+	const [searchLoading, setSearchLoading] = useState<boolean>(false);
+	const [searchValue, setSearchValue] = useState<string>("");
+	const [addOnsList, setAddOnsList] = useState<AddOnModel[]>([]);
+	const [filter, setFilter] = useState<string | null>("add_on_id");
+	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 
 	useEffect(() => {
-		if (callApi) {
-			getAddOnApi((data: any) => {
-				setAddOnList(data.addOns);
-				setCallApi(false);
-			}, () => {
-				setCallApi(false);
-			}, () => {
-				setCallApi(false);
-			}).then();
+			getAddOnApi(
+				`orderBy=${filter}&page=${page}&order=asc`,
+				(data: any) => {
+					setAddOnsList(data.add_ons);
+					setLoading(false);
+				},
+				() => {
+					setLoading(false);
+				},
+				() => {
+					setLoading(false);
+				}
+			).then();
+	}, [filter, page, callApi]);
+
+	useEffect(() => {
+		if (searchValue) {
+			handleSearch(searchValue);
 		}
-	}, [callApi]);
+	}, [searchValue]);
 
-	const handleOpenModal = (id: string, type: string, disableType: boolean) => {
-		setAddOnId(id);
-		setAddOnType(type);
-		setIsDisable(disableType);
-		setIsActionAddOneModalOpen(true);
-	};
-
-	const handleActionAddOn = () => {
-		if (addOnType === "edit") {
-			toggleCreateAddOnModalOpen();
-			setIsActionAddOneModalOpen(false);
-		} else if (addOnType === "disable") {
-			disableAddOnApi(addOnId, () => {
-			setCallApi(true);
-			setIsActionAddOneModalOpen(false);
-		}, () => {
-			setCallApi(false);
-		}, () => {
-			setCallApi(false);
-		});
+	const handleSearch = useDebouncedCallback(async (query: string) => {
+		setSearchLoading(true);
+		if (query === "") {
+			setSearchLoading(false);
 		} else {
-			deleteAddOnApi(addOnId, () => {
-			setCallApi(true);
-			setIsActionAddOneModalOpen(false);
-		}, () => {
-			setCallApi(false);
-		}, () => {
-			setCallApi(false);
-		});
+			getAddOnApi(
+				`name=${query}`,
+				(data: any) => {
+					setAddOnsList(data.add_ons);
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+				}
+			).then();
+		}
+	}, 500);
+
+	const handleAddOpenModal = (id: string, name: string, price: string) => {
+		setAddOnId(id);
+		setAddOnName(name);
+		setAddOnPrice(price);
+		setOpenAddModal(true);
+	};
+
+	const handleAction = async (id: string, actionType: string) => {
+		if (actionType === "disable") {
+			await disableAddOnApi(
+				id,
+				() => {
+					setCallApi(true);
+				},
+				() => {
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				}
+			);
+		} else {
+			await deleteAddOnApi(
+				id,
+				() => {
+					setCallApi(true);
+				},
+				() => {
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				}
+			);
 		}
 	};
 
-	const rows = addOnList.map((element, index) => (
+	const columns = [
+		"Index",
+		"Add-on Id",
+		"Name",
+		"Created At",
+		"Disable",
+		"Action",
+	];
+
+	const rows = addOnsList.map((element, index) => (
 		<Table.Tr key={index}>
 			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.add_on_id}</Table.Td>
-			<Table.Td>
-				<Image
-					radius="md"
-					h={50}
-					w="auto"
-					src={`${imageUrl}/${element.icon}`}
-				/>
-			</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
-			<Table.Td>{element.price}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
-			<Table.Td>
-				<Switch
-					checked={element.is_disabled === true}
-					onClick={() => handleOpenModal(element.add_on_id, "disable", element.is_disabled)}
+			<Table.Td w={60}>
+				<PopConfirmComponent
+					entityName="addOn"
+					type={PopConfirmType.switch}
+					isDisabled={element.is_disabled}
+					actionName={element.is_disabled ? "enable" : "disable"}
+					onConfirm={async () => handleAction(element.add_on_id, "disable")}
 				/>
 			</Table.Td>
-			<Table.Td>
-				<div className="flex">
-					<IoTrashOutline color="red" size={25} style={{ marginRight: "10px" }} onClick={() => handleOpenModal(element.add_on_id, "delete", element.is_disabled)} />
-					<FaRegEdit color="rgba(108, 210, 213, 1)" size={25} />
-				</div>
+			<Table.Td w={110}>
+				<GroupComponent>
+					<PopConfirmComponent
+						entityName="addOn"
+						actionName="delete"
+						onConfirm={async () => handleAction(element.add_on_id, "delete")}
+					/>
+					<ActionIconComponent
+						onClick={() => handleAddOpenModal(
+							element.add_on_id,
+							element.name,
+							element.price
+						)}
+						size="md">
+						<MdOutlineEdit size={18} />
+					</ActionIconComponent>
+				</GroupComponent>
 			</Table.Td>
 		</Table.Tr>
 	));
 
 	return (
-		<main
-			className={`flex min-h-screen w-full bg-light-background-natural flex-col pt-14 ${
-				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-16"
-			}`}
-		>
+		<MainComponent>
 			<DashboardPageHeader
-				heading="Add Ons"
-				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
-				button
-				buttonProps={{
-					title: "New Add On",
-					titleClassName: "sm:flex hidden",
-					onClick: toggleCreateAddOnModalOpen,
-					className: "rounded-md w-fit text-grey-100 text-sm",
-					children: <Plus size={20} className="sm:mr-2 mr-0" />,
+				title="AddOns"
+				idLabel="AddOn Id"
+				idVariable="addOn_id"
+				setFilter={setFilter}
+				buttonTitle="Add AddOn"
+				loading={searchLoading}
+				searchValue={searchValue}
+				setSearchValue={setSearchValue}
+				onClick={() => handleAddOpenModal("", "", "")}
+				setOption={(option) => setFilter(option.value)}
+				onSortSelected={(selected: SortButtonComponentItemProps) => {
+					console.log(selected.label);
 				}}
 			/>
 
-			<Table striped highlightOnHover withTableBorder>
-				<Table.Thead>
-					<Table.Tr>
-						<Table.Th>Index</Table.Th>
-						<Table.Th>Add on Id</Table.Th>
-						<Table.Th>Icon</Table.Th>
-						<Table.Th>Name</Table.Th>
-						<Table.Th>Price</Table.Th>
-						<Table.Th>Created at</Table.Th>
-						<Table.Th>Disable</Table.Th>
-						<Table.Th>Action</Table.Th>
-					</Table.Tr>
-				</Table.Thead>
-				<Table.Tbody>{rows}</Table.Tbody>
-			</Table>
+			{
+				loading ?
+					<LoadingOverlayComponent /> :
+					addOnsList.length === 0 ?
+						<NoDataFound /> :
+						<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
+							<BoxComponent mx="auto">
+								<PaperComponent>
+									<Table highlightOnHover>
+										<Table.Thead>
+											<Table.Tr>
+												{columns.map((item) =>
+												(<Table.Th key={item}>{item}</Table.Th>)
+											)}
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>{rows}</Table.Tbody>
+									</Table>
+								</PaperComponent>
+								<CenterComponent>
+									<PaginationComponent
+										total={10}
+										value={page}
+										onChange={setPage}
+								/>
+								</CenterComponent>
+							</BoxComponent>
+						</BoxComponent>
+			}
 
-			<AddAddOnModal
-				isOpen={isCreateAddOnModalOpen}
-				onClose={toggleCreateAddOnModalOpen}
-				setCallApi={setCallApi}
-			/>
-
-			<ActionAddOnModal
-				isOpen={isActionAddOneModalOpen}
-				onClose={() => setIsActionAddOneModalOpen(false)}
-				setCallApi={setCallApi}
-				handleActionAddOn={handleActionAddOn}
-				addOnType={addOnType}
-				isDisable={isDisable}
-			/>
-
-		</main>
+			{openAddModal &&
+				<AddAddOnModal
+					id={addOnId}
+					name={addOnName}
+					price={addOnPrice}
+					isOpen={openAddModal}
+					setCallApi={setCallApi}
+					onClose={() => setOpenAddModal(false)}
+				/>
+			}
+		</MainComponent>
 	);
 };
 

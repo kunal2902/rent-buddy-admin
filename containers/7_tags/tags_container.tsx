@@ -12,6 +12,7 @@ import {
 	GroupComponent,
 	LoadingOverlayComponent,
 	MainComponent,
+	NoDataFound,
 	PaginationComponent,
 	PaperComponent,
 	PopConfirmComponent,
@@ -27,28 +28,27 @@ const TagsContainer = () => {
 	const [tagId, setTagId] = useState<string>("");
 	const [tagName, setTagName] = useState<string>("");
 	const [callApi, setCallApi] = useState<boolean>(true);
-	const [loading, setLoading] = useState<boolean>(false);
+	const [loading, setLoading] = useState<boolean>(true);
+	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const [searchValue, setSearchValue] = useState<string>("");
 	const [tagsList, setTagsList] = useState<TagModel[]>([]);
 	const [filter, setFilter] = useState<string | null>("tag_id");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 
 	useEffect(() => {
-		if (callApi) {
-			getTagApi(
-				`orderBy=${filter}&page=${page}&order=asc`,
-				(data: any) => {
-					setTagsList(data.tags);
-					setCallApi(false);
-				},
-				() => {
-					setCallApi(false);
-				},
-				() => {
-					setCallApi(false);
-				}
-			).then();
-		}
+		getTagApi(
+			`orderBy=${filter}&page=${page}&order=asc`,
+			(data: any) => {
+				setTagsList(data.tags);
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			}
+		).then();
 	}, [filter, page, callApi]);
 
 	useEffect(() => {
@@ -58,25 +58,23 @@ const TagsContainer = () => {
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (query: string) => {
-		setLoading(true);
+		setSearchLoading(true);
 		if (query === "") {
-			setCallApi(true);
-			setLoading(false);
+			setSearchLoading(false);
 		} else {
 			getTagApi(
 				`name=${query}`,
 				(data: any) => {
 					setTagsList(data.tags);
-					setCallApi(false);
+					setSearchLoading(false);
 				},
 				() => {
-					setCallApi(false);
+					setSearchLoading(false);
 				},
 				() => {
-					setCallApi(false);
+					setSearchLoading(false);
 				}
 			).then();
-			setLoading(false);
 		}
 	}, 500);
 
@@ -162,10 +160,10 @@ const TagsContainer = () => {
 			<DashboardPageHeader
 				title="Tags"
 				idLabel="Tag Id"
-				loading={loading}
 				idVariable="tag_id"
 				setFilter={setFilter}
 				buttonTitle="Add Tag"
+				loading={searchLoading}
 				searchValue={searchValue}
 				setSearchValue={setSearchValue}
 				onClick={() => handleAddOpenModal("", "")}
@@ -176,33 +174,33 @@ const TagsContainer = () => {
 			/>
 
 			{
-				tagsList.length === 0 ?
-					<LoadingOverlayComponent
-						visible={tagsList.length === 0}
-					/> :
-					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
-						<BoxComponent mx="auto">
-							<PaperComponent>
-								<Table highlightOnHover>
-									<Table.Thead>
-										<Table.Tr>
-											{columns.map((item) =>
-												(<Table.Th key={item}>{item}</Table.Th>)
-											)}
-										</Table.Tr>
-									</Table.Thead>
-									<Table.Tbody>{rows}</Table.Tbody>
-								</Table>
-							</PaperComponent>
-							<CenterComponent>
-								<PaginationComponent
-									total={10}
-									value={page}
-									onChange={setPage}
-								/>
-							</CenterComponent>
+				loading ?
+					<LoadingOverlayComponent /> :
+					tagsList.length === 0 ?
+						<NoDataFound /> :
+						<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
+							<BoxComponent mx="auto">
+								<PaperComponent>
+									<Table highlightOnHover>
+										<Table.Thead>
+											<Table.Tr>
+												{columns.map((item) =>
+													(<Table.Th key={item}>{item}</Table.Th>)
+												)}
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>{rows}</Table.Tbody>
+									</Table>
+								</PaperComponent>
+								<CenterComponent>
+									<PaginationComponent
+										total={10}
+										value={page}
+										onChange={setPage}
+									/>
+								</CenterComponent>
+							</BoxComponent>
 						</BoxComponent>
-					</BoxComponent>
 			}
 
 			{openAddModal &&

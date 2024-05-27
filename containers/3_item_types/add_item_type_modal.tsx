@@ -172,8 +172,8 @@ const AddItemTypeModal: React.FC<Props> = (props: Props) => {
 
 			<GroupComponent justify="end">
 				<ButtonComponent
-					title="Save"
 					w={100}
+					title="Save"
 					onClick={handleSubmitItemType}
 				/>
 			</GroupComponent>

@@ -13,11 +13,14 @@ interface Props {
 	isOpen: boolean;
 	onClose: () => void;
 	setCallApi: (value: boolean) => void;
+	id: string | undefined;
+	name: string | undefined;
+	price: string | undefined;
 }
 
-const AddAddOnModal: React.FC<Props> = ({ isOpen, onClose, setCallApi }) => {
-	const [addOnName, setAddOnName] = useState<string>("");
-	const [addOnPrice, setAddOnPrice] = useState<string>("");
+const AddAddOnModal: React.FC<Props> = ({ isOpen, onClose, setCallApi, id, name, price }) => {
+	const [addOnName, setAddOnName] = useState<string>(name ?? "");
+	const [addOnPrice, setAddOnPrice] = useState<string>(price ?? "");
 	const [selectedFileToUpload, setSelectedFileToUpload] = useState<File | null>(null);
 	const [selectedFile, setSelectedFile] = useState<string | null>(null);
 
@@ -63,6 +66,7 @@ const AddAddOnModal: React.FC<Props> = ({ isOpen, onClose, setCallApi }) => {
 		}
 		addOnData.append("name", addOnName);
 		addOnData.append("price", addOnPrice);
+		addOnData.append("id", id ?? "");
 
 		try {
 			await upsertAddOnApi(

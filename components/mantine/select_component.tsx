@@ -16,7 +16,7 @@ export interface SelectComponentProps extends SelectProps {
 export const SelectComponent = (props: SelectComponentProps) => {
 	const { setOption, setValue, ...rest } = props;
 	const handleChange = (value: string | null, option: ComboboxItem) => {
-		setValue(value);
+		setValue(option.value);
 		if (setOption) {
 			const selectedOption = props.data.filter(entry => entry.value === option.value);
 			if (selectedOption.length > 0) {

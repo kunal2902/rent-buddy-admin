@@ -9,53 +9,48 @@ import {
 	BoxComponent,
 	CenterComponent,
 	DashboardPageHeader,
-	GroupComponent, ImageComponent,
+	GroupComponent,
+	ImageComponent,
 	LoadingOverlayComponent,
-	MainComponent, PaginationComponent,
+	MainComponent,
+	NoDataFound,
+	PaginationComponent,
 	PaperComponent,
 	PopConfirmComponent,
 	PopConfirmType,
 	SortButtonComponentItemProps,
 } from "@/components";
 import { ItemTypeModel } from "@/models";
-import {
-	deleteItemTypeApi,
-	disableItemTypeApi,
-	formatDate,
-	getItemTypeApi,
-	imageUrl,
-} from "@/utils";
+import { deleteItemTypeApi, disableItemTypeApi, formatDate, getItemTypeApi, imageUrl } from "@/utils";
 import AddItemTypeModal from "@/containers/3_item_types/add_item_type_modal";
 
 const ItemTypesContainer = () => {
 	const [page, setPage] = useState<number>(1);
 	const [callApi, setCallApi] = useState<boolean>(true);
-	const [loading, setLoading] = useState<boolean>(false);
+	const [loading, setLoading] = useState<boolean>(true);
 	const [itemTypeId, setItemTypeId] = useState<string>("");
 	const [searchValue, setSearchValue] = useState<string>("");
 	const [itemTypeName, setItemTypeName] = useState<string>("");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
+	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const [filter, setFilter] = useState<string | null>("item_type_id");
 	const [itemTypesList, setItemTypesList] = useState<ItemTypeModel[]>([]);
 	const [itemTypeIcon, setItemTypeIcon] = useState<string | undefined>("");
 
 	useEffect(() => {
-		if (callApi) {
 			getItemTypeApi(
 				`orderBy=${filter}&page=${page}&order=asc`,
 				(data: any) => {
-					console.log(data);
 					setItemTypesList(data.item_types);
-					setCallApi(false);
+					setLoading(false);
 				},
 				() => {
-					setCallApi(false);
+					setLoading(false);
 				},
 				() => {
-					setCallApi(false);
+					setLoading(false);
 				}
 			).then();
-		}
 	}, [filter, page, callApi]);
 
 	useEffect(() => {
@@ -65,25 +60,23 @@ const ItemTypesContainer = () => {
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (query: string) => {
-		setLoading(true);
+		setSearchLoading(true);
 		if (query === "") {
-			setCallApi(true);
-			setLoading(false);
+			setSearchLoading(false);
 		} else {
 			getItemTypeApi(
 				`name=${query}`,
 				(data: any) => {
 					setItemTypesList(data.item_types);
-					setCallApi(false);
+					setSearchLoading(false);
 				},
 				() => {
-					setCallApi(false);
+					setSearchLoading(false);
 				},
 				() => {
-					setCallApi(false);
+					setSearchLoading(false);
 				}
 			).then();
-			setLoading(false);
 		}
 	}, 500);
 
@@ -180,12 +173,12 @@ const ItemTypesContainer = () => {
 		<MainComponent>
 			<DashboardPageHeader
 				title="Item Types"
-				idLabel="Item Type Id"
-				loading={loading}
-				idVariable="item_type_id"
 				setFilter={setFilter}
-				buttonTitle="Add Item Type"
+				idLabel="Item Type Id"
+				loading={searchLoading}
+				idVariable="item_type_id"
 				searchValue={searchValue}
+				buttonTitle="Add Item Type"
 				setSearchValue={setSearchValue}
 				onClick={() => handleAddOpenModal("", "", "")}
 				setOption={(option) => setFilter(option.value)}
@@ -195,33 +188,33 @@ const ItemTypesContainer = () => {
 			/>
 
 			{
-				itemTypesList.length === 0 ?
-					<LoadingOverlayComponent
-						visible={itemTypesList.length === 0}
-					/> :
-					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
-						<BoxComponent mx="auto">
-							<PaperComponent>
-								<Table highlightOnHover>
-									<Table.Thead>
-										<Table.Tr>
-											{columns.map((item) =>
-												(<Table.Th key={item}>{item}</Table.Th>)
-											)}
-										</Table.Tr>
-									</Table.Thead>
-									<Table.Tbody>{rows}</Table.Tbody>
-								</Table>
-							</PaperComponent>
-							<CenterComponent>
-								<PaginationComponent
-									total={10}
-									value={page}
-									onChange={setPage}
-								/>
-							</CenterComponent>
+				loading ?
+					<LoadingOverlayComponent /> :
+					itemTypesList.length === 0 ?
+						<NoDataFound /> :
+						<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
+							<BoxComponent mx="auto">
+								<PaperComponent>
+									<Table highlightOnHover>
+										<Table.Thead>
+											<Table.Tr>
+												{columns.map((item) =>
+													(<Table.Th key={item}>{item}</Table.Th>)
+												)}
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>{rows}</Table.Tbody>
+									</Table>
+								</PaperComponent>
+								<CenterComponent>
+									<PaginationComponent
+										total={10}
+										value={page}
+										onChange={setPage}
+									/>
+								</CenterComponent>
+							</BoxComponent>
 						</BoxComponent>
-					</BoxComponent>
 			}
 
 			{openAddModal &&
