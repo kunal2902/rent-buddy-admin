@@ -1,55 +1,37 @@
 "use client";
 
-import { Plus } from "lucide-react";
-import { Loader, LoadingOverlay, Pagination, Table } from "@mantine/core";
+import { Table } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { MdOutlineEdit } from "react-icons/md";
 import {
 	ActionIconComponent,
 	BoxComponent,
-	ButtonComponent,
 	CenterComponent,
 	DashboardPageHeader,
 	GroupComponent,
+	LoadingOverlayComponent,
+	MainComponent,
+	PaginationComponent,
 	PaperComponent,
 	PopConfirmComponent,
 	PopConfirmType,
-	SelectComponent,
-	SortButtonComponent,
 	SortButtonComponentItemProps,
-	TextComponent,
-	TextInputComponent,
-	TitleComponent,
 } from "@/components";
-import { useItemsContainer } from "./hook";
 import { ItemModel } from "@/models";
-import {
-	appColorRGBA,
-	deleteItemApi,
-	disableItemApi,
-	formatDate,
-	getBackgroundColor,
-	getItemApi,
-	getSurfaceColor,
-	mantineRadius,
-	useThemeProvider,
-} from "@/utils";
+import { deleteItemApi, disableItemApi, formatDate, getItemApi } from "@/utils";
 import AddItemModal from "./add_item_modal";
-import { searchItems, sortItems } from "@/constants";
 
 const ItemsContainer = () => {
-	const { isSidebarOpen } = useItemsContainer();
-	const { darkMode } = useThemeProvider();
-	const [itemList, setItemList] = useState<ItemModel[]>([]);
-	const [callApi, setCallApi] = useState(true);
+	const [page, setPage] = useState<number>(1);
 	const [itemId, setItemId] = useState<string>("");
 	const [itemName, setItemName] = useState<string>("");
+	const [callApi, setCallApi] = useState<boolean>(true);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [searchValue, setSearchValue] = useState<string>("");
-	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
-	const [page, setPage] = useState<number>(1);
+	const [itemList, setItemList] = useState<ItemModel[]>([]);
 	const [filter, setFilter] = useState<string | null>("item_id");
+	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (callApi) {
@@ -129,6 +111,15 @@ const ItemsContainer = () => {
 		}
 	};
 
+	const columns = [
+		"Index",
+		"Item Id",
+		"Name",
+		"Created At",
+		"Disable",
+		"Action",
+	];
+
 	const rows = itemList.map((element, index) => (
 		<Table.Tr key={index}>
 			<Table.Td>{index + 1}</Table.Td>
@@ -162,12 +153,7 @@ const ItemsContainer = () => {
 	));
 
 	return (
-		<main
-			className={`flex min-h-screen w-full flex-col pt-14 ${
-				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-14"
-			}`}
-			style={getBackgroundColor(darkMode)}
-		>
+		<MainComponent>
 			<DashboardPageHeader
 				title="Items"
 				idLabel="Item Id"
@@ -177,10 +163,8 @@ const ItemsContainer = () => {
 				buttonTitle="Add Item"
 				searchValue={searchValue}
 				setSearchValue={setSearchValue}
-				setOption={(option) => {
-					setFilter(option.value);
-				}}
 				onClick={() => handleAddOpenModal("", "")}
+				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
 					console.log(selected.label);
 				}}
@@ -188,45 +172,28 @@ const ItemsContainer = () => {
 
 			{
 				itemList.length === 0 ?
-					<LoadingOverlay
-						mt={116}
-						mr={12}
-						ml={68}
-						mb={12}
-						zIndex={10}
+					<LoadingOverlayComponent
 						visible={itemList.length === 0}
-						overlayProps={{
-							radius: mantineRadius,
-							backgroundOpacity: 1,
-							color: getSurfaceColor(darkMode).backgroundColor,
-						}}
 					/> :
 					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
 						<BoxComponent mx="auto">
-							<PaperComponent withBorder radius={mantineRadius}>
+							<PaperComponent>
 								<Table highlightOnHover>
 									<Table.Thead>
 										<Table.Tr>
-											<Table.Th>Index</Table.Th>
-											<Table.Th>Item Id</Table.Th>
-											<Table.Th>Name</Table.Th>
-											<Table.Th>Created At</Table.Th>
-											<Table.Th>Disable</Table.Th>
-											<Table.Th>Action</Table.Th>
+											{columns.map((item) =>
+												(<Table.Th key={item}>{item}</Table.Th>)
+											)}
 										</Table.Tr>
 									</Table.Thead>
 									<Table.Tbody>{rows}</Table.Tbody>
 								</Table>
 							</PaperComponent>
 							<CenterComponent>
-								<Pagination
-									mt={12}
+								<PaginationComponent
 									total={10}
 									value={page}
-									radius={mantineRadius}
-									onChange={(pageNumber) => {
-										setPage(pageNumber);
-									}}
+									onChange={setPage}
 								/>
 							</CenterComponent>
 						</BoxComponent>
@@ -242,7 +209,7 @@ const ItemsContainer = () => {
 					onClose={() => setOpenAddModal(false)}
 				/>
 			}
-		</main>
+		</MainComponent>
 	);
 };
 

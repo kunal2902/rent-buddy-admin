@@ -23,11 +23,11 @@ interface Props {
 	setCallApi: Dispatch<SetStateAction<boolean>>;
 	initialItemTypeValue: string;
 	itemTypeId: string;
-	image: string | undefined;
+	icon: string | undefined;
 }
 
 const AddItemTypeModal: React.FC<Props> = (props: Props) => {
-	const { isOpen, onClose, setCallApi, initialItemTypeValue, itemTypeId, image } = props;
+	const { isOpen, onClose, setCallApi, initialItemTypeValue, itemTypeId, icon } = props;
 	const [itemTypeName, setItemTypeName] = useState<string>(initialItemTypeValue);
 	const [selectedFileToUpload, setSelectedFileToUpload] = useState<File | null>(null);
 	const [selectedFile, setSelectedFile] = useState<string | null>(null);
@@ -36,12 +36,12 @@ const AddItemTypeModal: React.FC<Props> = (props: Props) => {
 	const isEditModal: boolean = initialItemTypeValue !== "";
 
 	useEffect(() => {
-		if (itemTypeName && image) {
-			const imgUrl = `${imageUrl}/${image}`;
+		if (itemTypeName && icon) {
+			const imgUrl = `${imageUrl}/${icon}`;
 			setSelectedFile(imgUrl);
 			setInputError(null);
 		}
-	}, [itemTypeName, image]);
+	}, [itemTypeName, icon]);
 
 	const onChooseIconClick = () => {
 		if (fileInputTriggerRef) {

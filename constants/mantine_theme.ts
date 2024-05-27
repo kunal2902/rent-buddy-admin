@@ -27,7 +27,7 @@ export const coloredInputTheme = (darkMode: boolean) => createTheme({
 	components: {
 		Input: Input.extend({
 			// @ts-ignore
-			vars: () => ({ input: { "background-color": getSurfaceColor(darkMode).backgroundColor } }),
+			vars: () => ({ input: { backgroundColor: getSurfaceColor(darkMode).backgroundColor } }),
 		}),
 	},
 });

@@ -127,7 +127,7 @@ const UsersContainer = () => {
 	];
 
 	const rows = usersList.map((element, index) => (
-		<Table.Tr>
+		<Table.Tr key={index}>
 			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.user_id}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
@@ -211,8 +211,8 @@ const UsersContainer = () => {
 							</PaperComponent>
 							<CenterComponent>
 								<PaginationComponent
-									value={page}
 									total={10}
+									value={page}
 									onChange={setPage}
 								/>
 							</CenterComponent>
@@ -223,12 +223,10 @@ const UsersContainer = () => {
 			{openAddModal &&
 				<AddUserModal
 					userId={userId}
+					isOpen={openAddModal}
 					setCallApi={setCallApi}
 					initialUserValue={userName}
-					isOpen={openAddModal}
-					onClose={() => {
-						setOpenAddModal(false);
-					}}
+					onClose={() => setOpenAddModal(false)}
 				/>
 			}
 		</MainComponent>

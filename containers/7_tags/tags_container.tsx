@@ -10,19 +10,21 @@ import {
 	CenterComponent,
 	DashboardPageHeader,
 	GroupComponent,
-	LoadingOverlayComponent, PaginationComponent,
+	LoadingOverlayComponent,
+	MainComponent,
+	PaginationComponent,
 	PaperComponent,
 	PopConfirmComponent,
 	PopConfirmType,
 	SortButtonComponentItemProps,
- MainComponent } from "@/components";
+} from "@/components";
 import AddTagModal from "./add_tag_modal";
 import { TagModel } from "@/models";
 import { deleteTagApi, disableTagApi, formatDate, getTagApi } from "@/utils";
 
 const TagsContainer = () => {
-	const [tagId, setTagId] = useState("");
 	const [page, setPage] = useState<number>(1);
+	const [tagId, setTagId] = useState<string>("");
 	const [tagName, setTagName] = useState<string>("");
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [loading, setLoading] = useState<boolean>(false);
@@ -124,7 +126,7 @@ const TagsContainer = () => {
 	];
 
 	const rows = tagsList.map((element, index) => (
-		<Table.Tr>
+		<Table.Tr key={index}>
 			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.tag_id}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
@@ -166,10 +168,8 @@ const TagsContainer = () => {
 				buttonTitle="Add Tag"
 				searchValue={searchValue}
 				setSearchValue={setSearchValue}
-				setOption={(option) => {
-					setFilter(option.value);
-				}}
 				onClick={() => handleAddOpenModal("", "")}
+				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
 					console.log(selected.label);
 				}}
@@ -196,8 +196,8 @@ const TagsContainer = () => {
 							</PaperComponent>
 							<CenterComponent>
 								<PaginationComponent
-									value={page}
 									total={10}
+									value={page}
 									onChange={setPage}
 								/>
 							</CenterComponent>
@@ -208,12 +208,10 @@ const TagsContainer = () => {
 			{openAddModal &&
 				<AddTagModal
 					tagId={tagId}
+					isOpen={openAddModal}
 					setCallApi={setCallApi}
 					initialTagValue={tagName}
-					isOpen={openAddModal}
-					onClose={() => {
-						setOpenAddModal(false);
-					}}
+					onClose={() => setOpenAddModal(false)}
 				/>
 			}
 		</MainComponent>

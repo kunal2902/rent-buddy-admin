@@ -942,6 +942,7 @@ export const deleteSubCategoryApi = async (
 
 // Item type api
 export const getItemTypeApi = async (
+	query: string | undefined,
 	successCallback: (arg0: any) => void,
 	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
@@ -951,7 +952,8 @@ export const getItemTypeApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(itemTypeAPIPath, {
+	const path = query === "" ? itemTypeAPIPath : `${itemTypeAPIPath}?${query}`;
+	const response = await makeGetRequest(path, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1112,7 +1114,7 @@ export const getItemApi = async (
 		logoutCallback();
 		return;
 	}
-	const path = query === "" ? tagAPIPath : `${tagAPIPath}?${query}`;
+	const path = query === "" ? itemAPIPath : `${itemAPIPath}?${query}`;
 	const response = await makeGetRequest(path, {
 		authorization: `Bearer ${token}`,
 	});
@@ -1424,6 +1426,7 @@ export const deleteAddOnApi = async (
 
 // Activity logs api
 export const getActivityLogsApi = async (
+	query: string | undefined,
 	successCallback: (arg0: any) => void,
 	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
@@ -1433,7 +1436,8 @@ export const getActivityLogsApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(activityLogsAPIPath, {
+	const path = query === "" ? activityLogsAPIPath : `${activityLogsAPIPath}?${query}`;
+	const response = await makeGetRequest(path, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {

@@ -21,8 +21,8 @@ const ReportsContainer = () => {
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [searchValue, setSearchValue] = useState<string>("");
-	const [reportsList, setReportsList] = useState<ReportModel[]>([]);
 	const [filter, setFilter] = useState<string | null>("report_id");
+	const [reportsList, setReportsList] = useState<ReportModel[]>([]);
 
 	useEffect(() => {
 		if (callApi) {
@@ -79,7 +79,7 @@ const ReportsContainer = () => {
 	];
 
 	const rows = reportsList.map((element, index) => (
-		<Table.Tr>
+		<Table.Tr key={index}>
 			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.report_id}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
@@ -90,29 +90,26 @@ const ReportsContainer = () => {
 	return (
 		<MainComponent>
 			<DashboardPageHeader
-				title="Reports"
-				idLabel="Report Id"
-				loading={loading}
-				idVariable="report_id"
-				setFilter={setFilter}
 				buttonTitle=""
+				title="Reports"
+				loading={loading}
+				idLabel="Report Id"
+				setFilter={setFilter}
+				showAddButton={false}
+				idVariable="report_id"
+				onClick={() => {}}
 				searchValue={searchValue}
 				setSearchValue={setSearchValue}
-				setOption={(option) => {
-					setFilter(option.value);
-				}}
-				onClick={() => {
-				}}
+				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
 					console.log(selected.label);
 				}}
-				showAddButton={false}
 			/>
 
 			{
-				reportsList.length === 0 ?
+				loading ?
 					<LoadingOverlayComponent
-						visible={reportsList.length === 0}
+						visible={loading}
 					/> :
 					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
 						<BoxComponent mx="auto">
@@ -130,8 +127,8 @@ const ReportsContainer = () => {
 							</PaperComponent>
 							<CenterComponent>
 								<PaginationComponent
-									value={page}
 									total={10}
+									value={page}
 									onChange={setPage}
 								/>
 							</CenterComponent>

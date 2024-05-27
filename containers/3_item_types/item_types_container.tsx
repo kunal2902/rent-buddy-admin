@@ -1,97 +1,145 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
-import { Table, Image, Loader, Pagination, LoadingOverlay } from "@mantine/core";
+import { Table } from "@mantine/core";
 import { MdOutlineEdit } from "react-icons/md";
-import { useItemTypesContainer } from "./hook";
+import { useDebouncedCallback } from "@mantine/hooks";
 import {
 	ActionIconComponent,
 	BoxComponent,
-	ButtonComponent, CenterComponent,
-	GroupComponent, PaperComponent, PopConfirmComponent, PopConfirmType,
-	SelectComponent,
-	SortButtonComponent, SortButtonComponentItemProps, TextComponent,
-	TextInputComponent,
-	TitleComponent,
+	CenterComponent,
+	DashboardPageHeader,
+	GroupComponent, ImageComponent,
+	LoadingOverlayComponent,
+	MainComponent, PaginationComponent,
+	PaperComponent,
+	PopConfirmComponent,
+	PopConfirmType,
+	SortButtonComponentItemProps,
 } from "@/components";
 import { ItemTypeModel } from "@/models";
 import {
-	appColorRGBA,
 	deleteItemTypeApi,
 	disableItemTypeApi,
 	formatDate,
-	getBackgroundColor,
-	getItemTypeApi, getSurfaceColor,
+	getItemTypeApi,
 	imageUrl,
-	mantineRadius, useThemeProvider,
 } from "@/utils";
 import AddItemTypeModal from "@/containers/3_item_types/add_item_type_modal";
-import { searchItems, sortItems } from "@/constants";
 
 const ItemTypesContainer = () => {
-	const { isSidebarOpen,
-		isCreateItemTypeModalOpen,
-		toggleCreateItemTypeModalOpen,
-	} = useItemTypesContainer();
-	const { darkMode } = useThemeProvider();
-	const [itemTypeList, setItemTypeList] = useState<ItemTypeModel[]>([]);
-	const [callApi, setCallApi] = useState(true);
-	const [itemTypeId, setItemTypeId] = useState<string>("");
-	const [itemTypeName, setItemTypeName] = useState<string>("");
-	const [itemTypeImage, setItemTypeImage] = useState<string | undefined>("");
-	const [searchValue, setSearchValue] = useState<string>("");
-	const [filter, setFilter] = useState<string | null>("tag_id");
-	const [loading, setLoading] = useState<boolean>(false);
 	const [page, setPage] = useState<number>(1);
+	const [callApi, setCallApi] = useState<boolean>(true);
+	const [loading, setLoading] = useState<boolean>(false);
+	const [itemTypeId, setItemTypeId] = useState<string>("");
+	const [searchValue, setSearchValue] = useState<string>("");
+	const [itemTypeName, setItemTypeName] = useState<string>("");
+	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
+	const [filter, setFilter] = useState<string | null>("item_type_id");
+	const [itemTypesList, setItemTypesList] = useState<ItemTypeModel[]>([]);
+	const [itemTypeIcon, setItemTypeIcon] = useState<string | undefined>("");
 
 	useEffect(() => {
 		if (callApi) {
-			getItemTypeApi((data: any) => {
-				setItemTypeList(data.itemTypes);
-				setCallApi(false);
-			}, () => {
-				setCallApi(false);
-			}, () => {
-				setCallApi(false);
-			}).then();
+			getItemTypeApi(
+				`orderBy=${filter}&page=${page}&order=asc`,
+				(data: any) => {
+					console.log(data);
+					setItemTypesList(data.item_types);
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				}
+			).then();
 		}
-	}, [callApi]);
+	}, [filter, page, callApi]);
 
-	const handleActionItemType = async (id: string, type: string) => {
-		if (type === "disable") {
-			await disableItemTypeApi(id, () => {
+	useEffect(() => {
+		if (searchValue) {
+			handleSearch(searchValue);
+		}
+	}, [searchValue]);
+
+	const handleSearch = useDebouncedCallback(async (query: string) => {
+		setLoading(true);
+		if (query === "") {
 			setCallApi(true);
-		}, () => {
-			setCallApi(false);
-		}, () => {
-			setCallApi(false);
-		});
+			setLoading(false);
 		} else {
-			await deleteItemTypeApi(id, () => {
-			setCallApi(true);
-		}, () => {
-			setCallApi(false);
-		}, () => {
-			setCallApi(false);
-		});
+			getItemTypeApi(
+				`name=${query}`,
+				(data: any) => {
+					setItemTypesList(data.item_types);
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				}
+			).then();
+			setLoading(false);
 		}
-	};
+	}, 500);
 
-	const handleAddOpenModal = (id: string, name: string, image: string | undefined) => {
+	const handleAddOpenModal = (id: string, name: string, icon: string | undefined) => {
 		setItemTypeId(id);
 		setItemTypeName(name);
-		setItemTypeImage(image);
-		toggleCreateItemTypeModalOpen();
+		setItemTypeIcon(icon);
+		setOpenAddModal(true);
 	};
 
-	const rows = itemTypeList.map((element, index) => (
-		<Table.Tr>
+	const handleAction = async (id: string, type: string) => {
+		if (type === "disable") {
+			await disableItemTypeApi(
+				id,
+				() => {
+					setCallApi(true);
+				},
+				() => {
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				}
+			);
+		} else {
+			await deleteItemTypeApi(
+				id,
+				() => {
+					setCallApi(true);
+				},
+				() => {
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				}
+			);
+		}
+	};
+
+	const columns = [
+		"Index",
+		"Item Type Id",
+		"Icon",
+		"Name",
+		"Created At",
+		"Disable",
+		"Action",
+	];
+
+	const rows = itemTypesList.map((element, index) => (
+		<Table.Tr key={index}>
 			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.item_type_id}</Table.Td>
 			<Table.Td>
-				<Image
-					radius="md"
+				<ImageComponent
 					h={50}
 					w="auto"
 					src={`${imageUrl}/${element.icon}`}
@@ -105,15 +153,15 @@ const ItemTypesContainer = () => {
 					type={PopConfirmType.switch}
 					isDisabled={element.is_disabled}
 					actionName={element.is_disabled ? "enable" : "disable"}
-					onConfirm={async () => handleActionItemType(element.item_type_id, "disable")}
+					onConfirm={async () => handleAction(element.item_type_id, "disable")}
 				/>
 			</Table.Td>
 			<Table.Td w={110}>
 				<GroupComponent>
 					<PopConfirmComponent
-						entityName="tag"
+						entityName="item type"
 						actionName="delete"
-						onConfirm={async () => handleActionItemType(element.item_type_id, "delete")}
+						onConfirm={async () => handleAction(element.item_type_id, "delete")}
 					/>
 					<ActionIconComponent
 						onClick={() => handleAddOpenModal(
@@ -129,116 +177,64 @@ const ItemTypesContainer = () => {
 	));
 
 	return (
-		<main
-			className={`flex min-h-screen w-full flex-col pt-14 ${
-				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-14"
-			}`}
-			style={getBackgroundColor(darkMode)}
-		>
-			<GroupComponent
-				className="m-3"
-				align="center"
-				justify="space-between">
-				<TitleComponent title="Item Types" />
-				<GroupComponent>
-					<SelectComponent
-						placeholder="Searching In"
-						searchable
-						size="sm"
-						data={searchItems("Item Type Id", "item_type_id")}
-						setValue={setFilter}
-						setOption={(option) => {
-							setFilter(option.value);
-						}}
-					/>
-
-					<TextInputComponent
-						size="sm"
-						value={searchValue}
-						setValue={setSearchValue}
-						placeholder="Search"
-						rightSection={loading && <Loader size={20} />}
-					/>
-
-					<SortButtonComponent
-						items={sortItems("item_type_id")}
-						onSelected={(selected: SortButtonComponentItemProps) => {
-							console.log(selected.label);
-						}}
-					/>
-
-					<ButtonComponent
-						c={appColorRGBA}
-						color={getSurfaceColor(darkMode).backgroundColor}
-						onClick={() => handleAddOpenModal("", "", "")}
-					>
-						<Plus size={20} className="sm:mr-2 mr-0" />
-						<TextComponent text="Add Item Type" c={appColorRGBA} />
-					</ButtonComponent>
-				</GroupComponent>
-
-			</GroupComponent>
+		<MainComponent>
+			<DashboardPageHeader
+				title="Item Types"
+				idLabel="Item Type Id"
+				loading={loading}
+				idVariable="item_type_id"
+				setFilter={setFilter}
+				buttonTitle="Add Item Type"
+				searchValue={searchValue}
+				setSearchValue={setSearchValue}
+				onClick={() => handleAddOpenModal("", "", "")}
+				setOption={(option) => setFilter(option.value)}
+				onSortSelected={(selected: SortButtonComponentItemProps) => {
+					console.log(selected.label);
+				}}
+			/>
 
 			{
-				itemTypeList.length === 0 ?
-					<LoadingOverlay
-						mt={116}
-						mr={12}
-						ml={68}
-						mb={12}
-						zIndex={10}
-						visible={itemTypeList.length === 0}
-						overlayProps={{
-							radius: mantineRadius,
-							backgroundOpacity: 0.1,
-							color: getSurfaceColor(darkMode).backgroundColor,
-					}}
+				itemTypesList.length === 0 ?
+					<LoadingOverlayComponent
+						visible={itemTypesList.length === 0}
 					/> :
 					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
 						<BoxComponent mx="auto">
-							<PaperComponent withBorder radius={mantineRadius}>
+							<PaperComponent>
 								<Table highlightOnHover>
 									<Table.Thead>
 										<Table.Tr>
-											<Table.Th>Index</Table.Th>
-											<Table.Th>Item type Id</Table.Th>
-											<Table.Th>Icon</Table.Th>
-											<Table.Th>Name</Table.Th>
-											<Table.Th>Created at</Table.Th>
-											<Table.Th>Disable</Table.Th>
-											<Table.Th>Action</Table.Th>
+											{columns.map((item) =>
+												(<Table.Th key={item}>{item}</Table.Th>)
+											)}
 										</Table.Tr>
 									</Table.Thead>
 									<Table.Tbody>{rows}</Table.Tbody>
 								</Table>
 							</PaperComponent>
 							<CenterComponent>
-								<Pagination
-									mt={12}
+								<PaginationComponent
 									total={10}
 									value={page}
-									radius={mantineRadius}
-									onChange={(pageNumber) => {
-										setPage(pageNumber);
-									}}
+									onChange={setPage}
 								/>
 							</CenterComponent>
 						</BoxComponent>
 					</BoxComponent>
 			}
 
-			{isCreateItemTypeModalOpen &&
+			{openAddModal &&
 				<AddItemTypeModal
+					icon={itemTypeIcon}
+					isOpen={openAddModal}
 					itemTypeId={itemTypeId}
-					initialItemTypeValue={itemTypeName}
-					image={itemTypeImage}
 					setCallApi={setCallApi}
-					isOpen={isCreateItemTypeModalOpen}
-					onClose={toggleCreateItemTypeModalOpen}
+					initialItemTypeValue={itemTypeName}
+					onClose={() => setOpenAddModal(false)}
 				/>
 			}
-
-		</main>
+		</MainComponent>
 	);
 };
 

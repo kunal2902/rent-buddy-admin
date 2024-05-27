@@ -1,26 +1,14 @@
 "use client";
 
-import { DashboardPageHeader } from "@/components";
-import { useDashboardContainer } from "./hook";
-import { getBackgroundColor, useThemeProvider } from "@/utils";
+import React from "react";
+import { GroupComponent, MainComponent, TitleComponent } from "@/components";
 
-const DashboardContainer = () => {
-	const { darkMode } = useThemeProvider();
-	const { isSidebarOpen } = useDashboardContainer();
-
-	return (
-		<main
-			className={`flex min-h-screen w-full flex-col pt-14 ${
-				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-16"
-			}`}
-			style={getBackgroundColor(darkMode)}
-		>
-			<DashboardPageHeader
-				heading="Hi, Welcome back 👋"
-				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
-			/>
-		</main>
+const DashboardContainer = () => (
+	<MainComponent>
+		<GroupComponent className="m-3" align="center" justify="space-between">
+			<TitleComponent title="Hi, Welcome back 👋" />
+		</GroupComponent>
+	</MainComponent>
 	);
-};
 
 export default DashboardContainer;

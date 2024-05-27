@@ -197,8 +197,8 @@ const RolesSettingsContainer = () => {
 							</PaperComponent>
 							<CenterComponent>
 								<PaginationComponent
-									value={page}
 									total={10}
+									value={page}
 									onChange={setPage}
 								/>
 							</CenterComponent>
@@ -209,12 +209,10 @@ const RolesSettingsContainer = () => {
 			{openAddModal &&
 				<AddRoleModal
 					roleId={roleId}
+					isOpen={openAddModal}
 					setCallApi={setCallApi}
 					initialRoleValue={roleName}
-					isOpen={openAddModal}
-					onClose={() => {
-						setOpenAddModal(false);
-					}}
+					onClose={() => setOpenAddModal(false)}
 				/>
 			}
 		</MainComponent>

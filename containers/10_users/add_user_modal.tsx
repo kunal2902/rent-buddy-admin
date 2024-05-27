@@ -13,13 +13,13 @@ interface Props {
 	isOpen: boolean;
 	onClose: () => void;
 	setCallApi: Dispatch<SetStateAction<boolean>>;
-	initialUserValue: string;
-	userId: string;
+	initialUserValue?: string;
+	userId?: string;
 }
 
 const AddUserModal = (props: Props) => {
 	const { isOpen, onClose, setCallApi, initialUserValue, userId } = props;
-	const [userName, setUserName] = useState<string>(initialUserValue);
+	const [userName, setUserName] = useState<string>(initialUserValue ?? "");
 	const [inputError, setInputError] = useState<string | null>(null);
 	const isEditModal: boolean = initialUserValue !== "";
 

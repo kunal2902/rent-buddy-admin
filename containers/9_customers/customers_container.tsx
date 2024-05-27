@@ -78,7 +78,7 @@ const CustomersContainer = () => {
 	];
 
 	const rows = customersList.map((element, index) => (
-		<Table.Tr>
+		<Table.Tr key={index}>
 			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.customer_id}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
@@ -131,8 +131,8 @@ const CustomersContainer = () => {
 							</PaperComponent>
 							<CenterComponent>
 								<PaginationComponent
-									value={page}
 									total={10}
+									value={page}
 									onChange={setPage}
 								/>
 							</CenterComponent>

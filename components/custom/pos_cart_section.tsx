@@ -14,7 +14,7 @@ import {
 	TextComponent,
 	TooltipComponent,
 } from "@/components";
-import { AddUserModal } from "@/containers/10_users/add_user_modal";
+import AddUserModal from "@/containers/10_users/add_user_modal";
 import { appAccentColorRGBA, currencySign } from "@/utils";
 import { ComboBoxProps } from "@/types";
 
@@ -41,6 +41,7 @@ export const PosCartSection = () => {
 				onClose={() => {
 					setUserModalOpen(false);
 				}}
+				setCallApi={() => {}}
 			/>
 			<div
 				className="w-[30%] pr-3 mt-1"
