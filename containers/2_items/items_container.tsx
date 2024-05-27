@@ -12,6 +12,7 @@ import {
 	GroupComponent,
 	LoadingOverlayComponent,
 	MainComponent,
+	NoDataFound,
 	PaginationComponent,
 	PaperComponent,
 	PopConfirmComponent,
@@ -27,28 +28,27 @@ const ItemsContainer = () => {
 	const [itemId, setItemId] = useState<string>("");
 	const [itemName, setItemName] = useState<string>("");
 	const [callApi, setCallApi] = useState<boolean>(true);
-	const [loading, setLoading] = useState<boolean>(false);
+	const [loading, setLoading] = useState<boolean>(true);
 	const [searchValue, setSearchValue] = useState<string>("");
 	const [itemList, setItemList] = useState<ItemModel[]>([]);
 	const [filter, setFilter] = useState<string | null>("item_id");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
+	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 
 	useEffect(() => {
-		if (callApi) {
 			getItemApi(
 				`orderBy=${filter}&page=${page}&order=asc`,
 				(data: any) => {
 					setItemList(data.item);
-					setCallApi(false);
+					setLoading(false);
 				},
 				() => {
-					setCallApi(false);
+					setLoading(false);
 				},
 				() => {
-					setCallApi(false);
+					setLoading(false);
 				}).then();
-		}
-	}, [callApi]);
+	}, [filter, page, callApi]);
 
 	useEffect(() => {
 		if (searchValue) {
@@ -57,25 +57,23 @@ const ItemsContainer = () => {
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (query: string) => {
-		setLoading(true);
+		setSearchLoading(true);
 		if (query === "") {
-			setCallApi(true);
-			setLoading(false);
+			setSearchLoading(false);
 		} else {
 			getItemApi(
 				`name=${query}`,
 				(data: any) => {
 					setItemList(data.tags);
-					setCallApi(false);
+					setSearchLoading(false);
 				},
 				() => {
-					setCallApi(false);
+					setSearchLoading(false);
 				},
 				() => {
-					setCallApi(false);
+					setSearchLoading(false);
 				}
 			).then();
-			setLoading(false);
 		}
 	}, 500);
 
@@ -157,10 +155,10 @@ const ItemsContainer = () => {
 			<DashboardPageHeader
 				title="Items"
 				idLabel="Item Id"
-				loading={loading}
 				idVariable="item_id"
 				setFilter={setFilter}
 				buttonTitle="Add Item"
+				loading={searchLoading}
 				searchValue={searchValue}
 				setSearchValue={setSearchValue}
 				onClick={() => handleAddOpenModal("", "")}
@@ -171,33 +169,33 @@ const ItemsContainer = () => {
 			/>
 
 			{
-				itemList.length === 0 ?
-					<LoadingOverlayComponent
-						visible={itemList.length === 0}
-					/> :
-					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
-						<BoxComponent mx="auto">
-							<PaperComponent>
-								<Table highlightOnHover>
-									<Table.Thead>
-										<Table.Tr>
-											{columns.map((item) =>
-												(<Table.Th key={item}>{item}</Table.Th>)
-											)}
-										</Table.Tr>
-									</Table.Thead>
-									<Table.Tbody>{rows}</Table.Tbody>
-								</Table>
-							</PaperComponent>
-							<CenterComponent>
-								<PaginationComponent
-									total={10}
-									value={page}
-									onChange={setPage}
-								/>
-							</CenterComponent>
+				loading ?
+					<LoadingOverlayComponent /> :
+					itemList.length === 0 ?
+						<NoDataFound /> :
+						<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
+							<BoxComponent mx="auto">
+								<PaperComponent>
+									<Table highlightOnHover>
+										<Table.Thead>
+											<Table.Tr>
+												{columns.map((item) =>
+													(<Table.Th key={item}>{item}</Table.Th>)
+												)}
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>{rows}</Table.Tbody>
+									</Table>
+								</PaperComponent>
+								<CenterComponent>
+									<PaginationComponent
+										total={10}
+										value={page}
+										onChange={setPage}
+									/>
+								</CenterComponent>
+							</BoxComponent>
 						</BoxComponent>
-					</BoxComponent>
 			}
 
 			{openAddModal &&

@@ -7,7 +7,7 @@ import {
 	BoxComponent, CenterComponent,
 	DashboardPageHeader,
 	LoadingOverlayComponent,
-	MainComponent, PaginationComponent, PaperComponent,
+	MainComponent, NoDataFound, PaginationComponent, PaperComponent,
 	SortButtonComponentItemProps,
 } from "@/components";
 import { CustomerModel } from "@/models";
@@ -16,27 +16,26 @@ import { formatDate, getCustomersApi } from "@/utils";
 const CustomersContainer = () => {
 	const [page, setPage] = useState<number>(1);
 	const [callApi, setCallApi] = useState<boolean>(true);
-	const [loading, setLoading] = useState<boolean>(false);
+	const [loading, setLoading] = useState<boolean>(true);
+	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const [searchValue, setSearchValue] = useState<string>("");
 	const [customersList, setCustomersList] = useState<CustomerModel[]>([]);
 	const [filter, setFilter] = useState<string | null>("customer_id");
 
 	useEffect(() => {
-		if (callApi) {
 			getCustomersApi(
 				`orderBy=${filter}&page=${page}&order=asc`,
 				(data: any) => {
 					setCustomersList(data.customers);
-					setCallApi(false);
+					setLoading(false);
 				},
 				() => {
-					setCallApi(false);
+					setLoading(false);
 				},
 				() => {
-					setCallApi(false);
+					setLoading(false);
 				}
 			).then();
-		}
 	}, [filter, page, callApi]);
 
 	useEffect(() => {
@@ -46,25 +45,23 @@ const CustomersContainer = () => {
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (query: string) => {
-		setLoading(true);
+		setSearchLoading(true);
 		if (query === "") {
-			setCallApi(true);
-			setLoading(false);
+			setSearchLoading(false);
 		} else {
 			getCustomersApi(
 				`name=${query}`,
 				(data: any) => {
 					setCustomersList(data.customers);
-					setCallApi(false);
+					setSearchLoading(false);
 				},
 				() => {
-					setCallApi(false);
+					setSearchLoading(false);
 				},
 				() => {
-					setCallApi(false);
+					setSearchLoading(false);
 				}
 			).then();
-			setLoading(false);
 		}
 	}, 500);
 
@@ -91,53 +88,50 @@ const CustomersContainer = () => {
 	return (
 		<MainComponent>
 			<DashboardPageHeader
+				buttonTitle=""
 				title="Customers"
 				idLabel="Customer Id"
-				loading={loading}
-				idVariable="customer_id"
 				setFilter={setFilter}
-				buttonTitle=""
+				showAddButton={false}
+				loading={searchLoading}
+				idVariable="customer_id"
+				onClick={() => {}}
 				searchValue={searchValue}
 				setSearchValue={setSearchValue}
-				setOption={(option) => {
-					setFilter(option.value);
-				}}
-				onClick={() => {
-				}}
+				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
 					console.log(selected.label);
 				}}
-				showAddButton={false}
 			/>
 
 			{
-				customersList.length === 0 ?
-					<LoadingOverlayComponent
-						visible={customersList.length === 0}
-					/> :
-					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
-						<BoxComponent mx="auto">
-							<PaperComponent>
-								<Table highlightOnHover>
-									<Table.Thead>
-										<Table.Tr>
-											{columns.map((item) =>
+				loading ?
+					<LoadingOverlayComponent /> :
+					customersList.length === 0 ?
+						<NoDataFound /> :
+						<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
+							<BoxComponent mx="auto">
+								<PaperComponent>
+									<Table highlightOnHover>
+										<Table.Thead>
+											<Table.Tr>
+												{columns.map((item) =>
 												(<Table.Th key={item}>{item}</Table.Th>)
 											)}
-										</Table.Tr>
-									</Table.Thead>
-									<Table.Tbody>{rows}</Table.Tbody>
-								</Table>
-							</PaperComponent>
-							<CenterComponent>
-								<PaginationComponent
-									total={10}
-									value={page}
-									onChange={setPage}
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>{rows}</Table.Tbody>
+									</Table>
+								</PaperComponent>
+								<CenterComponent>
+									<PaginationComponent
+										total={10}
+										value={page}
+										onChange={setPage}
 								/>
-							</CenterComponent>
+								</CenterComponent>
+							</BoxComponent>
 						</BoxComponent>
-					</BoxComponent>
 			}
 		</MainComponent>
 	);

@@ -1,145 +1,215 @@
 "use client";
 
-import { Plus } from "lucide-react";
-import { Switch, Table } from "@mantine/core";
-import { FaRegEdit } from "react-icons/fa";
-import { IoTrashOutline } from "react-icons/io5";
-import { useEffect, useState } from "react";
-import { useCustomAttributesContainer } from "./hook";
-import { DashboardPageHeader } from "@/components";
-import AddCustomAttributeModal from "./add_custom_attribute";
+import { Table } from "@mantine/core";
+import { MdOutlineEdit } from "react-icons/md";
+import { useDebouncedCallback } from "@mantine/hooks";
+import React, { useEffect, useState } from "react";
+import {
+	ActionIconComponent,
+	BoxComponent,
+	CenterComponent,
+	DashboardPageHeader,
+	GroupComponent,
+	LoadingOverlayComponent,
+	MainComponent,
+	NoDataFound,
+	PaginationComponent,
+	PaperComponent,
+	PopConfirmComponent,
+	PopConfirmType,
+	SortButtonComponentItemProps,
+} from "@/components";
+import AddCustomAttributeModal from "./add_custom_attribute_modal";
 import { CustomAttributeModel } from "@/models";
 import { deleteAttributeApi, disableAttributeApi, formatDate, getAttributeApi } from "@/utils";
-import ActionCustomAttributeModal from "./action_custom_attribute_modal";
 
 const CustomAttributesContainer = () => {
-	const {
-		isSidebarOpen,
-		isCreateCustomAttributeModalOpen,
-		toggleCreateCustomAttributeModalOpen,
-	} = useCustomAttributesContainer();
-
-	const [customAttributesList, setCustomAttributesList] =
-		useState<CustomAttributeModel[]>([]);
-	const [callApi, setCallApi] = useState(true);
-	const [customAttributeId, setCustomAttributeId] = useState<string>("");
-	const [customAttributeType, setCustomAttributeType] = useState<string>("");
-	const [isDisable, setIsDisable] = useState<boolean>(true);
-	const [isActionCustomAttributeModalOpen, setIsActionCustomAttributeModalOpen] =
-		useState<boolean>(false);
+	const [page, setPage] = useState<number>(1);
+	const [callApi, setCallApi] = useState<boolean>(true);
+	const [loading, setLoading] = useState<boolean>(true);
+	const [searchValue, setSearchValue] = useState<string>("");
+	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
+	const [searchLoading, setSearchLoading] = useState<boolean>(false);
+	const [filter, setFilter] = useState<string | null>("custom_attribute_id");
+	const [customAttribute, setCustomAttribute] = useState<CustomAttributeModel | undefined>();
+	const [customAttributesList, setCustomAttributesList] = useState<CustomAttributeModel[]>([]);
 
 	useEffect(() => {
-		if (callApi) {
-			getAttributeApi((data: any) => {
-				setCustomAttributesList(data.customAttributes);
-				setCallApi(false);
-			}, () => {
-				setCallApi(false);
-			}, () => {
-				setCallApi(false);
-			}).then();
+		getAttributeApi(
+			`orderBy=${filter}&page=${page}&order=asc`,
+			(data: any) => {
+				setCustomAttributesList(data.custom_attributes);
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			}
+		).then();
+	}, [filter, page, callApi]);
+
+	useEffect(() => {
+		if (searchValue) {
+			handleSearch(searchValue);
 		}
-	}, [callApi]);
+	}, [searchValue]);
 
-	const handleOpenModal = (id: string, type: string, disableType: boolean) => {
-		setCustomAttributeId(id);
-		setCustomAttributeType(type);
-		setIsDisable(disableType);
-		setIsActionCustomAttributeModalOpen(true);
-	};
-
-	const handleActionCustomAttribute = () => {
-		if (customAttributeType === "disable") {
-			disableAttributeApi(customAttributeId, () => {
-			setCallApi(true);
-			setIsActionCustomAttributeModalOpen(false);
-		}, () => {
-			setCallApi(false);
-		}, () => {
-			setCallApi(false);
-		});
+	const handleSearch = useDebouncedCallback(async (query: string) => {
+		setSearchLoading(true);
+		if (query === "") {
+			setSearchLoading(false);
 		} else {
-			deleteAttributeApi(customAttributeId, () => {
-			setCallApi(true);
-			setIsActionCustomAttributeModalOpen(false);
-		}, () => {
-			setCallApi(false);
-		}, () => {
-			setCallApi(false);
-		});
+			getAttributeApi(
+				`name=${query}`,
+				(data: any) => {
+					setCustomAttributesList(data.custom_attributes);
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+				}
+			).then();
+		}
+	}, 500);
+
+	const handleAddOpenModal = (model?: CustomAttributeModel) => {
+		setCustomAttribute(model);
+		setOpenAddModal(true);
+	};
+
+	const handleAction = async (id: string, actionType: string) => {
+		if (actionType === "disable") {
+			await disableAttributeApi(
+				id,
+				() => {
+					setCallApi(true);
+				},
+				() => {
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				}
+			);
+		} else {
+			await deleteAttributeApi(
+				id,
+				() => {
+					setCallApi(true);
+				},
+				() => {
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				}
+			);
 		}
 	};
+
+	const columns = [
+		"Index",
+		"Custom Attribute Id",
+		"Name",
+		"Created At",
+		"Disable",
+		"Action",
+	];
 
 	const rows = customAttributesList.map((element, index) => (
 		<Table.Tr key={index}>
 			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.custom_attribute_id}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
-			<Table.Td>{element.type}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
-			<Table.Td>
-				<Switch
-					checked={element.is_disabled === true}
-					onClick={() => handleOpenModal(element.custom_attribute_id, "disable", element.is_disabled)}
+			<Table.Td w={60}>
+				<PopConfirmComponent
+					entityName="custom attribute"
+					type={PopConfirmType.switch}
+					isDisabled={element.is_disabled}
+					actionName={element.is_disabled ? "enable" : "disable"}
+					onConfirm={async () => handleAction(element.custom_attribute_id, "disable")}
 				/>
 			</Table.Td>
-			<Table.Td>
-				<div className="flex">
-					<IoTrashOutline color="red" size={25} style={{ marginRight: "10px" }} onClick={() => handleOpenModal(element.custom_attribute_id, "delete", element.is_disabled)} />
-					<FaRegEdit color="rgba(108, 210, 213, 1)" size={25} />
-				</div>
+			<Table.Td w={110}>
+				<GroupComponent>
+					<PopConfirmComponent
+						entityName="custom attribute"
+						actionName="delete"
+						onConfirm={async () => handleAction(element.custom_attribute_id, "delete")}
+					/>
+					<ActionIconComponent
+						onClick={() => handleAddOpenModal(element)}
+						size="md">
+						<MdOutlineEdit size={18} />
+					</ActionIconComponent>
+				</GroupComponent>
 			</Table.Td>
 		</Table.Tr>
 	));
 
 	return (
-		<main
-			className={`flex min-h-screen w-full bg-light-background-natural flex-col pt-14 ${
-				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-16"
-			}`}
-		>
+		<MainComponent>
 			<DashboardPageHeader
-				heading="Custom Attributes"
-				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
-				button
-				buttonProps={{
-					title: "New Attribute",
-					titleClassName: "sm:flex hidden",
-					onClick: toggleCreateCustomAttributeModalOpen,
-					className: "rounded-md w-fit text-grey-100 text-sm",
-					children: <Plus size={20} className="sm:mr-2 mr-0" />,
+				setFilter={setFilter}
+				loading={searchLoading}
+				title="Custom Attributes"
+				searchValue={searchValue}
+				idLabel="Custom Attribute Id"
+				setSearchValue={setSearchValue}
+				idVariable="custom_attribute_id"
+				buttonTitle="Add Custom Attribute"
+				onClick={() => handleAddOpenModal()}
+				setOption={(option) => setFilter(option.value)}
+				onSortSelected={(selected: SortButtonComponentItemProps) => {
+					console.log(selected.label);
 				}}
 			/>
 
-			<Table striped highlightOnHover withTableBorder>
-				<Table.Thead>
-					<Table.Tr>
-						<Table.Th>Index</Table.Th>
-						<Table.Th>Item type Id</Table.Th>
-						<Table.Th>Name</Table.Th>
-						<Table.Th>Type</Table.Th>
-						<Table.Th>Created at</Table.Th>
-						<Table.Th>Disable</Table.Th>
-						<Table.Th>Action</Table.Th>
-					</Table.Tr>
-				</Table.Thead>
-				<Table.Tbody>{rows}</Table.Tbody>
-			</Table>
+			{
+				loading ?
+					<LoadingOverlayComponent /> :
+					customAttributesList.length === 0 ?
+						<NoDataFound /> :
+						<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
+							<BoxComponent mx="auto">
+								<PaperComponent>
+									<Table highlightOnHover>
+										<Table.Thead>
+											<Table.Tr>
+												{columns.map((item) =>
+													(<Table.Th key={item}>{item}</Table.Th>)
+												)}
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>{rows}</Table.Tbody>
+									</Table>
+								</PaperComponent>
+								<CenterComponent>
+									<PaginationComponent
+										total={10}
+										value={page}
+										onChange={setPage}
+									/>
+								</CenterComponent>
+							</BoxComponent>
+						</BoxComponent>
+			}
 
-			<AddCustomAttributeModal
-				isOpen={isCreateCustomAttributeModalOpen}
-				onClose={toggleCreateCustomAttributeModalOpen}
-			/>
-
-			<ActionCustomAttributeModal
-				isOpen={isActionCustomAttributeModalOpen}
-				onClose={() => setIsActionCustomAttributeModalOpen(false)}
-				setCallApi={setCallApi}
-				handleActionCustomAttribute={handleActionCustomAttribute}
-				customAttributeType={customAttributeType}
-				isDisable={isDisable}
-			/>
-		</main>
+			{openAddModal &&
+				<AddCustomAttributeModal
+					isOpen={openAddModal}
+					setCallApi={setCallApi}
+					customAttribute={customAttribute}
+					onClose={() => setOpenAddModal(false)}
+				/>
+			}
+		</MainComponent>
 	);
 };
 

@@ -462,6 +462,7 @@ export const deleteRoleApi = async (
 
 // custom-attribute api
 export const getAttributeApi = async (
+	query: string | undefined,
 	successCallback: (arg0: any) => void,
 	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
@@ -471,7 +472,8 @@ export const getAttributeApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(attributeAPIPath, {
+	const path = query === "" ? attributeAPIPath : `${attributeAPIPath}?${query}`;
+	const response = await makeGetRequest(path, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -622,6 +624,7 @@ export const deleteAttributeApi = async (
 
 // category api
 export const getCategoryApi = async (
+	query: string | undefined,
 	successCallback: (arg0: any) => void,
 	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
@@ -631,7 +634,8 @@ export const getCategoryApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(categoryAPIPath, {
+	const path = query === "" ? categoryAPIPath : `${categoryAPIPath}?${query}`;
+	const response = await makeGetRequest(path, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -780,8 +784,9 @@ export const deleteCategoryApi = async (
 	}
 };
 
-// Sub categery api
+// Sub category api
 export const getSubCategoryApi = async (
+	query: string | undefined,
 	successCallback: (arg0: any) => void,
 	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
@@ -791,7 +796,8 @@ export const getSubCategoryApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(subCategoryAPIPath, {
+	const path = query === "" ? subCategoryAPIPath : `${subCategoryAPIPath}?${query}`;
+	const response = await makeGetRequest(path, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1266,6 +1272,7 @@ export const deleteItemApi = async (
 
 // Add on api
 export const getAddOnApi = async (
+	query: string | undefined,
 	successCallback: (arg0: any) => void,
 	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
@@ -1275,7 +1282,8 @@ export const getAddOnApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(addOnAPIPath, {
+	const path = query === "" ? addOnAPIPath : `${addOnAPIPath}?${query}`;
+	const response = await makeGetRequest(path, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {

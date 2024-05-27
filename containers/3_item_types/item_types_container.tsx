@@ -9,22 +9,19 @@ import {
 	BoxComponent,
 	CenterComponent,
 	DashboardPageHeader,
-	GroupComponent, ImageComponent,
+	GroupComponent,
+	ImageComponent,
 	LoadingOverlayComponent,
-	MainComponent, PaginationComponent,
+	MainComponent,
+	NoDataFound,
+	PaginationComponent,
 	PaperComponent,
 	PopConfirmComponent,
 	PopConfirmType,
 	SortButtonComponentItemProps, TextComponent,
 } from "@/components";
 import { ItemTypeModel } from "@/models";
-import {
-	deleteItemTypeApi,
-	disableItemTypeApi,
-	formatDate,
-	getItemTypeApi,
-	imageUrl,
-} from "@/utils";
+import { deleteItemTypeApi, disableItemTypeApi, formatDate, getItemTypeApi, imageUrl } from "@/utils";
 import AddItemTypeModal from "@/containers/3_item_types/add_item_type_modal";
 
 const ItemTypesContainer = () => {
@@ -37,27 +34,29 @@ const ItemTypesContainer = () => {
 	const [searchValue, setSearchValue] = useState<string>("");
 	const [itemTypeName, setItemTypeName] = useState<string>("");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
+	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const [filter, setFilter] = useState<string | null>("item_type_id");
 	const [orderBy, setOrderBy] = useState<string>("item_type_id");
 	const [order, setOrder] = useState<string>("asc");
 	const [itemTypesList, setItemTypesList] = useState<ItemTypeModel[]>([]);
 	const [itemTypeIcon, setItemTypeIcon] = useState<string | undefined>("");
+
 	useEffect(() => {
-		getItemTypeApi(
-			`orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
-			(data: any) => {
-				setItemTypesList(data.item_types);
-				setTotal(data.item_types_count);
-				setLoading(false);
-			},
-			() => {
-				setLoading(false);
-			},
-			() => {
-				setLoading(false);
-			}
-		).then();
-	}, [page, callApi, orderBy, order]);
+			getItemTypeApi(
+				`orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+				(data: any) => {
+					setItemTypesList(data.item_types);
+					setTotal(data.item_types_count);
+					setLoading(false);
+				},
+				() => {
+					setLoading(false);
+				},
+				() => {
+					setLoading(false);
+				}
+			).then();
+	}, [filter, page, callApi]);
 
 	useEffect(() => {
 		if (searchValue) {
@@ -66,24 +65,21 @@ const ItemTypesContainer = () => {
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (query: string) => {
-		setLoading(true);
+		setSearchLoading(true);
 		if (query === "") {
-			setCallApi(true);
-			setLoading(false);
+			setSearchLoading(false);
 		} else {
 			getItemTypeApi(
 				`filter_type=${filter}&filter_query=${query}`,
 				(data: any) => {
 					setItemTypesList(data.item_types);
-					setCallApi(false);
-					setLoading(false);
+					setSearchLoading(false);
 				},
 				() => {
-					setCallApi(false);
-					setLoading(false);
+					setSearchLoading(false);
 				},
 				() => {
-					setCallApi(false);
+					setSearchLoading(false);
 				}
 			).then();
 			setLoading(false);
@@ -184,12 +180,12 @@ const ItemTypesContainer = () => {
 			<DashboardPageHeader
 				total={total}
 				title="Item Types"
-				idLabel="Item Type Id"
-				loading={loading}
-				idVariable="item_type_id"
 				setFilter={setFilter}
-				buttonTitle="Add Item Type"
+				idLabel="Item Type Id"
+				loading={searchLoading}
+				idVariable="item_type_id"
 				searchValue={searchValue}
+				buttonTitle="Add Item Type"
 				setSearchValue={setSearchValue}
 				onClick={() => handleAddOpenModal("", "", "")}
 				setOption={(option) => setFilter(option.value)}
@@ -203,13 +199,9 @@ const ItemTypesContainer = () => {
 
 			{
 				loading ?
-					<LoadingOverlayComponent
-						visible={loading}
-					/> :
+					<LoadingOverlayComponent /> :
 					itemTypesList.length === 0 ?
-						<CenterComponent>
-							<TextComponent text="No data found!" />
-						</CenterComponent> :
+						<NoDataFound /> :
 						<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
 							<BoxComponent mx="auto">
 								<PaperComponent>
@@ -226,9 +218,9 @@ const ItemTypesContainer = () => {
 								</PaperComponent>
 								<CenterComponent>
 									<PaginationComponent
+										total={10}
 										value={page}
 										onChange={setPage}
-										total={Math.ceil(total / 15)}
 									/>
 								</CenterComponent>
 							</BoxComponent>

@@ -21,35 +21,35 @@ interface Props {
     isOpen: boolean;
     onClose: () => void;
 	setCallApi: Dispatch<SetStateAction<boolean>>;
-	initialCatValue: string;
-	catId: string;
-	image: string | undefined;
+	initialCategoryValue: string | undefined;
+	categoryId: string | undefined;
+	categoryIcon: string | undefined;
 }
 
-const CreateCategoryModal = (props: Props) => {
+const AddCategoryModal = (props: Props) => {
 	const {
 		isOpen,
 		onClose,
 		setCallApi,
-		image,
-		initialCatValue,
-		catId,
+		categoryIcon,
+		initialCategoryValue,
+		categoryId,
 	} = props;
-	const [categoryName, setCategoryName] = useState<string>(initialCatValue);
+	const [categoryName, setCategoryName] = useState<string>(initialCategoryValue ?? "");
 	const [selectedFileToUpload, setSelectedFileToUpload] = useState<File | null>(null);
 	const [selectedFile, setSelectedFile] = useState<string | null>(null);
 	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
 	const [inputError, setInputError] = useState<string | null>(null);
-	const isEditModal: boolean = initialCatValue !== "";
+	const isEditModal: boolean = initialCategoryValue !== "";
 
 	useEffect(() => {
-		if (categoryName && image) {
-			const imgUrl = `${imageUrl}/${image}`;
+		if (categoryName && categoryIcon) {
+			const imgUrl = `${imageUrl}/${categoryIcon}`;
 			console.log("initialCatValue", categoryName);
 			setSelectedFile(imgUrl);
 			setInputError(null);
 		}
-	}, [categoryName, image]);
+	}, [categoryName, categoryIcon]);
 
 	const onChooseIconClick = () => {
 		if (fileInputTriggerRef) {
@@ -89,7 +89,7 @@ const CreateCategoryModal = (props: Props) => {
 			categoryData.append("icon_file", selectedFileToUpload);
 		}
 		categoryData.append("name", categoryName);
-		categoryData.append("id", catId);
+		categoryData.append("id", categoryId ?? "");
 
         try {
             await upsertCategoryApi(
@@ -187,4 +187,4 @@ const CreateCategoryModal = (props: Props) => {
 	);
 };
 
-export default CreateCategoryModal;
+export default AddCategoryModal;

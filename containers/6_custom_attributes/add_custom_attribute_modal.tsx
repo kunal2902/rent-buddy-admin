@@ -3,10 +3,13 @@
 import React, { useState } from "react";
 import { ButtonComponent, ModalComponent, SelectComponent, TextInputComponent } from "@/components";
 import { CustomAttributeTypeOptions } from "@/constants";
+import { CustomAttributeModel } from "@/models";
 
 interface Props {
 	isOpen: boolean;
 	onClose: () => void;
+	setCallApi: (arg0: boolean) => void;
+	customAttribute: CustomAttributeModel | undefined
 }
 
 const AddCustomAttributeModal = (props: Props) => {
