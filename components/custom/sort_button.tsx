@@ -10,9 +10,9 @@ import { appColorRGBA, getSurfaceColor, mantineRadius, useThemeProvider } from "
 
 export enum SortItemDirection {
 	// eslint-disable-next-line no-unused-vars
-	ascending = "Ascending",
+	ascending = "asc",
 	// eslint-disable-next-line no-unused-vars
-	descending = "Descending",
+	descending = "desc",
 }
 
 export interface SortButtonComponentItemProps {

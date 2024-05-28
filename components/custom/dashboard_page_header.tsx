@@ -1,16 +1,20 @@
 "use client";
 
-import { Loader } from "@mantine/core";
+import { Badge, Loader } from "@mantine/core";
 import { Plus } from "lucide-react";
 import React from "react";
+import { IoMdClose } from "react-icons/io";
 import {
 	ButtonComponent,
-	GroupComponent, MantineProviderComponent,
-	SelectComponent, SortButtonComponent,
+	GroupComponent,
+	MantineProviderComponent,
+	SelectComponent,
+	SortButtonComponent,
 	SortButtonComponentItemProps,
 	TextComponent,
 	TextInputComponent,
 	TitleComponent,
+	TooltipComponent,
 } from "@/components";
 import { coloredInputTheme, searchItems, sortItems } from "@/constants";
 import { appColorRGBA, getSurfaceColor, useThemeProvider } from "@/utils";
@@ -18,10 +22,12 @@ import { ComboBoxProps } from "@/types";
 
 export interface DashboardPageHeaderProps {
 	title: string,
+	total: number,
+	filter: string,
 	idLabel: string,
 	loading: boolean,
 	idVariable: string,
-	setFilter: (val: (string | null)) => void
+	setFilter: (val: (string)) => void
 	buttonTitle: string,
 	searchValue: string,
 	setSearchValue: (value: string) => void,
@@ -34,6 +40,8 @@ export interface DashboardPageHeaderProps {
 export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
 	const {
 		title,
+		total,
+		filter,
 		idLabel,
 		loading,
 		idVariable,
@@ -50,7 +58,14 @@ export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
 
 	return (
 		<GroupComponent className="m-3" align="center" justify="space-between">
-			<TitleComponent title={title} />
+			<GroupComponent align="center">
+				<TitleComponent title={title} />
+				{total && (
+					<TooltipComponent
+						label={`Total number of ${title}: ${total}`}><Badge>{total}</Badge>
+					</TooltipComponent>
+				)}
+			</GroupComponent>
 			<GroupComponent>
 
 				<MantineProviderComponent theme={coloredInputTheme(darkMode)}>
@@ -60,6 +75,7 @@ export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
 						size="sm"
 						data={searchItems(idLabel, idVariable)}
 						setValue={setFilter}
+						defaultValue={filter}
 						setOption={setOption}
 					/>
 				</MantineProviderComponent>
@@ -70,7 +86,10 @@ export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
 						value={searchValue}
 						setValue={setSearchValue}
 						placeholder="Search"
-						rightSection={loading && <Loader size={20} />}
+						rightSection={loading ? <Loader size={20} /> :
+							searchValue ? <IoMdClose size={20} onClick={() => setSearchValue("")} /> :
+								undefined
+						}
 					/>
 				</MantineProviderComponent>
 
@@ -79,14 +98,16 @@ export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
 					onSelected={onSortSelected}
 				/>
 
-				{showAddButton && <ButtonComponent
-					c={appColorRGBA}
-					color={getSurfaceColor(darkMode).backgroundColor}
-					onClick={onClick}
+				{showAddButton && (
+					<ButtonComponent
+						c={appColorRGBA}
+						color={getSurfaceColor(darkMode).backgroundColor}
+						onClick={onClick}
 				>
-					<Plus size={18} className="sm:mr-2 mr-0" />
-					<TextComponent text={buttonTitle} c={appColorRGBA} />
-				</ButtonComponent>}
+						<Plus size={18} className="sm:mr-2 mr-0" />
+						<TextComponent text={buttonTitle} c={appColorRGBA} />
+					</ButtonComponent>
+				)}
 			</GroupComponent>
 		</GroupComponent>
 	);

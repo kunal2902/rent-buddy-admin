@@ -13,8 +13,8 @@ export const searchItems = (idLabel: string, idVariable: string): Array<ComboBox
 		value: idVariable,
 	},
 	{
-		id: "added_by",
+		id: "created_by",
 		label: "Added By",
-		value: "added_by",
+		value: "created_by",
 	},
 ];

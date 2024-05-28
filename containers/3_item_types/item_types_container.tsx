@@ -26,58 +26,66 @@ import AddItemTypeModal from "@/containers/3_item_types/add_item_type_modal";
 
 const ItemTypesContainer = () => {
 	const [page, setPage] = useState<number>(1);
+	const [pageSize, setPageSize] = useState<number>(15);
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [loading, setLoading] = useState<boolean>(true);
+	const [total, setTotal] = useState<number>(0);
 	const [itemTypeId, setItemTypeId] = useState<string>("");
 	const [searchValue, setSearchValue] = useState<string>("");
 	const [itemTypeName, setItemTypeName] = useState<string>("");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
-	const [filter, setFilter] = useState<string | null>("item_type_id");
+	const [filter, setFilter] = useState<string>("name");
+	const [orderBy, setOrderBy] = useState<string>("item_type_id");
+	const [order, setOrder] = useState<string>("asc");
 	const [itemTypesList, setItemTypesList] = useState<ItemTypeModel[]>([]);
 	const [itemTypeIcon, setItemTypeIcon] = useState<string | undefined>("");
 
 	useEffect(() => {
-			getItemTypeApi(
-				`orderBy=${filter}&page=${page}&order=asc`,
-				(data: any) => {
-					setItemTypesList(data.item_types);
-					setLoading(false);
-				},
-				() => {
-					setLoading(false);
-				},
-				() => {
-					setLoading(false);
-				}
-			).then();
-	}, [filter, page, callApi]);
+		initState().then();
+	}, [filter, page, callApi, orderBy, order]);
+
+	const initState = async () => {
+		await getItemTypeApi(
+			`orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			(data: any) => {
+				setItemTypesList(data.item_types);
+				setTotal(data.item_types_count);
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			}
+		);
+	};
 
 	useEffect(() => {
 		if (searchValue) {
 			handleSearch(searchValue);
+		} else {
+			setSearchLoading(false);
+			initState().then();
 		}
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (query: string) => {
 		setSearchLoading(true);
-		if (query === "") {
-			setSearchLoading(false);
-		} else {
-			getItemTypeApi(
-				`name=${query}`,
-				(data: any) => {
-					setItemTypesList(data.item_types);
-					setSearchLoading(false);
-				},
-				() => {
-					setSearchLoading(false);
-				},
-				() => {
-					setSearchLoading(false);
-				}
-			).then();
-		}
+		getItemTypeApi(
+			`filter_type=${filter}&filter_query=${query}`,
+			(data: any) => {
+				setItemTypesList(data.item_types);
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			}
+		).then();
 	}, 500);
 
 	const handleAddOpenModal = (id: string, name: string, icon: string | undefined) => {
@@ -92,26 +100,26 @@ const ItemTypesContainer = () => {
 			await disableItemTypeApi(
 				id,
 				() => {
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				}
 			);
 		} else {
 			await deleteItemTypeApi(
 				id,
 				() => {
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				}
 			);
 		}
@@ -172,7 +180,9 @@ const ItemTypesContainer = () => {
 	return (
 		<MainComponent>
 			<DashboardPageHeader
+				total={total}
 				title="Item Types"
+				filter={filter}
 				setFilter={setFilter}
 				idLabel="Item Type Id"
 				loading={searchLoading}
@@ -183,7 +193,8 @@ const ItemTypesContainer = () => {
 				onClick={() => handleAddOpenModal("", "", "")}
 				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
-					console.log(selected.label);
+					setOrderBy(selected.value);
+					setOrder(selected.direction);
 				}}
 			/>
 
@@ -208,9 +219,9 @@ const ItemTypesContainer = () => {
 								</PaperComponent>
 								<CenterComponent>
 									<PaginationComponent
-										total={10}
 										value={page}
 										onChange={setPage}
+										total={Math.ceil(total / 15)}
 									/>
 								</CenterComponent>
 							</BoxComponent>

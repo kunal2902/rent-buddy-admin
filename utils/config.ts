@@ -11,7 +11,7 @@ import moment from "moment";
 
 /** Global variables */
 export const isDebug: boolean = false;
-export const isProduction: boolean = true;
+export const isProduction: boolean = false;
 export const appName: string = "NCA CRM";
 export const appTitle: string = "NCA CRM";
 export const appDescription: string = "NCM ";

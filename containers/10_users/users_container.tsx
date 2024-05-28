@@ -10,17 +10,22 @@ import {
 	CenterComponent,
 	DashboardPageHeader,
 	GroupComponent,
-	LoadingOverlayComponent, PaginationComponent,
+	LoadingOverlayComponent,
+	MainComponent,
+	NoDataFound,
+	PaginationComponent,
 	PaperComponent,
 	PopConfirmComponent,
 	PopConfirmType,
 	SortButtonComponentItemProps,
-	MainComponent } from "@/components";
+} from "@/components";
 import { UserModel } from "@/models";
-import { deleteUserApi, disableUserApi, formatDate, getUserId, getUsersApi } from "@/utils";
+import { deleteUserApi, disableUserApi, formatDate, getItemTypeApi, getUserId, getUsersApi } from "@/utils";
 import AddUserModal from "./add_user_modal";
 
 const UsersContainer = () => {
+	const [total, setTotal] = useState<number>(0);
+	const [pageSize, setPageSize] = useState<number>(15);
 	const [userId, setUserId] = useState("");
 	const [page, setPage] = useState<number>(1);
 	const [userName, setUserName] = useState<string>("");
@@ -28,54 +33,58 @@ const UsersContainer = () => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [searchValue, setSearchValue] = useState<string>("");
 	const [usersList, setUsersList] = useState<UserModel[]>([]);
-	const [filter, setFilter] = useState<string | null>("user_id");
+	const [filter, setFilter] = useState<string>("name");
+	const [orderBy, setOrderBy] = useState<string>("user_id");
+	const [order, setOrder] = useState<string>("asc");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
+	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 
 	useEffect(() => {
-		if (callApi) {
-			getUsersApi(
-				`orderBy=${filter}&page=${page}&order=asc`,
-				(data: any) => {
-					setUsersList(data.users);
-					setCallApi(false);
-				},
-				() => {
-					setCallApi(false);
-				},
-				() => {
-					setCallApi(false);
-				}
-			).then();
-		}
-	}, [filter, page, callApi]);
+		initState().then();
+	}, [filter, page, callApi, orderBy, order]);
+
+	const initState = async () => {
+		await getUsersApi(
+			`orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			(data: any) => {
+				setUsersList(data.users);
+				setTotal(data.users.length);
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			}
+		);
+	};
 
 	useEffect(() => {
 		if (searchValue) {
 			handleSearch(searchValue);
+		} else {
+			setSearchLoading(false);
+			initState().then();
 		}
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (query: string) => {
 		setLoading(true);
-		if (query === "") {
-			setCallApi(true);
-			setLoading(false);
-		} else {
-			getUsersApi(
-				`name=${query}`,
-				(data: any) => {
-					setUsersList(data.users);
-					setCallApi(false);
-				},
-				() => {
-					setCallApi(false);
-				},
-				() => {
-					setCallApi(false);
-				}
-			).then();
-			setLoading(false);
-		}
+		getUsersApi(
+			`name=${query}`,
+			(data: any) => {
+				setUsersList(data.users);
+				setCallApi(false);
+			},
+			() => {
+				setCallApi(false);
+			},
+			() => {
+				setCallApi(false);
+			}
+		).then();
+		setLoading(false);
 	}, 500);
 
 	const handleAddOpenModal = (id: string, name: string) => {
@@ -89,26 +98,26 @@ const UsersContainer = () => {
 			await disableUserApi(
 				id,
 				() => {
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				}
 			);
 		} else {
 			await deleteUserApi(
 				id,
 				() => {
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				}
 			);
 		}
@@ -144,7 +153,7 @@ const UsersContainer = () => {
 						isDisabled={element.is_disabled}
 						actionName={element.is_disabled ? "enable" : "disable"}
 						onConfirm={async () => handleAction(element.user_id, "disable")}
-				/>
+					/>
 				}
 			</Table.Td>
 			<Table.Td w={110}>
@@ -155,16 +164,13 @@ const UsersContainer = () => {
 							entityName="user"
 							actionName="delete"
 							onConfirm={async () => handleAction(element.user_id, "delete")}
-					/>
+						/>
 					}
-					{
-						getUserId() !== element.user_id &&
-						<ActionIconComponent
-							onClick={() => handleAddOpenModal(element.user_id, element.name)}
-							size="md">
-							<MdOutlineEdit size={18} />
-						</ActionIconComponent>
-					}
+					<ActionIconComponent
+						onClick={() => handleAddOpenModal(element.user_id, element.name)}
+						size="md">
+						<MdOutlineEdit size={18} />
+					</ActionIconComponent>
 				</GroupComponent>
 			</Table.Td>
 		</Table.Tr>
@@ -173,9 +179,11 @@ const UsersContainer = () => {
 	return (
 		<MainComponent>
 			<DashboardPageHeader
+				total={total}
 				title="Users"
+				filter={filter}
 				idLabel="User Id"
-				loading={loading}
+				loading={searchLoading}
 				idVariable="user_id"
 				setFilter={setFilter}
 				buttonTitle="Add User"
@@ -186,38 +194,39 @@ const UsersContainer = () => {
 				}}
 				onClick={() => handleAddOpenModal("", "")}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
-					console.log(selected.label);
+					setOrderBy(selected.value);
+					setOrder(selected.direction);
 				}}
 			/>
 
 			{
-				usersList.length === 0 ?
-					<LoadingOverlayComponent
-						visible={usersList.length === 0}
-					/> :
-					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
-						<BoxComponent mx="auto">
-							<PaperComponent>
-								<Table highlightOnHover>
-									<Table.Thead>
-										<Table.Tr>
-											{columns.map((item) =>
-												(<Table.Th key={item}>{item}</Table.Th>)
-											)}
-										</Table.Tr>
-									</Table.Thead>
-									<Table.Tbody>{rows}</Table.Tbody>
-								</Table>
-							</PaperComponent>
-							<CenterComponent>
-								<PaginationComponent
-									total={10}
-									value={page}
-									onChange={setPage}
-								/>
-							</CenterComponent>
+				loading ?
+					<LoadingOverlayComponent /> :
+					usersList.length === 0 ?
+						<NoDataFound /> :
+						<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
+							<BoxComponent mx="auto">
+								<PaperComponent>
+									<Table highlightOnHover>
+										<Table.Thead>
+											<Table.Tr>
+												{columns.map((item) =>
+													(<Table.Th key={item}>{item}</Table.Th>)
+												)}
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>{rows}</Table.Tbody>
+									</Table>
+								</PaperComponent>
+								<CenterComponent>
+									<PaginationComponent
+										value={page}
+										onChange={setPage}
+										total={Math.ceil(total / 15)}
+									/>
+								</CenterComponent>
+							</BoxComponent>
 						</BoxComponent>
-					</BoxComponent>
 			}
 
 			{openAddModal &&
