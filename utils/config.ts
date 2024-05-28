@@ -11,7 +11,7 @@ import moment from "moment";
 
 /** Global variables */
 export const isDebug: boolean = false;
-export const isProduction: boolean = true;
+export const isProduction: boolean = false;
 export const appName: string = "NCA CRM";
 export const appTitle: string = "NCA CRM";
 export const appDescription: string = "NCM ";
@@ -72,7 +72,8 @@ export const apiUrl: string = process.env.NODE_ENV === "production" ||
 isProduction ?
 	"https://nca-crm-api-peggi.ondigitalocean.app/api/v1" :
 	"http://localhost:8000/api/v1";
-export const imageUrl: string = process.env.NODE_ENV === "production" ?
+export const imageUrl: string = process.env.NODE_ENV === "production" ||
+isProduction ?
   "https://nca-crm-api-peggi.ondigitalocean.app/image" :
   "http://localhost:8000/image";
 export const loginAPIPath: string = `${apiUrl}/auth/login`;

@@ -25,21 +25,30 @@ import { deleteTagApi, disableTagApi, formatDate, getTagApi } from "@/utils";
 
 const TagsContainer = () => {
 	const [page, setPage] = useState<number>(1);
+	const [pageSize, setPageSize] = useState<number>(15);
 	const [tagId, setTagId] = useState<string>("");
 	const [tagName, setTagName] = useState<string>("");
 	const [callApi, setCallApi] = useState<boolean>(true);
+	const [total, setTotal] = useState<number>(0);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const [searchValue, setSearchValue] = useState<string>("");
+	const [filter, setFilter] = useState<string>("name");
+	const [orderBy, setOrderBy] = useState<string>("tag_id");
+	const [order, setOrder] = useState<string>("asc");
 	const [tagsList, setTagsList] = useState<TagModel[]>([]);
-	const [filter, setFilter] = useState<string | null>("tag_id");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 
 	useEffect(() => {
-		getTagApi(
-			`orderBy=${filter}&page=${page}&order=asc`,
+		initState().then();
+	}, [filter, page, callApi, orderBy, order]);
+
+	const initState = async () => {
+		await getTagApi(
+			`orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
 				setTagsList(data.tags);
+				setTotal(data.tags_count);
 				setLoading(false);
 			},
 			() => {
@@ -48,34 +57,33 @@ const TagsContainer = () => {
 			() => {
 				setLoading(false);
 			}
-		).then();
-	}, [filter, page, callApi]);
+		);
+	};
 
 	useEffect(() => {
 		if (searchValue) {
 			handleSearch(searchValue);
+		} else {
+			setSearchLoading(false);
+			initState().then();
 		}
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (query: string) => {
 		setSearchLoading(true);
-		if (query === "") {
-			setSearchLoading(false);
-		} else {
-			getTagApi(
-				`name=${query}`,
-				(data: any) => {
-					setTagsList(data.tags);
-					setSearchLoading(false);
-				},
-				() => {
-					setSearchLoading(false);
-				},
-				() => {
-					setSearchLoading(false);
-				}
-			).then();
-		}
+		getTagApi(
+			`filter_type=${filter}&filter_query=${query}`,
+			(data: any) => {
+				setTagsList(data.tags);
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			}
+		).then();
 	}, 500);
 
 	const handleAddOpenModal = (id: string, name: string) => {
@@ -89,26 +97,26 @@ const TagsContainer = () => {
 			await disableTagApi(
 				id,
 				() => {
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				}
 			);
 		} else {
 			await deleteTagApi(
 				id,
 				() => {
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				}
 			);
 		}
@@ -158,7 +166,9 @@ const TagsContainer = () => {
 	return (
 		<MainComponent>
 			<DashboardPageHeader
+				total={total}
 				title="Tags"
+				filter={filter}
 				idLabel="Tag Id"
 				idVariable="tag_id"
 				setFilter={setFilter}
@@ -169,7 +179,8 @@ const TagsContainer = () => {
 				onClick={() => handleAddOpenModal("", "")}
 				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
-					console.log(selected.label);
+					setOrderBy(selected.value);
+					setOrder(selected.direction);
 				}}
 			/>
 
@@ -194,9 +205,9 @@ const TagsContainer = () => {
 								</PaperComponent>
 								<CenterComponent>
 									<PaginationComponent
-										total={10}
 										value={page}
 										onChange={setPage}
+										total={Math.ceil(total / 15)}
 									/>
 								</CenterComponent>
 							</BoxComponent>

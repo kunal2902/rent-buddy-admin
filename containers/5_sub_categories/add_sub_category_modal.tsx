@@ -22,9 +22,9 @@ interface Props {
 	isOpen: boolean;
 	onClose: () => void;
 	setCallApi: Dispatch<SetStateAction<boolean>>;
-	id: string | undefined;
-	name: string | undefined;
-	categoryName: string | undefined;
+	initialSubCategoryValue: string;
+	subCategoryId: string;
+	initialCategoryIdValue: string;
 	icon: string | undefined;
 }
 
@@ -33,17 +33,28 @@ const AddSubCategoryModal = (props: Props) => {
 		isOpen,
 		onClose,
 		setCallApi,
-		id,
-		name,
-		categoryName,
+		initialSubCategoryValue,
+		subCategoryId,
+		initialCategoryIdValue,
 		icon,
 	} = props;
-	const [subCategoryName, setSubCategoryName] = useState<string>("");
+	console.log("initialSubCategoryValue", initialSubCategoryValue);
+	const [subCategoryName, setSubCategoryName] = useState<string>(initialSubCategoryValue);
 	const [selectedFileToUpload, setSelectedFileToUpload] = useState<File | null>(null);
 	const [selectedFile, setSelectedFile] = useState<string | null>(null);
 	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
 	const [categories, setCategories] = useState<any>([]);
-	const [catId, setCatId] = useState<string | null>("");
+	const [inputError, setInputError] = useState<string | null>(null);
+	const [categoryId, setCategoryId] = useState<string>(initialCategoryIdValue);
+	const isEditModal: boolean = initialSubCategoryValue !== "";
+
+	useEffect(() => {
+		if (subCategoryName && icon && subCategoryId) {
+			const imgUrl = `${imageUrl}/${icon}`;
+			setSelectedFile(imgUrl);
+			setInputError(null);
+		}
+	}, [subCategoryName, icon, subCategoryId]);
 
 	useEffect(() => {
 		getCategoryApi("",
@@ -66,13 +77,6 @@ const AddSubCategoryModal = (props: Props) => {
 				setCallApi(false);
 			}).then();
 	}, []);
-
-	useEffect(() => {
-		if (name && icon) {
-			const imgUrl = `${imageUrl}/${icon}`;
-			setSelectedFile(imgUrl);
-		}
-	}, [name, icon]);
 
 	const onChooseIconClick = () => {
 		if (fileInputTriggerRef) {
@@ -103,13 +107,18 @@ const AddSubCategoryModal = (props: Props) => {
 
 	const handleSubmitSubCat = async (event: React.FormEvent) => {
 		event.preventDefault();
+
+		if (!subCategoryName) {
+			setInputError("Please enter the name first");
+		}
+
 		const subCatData = new FormData();
 		if (selectedFileToUpload) {
 			subCatData.append("icon_file", selectedFileToUpload);
 		}
 		subCatData.append("name", subCategoryName);
-		subCatData.append("category_id", catId ?? "");
-		subCatData.append("sub_category_id", id ?? "");
+		subCatData.append("category_id", categoryId);
+		subCatData.append("id", subCategoryId);
 		try {
 			await upsertSubCategoryApi(
 				subCatData,
@@ -133,7 +142,7 @@ const AddSubCategoryModal = (props: Props) => {
 			opened={isOpen}
 			onClose={onClose}
 			className="border-grey-800"
-			title={<TitleComponent title={props.id ? "Edit sub-category" : "New sub-category"} />}
+			title={<TitleComponent title={isEditModal ? "Edit Sub Category" : "New Sub Category"} />}
 		>
 
 			<GroupComponent>
@@ -200,8 +209,8 @@ const AddSubCategoryModal = (props: Props) => {
 					placeholder="Select category"
 					data={categories}
 					clearable
-					value={catId}
-					setValue={setCatId}
+					value={categoryId}
+					setValue={setCategoryId}
 					checkIconPosition="right"
 				/>
 			</GroupComponent>

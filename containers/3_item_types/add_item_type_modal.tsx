@@ -27,7 +27,14 @@ interface Props {
 }
 
 const AddItemTypeModal: React.FC<Props> = (props: Props) => {
-	const { isOpen, onClose, setCallApi, initialItemTypeValue, itemTypeId, icon } = props;
+	const {
+		isOpen,
+		onClose,
+		setCallApi,
+		initialItemTypeValue,
+		itemTypeId,
+		icon,
+	} = props;
 	const [itemTypeName, setItemTypeName] = useState<string>(initialItemTypeValue);
 	const [selectedFileToUpload, setSelectedFileToUpload] = useState<File | null>(null);
 	const [selectedFile, setSelectedFile] = useState<string | null>(null);

@@ -18,7 +18,7 @@ import {
 	PaperComponent,
 	PopConfirmComponent,
 	PopConfirmType,
-	SortButtonComponentItemProps, TextComponent,
+	SortButtonComponentItemProps,
 } from "@/components";
 import { ItemTypeModel } from "@/models";
 import { deleteItemTypeApi, disableItemTypeApi, formatDate, getItemTypeApi, imageUrl } from "@/utils";
@@ -35,55 +35,57 @@ const ItemTypesContainer = () => {
 	const [itemTypeName, setItemTypeName] = useState<string>("");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
-	const [filter, setFilter] = useState<string | null>("item_type_id");
+	const [filter, setFilter] = useState<string>("name");
 	const [orderBy, setOrderBy] = useState<string>("item_type_id");
 	const [order, setOrder] = useState<string>("asc");
 	const [itemTypesList, setItemTypesList] = useState<ItemTypeModel[]>([]);
 	const [itemTypeIcon, setItemTypeIcon] = useState<string | undefined>("");
 
 	useEffect(() => {
-			getItemTypeApi(
-				`orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
-				(data: any) => {
-					setItemTypesList(data.item_types);
-					setTotal(data.item_types_count);
-					setLoading(false);
-				},
-				() => {
-					setLoading(false);
-				},
-				() => {
-					setLoading(false);
-				}
-			).then();
-	}, [filter, page, callApi]);
+		initState().then();
+	}, [filter, page, callApi, orderBy, order]);
+
+	const initState = async () => {
+		await getItemTypeApi(
+			`orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			(data: any) => {
+				setItemTypesList(data.item_types);
+				setTotal(data.item_types_count);
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			}
+		);
+	};
 
 	useEffect(() => {
 		if (searchValue) {
 			handleSearch(searchValue);
+		} else {
+			setSearchLoading(false);
+			initState().then();
 		}
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (query: string) => {
 		setSearchLoading(true);
-		if (query === "") {
-			setSearchLoading(false);
-		} else {
-			getItemTypeApi(
-				`filter_type=${filter}&filter_query=${query}`,
-				(data: any) => {
-					setItemTypesList(data.item_types);
-					setSearchLoading(false);
-				},
-				() => {
-					setSearchLoading(false);
-				},
-				() => {
-					setSearchLoading(false);
-				}
-			).then();
-			setLoading(false);
-		}
+		getItemTypeApi(
+			`filter_type=${filter}&filter_query=${query}`,
+			(data: any) => {
+				setItemTypesList(data.item_types);
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			}
+		).then();
 	}, 500);
 
 	const handleAddOpenModal = (id: string, name: string, icon: string | undefined) => {
@@ -180,6 +182,7 @@ const ItemTypesContainer = () => {
 			<DashboardPageHeader
 				total={total}
 				title="Item Types"
+				filter={filter}
 				setFilter={setFilter}
 				idLabel="Item Type Id"
 				loading={searchLoading}
@@ -190,10 +193,8 @@ const ItemTypesContainer = () => {
 				onClick={() => handleAddOpenModal("", "", "")}
 				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
-					console.log(selected.value, selected.direction);
 					setOrderBy(selected.value);
 					setOrder(selected.direction);
-					setCallApi(true);
 				}}
 			/>
 
@@ -218,9 +219,9 @@ const ItemTypesContainer = () => {
 								</PaperComponent>
 								<CenterComponent>
 									<PaginationComponent
-										total={10}
 										value={page}
 										onChange={setPage}
+										total={Math.ceil(total / 15)}
 									/>
 								</CenterComponent>
 							</BoxComponent>

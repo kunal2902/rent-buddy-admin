@@ -8,7 +8,7 @@ import { ComboBoxProps } from "@/types";
 /** Props list of Mantine's Select component - https://mantine.dev/core/select/?t=props */
 export interface SelectComponentProps extends SelectProps {
 	setOption?: (option: ComboBoxProps) => void;
-	setValue: (val: string | null) => void;
+	setValue: (val: string) => void;
 	data: Array<ComboBoxProps>;
 }
 

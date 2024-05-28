@@ -21,6 +21,10 @@ export default withBundleAnalyzer({
 			{
 				protocol: "https",
 				hostname: "source.unsplash.com"
+			},
+			{
+				protocol: "https",
+				hostname: "nca-crm-api-peggi.ondigitalocean.app"
 			}
 		]
 	}

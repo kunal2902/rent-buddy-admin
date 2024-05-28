@@ -24,32 +24,41 @@ import { deleteAddOnApi, disableAddOnApi, formatDate, getAddOnApi } from "@/util
 
 const AddOnsContainer = () => {
 	const [page, setPage] = useState<number>(1);
+	const [pageSize, setPageSize] = useState<number>(15);
 	const [addOnId, setAddOnId] = useState<string>("");
 	const [addOnName, setAddOnName] = useState<string>("");
 	const [addOnPrice, setAddOnPrice] = useState<string>("");
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [loading, setLoading] = useState<boolean>(true);
+	const [total, setTotal] = useState<number>(0);
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const [searchValue, setSearchValue] = useState<string>("");
 	const [addOnsList, setAddOnsList] = useState<AddOnModel[]>([]);
-	const [filter, setFilter] = useState<string | null>("add_on_id");
+	const [filter, setFilter] = useState<string>("name");
+	const [orderBy, setOrderBy] = useState<string>("add_on_id");
+	const [order, setOrder] = useState<string>("asc");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 
 	useEffect(() => {
-			getAddOnApi(
-				`orderBy=${filter}&page=${page}&order=asc`,
-				(data: any) => {
-					setAddOnsList(data.add_ons);
-					setLoading(false);
-				},
-				() => {
-					setLoading(false);
-				},
-				() => {
-					setLoading(false);
-				}
-			).then();
-	}, [filter, page, callApi]);
+		initState().then();
+	}, [filter, page, callApi, orderBy, order]);
+
+	const initState = async () => {
+		await getAddOnApi(
+			`orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			(data: any) => {
+				setAddOnsList(data.add_ons);
+				setTotal(data.add_ons_count);
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			}
+		);
+	};
 
 	useEffect(() => {
 		if (searchValue) {
@@ -59,23 +68,19 @@ const AddOnsContainer = () => {
 
 	const handleSearch = useDebouncedCallback(async (query: string) => {
 		setSearchLoading(true);
-		if (query === "") {
-			setSearchLoading(false);
-		} else {
-			getAddOnApi(
-				`name=${query}`,
-				(data: any) => {
-					setAddOnsList(data.add_ons);
-					setSearchLoading(false);
-				},
-				() => {
-					setSearchLoading(false);
-				},
-				() => {
-					setSearchLoading(false);
-				}
-			).then();
-		}
+		getAddOnApi(
+			`name=${query}`,
+			(data: any) => {
+				setAddOnsList(data.add_ons);
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			}
+		).then();
 	}, 500);
 
 	const handleAddOpenModal = (id: string, name: string, price: string) => {
@@ -90,26 +95,26 @@ const AddOnsContainer = () => {
 			await disableAddOnApi(
 				id,
 				() => {
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				}
 			);
 		} else {
 			await deleteAddOnApi(
 				id,
 				() => {
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				}
 			);
 		}
@@ -163,7 +168,9 @@ const AddOnsContainer = () => {
 	return (
 		<MainComponent>
 			<DashboardPageHeader
-				title="AddOns"
+				total={total}
+				title="Add Ons"
+				filter={filter}
 				idLabel="AddOn Id"
 				idVariable="addOn_id"
 				setFilter={setFilter}
@@ -174,7 +181,8 @@ const AddOnsContainer = () => {
 				onClick={() => handleAddOpenModal("", "", "")}
 				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
-					console.log(selected.label);
+					setOrderBy(selected.value);
+					setOrder(selected.direction);
 				}}
 			/>
 
@@ -199,10 +207,10 @@ const AddOnsContainer = () => {
 								</PaperComponent>
 								<CenterComponent>
 									<PaginationComponent
-										total={10}
 										value={page}
 										onChange={setPage}
-								/>
+										total={Math.ceil(total / 15)}
+									/>
 								</CenterComponent>
 							</BoxComponent>
 						</BoxComponent>

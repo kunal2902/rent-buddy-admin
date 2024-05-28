@@ -21,29 +21,44 @@ import {
 	SortButtonComponentItemProps,
 } from "@/components";
 import { SubCategoryModel } from "@/models";
-import { deleteSubCategoryApi, disableSubCategoryApi, formatDate, getSubCategoryApi, imageUrl } from "@/utils";
+import {
+	deleteSubCategoryApi,
+	disableSubCategoryApi,
+	formatDate,
+	getSubCategoryApi,
+	imageUrl,
+} from "@/utils";
 import AddSubCategoryModal from "@/containers/5_sub_categories/add_sub_category_modal";
 
 const SubCategoriesContainer = () => {
+	const [pageSize, setPageSize] = useState<number>(15);
 	const [page, setPage] = useState<number>(1);
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [loading, setLoading] = useState<boolean>(true);
+	const [total, setTotal] = useState<number>(0);
 	const [searchValue, setSearchValue] = useState<string>("");
-	const [categoryName, setCategoryName] = useState<string>("");
+	const [categoryId, setCategoryId] = useState<string>("");
 	const [subCategoryId, setSubCategoryId] = useState<string>("");
 	const [subCategoryName, setSubCategoryName] = useState<string>("");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
+	const [filter, setFilter] = useState<string>("name");
+	const [orderBy, setOrderBy] = useState<string>("sub_category_id");
+	const [order, setOrder] = useState<string>("asc");
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
-	const [filter, setFilter] = useState<string | null>("sub_category_id");
 	const [subCatgoryIcon, setSubCategoryIcon] = useState<string | undefined>("");
 	const [subCategoryList, setSubCategoryList] = useState<SubCategoryModel[]>([]);
 
 	useEffect(() => {
-		getSubCategoryApi(
-			`orderBy=${filter}&page=${page}&order=asc`,
+		initState().then();
+	}, [filter, page, callApi, orderBy, order]);
+
+	const initState = async () => {
+		await getSubCategoryApi(
+			`orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
-				setLoading(false);
 				setSubCategoryList(data.sub_categories);
+				setTotal(data.sub_categories_count);
+				setLoading(false);
 			},
 			() => {
 				setLoading(false);
@@ -52,45 +67,44 @@ const SubCategoriesContainer = () => {
 				setLoading(false);
 			}
 		).then();
-	}, [filter, page, callApi]);
+	};
 
 	useEffect(() => {
 		if (searchValue) {
 			handleSearch(searchValue);
+		} else {
+			setSearchLoading(false);
+			initState().then();
 		}
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (query: string) => {
-		setSearchLoading(true);
-		if (query === "") {
-			setSearchLoading(false);
-		} else {
-			getSubCategoryApi(
-				`name=${query}`,
-				(data: any) => {
-					setSubCategoryList(data.sub_categories);
-					setSearchLoading(false);
-				},
-				() => {
-					setSearchLoading(false);
-				},
-				() => {
-					setSearchLoading(false);
-				}
-			).then();
-		}
+	setSearchLoading(true);
+		getSubCategoryApi(
+			`name=${query}`,
+			(data: any) => {
+				setSubCategoryList(data.sub_categories);
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			}
+		).then();
 	}, 500);
 
 	const handleAddOpenModal = (
 		id: string,
 		name: string,
 		icon: string | undefined,
-		catName: string
+		catId: string
 	) => {
 		setSubCategoryId(id);
 		setSubCategoryName(name);
 		setSubCategoryIcon(icon);
-		setCategoryName(catName);
+		setCategoryId(catId);
 		setOpenAddModal(true);
 	};
 
@@ -99,26 +113,26 @@ const SubCategoriesContainer = () => {
 			await disableSubCategoryApi(
 				id,
 				() => {
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				}
 			);
 		} else {
 			await deleteSubCategoryApi(
 				id,
 				() => {
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				}
 			);
 		}
@@ -170,7 +184,7 @@ const SubCategoriesContainer = () => {
 							element.sub_category_id,
 							element.name,
 							element.icon,
-							element.category.name
+							element.category_id
 						)}
 						size="md">
 						<MdOutlineEdit size={18} />
@@ -183,8 +197,10 @@ const SubCategoriesContainer = () => {
 	return (
 		<MainComponent>
 			<DashboardPageHeader
-				setFilter={setFilter}
+				filter={filter}
 				title="Sub-categories"
+				total={total}
+				setFilter={setFilter}
 				loading={searchLoading}
 				idLabel="Sub-Category Id"
 				searchValue={searchValue}
@@ -194,7 +210,8 @@ const SubCategoriesContainer = () => {
 				onClick={() => handleAddOpenModal("", "", "", "")}
 				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
-					console.log(selected.label);
+					setOrderBy(selected.value);
+					setOrder(selected.direction);
 				}}
 			/>
 
@@ -219,9 +236,9 @@ const SubCategoriesContainer = () => {
 								</PaperComponent>
 								<CenterComponent>
 									<PaginationComponent
-										total={10}
 										value={page}
 										onChange={setPage}
+										total={Math.ceil(total / 15)}
 									/>
 								</CenterComponent>
 							</BoxComponent>
@@ -230,12 +247,12 @@ const SubCategoriesContainer = () => {
 
 			{openAddModal &&
 				<AddSubCategoryModal
-					id={subCategoryId}
+					subCategoryId={subCategoryId}
 					icon={subCatgoryIcon}
 					isOpen={openAddModal}
-					name={subCategoryName}
+					initialSubCategoryValue={subCategoryName}
 					setCallApi={setCallApi}
-					categoryName={categoryName}
+					initialCategoryIdValue={categoryId}
 					onClose={() => setOpenAddModal(false)}
 				/>
 			}

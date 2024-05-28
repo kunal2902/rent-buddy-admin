@@ -21,24 +21,34 @@ import {
 } from "@/components";
 import AddCustomAttributeModal from "./add_custom_attribute_modal";
 import { CustomAttributeModel } from "@/models";
-import { deleteAttributeApi, disableAttributeApi, formatDate, getAttributeApi } from "@/utils";
+import { deleteAttributeApi, disableAttributeApi, formatDate, getAttributeApi, getItemTypeApi } from "@/utils";
 
 const CustomAttributesContainer = () => {
 	const [page, setPage] = useState<number>(1);
+	const [pageSize, setPageSize] = useState<number>(15);
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [loading, setLoading] = useState<boolean>(true);
+	const [total, setTotal] = useState<number>(0);
 	const [searchValue, setSearchValue] = useState<string>("");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
-	const [filter, setFilter] = useState<string | null>("custom_attribute_id");
+	const [filter, setFilter] = useState<string>("name");
+	const [orderBy, setOrderBy] = useState<string>("custom_attribute_id");
+	const [order, setOrder] = useState<string>("asc");
+	console.log("order", order);
 	const [customAttribute, setCustomAttribute] = useState<CustomAttributeModel | undefined>();
 	const [customAttributesList, setCustomAttributesList] = useState<CustomAttributeModel[]>([]);
 
 	useEffect(() => {
-		getAttributeApi(
-			`orderBy=${filter}&page=${page}&order=asc`,
+		initState().then();
+	}, [filter, page, callApi, orderBy, order]);
+
+	const initState = async () => {
+		await getAttributeApi(
+			`orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
 				setCustomAttributesList(data.custom_attributes);
+				setTotal(data.custom_attributes_count);
 				setLoading(false);
 			},
 			() => {
@@ -47,34 +57,33 @@ const CustomAttributesContainer = () => {
 			() => {
 				setLoading(false);
 			}
-		).then();
-	}, [filter, page, callApi]);
+		);
+	};
 
 	useEffect(() => {
 		if (searchValue) {
 			handleSearch(searchValue);
+		} else {
+			setSearchLoading(false);
+			initState().then();
 		}
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (query: string) => {
 		setSearchLoading(true);
-		if (query === "") {
-			setSearchLoading(false);
-		} else {
-			getAttributeApi(
-				`name=${query}`,
-				(data: any) => {
-					setCustomAttributesList(data.custom_attributes);
-					setSearchLoading(false);
-				},
-				() => {
-					setSearchLoading(false);
-				},
-				() => {
-					setSearchLoading(false);
-				}
-			).then();
-		}
+		getAttributeApi(
+			`filter_type=${filter}&filter_query=${query}`,
+			(data: any) => {
+				setCustomAttributesList(data.custom_attributes);
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			}
+		).then();
 	}, 500);
 
 	const handleAddOpenModal = (model?: CustomAttributeModel) => {
@@ -87,26 +96,26 @@ const CustomAttributesContainer = () => {
 			await disableAttributeApi(
 				id,
 				() => {
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				}
 			);
 		} else {
 			await deleteAttributeApi(
 				id,
 				() => {
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				}
 			);
 		}
@@ -156,7 +165,9 @@ const CustomAttributesContainer = () => {
 	return (
 		<MainComponent>
 			<DashboardPageHeader
+				total={total}
 				setFilter={setFilter}
+				filter={filter}
 				loading={searchLoading}
 				title="Custom Attributes"
 				searchValue={searchValue}
@@ -167,7 +178,8 @@ const CustomAttributesContainer = () => {
 				onClick={() => handleAddOpenModal()}
 				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
-					console.log(selected.label);
+					setOrderBy(selected.value);
+					setOrder(selected.direction);
 				}}
 			/>
 
@@ -192,9 +204,9 @@ const CustomAttributesContainer = () => {
 								</PaperComponent>
 								<CenterComponent>
 									<PaginationComponent
-										total={10}
 										value={page}
 										onChange={setPage}
+										total={Math.ceil(total / 15)}
 									/>
 								</CenterComponent>
 							</BoxComponent>

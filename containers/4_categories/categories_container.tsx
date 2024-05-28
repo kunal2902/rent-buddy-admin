@@ -9,7 +9,7 @@ import {
 	BoxComponent,
 	CenterComponent,
 	DashboardPageHeader,
-	GroupComponent,
+	GroupComponent, ImageComponent,
 	LoadingOverlayComponent,
 	MainComponent,
 	NoDataFound,
@@ -17,14 +17,16 @@ import {
 	PaperComponent,
 	PopConfirmComponent,
 	PopConfirmType,
-	SortButtonComponentItemProps,
+	SortButtonComponentItemProps
 } from "@/components";
 import { CategoryModel } from "@/models";
-import { deleteCategoryApi, disableCategoryApi, formatDate, getCategoryApi } from "@/utils";
+import { deleteCategoryApi, disableCategoryApi, formatDate, getCategoryApi, getItemTypeApi, imageUrl } from "@/utils";
 import AddCategoryModal from "./add_category_modal";
 
 const CategoriesContainer = () => {
 	const [page, setPage] = useState<number>(1);
+	const [pageSize, setPageSize] = useState<number>(15);
+	const [total, setTotal] = useState<number>(0);
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [categoryId, setCategoryId] = useState<string>("");
@@ -32,15 +34,22 @@ const CategoriesContainer = () => {
 	const [categoryName, setCategoryName] = useState<string>("");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
-	const [filter, setFilter] = useState<string | null>("category_id");
 	const [categoryIcon, setCategoryIcon] = useState<string | undefined>("");
+	const [filter, setFilter] = useState<string>("name");
+	const [orderBy, setOrderBy] = useState<string>("category_id");
+	const [order, setOrder] = useState<string>("asc");
 	const [categoriesList, setCategoriesList] = useState<CategoryModel[]>([]);
 
 	useEffect(() => {
-		getCategoryApi(
-			`orderBy=${filter}&page=${page}&order=asc`,
+		initState().then();
+	}, [filter, page, callApi, orderBy, order]);
+
+	const initState = async () => {
+		await getCategoryApi(
+			`orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
 				setCategoriesList(data.categories);
+				setTotal(data.categories_count);
 				setLoading(false);
 			},
 			() => {
@@ -49,22 +58,22 @@ const CategoriesContainer = () => {
 			() => {
 				setLoading(false);
 			}
-		).then();
-	}, [filter, page, callApi]);
+		);
+	};
 
 	useEffect(() => {
 		if (searchValue) {
 			handleSearch(searchValue);
+		} else {
+			setSearchLoading(false);
+			initState().then();
 		}
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (query: string) => {
 		setSearchLoading(true);
-		if (query === "") {
-			setSearchLoading(false);
-		} else {
 			getCategoryApi(
-				`name=${query}`,
+				`filter_type=${filter}&filter_query=${query}`,
 				(data: any) => {
 					setCategoriesList(data.categories);
 					setSearchLoading(false);
@@ -76,7 +85,6 @@ const CategoriesContainer = () => {
 					setSearchLoading(false);
 				}
 			).then();
-		}
 	}, 500);
 
 	const handleAddOpenModal = (id: string, name: string, icon: string | undefined) => {
@@ -91,26 +99,26 @@ const CategoriesContainer = () => {
 			await disableCategoryApi(
 				id,
 				() => {
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				}
 			);
 		} else {
 			await deleteCategoryApi(
 				id,
 				() => {
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				}
 			);
 		}
@@ -119,6 +127,7 @@ const CategoriesContainer = () => {
 	const columns = [
 		"Index",
 		"Category Id",
+		"Icon",
 		"Name",
 		"Created At",
 		"Disable",
@@ -129,6 +138,13 @@ const CategoriesContainer = () => {
 		<Table.Tr key={index}>
 			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.category_id}</Table.Td>
+			<Table.Td>
+				<ImageComponent
+					h={50}
+					w="auto"
+					src={`${imageUrl}/${element.icon}`}
+				/>
+			</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 			<Table.Td w={60}>
@@ -164,8 +180,10 @@ const CategoriesContainer = () => {
 	return (
 		<MainComponent>
 			<DashboardPageHeader
+				total={total}
 				title="Categories"
 				idLabel="Category Id"
+				filter={filter}
 				setFilter={setFilter}
 				loading={searchLoading}
 				idVariable="category_id"
@@ -175,7 +193,8 @@ const CategoriesContainer = () => {
 				onClick={() => handleAddOpenModal("", "", "")}
 				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
-					console.log(selected.label);
+					setOrderBy(selected.value);
+					setOrder(selected.direction);
 				}}
 			/>
 
@@ -200,9 +219,9 @@ const CategoriesContainer = () => {
 								</PaperComponent>
 								<CenterComponent>
 									<PaginationComponent
-										total={10}
 										value={page}
 										onChange={setPage}
+										total={Math.ceil(total / 15)}
 									/>
 								</CenterComponent>
 							</BoxComponent>
@@ -211,9 +230,9 @@ const CategoriesContainer = () => {
 
 			{openAddModal &&
 				<AddCategoryModal
-					categoryIcon={categoryIcon}
-					categoryId={categoryId}
+					icon={categoryIcon}
 					isOpen={openAddModal}
+					categoryId={categoryId}
 					setCallApi={setCallApi}
 					initialCategoryValue={categoryName}
 					onClose={() => setOpenAddModal(false)}
