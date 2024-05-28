@@ -72,7 +72,8 @@ export const apiUrl: string = process.env.NODE_ENV === "production" ||
 isProduction ?
 	"https://nca-crm-api-peggi.ondigitalocean.app/api/v1" :
 	"http://localhost:8000/api/v1";
-export const imageUrl: string = process.env.NODE_ENV === "production" ?
+export const imageUrl: string = process.env.NODE_ENV === "production" ||
+isProduction ?
   "https://nca-crm-api-peggi.ondigitalocean.app/image" :
   "http://localhost:8000/image";
 export const loginAPIPath: string = `${apiUrl}/auth/login`;
