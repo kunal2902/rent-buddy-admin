@@ -17,7 +17,7 @@ import {
 	PaperComponent,
 	PopConfirmComponent,
 	PopConfirmType,
-	SortButtonComponentItemProps
+	SortButtonComponentItemProps,
 } from "@/components";
 import { CategoryModel } from "@/models";
 import { deleteCategoryApi, disableCategoryApi, formatDate, getCategoryApi, getItemTypeApi, imageUrl } from "@/utils";
