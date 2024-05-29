@@ -14,6 +14,7 @@ interface Props {
 
 const AddCustomAttributeModal = (props: Props) => {
 	const { isOpen, onClose } = props;
+	const [loading, setLoading] = useState(false);
 	const [customAttributeName, setCustomAttributeName] = useState<string>("");
 	const [type, setType] = useState<string | null>(null);
 
@@ -40,7 +41,11 @@ const AddCustomAttributeModal = (props: Props) => {
 			/>
 
 			<div className="mt-1 flex items-center justify-end">
-				<ButtonComponent title="Save" fullWidth px={5} />
+				<ButtonComponent
+					loading={loading}
+					w={100}
+					title="Save"
+				/>
 			</div>
 		</ModalComponent>
 	);

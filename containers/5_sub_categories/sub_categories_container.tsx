@@ -54,7 +54,7 @@ const SubCategoriesContainer = () => {
 
 	const initState = async () => {
 		await getSubCategoryApi(
-			`orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
 				setSubCategoryList(data.sub_categories);
 				setTotal(data.sub_categories_count);
@@ -78,10 +78,10 @@ const SubCategoriesContainer = () => {
 		}
 	}, [searchValue]);
 
-	const handleSearch = useDebouncedCallback(async (query: string) => {
-	setSearchLoading(true);
+	const handleSearch = useDebouncedCallback(async (q: string) => {
+		setSearchLoading(true);
 		getSubCategoryApi(
-			`name=${query}`,
+			`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
 				setSubCategoryList(data.sub_categories);
 				setSearchLoading(false);
@@ -145,6 +145,7 @@ const SubCategoriesContainer = () => {
 		"Sub-category Name",
 		"Category Name",
 		"Created At",
+		"Created By",
 		"Disable",
 		"Action",
 	];
@@ -163,6 +164,7 @@ const SubCategoriesContainer = () => {
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{element.category.name}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
+			<Table.Td>{element.created_by.name}</Table.Td>
 			<Table.Td w={60}>
 				<PopConfirmComponent
 					entityName="sub category"

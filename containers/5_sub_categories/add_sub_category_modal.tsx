@@ -17,6 +17,7 @@ import {
 import { FileInputComponent } from "@/components/mantine/file_input_component";
 import { getCategoryApi, imageUrl, upsertSubCategoryApi } from "@/utils";
 import { StackComponent } from "@/components/mantine/stack_component";
+import { Stack } from "@mantine/core";
 
 interface Props {
 	isOpen: boolean;
@@ -46,6 +47,7 @@ const AddSubCategoryModal = (props: Props) => {
 	const [categories, setCategories] = useState<any>([]);
 	const [inputError, setInputError] = useState<string | null>(null);
 	const [categoryId, setCategoryId] = useState<string>(initialCategoryIdValue);
+	const [loading, setLoading] = useState(false);
 	const isEditModal: boolean = initialSubCategoryValue !== "";
 
 	useEffect(() => {
@@ -119,15 +121,19 @@ const AddSubCategoryModal = (props: Props) => {
 		subCatData.append("name", subCategoryName);
 		subCatData.append("category_id", categoryId);
 		subCatData.append("id", subCategoryId);
+		setLoading(true);
+
 		try {
 			await upsertSubCategoryApi(
 				subCatData,
 				() => {
 					onClose();
-					setCallApi(true);
+					setCallApi(val => !val);
+					setLoading(false);
 				},
 				(message: string) => {
 					toast.error(message);
+					setLoading(false);
 				},
 				() => {
 				}
@@ -138,15 +144,101 @@ const AddSubCategoryModal = (props: Props) => {
 	};
 
 	return (
+		// <ModalComponent
+		// 	opened={isOpen}
+		// 	onClose={onClose}
+		// 	className="border-grey-800"
+		// 	title={<TitleComponent title={isEditModal ? "Edit Sub Category" : "New Sub Category"} />}
+		// >
+		//
+		// 	<GroupComponent grow align="start">
+		// 		<Stack>
+		// 			<FileInputComponent
+		// 				required
+		// 				label="Please select category icon"
+		// 				placeholder="C 111ategory icon"
+		// 				className="hidden"
+		// 				onChange={onFilePick}
+		// 				ref={fileInputTriggerRef}
+		// 			/>
+		// 			{selectedFile ? (
+		// 				<div className="w-full flex flex-col items-center justify-center h-40">
+		// 					<Image
+		// 						src={selectedFile}
+		// 						width={500}
+		// 						height={500}
+		// 						alt="Selected Icon"
+		// 						className="w-full h-full object-contain" />
+		// 				</div>
+		// 			) : (
+		// 				<div
+		// 					onClick={onChooseIconClick}
+		// 					className="w-full cursor-pointer border border-dashed flex flex-col items-center justify-center h-40 rounded-md border-primary-darker text-primary-darker">
+		// 					<ImageIcon size={50} />
+		// 					<p className="text-center mt-0.5">Choose an Icon</p>
+		// 				</div>
+		// 			)}
+		//
+		// 			{selectedFile && (
+		// 				<GroupComponent grow>
+		// 					<ActionIconComponent
+		// 						onClick={onResetIconClick}
+		// 						size="md"
+		// 						color="red"
+		// 					>
+		// 						<MdOutlineDeleteForever size={18} />
+		// 					</ActionIconComponent>
+		//
+		// 					<ActionIconComponent
+		// 						onClick={onChooseIconClick}
+		// 						size="md"
+		// 					>
+		// 						<MdOutlineEdit size={18} />
+		// 					</ActionIconComponent>
+		//
+		// 				</GroupComponent>
+		// 			)}
+		// 		</Stack>
+		//
+		// 		<TextInputComponent
+		// 			mt={1}
+		// 			required
+		// 			label="Name"
+		// 			title="Name"
+		// 			value={subCategoryName}
+		// 			placeholder="Awesome Name"
+		// 			setValue={setSubCategoryName}
+		// 			className="border-grey-600 font-barlow font-base text-base"
+		// 		/>
+		// 		<SelectComponent
+		// 			required
+		// 			label="Select category"
+		// 			placeholder="Select category"
+		// 			data={categories}
+		// 			clearable
+		// 			value={categoryId}
+		// 			setValue={setCategoryId}
+		// 			checkIconPosition="right"
+		// 			isGrouped={false}
+		// 		/>
+		// 	</GroupComponent>
+		// 	<GroupComponent justify="end">
+		// 		<ButtonComponent
+		// 			loading={loading}
+		// 			w={100}
+		// 			title="Save"
+		// 			onClick={handleSubmitSubCat}
+		// 		/>
+		// 	</GroupComponent>
+		// </ModalComponent>
 		<ModalComponent
 			opened={isOpen}
 			onClose={onClose}
 			className="border-grey-800"
-			title={<TitleComponent title={isEditModal ? "Edit Sub Category" : "New Sub Category"} />}
+			title={<TitleComponent title={isEditModal ? "Edit Item Type" : "New Item Type"} />}
 		>
-
-			<GroupComponent>
-				<StackComponent>
+			<GroupComponent grow align="start">
+				<Stack>
 					<FileInputComponent
 						required
 						label="Please select category icon"
@@ -192,30 +284,38 @@ const AddSubCategoryModal = (props: Props) => {
 
 						</GroupComponent>
 					)}
-				</StackComponent>
-				<TextInputComponent
-					mt={1}
-					required
-					label="Name"
-					title="Name"
-					value={subCategoryName}
-					placeholder="Awesome Name"
-					setValue={setSubCategoryName}
-					className="border-grey-600 font-barlow font-base text-base"
-				/>
-				<SelectComponent
-					required
-					label="Select category"
-					placeholder="Select category"
-					data={categories}
-					clearable
-					value={categoryId}
-					setValue={setCategoryId}
-					checkIconPosition="right"
-				/>
+				</Stack>
+
+				<GroupComponent>
+					<TextInputComponent
+						mt={1}
+						required
+						label="Name"
+						title="Name"
+						value={subCategoryName}
+						placeholder="Awesome Name"
+						setValue={setSubCategoryName}
+						className="border-grey-600 font-barlow font-base text-base"
+					/>
+
+					<SelectComponent
+						required
+						label="Select category"
+						placeholder="Select category"
+						data={categories}
+						clearable={false}
+						value={categoryId}
+						setValue={setCategoryId}
+						checkIconPosition="right"
+						isGrouped={false}
+					/>
+				</GroupComponent>
+
 			</GroupComponent>
+
 			<GroupComponent justify="end">
 				<ButtonComponent
+					loading={loading}
 					w={100}
 					title="Save"
 					onClick={handleSubmitSubCat}

@@ -40,6 +40,7 @@ const AddItemTypeModal: React.FC<Props> = (props: Props) => {
 	const [selectedFile, setSelectedFile] = useState<string | null>(null);
 	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
 	const [inputError, setInputError] = useState<string | null>(null);
+	const [loading, setLoading] = useState(false);
 	const isEditModal: boolean = initialItemTypeValue !== "";
 
 	useEffect(() => {
@@ -79,27 +80,29 @@ const AddItemTypeModal: React.FC<Props> = (props: Props) => {
 
 	const handleSubmitItemType = async (event: React.FormEvent) => {
 		event.preventDefault();
-
 		if (!itemTypeName) {
 			setInputError("Please enter the name first");
 		}
-
 		const itemTypeData = new FormData();
+
 		if (selectedFileToUpload) {
 			itemTypeData.append("icon_file", selectedFileToUpload);
 		}
 		itemTypeData.append("name", itemTypeName);
 		itemTypeData.append("id", itemTypeId);
+		setLoading(true);
 
 		try {
 			await upsertItemTypeApi(
 				itemTypeData,
 				() => {
 					onClose();
-					setCallApi(true);
+					setCallApi(val => !val);
+					setLoading(false);
 				},
 				(message: string) => {
 					toast.error(message);
+					setLoading(false);
 				},
 				() => {
 				}
@@ -179,6 +182,7 @@ const AddItemTypeModal: React.FC<Props> = (props: Props) => {
 
 			<GroupComponent justify="end">
 				<ButtonComponent
+					loading={loading}
 					w={100}
 					title="Save"
 					onClick={handleSubmitItemType}

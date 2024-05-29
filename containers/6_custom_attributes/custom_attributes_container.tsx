@@ -45,7 +45,7 @@ const CustomAttributesContainer = () => {
 
 	const initState = async () => {
 		await getAttributeApi(
-			`orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
 				setCustomAttributesList(data.custom_attributes);
 				setTotal(data.custom_attributes_count);
@@ -69,10 +69,10 @@ const CustomAttributesContainer = () => {
 		}
 	}, [searchValue]);
 
-	const handleSearch = useDebouncedCallback(async (query: string) => {
+	const handleSearch = useDebouncedCallback(async (q: string) => {
 		setSearchLoading(true);
 		getAttributeApi(
-			`filter_type=${filter}&filter_query=${query}`,
+			`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
 				setCustomAttributesList(data.custom_attributes);
 				setSearchLoading(false);
@@ -126,6 +126,7 @@ const CustomAttributesContainer = () => {
 		"Custom Attribute Id",
 		"Name",
 		"Created At",
+		"Created By",
 		"Disable",
 		"Action",
 	];
@@ -136,6 +137,7 @@ const CustomAttributesContainer = () => {
 			<Table.Td>{element.custom_attribute_id}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
+			<Table.Td>{element.created_by.name}</Table.Td>
 			<Table.Td w={60}>
 				<PopConfirmComponent
 					entityName="custom attribute"

@@ -71,7 +71,7 @@ export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
 				<MantineProviderComponent theme={coloredInputTheme(darkMode)}>
 					<SelectComponent
 						placeholder="Searching In"
-						searchable
+						searchable={false}
 						size="sm"
 						data={searchItems(idLabel, idVariable)}
 						setValue={setFilter}
