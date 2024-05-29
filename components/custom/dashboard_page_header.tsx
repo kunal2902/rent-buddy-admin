@@ -27,14 +27,17 @@ export interface DashboardPageHeaderProps {
 	idLabel: string,
 	loading: boolean,
 	idVariable: string,
-	setFilter: (val: (string)) => void
 	buttonTitle: string,
 	searchValue: string,
-	setSearchValue: (value: string) => void,
-	setOption: ((option: ComboBoxProps) => void) | undefined
 	onClick: () => void,
+	showAddButton?: boolean,
+	showValueSelect?: boolean,
+	setFilter: (val: (string)) => void,
+	setSearchValue: (value: string) => void,
+	valueSelectItems?: Array<ComboBoxProps>,
+	searchSelectItems?: Array<ComboBoxProps>,
+	setOption?: ((option: ComboBoxProps) => void) | undefined,
 	onSortSelected: (selected: SortButtonComponentItemProps) => void,
-	showAddButton?: boolean
 }
 
 export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
@@ -44,15 +47,18 @@ export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
 		filter,
 		idLabel,
 		loading,
-		idVariable,
+		onClick,
 		setFilter,
+		idVariable,
 		buttonTitle,
 		searchValue,
 		setSearchValue,
-		setOption,
-		onClick,
 		onSortSelected,
 		showAddButton = true,
+		showValueSelect = false,
+		setOption,
+		valueSelectItems,
+		searchSelectItems,
 	} = props;
 	const { darkMode } = useThemeProvider();
 
@@ -70,27 +76,42 @@ export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
 
 				<MantineProviderComponent theme={coloredInputTheme(darkMode)}>
 					<SelectComponent
-						placeholder="Searching In"
-						searchable
 						size="sm"
-						data={searchItems(idLabel, idVariable)}
 						setValue={setFilter}
 						defaultValue={filter}
 						setOption={setOption}
+						placeholder="Searching In"
+						data={searchSelectItems ?? searchItems(idLabel, idVariable)}
 					/>
 				</MantineProviderComponent>
 
 				<MantineProviderComponent theme={coloredInputTheme(darkMode)}>
-					<TextInputComponent
-						size="sm"
-						value={searchValue}
-						setValue={setSearchValue}
-						placeholder="Search"
-						rightSection={loading ? <Loader size={20} /> :
-							searchValue ? <IoMdClose size={20} onClick={() => setSearchValue("")} /> :
-								undefined
-						}
-					/>
+					{
+						showValueSelect && valueSelectItems ?
+							<SelectComponent
+								size="sm"
+								placeholder="Select"
+								data={valueSelectItems}
+								setValue={setSearchValue}
+								defaultValue={searchValue}
+							/> :
+							<TextInputComponent
+								size="sm"
+								value={searchValue}
+								placeholder="Search"
+								setValue={setSearchValue}
+								rightSection={
+									loading ?
+										<Loader size={20} /> :
+										searchValue ?
+											<IoMdClose
+												size={20}
+												onClick={() => setSearchValue("")}
+											/> :
+											undefined
+								}
+							/>
+					}
 				</MantineProviderComponent>
 
 				<SortButtonComponent
@@ -103,7 +124,7 @@ export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
 						c={appColorRGBA}
 						color={getSurfaceColor(darkMode).backgroundColor}
 						onClick={onClick}
-				>
+					>
 						<Plus size={18} className="sm:mr-2 mr-0" />
 						<TextComponent text={buttonTitle} c={appColorRGBA} />
 					</ButtonComponent>

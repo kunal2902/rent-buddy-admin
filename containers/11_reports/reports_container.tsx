@@ -9,6 +9,7 @@ import {
 	DashboardPageHeader,
 	LoadingOverlayComponent,
 	MainComponent,
+	NoDataFound,
 	PaginationComponent,
 	PaperComponent,
 	SortButtonComponentItemProps,
@@ -18,57 +19,62 @@ import { ReportModel } from "@/models";
 
 const ReportsContainer = () => {
 	const [page, setPage] = useState<number>(1);
-	const [callApi, setCallApi] = useState<boolean>(true);
-	const [loading, setLoading] = useState<boolean>(false);
+	const [total, setTotal] = useState<number>(0);
+	const [order, setOrder] = useState<string>("desc");
+	const [filter, setFilter] = useState<string>("name");
+	const [pageSize, setPageSize] = useState<number>(15);
+	const [loading, setLoading] = useState<boolean>(true);
 	const [searchValue, setSearchValue] = useState<string>("");
-	const [filter, setFilter] = useState<string | null>("report_id");
+	const [orderBy, setOrderBy] = useState<string>("created_at");
+	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const [reportsList, setReportsList] = useState<ReportModel[]>([]);
 
 	useEffect(() => {
-		if (callApi) {
-			getReportsAPI(
-				`orderBy=${filter}&page=${page}&order=asc`,
-				(data: any) => {
-					setReportsList(data.reports);
-					setCallApi(false);
-				},
-				() => {
-					setCallApi(false);
-				},
-				() => {
-					setCallApi(false);
-				}
-			).then();
-		}
-	}, [filter, page, callApi]);
+		initState().then();
+	}, [filter, page, orderBy, order]);
+
+	const initState = async () => {
+		getReportsAPI(
+			`orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			(data: any) => {
+				setReportsList(data.reports);
+				setTotal(data.reports_count ?? 0);
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			}
+		).then();
+	};
 
 	useEffect(() => {
 		if (searchValue) {
 			handleSearch(searchValue);
+		} else {
+			setSearchLoading(false);
+			initState().then();
 		}
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (query: string) => {
-		setLoading(true);
-		if (query === "") {
-			setCallApi(true);
-			setLoading(false);
-		} else {
-			getReportsAPI(
-				`name=${query}`,
-				(data: any) => {
-					setReportsList(data.reports);
-					setCallApi(false);
-				},
-				() => {
-					setCallApi(false);
-				},
-				() => {
-					setCallApi(false);
-				}
-			).then();
-			setLoading(false);
-		}
+		setSearchLoading(true);
+		getReportsAPI(
+			`filter_type=${filter}&filter_query=${query}`,
+			(data: any) => {
+				setReportsList(data.reports);
+				setTotal(data.reports_count ?? 0);
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			}
+		).then();
 	}, 500);
 
 	const columns = [
@@ -90,50 +96,54 @@ const ReportsContainer = () => {
 	return (
 		<MainComponent>
 			<DashboardPageHeader
+				total={total}
 				buttonTitle=""
 				title="Reports"
-				loading={loading}
+				filter={filter}
 				idLabel="Report Id"
 				setFilter={setFilter}
 				showAddButton={false}
 				idVariable="report_id"
-				onClick={() => {}}
+				onClick={() => {
+				}}
+				loading={searchLoading}
 				searchValue={searchValue}
 				setSearchValue={setSearchValue}
 				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
-					console.log(selected.label);
+					setOrderBy(selected.value);
+					setOrder(selected.direction);
 				}}
 			/>
 
 			{
 				loading ?
-					<LoadingOverlayComponent
-						visible={loading}
-					/> :
-					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
-						<BoxComponent mx="auto">
-							<PaperComponent>
-								<Table highlightOnHover>
-									<Table.Thead>
-										<Table.Tr>
-											{columns.map((item) =>
-												(<Table.Th key={item}>{item}</Table.Th>)
-											)}
-										</Table.Tr>
-									</Table.Thead>
-									<Table.Tbody>{rows}</Table.Tbody>
-								</Table>
-							</PaperComponent>
-							<CenterComponent>
-								<PaginationComponent
-									total={10}
-									value={page}
-									onChange={setPage}
-								/>
-							</CenterComponent>
+					<LoadingOverlayComponent /> :
+					reportsList.length === 0 ?
+						<NoDataFound /> :
+						<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
+							<BoxComponent mx="auto">
+								<PaperComponent>
+									<Table highlightOnHover>
+										<Table.Thead>
+											<Table.Tr>
+												{columns.map((item) =>
+													(<Table.Th key={item}>{item}</Table.Th>)
+												)}
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>{rows}</Table.Tbody>
+									</Table>
+								</PaperComponent>
+								<CenterComponent>
+									<PaginationComponent
+										total={10}
+										value={page}
+										onChange={setPage}
+									/>
+								</CenterComponent>
+							</BoxComponent>
 						</BoxComponent>
-					</BoxComponent>
 			}
 		</MainComponent>
 	);

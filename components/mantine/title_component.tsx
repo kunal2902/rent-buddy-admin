@@ -19,7 +19,7 @@ export const TitleComponent = (props: TitleComponentProps) => {
 			{...rest}
 			fw={bold ? 700 : 0}
 			order={props.order ?? 4}
-			c={darkMode ? textColorPrimaryDark : textColorPrimaryLight}
+			c={props.c ? props.c : darkMode ? textColorPrimaryDark : textColorPrimaryLight}
 		>
 			{title}
 		</Title>
