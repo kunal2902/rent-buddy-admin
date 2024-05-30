@@ -53,6 +53,7 @@ const SubCategoriesContainer = () => {
 	}, [filter, page, callApi, orderBy, order]);
 
 	const initState = async () => {
+		setLoading(true);
 		await getSubCategoryApi(
 			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {

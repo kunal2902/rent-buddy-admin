@@ -17,66 +17,73 @@ import {
 	PopConfirmType,
 	SortButtonComponentItemProps,
  PaginationComponent } from "@/components";
-import { deleteRoleApi, disableRoleApi, formatDate, getRoleApi } from "@/utils";
+import { deleteRoleApi, disableRoleApi, formatDate, getItemTypeApi, getRoleApi } from "@/utils";
 import { RoleModel } from "@/models";
 import AddRoleModal from "./add_role_modal";
 
 const RolesSettingsContainer = () => {
 	const [roleId, setRoleId] = useState("");
+	const [pageSize, setPageSize] = useState<number>(15);
 	const [page, setPage] = useState<number>(1);
+	const [total, setTotal] = useState<number>(0);
 	const [roleName, setRoleName] = useState<string>("");
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [searchValue, setSearchValue] = useState<string>("");
 	const [rolesList, setRolesList] = useState<RoleModel[]>([]);
-	const [filter, setFilter] = useState<string | null>("role_id");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
+	const [searchLoading, setSearchLoading] = useState<boolean>(false);
+	const [filter, setFilter] = useState<string>("name");
+	const [orderBy, setOrderBy] = useState<string>("role_id");
+	const [order, setOrder] = useState<string>("asc");
 
 	useEffect(() => {
-		if (callApi) {
-			getRoleApi(
-				`orderBy=${filter}&page=${page}&order=asc`,
-				(data: any) => {
-					setRolesList(data.roles);
-					setCallApi(false);
-				},
-				() => {
-					setCallApi(false);
-				},
-				() => {
-					setCallApi(false);
-				}
-			).then();
-		}
-	}, [callApi]);
+		initState().then();
+	}, [filter, page, callApi, orderBy, order]);
+
+	const initState = async () => {
+		setLoading(true);
+		await getRoleApi(
+			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			(data: any) => {
+				setRolesList(data.roles);
+				setTotal(data.roles_count);
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			}
+		);
+	};
 
 	useEffect(() => {
 		if (searchValue) {
 			handleSearch(searchValue);
+		} else {
+			setSearchLoading(false);
+			initState().then();
 		}
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (query: string) => {
 		setLoading(true);
-		if (query === "") {
-			setCallApi(true);
-			setLoading(false);
-		} else {
-			getRoleApi(
-				`name=${query}`,
-				(data: any) => {
-					setRolesList(data.roles);
-					setCallApi(false);
-				},
-				() => {
-					setCallApi(false);
-				},
-				() => {
-					setCallApi(false);
-				}
-			).then();
-			setLoading(false);
-		}
+		await getRoleApi(
+			`name=${query}`,
+			(data: any) => {
+				setRolesList(data.roles);
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			}
+		).then();
+		setLoading(false);
 	}, 500);
 
 	const handleAddOpenModal = (id: string, name: string) => {
@@ -90,26 +97,26 @@ const RolesSettingsContainer = () => {
 			await disableRoleApi(
 				id,
 				() => {
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				}
 			);
 		} else {
 			await deleteRoleApi(
 				id,
 				() => {
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				}
 			);
 		}
@@ -159,28 +166,29 @@ const RolesSettingsContainer = () => {
 	return (
 		<MainComponent>
 			<DashboardPageHeader
+				total={total}
 				title="Roles"
-				idLabel="Role Id"
-				loading={loading}
-				idVariable="role_id"
+				filter={filter}
 				setFilter={setFilter}
-				buttonTitle="Add Role"
+				idLabel="Role Id"
+				loading={searchLoading}
+				idVariable="role_id"
 				searchValue={searchValue}
+				buttonTitle="Add Role"
 				setSearchValue={setSearchValue}
+				onClick={() => handleAddOpenModal("", "")}
 				setOption={(option) => {
 					setFilter(option.value);
 				}}
-				onClick={() => handleAddOpenModal("", "")}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
-					console.log(selected.label);
+					setOrderBy(selected.value);
+					setOrder(selected.direction);
 				}}
 			/>
 
 			{
-				rolesList.length === 0 ?
-					<LoadingOverlayComponent
-						visible={rolesList.length === 0}
-					/> :
+				loading ?
+					<LoadingOverlayComponent /> :
 					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
 						<BoxComponent mx="auto">
 							<PaperComponent>
@@ -197,9 +205,9 @@ const RolesSettingsContainer = () => {
 							</PaperComponent>
 							<CenterComponent>
 								<PaginationComponent
-									total={10}
 									value={page}
 									onChange={setPage}
+									total={Math.ceil(total / 15)}
 								/>
 							</CenterComponent>
 						</BoxComponent>

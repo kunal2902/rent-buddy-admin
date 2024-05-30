@@ -11,4 +11,22 @@ export const CustomAttributeTypeOptions: Array<ComboBoxProps> = [
 		label: "Number",
 		value: "number",
 	},
+	{
+		id: "percentage",
+		label: "Percentage",
+		value: "percentage",
+	},
+];
+
+export const CustomAttributeTaxTypeOptions: Array<ComboBoxProps> = [
+	{
+		id: "string",
+		label: "On Bill",
+		value: "on_bill",
+	},
+	{
+		id: "string",
+		label: "On Poduct",
+		value: "on_product",
+	},
 ];

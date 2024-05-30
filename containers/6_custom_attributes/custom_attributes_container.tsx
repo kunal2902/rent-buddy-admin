@@ -21,7 +21,7 @@ import {
 } from "@/components";
 import AddCustomAttributeModal from "./add_custom_attribute_modal";
 import { CustomAttributeModel } from "@/models";
-import { deleteAttributeApi, disableAttributeApi, formatDate, getAttributeApi, getItemTypeApi } from "@/utils";
+import { deleteAttributeApi, disableAttributeApi, formatDate, getAttributeApi } from "@/utils";
 
 const CustomAttributesContainer = () => {
 	const [page, setPage] = useState<number>(1);
@@ -29,6 +29,7 @@ const CustomAttributesContainer = () => {
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [total, setTotal] = useState<number>(0);
+	const [customAttributId, setCustomAttributeId] = useState<string>("");
 	const [searchValue, setSearchValue] = useState<string>("");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
@@ -44,6 +45,7 @@ const CustomAttributesContainer = () => {
 	}, [filter, page, callApi, orderBy, order]);
 
 	const initState = async () => {
+		setLoading(true);
 		await getAttributeApi(
 			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
@@ -125,6 +127,7 @@ const CustomAttributesContainer = () => {
 		"Index",
 		"Custom Attribute Id",
 		"Name",
+		"Type",
 		"Created At",
 		"Created By",
 		"Disable",
@@ -136,6 +139,7 @@ const CustomAttributesContainer = () => {
 			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.custom_attribute_id}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
+			<Table.Td>{element.type}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 			<Table.Td>{element.created_by.name}</Table.Td>
 			<Table.Td w={60}>
@@ -221,6 +225,7 @@ const CustomAttributesContainer = () => {
 					setCallApi={setCallApi}
 					customAttribute={customAttribute}
 					onClose={() => setOpenAddModal(false)}
+					customAttributId={customAttributId}
 				/>
 			}
 		</MainComponent>

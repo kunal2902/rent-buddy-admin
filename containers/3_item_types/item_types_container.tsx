@@ -46,6 +46,7 @@ const ItemTypesContainer = () => {
 	}, [filter, page, callApi, orderBy, order]);
 
 	const initState = async () => {
+		setLoading(true);
 		await getItemTypeApi(
 			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
@@ -197,7 +198,6 @@ const ItemTypesContainer = () => {
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
 					setOrderBy(selected.value);
 					setOrder(selected.direction);
-					console.log("select", selected);
 				}}
 			/>
 

@@ -39,7 +39,6 @@ const AddSubCategoryModal = (props: Props) => {
 		initialCategoryIdValue,
 		icon,
 	} = props;
-	console.log("initialSubCategoryValue", initialSubCategoryValue);
 	const [subCategoryName, setSubCategoryName] = useState<string>(initialSubCategoryValue);
 	const [selectedFileToUpload, setSelectedFileToUpload] = useState<File | null>(null);
 	const [selectedFile, setSelectedFile] = useState<string | null>(null);
@@ -70,13 +69,13 @@ const AddSubCategoryModal = (props: Props) => {
 						label: category.name,
 					}));
 				setCategories(formattedCategories);
-				setCallApi(false);
+				setCallApi(val => !val);
 			},
 			() => {
-				setCallApi(false);
+				setCallApi(val => !val);
 			},
 			() => {
-				setCallApi(false);
+				setCallApi(val => !val);
 			}).then();
 	}, []);
 
@@ -144,93 +143,6 @@ const AddSubCategoryModal = (props: Props) => {
 	};
 
 	return (
-		// <ModalComponent
-		// 	opened={isOpen}
-		// 	onClose={onClose}
-		// 	className="border-grey-800"
-		// 	title={<TitleComponent title={isEditModal ? "Edit Sub Category" : "New Sub Category"} />}
-		// >
-		//
-		// 	<GroupComponent grow align="start">
-		// 		<Stack>
-		// 			<FileInputComponent
-		// 				required
-		// 				label="Please select category icon"
-		// 				placeholder="C 111ategory icon"
-		// 				className="hidden"
-		// 				onChange={onFilePick}
-		// 				ref={fileInputTriggerRef}
-		// 			/>
-		// 			{selectedFile ? (
-		// 				<div className="w-full flex flex-col items-center justify-center h-40">
-		// 					<Image
-		// 						src={selectedFile}
-		// 						width={500}
-		// 						height={500}
-		// 						alt="Selected Icon"
-		// 						className="w-full h-full object-contain" />
-		// 				</div>
-		// 			) : (
-		// 				<div
-		// 					onClick={onChooseIconClick}
-		// 					className="w-full cursor-pointer border border-dashed flex flex-col items-center justify-center h-40 rounded-md border-primary-darker text-primary-darker">
-		// 					<ImageIcon size={50} />
-		// 					<p className="text-center mt-0.5">Choose an Icon</p>
-		// 				</div>
-		// 			)}
-		//
-		// 			{selectedFile && (
-		// 				<GroupComponent grow>
-		// 					<ActionIconComponent
-		// 						onClick={onResetIconClick}
-		// 						size="md"
-		// 						color="red"
-		// 					>
-		// 						<MdOutlineDeleteForever size={18} />
-		// 					</ActionIconComponent>
-		//
-		// 					<ActionIconComponent
-		// 						onClick={onChooseIconClick}
-		// 						size="md"
-		// 					>
-		// 						<MdOutlineEdit size={18} />
-		// 					</ActionIconComponent>
-		//
-		// 				</GroupComponent>
-		// 			)}
-		// 		</Stack>
-		//
-		// 		<TextInputComponent
-		// 			mt={1}
-		// 			required
-		// 			label="Name"
-		// 			title="Name"
-		// 			value={subCategoryName}
-		// 			placeholder="Awesome Name"
-		// 			setValue={setSubCategoryName}
-		// 			className="border-grey-600 font-barlow font-base text-base"
-		// 		/>
-		// 		<SelectComponent
-		// 			required
-		// 			label="Select category"
-		// 			placeholder="Select category"
-		// 			data={categories}
-		// 			clearable
-		// 			value={categoryId}
-		// 			setValue={setCategoryId}
-		// 			checkIconPosition="right"
-		// 			isGrouped={false}
-		// 		/>
-		// 	</GroupComponent>
-		// 	<GroupComponent justify="end">
-		// 		<ButtonComponent
-		// 			loading={loading}
-		// 			w={100}
-		// 			title="Save"
-		// 			onClick={handleSubmitSubCat}
-		// 		/>
-		// 	</GroupComponent>
-		// </ModalComponent>
 		<ModalComponent
 			opened={isOpen}
 			onClose={onClose}
