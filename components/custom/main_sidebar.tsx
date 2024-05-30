@@ -5,17 +5,17 @@
 import { twMerge } from "tailwind-merge";
 import { useState } from "react";
 import { ScrollArea } from "@mantine/core";
+import { usePathname } from "next/navigation";
 import { LinkType, SidebarItems, SideBarProps, SideBarType, SubMenuType } from "@/constants";
-import { NavLinkComponent, TooltipComponent, useMainSidebar } from "@/components";
-import { appColorRGBA, getSurfaceColor, mantineNavLinkChildOffset, useThemeProvider } from "@/utils";
+import { NavLinkComponent, TooltipComponent } from "@/components";
+import { appColorRGBA, getSurfaceColor, mantineNavLinkChildOffset, useSidebarState, useThemeProvider } from "@/utils";
 
 export const MainSidebar = () => {
+	const currentPathname = usePathname();
 	const { darkMode } = useThemeProvider();
-	const { isSidebarOpen, currentPathname } = useMainSidebar();
-	const [disableParentTooltip, setDisableParentTooltip] =
-		useState<boolean>(false);
-	const [disableSubParentTooltip, setDisableSubParentTooltip] =
-		useState<boolean>(false);
+	const { isSidebarOpen } = useSidebarState();
+	const [disableParentTooltip, setDisableParentTooltip] = useState<boolean>(false);
+	const [disableSubParentTooltip, setDisableSubParentTooltip] = useState<boolean>(false);
 
 	const checkCurrentPathMatch = (
 		options: Array<SideBarProps<SideBarType>>

@@ -22,22 +22,22 @@ import {
 } from "@/components";
 import { ItemTypeModel } from "@/models";
 import { deleteItemTypeApi, disableItemTypeApi, formatDate, getItemTypeApi, imageUrl } from "@/utils";
-import AddItemTypeModal from "@/containers/3_item_types/add_item_type_modal";
+import AddItemTypeModal from "./add_item_type_modal";
 
 const ItemTypesContainer = () => {
 	const [page, setPage] = useState<number>(1);
+	const [total, setTotal] = useState<number>(0);
+	const [order, setOrder] = useState<string>("asc");
+	const [filter, setFilter] = useState<string>("name");
 	const [pageSize, setPageSize] = useState<number>(15);
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [loading, setLoading] = useState<boolean>(true);
-	const [total, setTotal] = useState<number>(0);
 	const [itemTypeId, setItemTypeId] = useState<string>("");
 	const [searchValue, setSearchValue] = useState<string>("");
 	const [itemTypeName, setItemTypeName] = useState<string>("");
+	const [orderBy, setOrderBy] = useState<string>("item_type_id");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
-	const [filter, setFilter] = useState<string>("name");
-	const [orderBy, setOrderBy] = useState<string>("item_type_id");
-	const [order, setOrder] = useState<string>("asc");
 	const [itemTypesList, setItemTypesList] = useState<ItemTypeModel[]>([]);
 	const [itemTypeIcon, setItemTypeIcon] = useState<string | undefined>("");
 
@@ -183,8 +183,8 @@ const ItemTypesContainer = () => {
 		<MainComponent>
 			<DashboardPageHeader
 				total={total}
-				title="Item Types"
 				filter={filter}
+				title="Item Types"
 				setFilter={setFilter}
 				idLabel="Item Type Id"
 				loading={searchLoading}

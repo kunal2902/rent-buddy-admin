@@ -1,15 +1,14 @@
 "use client";
 
 import { Menu } from "lucide-react";
-import Image from "next/image";
-import { MdOutlineDarkMode, MdOutlineLightMode } from "react-icons/md";
 import Logo from "@/public/images/logo.png";
 import {
 	ActionIconComponent,
-	AvatarComponent,
+	AvatarPopupComponent,
 	ButtonComponent,
-	CenterComponent, ImageComponent,
-	SpaceComponent, TooltipComponent,
+	CenterComponent,
+	ImageComponent,
+	SpaceComponent,
 	UnstyledButtonComponent,
 	useMainNavbar,
 } from "@/components";
@@ -17,15 +16,16 @@ import {
 	appLogoHeight,
 	appLogoWidth,
 	appName,
-	dashboardRoute, getSurfaceColor,
+	dashboardRoute,
+	getSurfaceColor,
 	posRoute,
 	useThemeProvider,
 } from "@/utils";
 import { TextComponent } from "@/components/mantine/text_component";
 
 export const MainNavbar = () => {
-	const { darkMode, toggleDarkMode } = useThemeProvider();
-	const { toggleSidebar, userName } = useMainNavbar();
+	const { toggleSidebar } = useMainNavbar();
+	const { darkMode } = useThemeProvider();
 
 	return (
 		<div
@@ -72,23 +72,20 @@ export const MainNavbar = () => {
 
 				<SpaceComponent showWidth />
 
-				<TooltipComponent
+				{/*<TooltipComponent
 					label={darkMode ? "Change to Light mode" : "Change to Dark mode"}>
 					<ActionIconComponent
 						variant="filled"
 						onClick={toggleDarkMode}
 					>
-						{darkMode ? <MdOutlineDarkMode size={18} /> : <MdOutlineLightMode size={18} />}
+						{darkMode ?
+							<MdOutlineDarkMode size={18} /> :
+							<MdOutlineLightMode size={18} />
+						}
 					</ActionIconComponent>
-				</TooltipComponent>
+				</TooltipComponent>*/}
 
-				<SpaceComponent showWidth />
-
-				{userName && (
-					<AvatarComponent src={null} alt={userName}>
-						{userName}
-					</AvatarComponent>
-				)}
+				<AvatarPopupComponent />
 
 				<SpaceComponent showWidth />
 			</div>

@@ -9,68 +9,73 @@ import {
 	DashboardPageHeader,
 	LoadingOverlayComponent,
 	MainComponent,
+	NoDataFound,
 	PaginationComponent,
 	PaperComponent,
 	SortButtonComponentItemProps,
 } from "@/components";
 import { ActivityLogModel } from "@/models";
-import { formatDate, getActivityLogsApi } from "@/utils";
+import { formatDate, getActivityLogsApi, toTitleCase } from "@/utils";
+import { actionItemsLogs, entityItemsLogs, searchItemsLogs } from "@/constants";
 
 const ActivityLogsContainer = () => {
 	const [page, setPage] = useState<number>(1);
-	const [callApi, setCallApi] = useState<boolean>(true);
-	const [loading, setLoading] = useState<boolean>(false);
+	const [total, setTotal] = useState<number>(0);
+	const [order, setOrder] = useState<string>("desc");
+	const [pageSize, setPageSize] = useState<number>(15);
+	const [loading, setLoading] = useState<boolean>(true);
 	const [searchValue, setSearchValue] = useState<string>("");
-	const [filter, setFilter] = useState<string | null>("log_id");
+	const [orderBy, setOrderBy] = useState<string>("created_at");
+	const [filter, setFilter] = useState<string>("activity_log_id");
+	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const [activityLogsList, setActivityLogsList] = useState<ActivityLogModel[]>([]);
 
 	useEffect(() => {
-		if (callApi) {
-			getActivityLogsApi(
-				`orderBy=${filter}&page=${page}&order=asc`,
-				(data: any) => {
-					setActivityLogsList(data.logs);
-					setCallApi(false);
-				},
-				() => {
-					console.log("Error occurred.");
-					setCallApi(false);
-				},
-				() => {
-					console.log("Logout.");
-					setCallApi(false);
-				}
-			).then();
-		}
-	}, [filter, page, callApi]);
+		initState().then();
+	}, [filter, page, orderBy, order]);
+
+	const initState = async () => {
+		getActivityLogsApi(
+			`orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			(data: any) => {
+				setActivityLogsList(data.activity_logs);
+				setTotal(data.activity_logs_count ?? 0);
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			}
+		).then();
+	};
 
 	useEffect(() => {
 		if (searchValue) {
 			handleSearch(searchValue);
+		} else {
+			setSearchLoading(false);
+			initState().then();
 		}
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (query: string) => {
-		setLoading(true);
-		if (query === "") {
-			setCallApi(true);
-			setLoading(false);
-		} else {
-			getActivityLogsApi(
-				`name=${query}`,
-				(data: any) => {
-					setActivityLogsList(data.logs);
-					setCallApi(false);
-				},
-				() => {
-					setCallApi(false);
-				},
-				() => {
-					setCallApi(false);
-				}
-			).then();
-			setLoading(false);
-		}
+		setSearchLoading(true);
+		getActivityLogsApi(
+			`filter_type=${filter}&filter_query=${query}`,
+			(data: any) => {
+				setActivityLogsList(data.activity_logs);
+				setTotal(data.activity_logs_count ?? 0);
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			}
+		).then();
 	}, 500);
 
 	const columns = [
@@ -82,12 +87,15 @@ const ActivityLogsContainer = () => {
 		"Created At",
 	];
 
+	const getEntityName = (entity: string) =>
+		entityItemsLogs.find(value => value.value === entity)?.label;
+
 	const rows = activityLogsList.map((element, index) => (
 		<Table.Tr key={index}>
 			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.activity_log_id}</Table.Td>
-			<Table.Td>{element.action_entity}</Table.Td>
-			<Table.Td>{element.action}</Table.Td>
+			<Table.Td>{getEntityName(element.action_entity)}</Table.Td>
+			<Table.Td>{toTitleCase(element.action)}</Table.Td>
 			<Table.Td>{element.performed_by.name}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 		</Table.Tr>
@@ -96,51 +104,58 @@ const ActivityLogsContainer = () => {
 	return (
 		<MainComponent>
 			<DashboardPageHeader
+				idLabel=""
+				total={total}
+				idVariable=""
 				buttonTitle=""
-				idLabel="Log Id"
-				loading={loading}
-				idVariable="activity_log_id"
+				filter={filter}
 				title="Activity Logs"
-				setFilter={setFilter}
-				showAddButton={false}
-				onClick={() => {
+				setFilter={(value) => {
+					setFilter(value);
+					setSearchValue("");
 				}}
+				showAddButton={false}
+				loading={searchLoading}
+				onClick={() => {}}
 				searchValue={searchValue}
 				setSearchValue={setSearchValue}
-				setOption={(option) => setFilter(option.value)}
+				searchSelectItems={searchItemsLogs}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
-					console.log(selected.label);
+					setOrderBy(selected.value);
+					setOrder(selected.direction);
 				}}
+				showValueSelect={filter === "entity" || filter === "action"}
+				valueSelectItems={filter === "entity" ? entityItemsLogs : actionItemsLogs}
 			/>
 
 			{
 				loading ?
-					<LoadingOverlayComponent
-						visible={loading}
-					/> :
-					<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
-						<BoxComponent mx="auto">
-							<PaperComponent>
-								<Table highlightOnHover>
-									<Table.Thead>
-										<Table.Tr>
-											{columns.map((item) =>
-												(<Table.Th key={item}>{item}</Table.Th>)
-											)}
-										</Table.Tr>
-									</Table.Thead>
-									<Table.Tbody>{rows}</Table.Tbody>
-								</Table>
-							</PaperComponent>
-							<CenterComponent>
-								<PaginationComponent
-									total={10}
-									value={page}
-									onChange={setPage}
-								/>
-							</CenterComponent>
+					<LoadingOverlayComponent /> :
+					activityLogsList.length === 0 ?
+						<NoDataFound /> :
+						<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
+							<BoxComponent mx="auto">
+								<PaperComponent>
+									<Table highlightOnHover>
+										<Table.Thead>
+											<Table.Tr>
+												{columns.map((item) =>
+													(<Table.Th key={item}>{item}</Table.Th>)
+												)}
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>{rows}</Table.Tbody>
+									</Table>
+								</PaperComponent>
+								<CenterComponent>
+									<PaginationComponent
+										value={page}
+										onChange={setPage}
+										total={Math.ceil(total / 15)}
+									/>
+								</CenterComponent>
+							</BoxComponent>
 						</BoxComponent>
-					</BoxComponent>
 			}
 		</MainComponent>
 	);
