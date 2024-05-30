@@ -21,6 +21,7 @@ const AddTagModal = (props: Props) => {
 	const { isOpen, onClose, setCallApi, initialTagValue, tagId } = props;
 	const [tagName, setTagName] = useState<string>(initialTagValue);
 	const [inputError, setInputError] = useState<string | null>(null);
+	const [loading, setLoading] = useState(false);
 	const isEditModal: boolean = initialTagValue !== "";
 
 	useEffect(() => {
@@ -38,15 +39,18 @@ const AddTagModal = (props: Props) => {
 			name: tagName,
 			id: tagId,
 		};
+		setLoading(true);
 		try {
 			await upsertTagApi(
 				body,
 				() => {
 					onClose();
-					setCallApi(true);
+					setCallApi(val => !val);
+					setLoading(false);
 				},
 				(message: string) => {
 					toast.error(message);
+					setLoading(false);
 				},
 				() => {},
 			);
@@ -75,6 +79,7 @@ const AddTagModal = (props: Props) => {
 
 			<GroupComponent justify="end">
 				<ButtonComponent
+					loading={loading}
 					title="Save"
 					w={100}
 					onClick={handleSubmitTag}

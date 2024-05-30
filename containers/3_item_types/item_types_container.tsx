@@ -47,7 +47,7 @@ const ItemTypesContainer = () => {
 
 	const initState = async () => {
 		await getItemTypeApi(
-			`orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
 				setItemTypesList(data.item_types);
 				setTotal(data.item_types_count);
@@ -71,10 +71,10 @@ const ItemTypesContainer = () => {
 		}
 	}, [searchValue]);
 
-	const handleSearch = useDebouncedCallback(async (query: string) => {
+	const handleSearch = useDebouncedCallback(async (q: string) => {
 		setSearchLoading(true);
-		getItemTypeApi(
-			`filter_type=${filter}&filter_query=${query}`,
+		await getItemTypeApi(
+			`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
 				setItemTypesList(data.item_types);
 				setSearchLoading(false);
@@ -131,6 +131,7 @@ const ItemTypesContainer = () => {
 		"Icon",
 		"Name",
 		"Created At",
+		"Created By",
 		"Disable",
 		"Action",
 	];
@@ -148,6 +149,7 @@ const ItemTypesContainer = () => {
 			</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
+			<Table.Td>{element.created_by.name}</Table.Td>
 			<Table.Td w={60}>
 				<PopConfirmComponent
 					entityName="item type"
@@ -195,6 +197,7 @@ const ItemTypesContainer = () => {
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
 					setOrderBy(selected.value);
 					setOrder(selected.direction);
+					console.log("select", selected);
 				}}
 			/>
 

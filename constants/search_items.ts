@@ -1,23 +1,26 @@
-import { ComboBoxProps } from "@/types";
+import { GroupedComboBoxProps } from "@/types";
 
-/** Search items for searching in Name, ID or Created By */
-export const searchItems = (idLabel: string, idVariable: string): Array<ComboBoxProps> => [
-	{
-		id: "name",
-		label: "Name",
-		value: "name",
-	},
-	{
-		id: idVariable,
-		label: idLabel,
-		value: idVariable,
-	},
-	{
-		id: "created_by",
-		label: "Created By",
-		value: "created_by",
-	},
-];
+/** Search items for searching in Name, ID or Added By */
+export const searchItems = (idLabel: string, idVariable: string): Array<GroupedComboBoxProps> => ([{
+	group: "Searching in",
+	items: [
+		{
+			id: "name",
+			label: "Name",
+			value: "name",
+		},
+		{
+			id: idVariable,
+			label: idLabel,
+			value: idVariable,
+		},
+		{
+			id: "created_by",
+			label: "Added By",
+			value: "created_by",
+		},
+	],
+}]);
 
 /** Search items for searching in Name, ID or Added By */
 export const searchItemsLogs: Array<ComboBoxProps> = [

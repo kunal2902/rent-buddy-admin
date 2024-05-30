@@ -40,6 +40,7 @@ const AddCategoryModal = (props: Props) => {
 	const [selectedFile, setSelectedFile] = useState<string | null>(null);
 	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
 	const [inputError, setInputError] = useState<string | null>(null);
+	const [loading, setLoading] = useState(false);
 	const isEditModal: boolean = initialCategoryValue !== "";
 
 	useEffect(() => {
@@ -89,16 +90,19 @@ const AddCategoryModal = (props: Props) => {
 		}
 		categoryData.append("name", categoryName);
 		categoryData.append("id", categoryId);
+		setLoading(true);
 
         try {
             await upsertCategoryApi(
                 categoryData,
                 () => {
 					onClose();
-					setCallApi(true);
+					setCallApi(val => !val);
+					setLoading(false);
                 },
                 (message: string) => {
-                    toast.error(message);
+					toast.error(message);
+					setLoading(false);
                 },
 				() => {}
             );
@@ -177,6 +181,7 @@ const AddCategoryModal = (props: Props) => {
 
 			<GroupComponent justify="end">
 				<ButtonComponent
+					loading={loading}
 					title="Save"
 					w={100}
 					onClick={handleSubmitCat}

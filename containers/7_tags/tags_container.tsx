@@ -45,7 +45,7 @@ const TagsContainer = () => {
 
 	const initState = async () => {
 		await getTagApi(
-			`orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
 				setTagsList(data.tags);
 				setTotal(data.tags_count);
@@ -69,10 +69,10 @@ const TagsContainer = () => {
 		}
 	}, [searchValue]);
 
-	const handleSearch = useDebouncedCallback(async (query: string) => {
+	const handleSearch = useDebouncedCallback(async (q: string) => {
 		setSearchLoading(true);
 		getTagApi(
-			`filter_type=${filter}&filter_query=${query}`,
+			`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
 				setTagsList(data.tags);
 				setSearchLoading(false);
@@ -127,6 +127,7 @@ const TagsContainer = () => {
 		"Tag Id",
 		"Name",
 		"Created At",
+		"Created By",
 		"Disable",
 		"Action",
 	];
@@ -137,6 +138,7 @@ const TagsContainer = () => {
 			<Table.Td>{element.tag_id}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
+			<Table.Td>{element.created_by.name}</Table.Td>
 			<Table.Td w={60}>
 				<PopConfirmComponent
 					entityName="tag"

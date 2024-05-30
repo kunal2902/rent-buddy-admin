@@ -34,14 +34,14 @@ export const sortItems = (idVariable: string): Array<SortButtonComponentItemProp
 	{
 		id: 5,
 		icon: GoSortAsc,
-		value: "created_by",
+		value: "created_at",
 		label: "Date - ascending",
 		direction: SortItemDirection.ascending,
 	},
 	{
 		id: 6,
 		icon: GoSortDesc,
-		value: "created_by",
+		value: "created_at",
 		label: "Date - descending",
 		direction: SortItemDirection.descending,
 	},
@@ -49,14 +49,14 @@ export const sortItems = (idVariable: string): Array<SortButtonComponentItemProp
 		id: 7,
 		icon: GoSortAsc,
 		value: "created_by",
-		label: "Added By - ascending",
+		label: "Created By - ascending",
 		direction: SortItemDirection.ascending,
 	},
 	{
 		id: 8,
 		icon: GoSortDesc,
 		value: "created_by",
-		label: "Added By - descending",
+		label: "Created By - descending",
 		direction: SortItemDirection.descending,
 	},
 ];

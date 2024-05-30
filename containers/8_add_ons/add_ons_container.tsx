@@ -38,14 +38,13 @@ const AddOnsContainer = () => {
 	const [orderBy, setOrderBy] = useState<string>("add_on_id");
 	const [order, setOrder] = useState<string>("asc");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
-
 	useEffect(() => {
 		initState().then();
 	}, [filter, page, callApi, orderBy, order]);
 
 	const initState = async () => {
 		await getAddOnApi(
-			`orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
 				setAddOnsList(data.add_ons);
 				setTotal(data.add_ons_count);
@@ -63,13 +62,16 @@ const AddOnsContainer = () => {
 	useEffect(() => {
 		if (searchValue) {
 			handleSearch(searchValue);
+		} else {
+			setSearchLoading(false);
+			initState().then();
 		}
 	}, [searchValue]);
 
-	const handleSearch = useDebouncedCallback(async (query: string) => {
+	const handleSearch = useDebouncedCallback(async (q: string) => {
 		setSearchLoading(true);
 		getAddOnApi(
-			`name=${query}`,
+			`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
 				setAddOnsList(data.add_ons);
 				setSearchLoading(false);
@@ -125,6 +127,7 @@ const AddOnsContainer = () => {
 		"Add-on Id",
 		"Name",
 		"Created At",
+		"Created By",
 		"Disable",
 		"Action",
 	];
@@ -135,6 +138,7 @@ const AddOnsContainer = () => {
 			<Table.Td>{element.add_on_id}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
+			<Table.Td>{element.created_by.name}</Table.Td>
 			<Table.Td w={60}>
 				<PopConfirmComponent
 					entityName="addOn"
@@ -172,9 +176,9 @@ const AddOnsContainer = () => {
 				title="Add Ons"
 				filter={filter}
 				idLabel="AddOn Id"
-				idVariable="addOn_id"
+				idVariable="add_on_id"
 				setFilter={setFilter}
-				buttonTitle="Add AddOn"
+				buttonTitle="Add Add On"
 				loading={searchLoading}
 				searchValue={searchValue}
 				setSearchValue={setSearchValue}
