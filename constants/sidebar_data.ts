@@ -15,7 +15,7 @@ import {
 import { MdOutlineAdminPanelSettings, MdOutlinePrivacyTip, MdOutlineContactPage } from "react-icons/md";
 import { LuMail, LuBadgeInfo } from "react-icons/lu";
 import { HiOutlineDocumentReport } from "react-icons/hi";
-import { RxDashboard } from "react-icons/rx";
+import { RxActivityLog, RxDashboard } from "react-icons/rx";
 import { TbReceiptTax } from "react-icons/tb";
 import { CgFileDocument } from "react-icons/cg";
 import { IconType } from "react-icons";
@@ -24,7 +24,7 @@ import { PiWarehouse, PiWarehouseFill } from "react-icons/pi";
 import { RiSettingsFill, RiSettingsLine } from "react-icons/ri";
 import {
 	aboutName,
-	aboutRoute,
+	aboutRoute, activityLogsName, activityLogsRoute,
 	addOnsName,
 	addOnsRoute,
 	categoriesName,
@@ -55,7 +55,7 @@ import {
 	tagsRoute, taxesName,
 	taxesRoute, tncName, tncRoute,
 	usersName,
-	usersRoute,
+	usersRoute
 } from "@/utils";
 
 export enum SideBarType {
@@ -173,6 +173,13 @@ export const SidebarItems: Array<SideBarProps<SideBarType>> = [
 	},
 	{
 		id: 6,
+		title: activityLogsName,
+		other: { link: activityLogsRoute },
+		Icon: RxActivityLog,
+		type: SideBarType.Simple,
+	},
+	{
+		id: 7,
 		title: settingsName,
 		Icon: RiSettingsLine,
 		type: SideBarType.Nested,
