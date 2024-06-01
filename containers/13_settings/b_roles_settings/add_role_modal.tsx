@@ -2,6 +2,7 @@
 
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Checkbox, Collapse, Divider, Stack } from "@mantine/core";
+import { toast } from "react-toastify";
 import {
 	ButtonComponent, GroupComponent,
 	ModalComponent, SpaceComponent, TextComponent,
@@ -9,9 +10,8 @@ import {
 } from "@/components";
 import {
 	getPermissionApi,
-	mantineSize, upsertRoleApi
+	mantineSize, upsertRoleApi,
 } from "@/utils";
-import { toast } from "react-toastify";
 
 interface Props {
 	isOpen: boolean;
@@ -60,11 +60,12 @@ const AddRoleModal = (props: Props) => {
 		if (roleName) {
 			setInputError(null);
 		}
-		getPermissionApi((data: any) => {
-			setPermissions(data.permissions);
+		getPermissionApi("",
+			(data: any) => {
+				setPermissions(data.permissions);
 			},
 			() => {},
-			() => {}
+			() => {},
 		);
 	}, [roleName]);
 

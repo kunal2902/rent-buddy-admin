@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Checkbox, Stack } from "@mantine/core";
 import {
 	ButtonComponent,
@@ -18,21 +18,42 @@ interface Props {
 	isOpen: boolean;
 	onClose: () => void;
 	setCallApi: Dispatch<SetStateAction<boolean>>;
-	customAttribute: CustomAttributeModel | undefined;
-	customAttributId: string;
+	customAttributeId: string;
+	initialValueName: string;
+	initialValueType: string;
+	initialValueDefaultValue: string;
+	initialValueIsTax: boolean;
+	initialValueTaxType: string;
 }
 
 const AddCustomAttributeModal = (props: Props) => {
-	const { isOpen, onClose, setCallApi, customAttributId } = props;
+	const {
+		isOpen,
+		onClose,
+		setCallApi,
+		customAttributeId,
+		initialValueName,
+		initialValueType,
+		initialValueDefaultValue,
+		initialValueIsTax,
+		initialValueTaxType,
+	} = props;
 	const [loading, setLoading] = useState(false);
-	const [customAttributeName, setCustomAttributeName] = useState<string>("");
-	const [isTax, setIsTax] = useState<boolean>(false);
-	const [type, setType] = useState<string | null>(null);
-	const [taxType, setTaxType] = useState<string | null>(null);
-	const [defaultValue, setDefaultValue] = useState<string>("");
+	const [customAttributeName, setCustomAttributeName] = useState<string>(initialValueName);
+	const [isTax, setIsTax] = useState<boolean>(initialValueIsTax);
+	const [type, setType] = useState<string | null>(initialValueType);
+	const [taxType, setTaxType] = useState<string | null>(initialValueTaxType);
+	const [defaultValue, setDefaultValue] = useState<string>(initialValueDefaultValue);
 	const [inputError, setInputError] = useState<string | null>(null);
 	// const isEditModal: boolean = initialItemTypeValue !== "";
 	const isEditModal: boolean = true;
+
+	useEffect(() => {
+		if (customAttributeName) {
+			setInputError(null);
+			setIsTax(initialValueIsTax);
+		}
+	}, [customAttributeName, initialValueIsTax]);
 
 	const handleSubmitCustomAttribute = async (event: React.FormEvent) => {
 		event.preventDefault();
@@ -43,7 +64,7 @@ const AddCustomAttributeModal = (props: Props) => {
 		let customAttributBody = {};
 		if (isTax) {
 			customAttributBody = {
-				id: customAttributId,
+				id: customAttributeId,
 				name: customAttributeName,
 				type,
 				defaultValue,
@@ -52,7 +73,7 @@ const AddCustomAttributeModal = (props: Props) => {
 			};
 		} else {
 			customAttributBody = {
-				id: customAttributId,
+				id: customAttributeId,
 				name: customAttributeName,
 				type,
 				defaultValue,

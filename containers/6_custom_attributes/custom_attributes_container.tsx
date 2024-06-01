@@ -30,6 +30,11 @@ const CustomAttributesContainer = () => {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [total, setTotal] = useState<number>(0);
 	const [customAttributId, setCustomAttributeId] = useState<string>("");
+	const [customAttributName, setCustomAttributName] = useState<string>("");
+	const [type, setType] = useState<string>("");
+	const [defaultValue, setDefaultValue] = useState<string>("");
+	const [isTax, setIsTax] = useState<boolean>(false);
+	const [taxType, setTaxType] = useState<string>("");
 	const [searchValue, setSearchValue] = useState<string>("");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
@@ -37,9 +42,7 @@ const CustomAttributesContainer = () => {
 	const [orderBy, setOrderBy] = useState<string>("custom_attribute_id");
 	const [order, setOrder] = useState<string>("asc");
 	console.log("order", order);
-	const [customAttribute, setCustomAttribute] = useState<CustomAttributeModel | undefined>();
 	const [customAttributesList, setCustomAttributesList] = useState<CustomAttributeModel[]>([]);
-
 	useEffect(() => {
 		initState().then();
 	}, [filter, page, callApi, orderBy, order]);
@@ -88,8 +91,20 @@ const CustomAttributesContainer = () => {
 		).then();
 	}, 500);
 
-	const handleAddOpenModal = (model?: CustomAttributeModel) => {
-		setCustomAttribute(model);
+	const handleAddOpenModal = (
+		id: string,
+		name: string,
+		customAttributeType: string,
+		default_value: string,
+		is_tax: boolean,
+		tax_type: string,
+	) => {
+		setCustomAttributeId(id);
+		setCustomAttributName(name);
+		setType(customAttributeType);
+		setDefaultValue(default_value);
+		setIsTax(is_tax);
+		setTaxType(tax_type);
 		setOpenAddModal(true);
 	};
 
@@ -128,6 +143,9 @@ const CustomAttributesContainer = () => {
 		"Custom Attribute Id",
 		"Name",
 		"Type",
+		"Default Value",
+		"Is Tax",
+		"Tax Type",
 		"Created At",
 		"Created By",
 		"Disable",
@@ -140,6 +158,9 @@ const CustomAttributesContainer = () => {
 			<Table.Td>{element.custom_attribute_id}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{element.type}</Table.Td>
+			<Table.Td>{element.default_value}</Table.Td>
+			<Table.Td>{element.is_tax}</Table.Td>
+			<Table.Td>{element.tax_type?.replace("_", " ")}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 			<Table.Td>{element.created_by.name}</Table.Td>
 			<Table.Td w={60}>
@@ -159,7 +180,14 @@ const CustomAttributesContainer = () => {
 						onConfirm={async () => handleAction(element.custom_attribute_id, "delete")}
 					/>
 					<ActionIconComponent
-						onClick={() => handleAddOpenModal(element)}
+						onClick={() => handleAddOpenModal(
+							element.custom_attribute_id,
+							element.name,
+							element.type,
+							element.default_value,
+							element.is_tax,
+							element.tax_type,
+						)}
 						size="md">
 						<MdOutlineEdit size={18} />
 					</ActionIconComponent>
@@ -181,7 +209,7 @@ const CustomAttributesContainer = () => {
 				setSearchValue={setSearchValue}
 				idVariable="custom_attribute_id"
 				buttonTitle="Add Custom Attribute"
-				onClick={() => handleAddOpenModal()}
+				onClick={() => handleAddOpenModal("", "", "", "", false, "")}
 				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
 					setOrderBy(selected.value);
@@ -223,9 +251,13 @@ const CustomAttributesContainer = () => {
 				<AddCustomAttributeModal
 					isOpen={openAddModal}
 					setCallApi={setCallApi}
-					customAttribute={customAttribute}
+					customAttributeId={customAttributId}
+					initialValueName={customAttributName}
+					initialValueType={type}
+					initialValueDefaultValue={defaultValue}
+					initialValueIsTax={isTax}
+					initialValueTaxType={taxType}
 					onClose={() => setOpenAddModal(false)}
-					customAttributId={customAttributId}
 				/>
 			}
 		</MainComponent>

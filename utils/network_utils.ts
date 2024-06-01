@@ -121,7 +121,7 @@ export const getPermissionApi = async (
 		return;
 	}
 	const path = query === "" ? permissionAPIPath : `${permissionAPIPath}/${query}`;
-	const response = await makeGetRequest(permissionAPIPath, {
+	const response = await makeGetRequest(path, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {

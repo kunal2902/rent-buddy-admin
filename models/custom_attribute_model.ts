@@ -9,4 +9,7 @@ export interface CustomAttributeModel {
     created_at: Date;
     is_disabled: boolean;
     is_deleted: boolean;
+    default_value: string,
+    is_tax: boolean;
+    tax_type: string,
 }

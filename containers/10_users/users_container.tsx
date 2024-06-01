@@ -28,7 +28,11 @@ const UsersContainer = () => {
 	const [pageSize, setPageSize] = useState<number>(15);
 	const [userId, setUserId] = useState("");
 	const [page, setPage] = useState<number>(1);
-	const [userName, setUserName] = useState<string>("");
+	const [initialValueUserName, setInitialValueUserName] = useState<string>("");
+	const [initialValueName, setInitialValueName] = useState<string>("");
+	const [initialValueEmail, setInitialValueEmail] = useState<string>("");
+	const [initialValuePassword, setInitialValuePassword] = useState<string>("");
+	const [initialValueRoleId, setInitialValueRoleId] = useState<string>("");
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [searchValue, setSearchValue] = useState<string>("");
@@ -45,7 +49,7 @@ const UsersContainer = () => {
 
 	const initState = async () => {
 		await getUsersApi(
-			`orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
 				setUsersList(data.users);
 				setTotal(data.users.length);
@@ -69,10 +73,10 @@ const UsersContainer = () => {
 		}
 	}, [searchValue]);
 
-	const handleSearch = useDebouncedCallback(async (query: string) => {
+	const handleSearch = useDebouncedCallback(async (q: string) => {
 		setLoading(true);
 		getUsersApi(
-			`name=${query}`,
+			`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
 				setUsersList(data.users);
 				setCallApi(false);
@@ -87,9 +91,20 @@ const UsersContainer = () => {
 		setLoading(false);
 	}, 500);
 
-	const handleAddOpenModal = (id: string, name: string) => {
+	const handleAddOpenModal = (
+		id: string,
+		name: string,
+		userName: string,
+		email: string,
+		password: string,
+		roleId: string,
+		) => {
 		setUserId(id);
-		setUserName(name);
+		setInitialValueName(name);
+		setInitialValueUserName(userName);
+		setInitialValueEmail(email);
+		setInitialValuePassword(password);
+		setInitialValueRoleId(roleId);
 		setOpenAddModal(true);
 	};
 
@@ -129,7 +144,6 @@ const UsersContainer = () => {
 		"Name",
 		"User name",
 		"Email",
-		"Phone",
 		"Created At",
 		"Disable",
 		"Action",
@@ -142,7 +156,6 @@ const UsersContainer = () => {
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{element.username}</Table.Td>
 			<Table.Td>{element.email}</Table.Td>
-			<Table.Td>{element.phone}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 			<Table.Td w={60}>
 				{
@@ -167,7 +180,14 @@ const UsersContainer = () => {
 						/>
 					}
 					<ActionIconComponent
-						onClick={() => handleAddOpenModal(element.user_id, element.name)}
+						onClick={() => handleAddOpenModal(
+							element.user_id,
+							element.name,
+							element.username,
+							element.email,
+							element.password,
+							element.role_id,
+						)}
 						size="md">
 						<MdOutlineEdit size={18} />
 					</ActionIconComponent>
@@ -192,7 +212,7 @@ const UsersContainer = () => {
 				setOption={(option) => {
 					setFilter(option.value);
 				}}
-				onClick={() => handleAddOpenModal("", "")}
+				onClick={() => handleAddOpenModal("", "", "", "", "", "")}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
 					setOrderBy(selected.value);
 					setOrder(selected.direction);
@@ -234,7 +254,11 @@ const UsersContainer = () => {
 					userId={userId}
 					isOpen={openAddModal}
 					setCallApi={setCallApi}
-					initialUserValue={userName}
+					initialValueName={initialValueName}
+					initialValueUserName={initialValueUserName}
+					initialValueEmail={initialValueEmail}
+					initialValuePassword={initialValuePassword}
+					initialRoleId={initialValueRoleId}
 					onClose={() => setOpenAddModal(false)}
 				/>
 			}

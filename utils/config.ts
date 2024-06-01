@@ -119,11 +119,11 @@ export const activityLogsAPIPath: string = `${apiUrl}/activity-logs`;
 
 // Users path
 /** get all users based on filter, sorting and search, add or insert */
-export const usersAPIPath: string = `${apiUrl}/users`;
+export const usersAPIPath: string = `${apiUrl}/user`;
 
 // Customers path
 /** get all customers based on filter, sorting and search, add or insert */
-export const customerAPIPath: string = `${apiUrl}/customer`;
+export const customerAPIPath: string = `${apiUrl}/customers`;
 
 // Reports path
 /** get all reports based on filter, sorting and search */

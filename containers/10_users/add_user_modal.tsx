@@ -14,22 +14,35 @@ interface Props {
 	isOpen: boolean;
 	onClose: () => void;
 	setCallApi: Dispatch<SetStateAction<boolean>>;
-	initialUserValue?: string;
-	userId?: string;
+	initialValueName: string;
+	initialValueUserName: string;
+	initialValueEmail: string;
+	initialValuePassword: string;
 	initialRoleId: string;
+	userId?: string;
 }
 
 const AddUserModal = (props: Props) => {
-	const { isOpen, onClose, setCallApi, initialUserValue, initialRoleId, userId } = props;
-	const [name, setName] = useState<string>(initialUserValue ?? "");
-	const [userName, setUserName] = useState<string>("");
-	const [password, setPassword] = useState<string>("");
-	const [email, setEmail] = useState<string>("");
+	const {
+		isOpen,
+		onClose,
+		setCallApi,
+		initialValueName,
+		initialValueUserName,
+		initialRoleId,
+		initialValueEmail,
+		initialValuePassword,
+		userId,
+	} = props;
+	const [name, setName] = useState<string>(initialValueName);
+	const [userName, setUserName] = useState<string>(initialValueUserName);
+	const [password, setPassword] = useState<string>(initialValuePassword);
+	const [email, setEmail] = useState<string>(initialValueEmail);
 	const [inputError, setInputError] = useState<string | null>(null);
 	const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 	const [rolesList, setRolesList] = useState([]);
 	const [roleId, setRoleId] = useState<string>(initialRoleId);
-	const isEditModal: boolean = initialUserValue !== "";
+	const isEditModal: boolean = initialValueName !== "";
 
 	useEffect(() => {
 		if (userName) {
@@ -46,14 +59,9 @@ const AddUserModal = (props: Props) => {
 						label: role.name,
 					}));
 				setRolesList(formattedCategories);
-				setCallApi(val => !val);
 			},
-			() => {
-				setCallApi(val => !val);
-			},
-			() => {
-				setCallApi(val => !val);
-			}).then();
+			() => {},
+			() => {});
 	}, [userName]);
 
 	const handleSubmitUser = async (event: React.FormEvent) => {
@@ -64,7 +72,7 @@ const AddUserModal = (props: Props) => {
 		const body = {
 			email,
 			password,
-			name: userName,
+			name,
 			id: userId,
 			username: userName,
 			role_id: roleId,
@@ -74,7 +82,7 @@ const AddUserModal = (props: Props) => {
 				body,
 				() => {
 					onClose();
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				(message: string) => {
 					toast.error(message);
