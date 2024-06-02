@@ -36,11 +36,13 @@ import { StackComponent } from "@/components/mantine/stack_component";
 const LoginContainer = () => {
 	const router = useRouter();
 	const { darkMode } = useThemeProvider();
+	const [loading, setLoading] = useState<boolean>(false);
 	const [password, setPassword] = useState<string>("bulai002");
 	const [email, setEmail] = useState<string>("simon@admin.com");
 	const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
 	const handleLogin = async (event: { preventDefault: () => void }) => {
+		setLoading(true);
 		event.preventDefault();
 		const body = {
 			email,
@@ -51,24 +53,24 @@ const LoginContainer = () => {
 				body.email,
 				body.password,
 				(result: any) => {
-					if (result.code === 200) {
-						setCookie(crmJwtConstant, result.data.authToken, cookieOptions);
-						setCookie(userIdConstant, result.data.user.user_id, cookieOptions);
-						setCookie(nameConstant, result.data.user.name, cookieOptions);
-						setCookie(emailConstant, result.data.user.email, cookieOptions);
-						setCookie(userNameConstant, result.data.user.username, cookieOptions);
-						setCookie(roleIdConstant, result.data.user.role_id, cookieOptions);
-						router.replace("/");
-					} else {
-						console.log({ result });
-						console.log("Error");
-					}
+					setCookie(crmJwtConstant, result.data.authToken, cookieOptions);
+					setCookie(userIdConstant, result.data.user.user_id, cookieOptions);
+					setCookie(nameConstant, result.data.user.name, cookieOptions);
+					setCookie(emailConstant, result.data.user.email, cookieOptions);
+					setCookie(userNameConstant, result.data.user.username, cookieOptions);
+					setCookie(roleIdConstant, result.data.user.role_id, cookieOptions);
+					router.replace("/");
+					setTimeout(() => {
+						setLoading(false);
+					}, 1500);
 				},
 				(err: any) => {
+					setLoading(false);
 					toast.error(err);
 				}
 			);
 		} catch (error) {
+			setLoading(false);
 			console.error("Login failed:", error);
 		}
 	};
@@ -124,13 +126,13 @@ const LoginContainer = () => {
 						px={0}
 						py={0}
 						variant="subtle"
-						onClick={() => {
-						}}
+						onClick={() => {}}
 						title="Forgot Password?" />
 				</GroupComponent>
 
 				<ButtonComponent
 					title="Login"
+					loading={loading}
 					onClick={handleLogin}
 				/>
 			</div>

@@ -1,19 +1,19 @@
 import {
-	ShieldCheck,
-	Users,
-	Settings,
-	ScanLine,
+	Blocks,
+	Bookmark,
+	LayoutPanelTop,
+	List,
+	LucideIcon,
 	ScanBarcode,
+	ScanLine,
+	Settings,
+	ShieldCheck,
 	Tag,
 	Tags,
-	List,
-	LayoutPanelTop,
-	LucideIcon,
-	Bookmark,
-	Blocks,
+	Users,
 } from "lucide-react";
-import { MdOutlineAdminPanelSettings, MdOutlinePrivacyTip, MdOutlineContactPage } from "react-icons/md";
-import { LuMail, LuBadgeInfo } from "react-icons/lu";
+import { MdOutlineAdminPanelSettings, MdOutlineContactPage, MdOutlinePrivacyTip } from "react-icons/md";
+import { LuBadgeInfo, LuMail } from "react-icons/lu";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { RxActivityLog, RxDashboard } from "react-icons/rx";
 import { TbReceiptTax } from "react-icons/tb";
@@ -24,18 +24,23 @@ import { PiWarehouse, PiWarehouseFill } from "react-icons/pi";
 import { RiSettingsFill, RiSettingsLine } from "react-icons/ri";
 import {
 	aboutName,
-	aboutRoute, activityLogsName, activityLogsRoute,
+	aboutRoute,
+	activityLogsName,
+	activityLogsRoute,
 	addOnsName,
 	addOnsRoute,
 	categoriesName,
-	categoriesRoute, contactName, contactRoute,
+	categoriesRoute,
+	contactName,
+	contactRoute,
 	customAttributesName,
 	customAttributesRoute,
 	customersName,
 	customersRoute,
 	dashboardName,
 	dashboardRoute,
-	emailRoute, emailSettingsName,
+	emailRoute,
+	emailSettingsName,
 	generalSettingsName,
 	generalSettingsRoute,
 	inventoryName,
@@ -45,17 +50,24 @@ import {
 	itemTypesRoute,
 	pageLayoutName,
 	pageLayoutRoute,
-	pagesName, privacyPolicyName, privacyPolicyRoute,
+	pagesName,
+	privacyPolicyName,
+	privacyPolicyRoute,
 	reportsName,
-	reportsRoute, rolesName, rolesRoute,
+	reportsRoute,
+	rolesName,
+	rolesRoute,
 	settingsName,
 	subCategoriesName,
 	subCategoriesRoute,
 	tagsName,
-	tagsRoute, taxesName,
-	taxesRoute, tncName, tncRoute,
+	tagsRoute,
+	taxesName,
+	taxesRoute,
+	tncName,
+	tncRoute,
 	usersName,
-	usersRoute
+	usersRoute,
 } from "@/utils";
 
 export enum SideBarType {

@@ -2,6 +2,7 @@
 
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Checkbox, Stack } from "@mantine/core";
+import { toast } from "react-toastify";
 import {
 	ButtonComponent,
 	ModalComponent,
@@ -12,7 +13,6 @@ import {
 import { CustomAttributeTaxTypeOptions, CustomAttributeTypeOptions } from "@/constants";
 import { CustomAttributeModel } from "@/models";
 import { mantineSize, upsertAttributeApi, upsertTagApi } from "@/utils";
-import { toast } from "react-toastify";
 
 interface Props {
 	isOpen: boolean;

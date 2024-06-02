@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-import { UnstyledButton, UnstyledButtonProps,
-} from "@mantine/core";
+import { UnstyledButton, UnstyledButtonProps } from "@mantine/core";
 import Link from "next/link";
 import { mantineSize } from "@/utils";
 
@@ -19,7 +18,10 @@ export const UnstyledButtonComponent = (props: UnstyledButtonComponentProps) =>
 	<UnstyledButton
 		{...props}
 		size={props.size ?? mantineSize}
-		{...(props.href ? { component: Link, href: props.href } :
+		{...(props.href ? {
+				component: Link,
+				href: props.href,
+			} :
 			{ onClick: props.onClick })}
 	>
 		{props.children}

@@ -21,10 +21,12 @@ import {
 	SortButtonComponentItemProps,
 } from "@/components";
 import { ItemTypeModel } from "@/models";
-import { deleteItemTypeApi, disableItemTypeApi, formatDate, getItemTypeApi, imageUrl } from "@/utils";
+import { deleteItemTypeApi, disableItemTypeApi, formatDate, getItemTypeApi, imageUrl, logoutUser } from "@/utils";
 import AddItemTypeModal from "./add_item_type_modal";
+import { useRouter } from "next/navigation";
 
 const ItemTypesContainer = () => {
+	const router = useRouter();
 	const [page, setPage] = useState<number>(1);
 	const [total, setTotal] = useState<number>(0);
 	const [order, setOrder] = useState<string>("asc");
@@ -59,6 +61,7 @@ const ItemTypesContainer = () => {
 			},
 			() => {
 				setLoading(false);
+				logoutUser(router);
 			}
 		);
 	};
@@ -85,6 +88,7 @@ const ItemTypesContainer = () => {
 			},
 			() => {
 				setSearchLoading(false);
+				logoutUser(router);
 			}
 		).then();
 	}, 500);
@@ -108,6 +112,7 @@ const ItemTypesContainer = () => {
 				},
 				() => {
 					setCallApi(val => !val);
+					logoutUser(router);
 				}
 			);
 		} else {
@@ -121,6 +126,7 @@ const ItemTypesContainer = () => {
 				},
 				() => {
 					setCallApi(val => !val);
+					logoutUser(router);
 				}
 			);
 		}

@@ -4,12 +4,14 @@ import React, { useEffect, useState } from "react";
 import { Table } from "@mantine/core";
 import { MdOutlineEdit } from "react-icons/md";
 import { useDebouncedCallback } from "@mantine/hooks";
+import { useRouter } from "next/navigation";
 import {
 	ActionIconComponent,
 	BoxComponent,
 	CenterComponent,
 	DashboardPageHeader,
-	GroupComponent, ImageComponent,
+	GroupComponent,
+	ImageComponent,
 	LoadingOverlayComponent,
 	MainComponent,
 	NoDataFound,
@@ -20,24 +22,25 @@ import {
 	SortButtonComponentItemProps,
 } from "@/components";
 import { CategoryModel } from "@/models";
-import { deleteCategoryApi, disableCategoryApi, formatDate, getCategoryApi, imageUrl } from "@/utils";
+import { deleteCategoryApi, disableCategoryApi, formatDate, getCategoryApi, imageUrl, logoutUser } from "@/utils";
 import AddCategoryModal from "./add_category_modal";
 
 const CategoriesContainer = () => {
+	const router = useRouter();
 	const [page, setPage] = useState<number>(1);
-	const [pageSize, setPageSize] = useState<number>(15);
 	const [total, setTotal] = useState<number>(0);
+	const [order, setOrder] = useState<string>("asc");
+	const [filter, setFilter] = useState<string>("name");
+	const [pageSize, setPageSize] = useState<number>(15);
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [categoryId, setCategoryId] = useState<string>("");
 	const [searchValue, setSearchValue] = useState<string>("");
 	const [categoryName, setCategoryName] = useState<string>("");
+	const [orderBy, setOrderBy] = useState<string>("category_id");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const [categoryIcon, setCategoryIcon] = useState<string | undefined>("");
-	const [filter, setFilter] = useState<string>("name");
-	const [orderBy, setOrderBy] = useState<string>("category_id");
-	const [order, setOrder] = useState<string>("asc");
 	const [categoriesList, setCategoriesList] = useState<CategoryModel[]>([]);
 
 	useEffect(() => {
@@ -58,6 +61,7 @@ const CategoriesContainer = () => {
 			},
 			() => {
 				setLoading(false);
+				logoutUser(router);
 			}
 		);
 	};
@@ -84,6 +88,7 @@ const CategoriesContainer = () => {
 			},
 			() => {
 				setSearchLoading(false);
+				logoutUser(router);
 			}
 		).then();
 	}, 500);
@@ -107,6 +112,7 @@ const CategoriesContainer = () => {
 				},
 				() => {
 					setCallApi(val => !val);
+					logoutUser(router);
 				}
 			);
 		} else {
@@ -120,6 +126,7 @@ const CategoriesContainer = () => {
 				},
 				() => {
 					setCallApi(val => !val);
+					logoutUser(router);
 				}
 			);
 		}

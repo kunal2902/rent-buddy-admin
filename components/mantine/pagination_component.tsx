@@ -1,9 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-	Pagination, PaginationProps,
-} from "@mantine/core";
+import { Pagination, PaginationProps } from "@mantine/core";
 import { mantineRadius } from "@/utils";
 
 /** Props list of Mantine's Pagination component - https://mantine.dev/theming/pagination/#mantineprovider-props */

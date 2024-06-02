@@ -4,6 +4,7 @@ import { Table } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { MdOutlineEdit } from "react-icons/md";
+import { useRouter } from "next/navigation";
 import {
 	ActionIconComponent,
 	BoxComponent,
@@ -20,10 +21,11 @@ import {
 	SortButtonComponentItemProps,
 } from "@/components";
 import { ItemModel } from "@/models";
-import { deleteItemApi, disableItemApi, formatDate, getItemApi } from "@/utils";
+import { deleteItemApi, disableItemApi, formatDate, getItemApi, logoutUser } from "@/utils";
 import AddItemModal from "./add_item_modal";
 
 const ItemsContainer = () => {
+	const router = useRouter();
 	const [page, setPage] = useState<number>(1);
 	const [itemId, setItemId] = useState<string>("");
 	const [itemName, setItemName] = useState<string>("");
@@ -36,18 +38,20 @@ const ItemsContainer = () => {
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 
 	useEffect(() => {
-			getItemApi(
-				`orderBy=${filter}&page=${page}&order=asc`,
-				(data: any) => {
-					setItemList(data.item);
-					setLoading(false);
-				},
-				() => {
-					setLoading(false);
-				},
-				() => {
-					setLoading(false);
-				}).then();
+		getItemApi(
+			`orderBy=${filter}&page=${page}&order=asc`,
+			(data: any) => {
+				setItemList(data.item);
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+				logoutUser(router);
+			}
+		).then();
 	}, [filter, page, callApi]);
 
 	useEffect(() => {
@@ -72,6 +76,7 @@ const ItemsContainer = () => {
 				},
 				() => {
 					setSearchLoading(false);
+					logoutUser(router);
 				}
 			).then();
 		}
@@ -94,6 +99,7 @@ const ItemsContainer = () => {
 				},
 				() => {
 					setCallApi(false);
+					logoutUser(router);
 				});
 		} else {
 			await deleteItemApi(id,
@@ -105,6 +111,7 @@ const ItemsContainer = () => {
 				},
 				() => {
 					setCallApi(false);
+					logoutUser(router);
 				});
 		}
 	};

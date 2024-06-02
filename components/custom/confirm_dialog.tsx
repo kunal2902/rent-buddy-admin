@@ -12,7 +12,13 @@ interface confirmDialogProps {
 }
 
 export const ConfirmDialog = (props: confirmDialogProps) => {
-	const { isOpen, onClose, onConfirm, actionName, entityName } = props;
+	const {
+		isOpen,
+		onClose,
+		onConfirm,
+		actionName,
+		entityName,
+	} = props;
 
 	return (
 		<ModalComponent

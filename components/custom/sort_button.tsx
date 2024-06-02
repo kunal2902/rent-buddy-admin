@@ -33,7 +33,11 @@ export interface SortButtonComponentProps extends MenuProps {
 /** This is the Mantine Menu component - https://mantine.dev/core/menu/ */
 export const SortButtonComponent = (props: SortButtonComponentProps) => {
 	const { darkMode } = useThemeProvider();
-	const { items, onSelected, ...rest } = props;
+	const {
+		items,
+		onSelected,
+		...rest
+	} = props;
 	const [selected, setSelected] = useState<SortButtonComponentItemProps>();
 	const SortButton = forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<"div">>((buttonProps, ref) => (
 		<div ref={ref} {...buttonProps}>

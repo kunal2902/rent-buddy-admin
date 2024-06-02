@@ -1,4 +1,4 @@
-import { GroupedComboBoxProps } from "@/types";
+import { ComboBoxProps, GroupedComboBoxProps } from "@/types";
 
 /** Search items for searching in Name, ID or Added By */
 export const searchItems = (idLabel: string, idVariable: string): Array<GroupedComboBoxProps> => ([{

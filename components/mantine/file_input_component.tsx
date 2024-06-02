@@ -5,7 +5,8 @@ import { forwardRef, useEffect } from "react";
 
 /** Props list of Mantine's TextInput component - https://mantine.dev/core/file-input/?t=props */
 
-export interface FileInputComponentProps extends FileInputProps {}
+export interface FileInputComponentProps extends FileInputProps {
+}
 
 /** This is the Mantine FileInput component - https://mantine.dev/core/file-input/ */
 export const FileInputComponent = forwardRef<

@@ -1,9 +1,6 @@
 "use client";
 
-import {
-	ActionIcon,
-	ActionIconProps,
-} from "@mantine/core";
+import { ActionIcon, ActionIconProps } from "@mantine/core";
 import React from "react";
 import Link from "next/link";
 import {
@@ -31,7 +28,10 @@ export const ActionIconComponent = (props: ActionIconComponentProps) =>
 		radius={props.radius ?? mantineRadius}
 		size={props.size ?? mantineActionIconSize}
 		variant={props.variant ?? mantineActionIconVariant}
-		{...(props.href ? { component: Link, href: props.href } :
+		{...(props.href ? {
+				component: Link,
+				href: props.href,
+			} :
 			{ onClick: props.onClick })}
 	>
 		{props.children}

@@ -2,12 +2,16 @@
 
 import { toast } from "react-toastify";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
-	ButtonComponent, GroupComponent,
-	ModalComponent, SpaceComponent,
-	TextInputComponent, TitleComponent,
+	ButtonComponent,
+	GroupComponent,
+	ModalComponent,
+	SpaceComponent,
+	TextInputComponent,
+	TitleComponent,
 } from "@/components";
-import { upsertItemApi } from "@/utils";
+import { logoutUser, upsertItemApi } from "@/utils";
 
 interface Props {
 	isOpen: boolean;
@@ -18,10 +22,18 @@ interface Props {
 }
 
 const AddItemModal = (props: Props) => {
-	const { isOpen, onClose, setCallApi, initialItemName, itemId } = props;
-	const [itemName, setItemName] = useState<string>(initialItemName);
-	const [inputError, setInputError] = useState<string | null>(null);
+	const {
+		isOpen,
+		onClose,
+		setCallApi,
+		initialItemName,
+		itemId,
+	} = props;
+	const router = useRouter();
 	const isEditModal: boolean = initialItemName !== "";
+	const [itemName, setItemName] = useState<string>(initialItemName);
+	const [loading, setLoading] = useState<boolean>(false);
+	const [inputError, setInputError] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (itemName) {
@@ -34,6 +46,7 @@ const AddItemModal = (props: Props) => {
 		if (!itemName) {
 			setInputError("Please enter the name first");
 		}
+		setLoading(true);
 		const body = {
 			name: itemName,
 			id: itemId,
@@ -43,12 +56,17 @@ const AddItemModal = (props: Props) => {
 				body,
 				() => {
 					onClose();
+					setLoading(false);
 					setCallApi(true);
 				},
 				(message: string) => {
 					toast.error(message);
+					setLoading(false);
 				},
-				() => {},
+				() => {
+					logoutUser(router);
+					setLoading(false);
+				}
 			);
 		} catch (error) {
 			console.error("Error:", error);
@@ -75,8 +93,9 @@ const AddItemModal = (props: Props) => {
 
 			<GroupComponent justify="end">
 				<ButtonComponent
-					title="Save"
 					w={100}
+					title="Save"
+					loading={loading}
 					onClick={handleSubmitItem}
 				/>
 			</GroupComponent>

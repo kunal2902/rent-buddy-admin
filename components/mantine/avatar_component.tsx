@@ -1,9 +1,6 @@
 "use client";
 
-import {
-	Avatar,
-	AvatarProps,
-} from "@mantine/core";
+import { Avatar, AvatarProps } from "@mantine/core";
 import React from "react";
 import { appColorRGBA, mantineAvatarVariant, mantineButtonHeight, mantineRadius, mantineSize } from "@/utils";
 

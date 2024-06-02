@@ -13,7 +13,11 @@ export interface TitleComponentProps extends TitleProps {
 /** This is the Mantine Title component - https://mantine.dev/core/title/ */
 export const TitleComponent = (props: TitleComponentProps) => {
 	const { darkMode } = useThemeProvider();
-	const { bold, title, ...rest } = props;
+	const {
+		bold,
+		title,
+		...rest
+	} = props;
 	return (
 		<Title
 			{...rest}

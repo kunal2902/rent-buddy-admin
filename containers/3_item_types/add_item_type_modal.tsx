@@ -15,7 +15,8 @@ import {
 	TitleComponent,
 } from "@/components";
 import { FileInputComponent } from "@/components/mantine/file_input_component";
-import { imageUrl, upsertItemTypeApi } from "@/utils";
+import { imageUrl, logoutUser, upsertItemTypeApi } from "@/utils";
+import { useRouter } from "next/navigation";
 
 interface Props {
 	isOpen: boolean;
@@ -35,13 +36,13 @@ const AddItemTypeModal: React.FC<Props> = (props: Props) => {
 		itemTypeId,
 		icon,
 	} = props;
-	const [itemTypeName, setItemTypeName] = useState<string>(initialItemTypeValue);
-	const [selectedFileToUpload, setSelectedFileToUpload] = useState<File | null>(null);
-	const [selectedFile, setSelectedFile] = useState<string | null>(null);
-	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
-	const [inputError, setInputError] = useState<string | null>(null);
-	const [loading, setLoading] = useState(false);
 	const isEditModal: boolean = initialItemTypeValue !== "";
+	const [loading, setLoading] = useState(false);
+	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
+	const [itemTypeName, setItemTypeName] = useState<string>(initialItemTypeValue);
+	const [inputError, setInputError] = useState<string | null>(null);
+	const [selectedFile, setSelectedFile] = useState<string | null>(null);
+	const [selectedFileToUpload, setSelectedFileToUpload] = useState<File | null>(null);
 
 	useEffect(() => {
 		if (itemTypeName && icon) {
@@ -105,6 +106,8 @@ const AddItemTypeModal: React.FC<Props> = (props: Props) => {
 					setLoading(false);
 				},
 				() => {
+					setLoading(false);
+					logoutUser(useRouter());
 				}
 			);
 		} catch (error) {

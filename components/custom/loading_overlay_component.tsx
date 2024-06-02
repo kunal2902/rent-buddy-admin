@@ -15,7 +15,7 @@ export const LoadingOverlayComponent = () => {
 				alignContent: "center",
 				margin: "0 12px 12px 12px",
 				borderRadius: "8px",
-		}}
+			}}
 		>
 			<CenterComponent h="100%">
 				<Loader />

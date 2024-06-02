@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import Image from "next/image";
 import { Image as ImageIcon } from "lucide-react";
 import { Stack } from "@mantine/core";
+import { useRouter } from "next/navigation";
 import {
 	ActionIconComponent,
 	ButtonComponent,
@@ -15,11 +16,11 @@ import {
 	TextInputComponent,
 	TitleComponent,
 } from "@/components";
-import { imageUrl, upsertCategoryApi } from "@/utils";
+import { imageUrl, logoutUser, upsertCategoryApi } from "@/utils";
 
 interface Props {
-    isOpen: boolean;
-    onClose: () => void;
+	isOpen: boolean;
+	onClose: () => void;
 	setCallApi: Dispatch<SetStateAction<boolean>>;
 	initialCategoryValue: string;
 	categoryId: string;
@@ -35,13 +36,14 @@ const AddCategoryModal = (props: Props) => {
 		categoryId,
 		icon,
 	} = props;
-	const [categoryName, setCategoryName] = useState<string>(initialCategoryValue);
-	const [selectedFileToUpload, setSelectedFileToUpload] = useState<File | null>(null);
-	const [selectedFile, setSelectedFile] = useState<string | null>(null);
-	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
-	const [inputError, setInputError] = useState<string | null>(null);
-	const [loading, setLoading] = useState(false);
+	const router = useRouter();
 	const isEditModal: boolean = initialCategoryValue !== "";
+	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
+	const [loading, setLoading] = useState<boolean>(false);
+	const [categoryName, setCategoryName] = useState<string>(initialCategoryValue);
+	const [inputError, setInputError] = useState<string | null>(null);
+	const [selectedFile, setSelectedFile] = useState<string | null>(null);
+	const [selectedFileToUpload, setSelectedFileToUpload] = useState<File | null>(null);
 
 	useEffect(() => {
 		if (categoryName && icon) {
@@ -75,10 +77,10 @@ const AddCategoryModal = (props: Props) => {
 				}
 			};
 		}
-};
+	};
 
 	const handleSubmitCat = async (event: React.FormEvent) => {
-        event.preventDefault();
+		event.preventDefault();
 
 		if (!categoryName) {
 			setInputError("Please enter the name first");
@@ -92,24 +94,26 @@ const AddCategoryModal = (props: Props) => {
 		categoryData.append("id", categoryId);
 		setLoading(true);
 
-        try {
-            await upsertCategoryApi(
-                categoryData,
-                () => {
+		try {
+			await upsertCategoryApi(
+				categoryData,
+				() => {
 					onClose();
 					setCallApi(val => !val);
 					setLoading(false);
-                },
-                (message: string) => {
+				},
+				(message: string) => {
 					toast.error(message);
 					setLoading(false);
-                },
-				() => {}
-            );
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    };
+				},
+				() => {
+					logoutUser(router);
+				}
+			);
+		} catch (error) {
+			console.error("Error:", error);
+		}
+	};
 
 	return (
 		<ModalComponent
