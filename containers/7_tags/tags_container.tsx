@@ -38,12 +38,12 @@ const TagsContainer = () => {
 	const [order, setOrder] = useState<string>("asc");
 	const [tagsList, setTagsList] = useState<TagModel[]>([]);
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
-
 	useEffect(() => {
 		initState().then();
 	}, [filter, page, callApi, orderBy, order]);
 
 	const initState = async () => {
+		setLoading(true);
 		await getTagApi(
 			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {

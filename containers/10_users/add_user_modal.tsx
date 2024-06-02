@@ -2,31 +2,66 @@
 
 import { toast } from "react-toastify";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Stack } from "@mantine/core";
 import {
 	ButtonComponent, GroupComponent,
-	ModalComponent, SpaceComponent,
+	ModalComponent, PasswordInputComponent, SelectComponent, SpaceComponent,
 	TextInputComponent, TitleComponent,
 } from "@/components";
-import { upsertUserApi } from "@/utils";
+import { getCategoryApi, getPermissionApi, getRoleApi, upsertUserApi } from "@/utils";
 
 interface Props {
 	isOpen: boolean;
 	onClose: () => void;
 	setCallApi: Dispatch<SetStateAction<boolean>>;
-	initialUserValue?: string;
+	initialValueName: string;
+	initialValueUserName: string;
+	initialValueEmail: string;
+	initialValuePassword: string;
+	initialRoleId: string;
 	userId?: string;
 }
 
 const AddUserModal = (props: Props) => {
-	const { isOpen, onClose, setCallApi, initialUserValue, userId } = props;
-	const [userName, setUserName] = useState<string>(initialUserValue ?? "");
+	const {
+		isOpen,
+		onClose,
+		setCallApi,
+		initialValueName,
+		initialValueUserName,
+		initialRoleId,
+		initialValueEmail,
+		initialValuePassword,
+		userId,
+	} = props;
+	const [name, setName] = useState<string>(initialValueName);
+	const [userName, setUserName] = useState<string>(initialValueUserName);
+	const [password, setPassword] = useState<string>(initialValuePassword);
+	const [email, setEmail] = useState<string>(initialValueEmail);
 	const [inputError, setInputError] = useState<string | null>(null);
-	const isEditModal: boolean = initialUserValue !== "";
+	const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+	const [rolesList, setRolesList] = useState([]);
+	const [roleId, setRoleId] = useState<string>(initialRoleId);
+	const isEditModal: boolean = initialValueName !== "";
 
 	useEffect(() => {
 		if (userName) {
 			setInputError(null);
 		}
+		getRoleApi("",
+			(data: any) => {
+				const formattedCategories = data.roles.map(
+					(role: {
+						role_id: string;
+						name: string;
+					}) => ({
+						value: role.role_id,
+						label: role.name,
+					}));
+				setRolesList(formattedCategories);
+			},
+			() => {},
+			() => {});
 	}, [userName]);
 
 	const handleSubmitUser = async (event: React.FormEvent) => {
@@ -35,15 +70,19 @@ const AddUserModal = (props: Props) => {
 			setInputError("Please enter the name first");
 		}
 		const body = {
-			name: userName,
+			email,
+			password,
+			name,
 			id: userId,
+			username: userName,
+			role_id: roleId,
 		};
 		try {
 			await upsertUserApi(
 				body,
 				() => {
 					onClose();
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				(message: string) => {
 					toast.error(message);
@@ -59,17 +98,64 @@ const AddUserModal = (props: Props) => {
 		<ModalComponent
 			opened={isOpen}
 			onClose={onClose}
+			className="border-grey-800"
 			title={<TitleComponent title={isEditModal ? "Edit User" : "New User"} />}
 		>
-			<TextInputComponent
-				required
-				title="Name"
-				label="User Name"
-				value={userName}
-				error={inputError}
-				setValue={setUserName}
-				placeholder="Enter user Name"
-			/>
+			<GroupComponent grow align="start">
+				<Stack>
+					<TextInputComponent
+						required
+						title="Name"
+						label="Name"
+						value={name}
+						error={inputError}
+						setValue={setName}
+						placeholder="Enter Name"
+					/>
+
+					<TextInputComponent
+						required
+						title="User Name"
+						label="User Name"
+						value={userName}
+						error={inputError}
+						setValue={setUserName}
+						placeholder="Enter user Name"
+					/>
+
+					<TextInputComponent
+						required
+						title="Email"
+						label="Email"
+						value={email}
+						error={inputError}
+						setValue={setEmail}
+						placeholder="abc@gmail.com"
+					/>
+
+					<PasswordInputComponent
+						mt={6}
+						label="Password"
+						value={password}
+						placeholder="******"
+						setValue={setPassword}
+						visible={isPasswordVisible}
+						onVisibilityChange={setIsPasswordVisible}
+					/>
+
+					<SelectComponent
+						required
+						label="Select role"
+						placeholder="Select role"
+						data={rolesList}
+						clearable={false}
+						value={roleId}
+						setValue={setRoleId}
+						checkIconPosition="right"
+						isGrouped={false}
+					/>
+				</Stack>
+			</GroupComponent>
 
 			<SpaceComponent showHeight />
 

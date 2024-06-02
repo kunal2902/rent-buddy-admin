@@ -110,6 +110,7 @@ export const loginApi = async (
 
 // Permission Api
 export const getPermissionApi = async (
+	query: string | undefined,
 	successCallback: (arg0: any) => void,
 	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
@@ -119,13 +120,14 @@ export const getPermissionApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makeGetRequest(permissionAPIPath, {
+	const path = query === "" ? permissionAPIPath : `${permissionAPIPath}/${query}`;
+	const response = await makeGetRequest(path, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
 		console.log(response);
 	}
-	switch (response.status) {
+	switch (response.code) {
 		case 200:
 			successCallback(response.data);
 			break;
@@ -375,7 +377,7 @@ export const upsertRoleApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePostRequest(roleAPIPath, {
+	const response = await makePostRequest(roleAPIPath, body, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -537,7 +539,7 @@ export const upsertAttributeApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePostRequest(attributeAPIPath, {
+	const response = await makePostRequest(attributeAPIPath, body, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -1575,7 +1577,7 @@ export const upsertUserApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePostRequest(usersAPIPath, {
+	const response = await makePostRequest(usersAPIPath, body, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {

@@ -20,7 +20,7 @@ import {
 	SortButtonComponentItemProps,
 } from "@/components";
 import { CategoryModel } from "@/models";
-import { deleteCategoryApi, disableCategoryApi, formatDate, getCategoryApi, getItemTypeApi, imageUrl } from "@/utils";
+import { deleteCategoryApi, disableCategoryApi, formatDate, getCategoryApi, imageUrl } from "@/utils";
 import AddCategoryModal from "./add_category_modal";
 
 const CategoriesContainer = () => {
@@ -45,6 +45,7 @@ const CategoriesContainer = () => {
 	}, [filter, page, callApi, orderBy, order]);
 
 	const initState = async () => {
+		setLoading(true);
 		await getCategoryApi(
 			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {

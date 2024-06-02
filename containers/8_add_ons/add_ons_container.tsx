@@ -9,18 +9,18 @@ import {
 	BoxComponent,
 	CenterComponent,
 	DashboardPageHeader,
-	GroupComponent,
+	GroupComponent, ImageComponent,
 	LoadingOverlayComponent,
 	MainComponent, NoDataFound,
 	PaginationComponent,
 	PaperComponent,
 	PopConfirmComponent,
 	PopConfirmType,
-	SortButtonComponentItemProps,
+	SortButtonComponentItemProps
 } from "@/components";
 import AddAddOnModal from "./add_add_on_modal";
 import { AddOnModel } from "@/models";
-import { deleteAddOnApi, disableAddOnApi, formatDate, getAddOnApi } from "@/utils";
+import { deleteAddOnApi, disableAddOnApi, formatDate, getAddOnApi, imageUrl } from "@/utils";
 
 const AddOnsContainer = () => {
 	const [page, setPage] = useState<number>(1);
@@ -43,6 +43,7 @@ const AddOnsContainer = () => {
 	}, [filter, page, callApi, orderBy, order]);
 
 	const initState = async () => {
+		setLoading(true);
 		await getAddOnApi(
 			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
@@ -125,6 +126,7 @@ const AddOnsContainer = () => {
 	const columns = [
 		"Index",
 		"Add-on Id",
+		"Icon",
 		"Name",
 		"Created At",
 		"Created By",
@@ -136,6 +138,13 @@ const AddOnsContainer = () => {
 		<Table.Tr key={index}>
 			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.add_on_id}</Table.Td>
+			<Table.Td>
+				<ImageComponent
+					h={50}
+					w="auto"
+					src={`${imageUrl}/${element.icon}`}
+				/>
+			</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 			<Table.Td>{element.created_by.name}</Table.Td>
