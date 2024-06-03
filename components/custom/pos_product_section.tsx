@@ -91,7 +91,13 @@ export const PosProductSection = () => {
 				className="my-3">
 				<SimpleGridComponent
 					className="mx-3"
-					cols={{ base: 1, sm: 2, md: 3, lg: 4, xl: 4 }}
+					cols={{
+						base: 1,
+						sm: 2,
+						md: 3,
+						lg: 4,
+						xl: 4,
+					}}
 				>
 					<ProductCard index={1} />
 					<ProductCard index={2} />

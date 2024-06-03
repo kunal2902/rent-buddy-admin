@@ -1,9 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-	Chip, ChipProps,
-} from "@mantine/core";
+import { Chip, ChipProps } from "@mantine/core";
 import { appColorRGBA, mantineChipSize, mantineRadius } from "@/utils";
 
 /** Props list of Mantine's Chip component - https://mantine.dev/core/chip/?t=props */

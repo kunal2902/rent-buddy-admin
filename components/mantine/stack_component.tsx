@@ -1,9 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-	Stack, StackProps,
-} from "@mantine/core";
+import { Stack, StackProps } from "@mantine/core";
 
 /** Props list of Mantine's Stack component - https://mantine.dev/core/stack/?t=props */
 export interface StackComponentProps extends StackProps {

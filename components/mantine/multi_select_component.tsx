@@ -10,7 +10,12 @@ export interface MultiSelectComponentProps extends Omit<MultiSelectProps, "data"
 }
 
 export const MultiSelectComponent: React.FC<MultiSelectComponentProps> = (props) => {
-	const { setOption, setValue, data, ...rest } = props;
+	const {
+		setOption,
+		setValue,
+		data,
+		...rest
+	} = props;
 	const handleChange = (value: string[]) => {
 		setValue(value);
 

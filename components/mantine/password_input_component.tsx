@@ -11,7 +11,10 @@ export interface PasswordInputComponentProps extends PasswordInputProps {
 
 /** This is the Mantine PasswordInput component - https://mantine.dev/core/password-input/ */
 export const PasswordInputComponent = (props: PasswordInputComponentProps) => {
-	const { setValue, ...rest } = props;
+	const {
+		setValue,
+		...rest
+	} = props;
 
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setValue(event.target.value);

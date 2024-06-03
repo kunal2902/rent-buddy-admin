@@ -1,9 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-	Table, TableProps,
-} from "@mantine/core";
+import { Table, TableProps } from "@mantine/core";
 
 /** Props list of Mantine's Table component - https://mantine.dev/core/table/?t=props */
 export interface TableComponentProps extends TableProps {

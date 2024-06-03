@@ -1,13 +1,11 @@
 "use client";
 
 import React, { ReactNode } from "react";
-import {
-	Box, BoxProps,
-} from "@mantine/core";
+import { Box, BoxProps } from "@mantine/core";
 
 /** Props list of Mantine's Box component - https://mantine.dev/core/box/?t=props */
 export interface BoxComponentProps extends BoxProps {
-	children: ReactNode
+	children: ReactNode;
 }
 
 /** This is the Mantine Box component - https://mantine.dev/core/box/ */

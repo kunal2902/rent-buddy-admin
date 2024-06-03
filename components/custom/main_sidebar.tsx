@@ -39,7 +39,10 @@ export const MainSidebar = () => {
 				<div className="flex-grow flex flex-col w-full">
 					{SidebarItems.map((item) => {
 						const { Icon } = item;
-						const { options, ActiveIcon } = item.other as SubMenuType;
+						const {
+							options,
+							ActiveIcon,
+						} = item.other as SubMenuType;
 						const isItemSelected =
 							(item.other as LinkType).link === currentPathname;
 

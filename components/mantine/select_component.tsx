@@ -10,12 +10,12 @@ export interface SelectComponentProps extends SelectProps {
 	setOption?: (option: ComboBoxProps) => void;
 	setValue: (val: string) => void;
 	data: Array<GroupedComboBoxProps> | Array<ComboBoxProps>;
-	isGrouped: boolean;
+	isGrouped?: boolean;
 }
 
 /** This is the Mantine Select component - https://mantine.dev/core/select/ */
 export const SelectComponent = (props: SelectComponentProps) => {
-	const { setOption, setValue, isGrouped, ...rest } = props;
+	const { setOption, setValue, isGrouped = false, ...rest } = props;
 	const handleChange = (value: string | null, option: ComboboxItem) => {
 		setValue(option.value);
 		if (setOption) {

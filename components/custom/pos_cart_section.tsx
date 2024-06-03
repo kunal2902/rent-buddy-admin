@@ -41,7 +41,8 @@ export const PosCartSection = () => {
 				onClose={() => {
 					setUserModalOpen(false);
 				}}
-				setCallApi={() => {}}
+				setCallApi={() => {
+				}}
 			/>
 			<div
 				className="w-[30%] pr-3 mt-1"

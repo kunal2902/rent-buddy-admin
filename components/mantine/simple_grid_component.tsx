@@ -1,9 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-	SimpleGrid, SimpleGridProps,
-} from "@mantine/core";
+import { SimpleGrid, SimpleGridProps } from "@mantine/core";
 
 /** Props list of Mantine's SimpleGrid component - https://mantine.dev/core/simple-grid/?t=props */
 export interface SimpleGridComponentProps extends SimpleGridProps {

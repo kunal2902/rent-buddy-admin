@@ -1,4 +1,4 @@
-import { getCookie } from "cookies-next";
+import { deleteCookie, getCookie } from "cookies-next";
 import {
 	ActionIconVariant,
 	AvatarVariant,
@@ -8,6 +8,7 @@ import {
 	MantineSize,
 } from "@mantine/core";
 import moment from "moment";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 /** Global variables */
 export const isDebug: boolean = false;
@@ -55,9 +56,7 @@ export const mantineAvatarVariant: AvatarVariant = "filled";
 export const mantineActionIconVariant: ActionIconVariant = "light";
 
 /** Cookie constants */
-export const cookieOptions = {
-	secure: true,
-};
+export const cookieOptions = { secure: true };
 export const crmJwtConstant: string = "crm_jwt";
 export const userIdConstant: string = "user_id";
 export const nameConstant: string = "name";
@@ -74,8 +73,8 @@ isProduction ?
 	"http://localhost:8000/api/v1";
 export const imageUrl: string = process.env.NODE_ENV === "production" ||
 isProduction ?
-  "https://nca-crm-api-peggi.ondigitalocean.app/image" :
-  "http://localhost:8000/image";
+	"https://nca-crm-api-peggi.ondigitalocean.app/image" :
+	"http://localhost:8000/image";
 export const loginAPIPath: string = `${apiUrl}/auth/login`;
 
 // Permission path
@@ -218,3 +217,16 @@ export const getBackgroundColor = (darkMode: boolean) =>
 /** Returns Surface Color for Surface */
 export const getSurfaceColor = (darkMode: boolean) =>
 	({ backgroundColor: darkMode ? surfaceColorDark : surfaceColorLight });
+
+/** Function to log-out user */
+export const logoutUser = (router: AppRouterInstance) => {
+	deleteCookie(crmJwtConstant, cookieOptions);
+	deleteCookie(userIdConstant, cookieOptions);
+	deleteCookie(nameConstant, cookieOptions);
+	deleteCookie(emailConstant, cookieOptions);
+	deleteCookie(userNameConstant, cookieOptions);
+	deleteCookie(roleIdConstant, cookieOptions);
+	deleteCookie(sidebarStateConstant, cookieOptions);
+	deleteCookie(themeModeConstant, cookieOptions);
+	router.replace("/");
+};

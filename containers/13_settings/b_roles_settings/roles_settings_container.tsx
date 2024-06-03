@@ -16,7 +16,7 @@ import {
 	PopConfirmComponent,
 	PopConfirmType,
 	SortButtonComponentItemProps,
-	PaginationComponent, NoDataFound
+	PaginationComponent, NoDataFound,
 } from "@/components";
 import { deleteRoleApi, disableRoleApi, formatDate, getRoleApi, getTagApi } from "@/utils";
 import { RoleModel } from "@/models";

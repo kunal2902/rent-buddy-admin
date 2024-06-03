@@ -8,7 +8,10 @@ export interface DraftModalProps {
 }
 
 export const DraftModal = (props: DraftModalProps) => {
-	const { isOpen, onClose } = props;
+	const {
+		isOpen,
+		onClose,
+	} = props;
 
 	return (
 		<ModalComponent opened={isOpen} onClose={onClose} className="border-grey-800" title="Draft Orders">

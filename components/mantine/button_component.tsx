@@ -31,7 +31,10 @@ export const ButtonComponent = (props: ButtonComponentProps) => {
 			size={rest.size ?? mantineButtonSize}
 			color={rest.color ?? appColorRGBA}
 			radius={rest.radius ?? mantineRadius}
-			{...(href ? { component: Link, href } :
+			{...(href ? {
+					component: Link,
+					href,
+				} :
 				{ onClick })}
 		>
 			{rest.children ? (

@@ -1,10 +1,11 @@
 "use client";
 
-import React, { forwardRef } from "react";
+import React, { forwardRef, useState } from "react";
 import { Divider, Popover, PopoverProps } from "@mantine/core";
 import { IoIosLogOut } from "react-icons/io";
 import { MdOutlineDarkMode, MdOutlineLightMode } from "react-icons/md";
-import { getEmail, getName, mantineRadius, useThemeProvider } from "@/utils";
+import { useRouter } from "next/navigation";
+import { getEmail, getName, logoutUser, mantineRadius, useThemeProvider } from "@/utils";
 import { AvatarComponent, ButtonComponent, TextComponent, TitleComponent } from "@/components";
 import { StackComponent } from "@/components/mantine/stack_component";
 
@@ -16,10 +17,13 @@ export interface AvatarPopupComponentProps extends PopoverProps {
 /** This is the Mantine Menu component - https://mantine.dev/core/menu/ */
 export const AvatarPopupComponent = (props: AvatarPopupComponentProps) => {
 	const userName = getName();
+	const router = useRouter();
+	const [loading, setLoading] = useState<boolean>(false);
 	const {
 		darkMode,
 		toggleDarkMode,
 	} = useThemeProvider();
+
 	const PopButton = forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<"div">>((buttonProps, ref) => (
 		<div ref={ref} {...buttonProps}>
 			<AvatarComponent
@@ -78,8 +82,16 @@ export const AvatarPopupComponent = (props: AvatarPopupComponentProps) => {
 					title="Logout"
 					justify="start"
 					variant="subtle"
+					loading={loading}
 					leftSection={<IoIosLogOut size={18} />}
 					style={{ borderRadius: "0 0 8px 8px" }}
+					onClick={() => {
+						setLoading(true);
+						setTimeout(() => {
+							setLoading(false);
+							logoutUser(router);
+						}, 1500);
+					}}
 				/>
 
 			</Popover.Dropdown>

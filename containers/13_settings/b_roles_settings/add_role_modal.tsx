@@ -3,15 +3,18 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Checkbox, Collapse, Divider, Stack } from "@mantine/core";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 import {
-	ButtonComponent, GroupComponent,
-	ModalComponent, SpaceComponent, TextComponent,
-	TextInputComponent, TitleComponent,
+	ButtonComponent,
+	GroupComponent,
+	ModalComponent,
+	SpaceComponent,
+	TextComponent,
+	TextInputComponent,
+	TitleComponent,
 } from "@/components";
-import {
-	getPermissionApi,
-	mantineSize, upsertRoleApi,
-} from "@/utils";
+import { getPermissionApi, logoutUser, mantineSize, upsertRoleApi } from "@/utils";
+import { StackComponent } from "@/components/mantine/stack_component";
 
 interface Props {
 	isOpen: boolean;
@@ -26,7 +29,14 @@ interface SelectedPermissions {
 }
 
 const AddRoleModal = (props: Props) => {
-	const { isOpen, onClose, setCallApi, initialRoleValue, roleId } = props;
+	const {
+		isOpen,
+		onClose,
+		setCallApi,
+		initialRoleValue,
+		roleId,
+	} = props;
+	const router = useRouter();
 	const [roleName, setRoleName] = useState<string>(initialRoleValue);
 	const [permissions, setPermissions] = useState([]);
 	const [inputError, setInputError] = useState<string | null>(null);
@@ -47,11 +57,15 @@ const AddRoleModal = (props: Props) => {
 			const newPermissions = isSelected
 				? entityPermissions.filter((perm) => perm !== permission)
 				: [...entityPermissions, permission];
-			return { ...prevState, [entity]: newPermissions };
+			return {
+				...prevState,
+				[entity]: newPermissions,
+			};
 		});
 	};
 
-	const formatPermissionsForSubmit = (selectedPerms: SelectedPermissions) => Object.entries(selectedPerms).map(([entity, perms]) => ({
+	const formatPermissionsForSubmit = (selectedPerms: SelectedPermissions) =>
+		Object.entries(selectedPerms).map(([entity, perms]) => ({
 			entity,
 			permissions: perms,
 		}));
@@ -64,9 +78,10 @@ const AddRoleModal = (props: Props) => {
 			(data: any) => {
 				setPermissions(data.permissions);
 			},
-			() => {},
-			() => {},
-		);
+			() => {
+			},
+			() => logoutUser(router)
+		).then();
 	}, [roleName]);
 
 	const handleSubmitRole = async (event: React.FormEvent) => {
@@ -74,7 +89,7 @@ const AddRoleModal = (props: Props) => {
 		if (!roleName) {
 			setInputError("Please enter the name first");
 		}
-		let roleBody = {};
+		let roleBody: {};
 		if (isAdmin) {
 			roleBody = {
 				id: roleId,
@@ -103,7 +118,7 @@ const AddRoleModal = (props: Props) => {
 					toast.error(message);
 					setLoading(false);
 				},
-				() => {},
+				() => logoutUser(router)
 			);
 		} catch (error) {
 			console.error("Error:", error);
@@ -136,35 +151,29 @@ const AddRoleModal = (props: Props) => {
 						<TitleComponent title="Choose Permission" size="h5" />
 						{permissions.map((item: any, index) => (
 							<Stack key={index}>
-								<GroupComponent justify="space-between">
-									<TextComponent tt="capitalize" text={item.entity} />
-									<ButtonComponent
-										title={
-											(selectedPermissions[item.entity]?.length || 0) > 0
-												? "Change Permission"
-												: "Select Permission"
+								///todo work on this
+								<Checkbox
+									key={item.entity}
+									label={item.entity}
+									checked={false}
+									onChange={() => {
+										// eslint-disable-next-line no-plusplus
+										for (let i = 0; i < item.permissions.length; i++) {
+											handleCheckboxChange(item.entity, item.permissions[i]);
 										}
-										onClick={() => handleToggle(index)}
+									}}
+								/>
+								{item.permissions.map((permission: any) => (
+									<Checkbox
+										ml={10}
+										key={permission}
+										label={permission}
+										checked={selectedPermissions[item.entity]
+											?.includes(permission) || false}
+										onChange={() =>
+											handleCheckboxChange(item.entity, permission)}
 									/>
-								</GroupComponent>
-								<Collapse
-									in={openedIndex === index}
-									transitionDuration={1000}
-									transitionTimingFunction="linear"
-								>
-									<GroupComponent justify="space-between">
-										{item.permissions.map((permission: any) => (
-											<Checkbox
-												key={permission}
-												label={permission}
-												checked={selectedPermissions[item.entity]
-													?.includes(permission) || false}
-												onChange={() =>
-													handleCheckboxChange(item.entity, permission)}
-											/>
-										))}
-									</GroupComponent>
-								</Collapse>
+								))}
 								<Divider />
 							</Stack>
 						))}

@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
+import { Stack } from "@mantine/core";
 import {
 	ActionIconComponent,
 	ButtonComponent,
@@ -17,7 +18,6 @@ import {
 import { FileInputComponent } from "@/components/mantine/file_input_component";
 import { getCategoryApi, imageUrl, upsertSubCategoryApi } from "@/utils";
 import { StackComponent } from "@/components/mantine/stack_component";
-import { Stack } from "@mantine/core";
 
 interface Props {
 	isOpen: boolean;
