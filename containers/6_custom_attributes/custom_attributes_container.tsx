@@ -22,6 +22,7 @@ import {
 import AddCustomAttributeModal from "./add_custom_attribute_modal";
 import { CustomAttributeModel } from "@/models";
 import { deleteAttributeApi, disableAttributeApi, formatDate, getAttributeApi } from "@/utils";
+import { elementType } from "prop-types";
 
 const CustomAttributesContainer = () => {
 	const [page, setPage] = useState<number>(1);
@@ -159,8 +160,8 @@ const CustomAttributesContainer = () => {
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{element.type}</Table.Td>
 			<Table.Td>{element.default_value}</Table.Td>
-			<Table.Td>{element.is_tax}</Table.Td>
-			<Table.Td>{element.tax_type?.replace("_", " ")}</Table.Td>
+			<Table.Td>{element.is_tax ? "Yes" : "No"}</Table.Td>
+			<Table.Td>{element.is_tax ? element.tax_type?.replace("_", " ") : "-"}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 			<Table.Td>{element.created_by.name}</Table.Td>
 			<Table.Td w={60}>

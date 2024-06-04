@@ -127,7 +127,7 @@ const AddCategoryModal = (props: Props) => {
 					<FileInputComponent
 						required
 						label="Please select category icon"
-						placeholder="C 111ategory icon"
+						placeholder="Category icon"
 						className="hidden"
 						onChange={onFilePick}
 						ref={fileInputTriggerRef}

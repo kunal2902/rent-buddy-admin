@@ -3,15 +3,26 @@
 import { toast } from "react-toastify";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Checkbox, Fieldset, Grid, rgba, Stack } from "@mantine/core";
+import { Image as ImageIcon } from "lucide-react";
+import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
+import { useDarkMode } from "storybook-dark-mode";
 import {
-	ButtonComponent,
+	ActionIconComponent,
+	ButtonComponent, CardComponent,
 	GroupComponent,
+	ImageComponent,
 	ModalComponent,
+	ScrollAreaComponent,
+	SelectComponent, SimpleGridComponent,
 	SpaceComponent,
 	TextInputComponent,
 	TitleComponent,
 } from "@/components";
-import { logoutUser, upsertItemApi } from "@/utils";
+import { getBackgroundColor, logoutUser, upsertItemApi, useThemeProvider } from "@/utils";
+import { NumberInputComponent } from "@/components/mantine/number_input_component";
+import { TextAreaInputComponent } from "@/components/mantine/textarea_input_component";
+import { StackComponent } from "@/components/mantine/stack_component";
 
 interface Props {
 	isOpen: boolean;
@@ -29,6 +40,7 @@ const AddItemModal = (props: Props) => {
 		initialItemName,
 		itemId,
 	} = props;
+	const darkMode = useThemeProvider();
 	const router = useRouter();
 	const isEditModal: boolean = initialItemName !== "";
 	const [itemName, setItemName] = useState<string>(initialItemName);
@@ -73,21 +85,255 @@ const AddItemModal = (props: Props) => {
 		}
 	};
 
+	function getImageRow() {
+		return (
+			<Stack gap={10} h={180} mah={180} maw={160} w={160}>
+				<ImageComponent
+					src="http://localhost:8000/image/5b694cb7-3dbe-44de-83df-2c042e57fb6d.jpeg"
+					w={160}
+					h={140}
+			/>
+				<GroupComponent
+					gap={0}
+					mah={30}
+					h={30}
+					justify="center">
+
+					<ActionIconComponent
+						size="xs"
+						h={30}
+						w={30}
+						color="red"
+						mr={5}
+				>
+						<MdOutlineDeleteForever size={18} />
+					</ActionIconComponent>
+
+					<ActionIconComponent
+						size="xs"
+						h={30}
+						w={30}
+						ml={5}
+				>
+						<MdOutlineEdit size={18} />
+					</ActionIconComponent>
+				</GroupComponent>
+			</Stack>
+		);
+	}
+
+	function getCustomAttribute() {
+		return (
+			<GroupComponent align="start">
+				<Checkbox mt={7} />
+				<TextInputComponent
+					className="flex-grow"
+					title="Name"
+					label="Item Name"
+					value={itemName}
+					error={inputError}
+					setValue={setItemName}
+					placeholder="Enter Item Name"
+			/>
+			</GroupComponent>
+		);
+	}
+
 	return (
 		<ModalComponent
+			fullScreen
 			opened={isOpen}
 			onClose={onClose}
 			title={<TitleComponent title={isEditModal ? "Edit Item" : "New Item"} />}
 		>
-			<TextInputComponent
-				required
-				title="Name"
-				label="Item Name"
-				value={itemName}
-				error={inputError}
-				setValue={setItemName}
-				placeholder="Enter Item Name"
-			/>
+			<Fieldset legend={<TitleComponent title="Product Information" order={5} />}>
+				<StackComponent>
+					<SimpleGridComponent
+						cols={{
+							base: 1,
+							sm: 2,
+							md: 3,
+							lg: 3,
+							xl: 3,
+						}}
+					>
+						<TextInputComponent
+							required
+							title="Name"
+							label="Item Name"
+							value={itemName}
+							error={inputError}
+							setValue={setItemName}
+							placeholder="Enter Item Name"
+						/>
+						<TextInputComponent
+							title="Internal Name"
+							label="Internal Name"
+							value={itemName}
+							error={inputError}
+							setValue={setItemName}
+							placeholder="Enter Item Name"
+						/>
+						<TextInputComponent
+							required
+							title="SKU"
+							label="SKU"
+							value={itemName}
+							error={inputError}
+							setValue={setItemName}
+							placeholder="Enter Item Name"
+						/>
+						<NumberInputComponent
+							required
+							title="Stock Quantity"
+							label="Stock Quantity"
+							value={itemName}
+							error={inputError}
+							// setValue={setItemName}
+							placeholder="Enter Item Name"
+						/>
+						<NumberInputComponent
+							required
+							title="Price"
+							label="Price"
+							value={itemName}
+							error={inputError}
+							// setValue={setItemName}
+							placeholder="Enter Item Name"
+						/>
+					</SimpleGridComponent>
+					<GroupComponent grow>
+						<TextAreaInputComponent
+							required
+							title="Short Dscription"
+							label="Short Dscription"
+							value={itemName}
+							error={inputError}
+							setValue={setItemName}
+							resize="vertical"
+							placeholder="Enter Item Name"
+						/>
+						<TextAreaInputComponent
+							title="Dscription"
+							label="Dscription"
+							value={itemName}
+							error={inputError}
+							setValue={setItemName}
+							resize="vertical"
+							placeholder="Enter Item Name"
+						/>
+					</GroupComponent>
+				</StackComponent>
+			</Fieldset>
+
+			<SpaceComponent showHeight />
+
+			<Fieldset legend={<TitleComponent title="Images" order={5} />}>
+				<ScrollAreaComponent
+					h={200}
+					type="always"
+					w="100%"
+					scrollbars="x"
+				>
+					<GroupComponent gap={10} maw={12 * 170} w={12 * 170}>
+						{[1, 1, 1, 11, 1, 1, 1, 1, 1, 1, 1].map(() => getImageRow())}
+						<StackComponent
+							// onClick={onChooseIconClick}
+							className="cursor-pointer border border-dashed flex flex-col items-center justify-center rounded-md border-primary-darker text-primary-darker"
+							h={180}
+							w={160}
+							justify="center"
+							align="center"
+						>
+							<ImageIcon size={50} />
+							<p className="text-center mt-0.5">Choose an Icon</p>
+						</StackComponent>
+					</GroupComponent>
+				</ScrollAreaComponent>
+			</Fieldset>
+
+			<SpaceComponent showHeight />
+
+			<Fieldset legend={<TitleComponent title="Other Arrtributes" order={5} />}>
+				<SimpleGridComponent
+					cols={{
+						base: 1,
+						sm: 2,
+						md: 3,
+						lg: 3,
+						xl: 3,
+					}}
+				>
+					<SelectComponent
+						required
+						label="Select category"
+						placeholder="Select category"
+						// data={categories}
+						clearable={false}
+						// value={categoryId}
+						// setValue={setCategoryId}
+						checkIconPosition="right"
+						isGrouped={false}
+					/>
+					<SelectComponent
+						label="Select sub-category"
+						placeholder="Select sub-category"
+						// data={categories}
+						clearable={false}
+						// value={categoryId}
+						// setValue={setCategoryId}
+						checkIconPosition="right"
+						isGrouped={false}
+					/>
+					<SelectComponent
+						required
+						label="Item type"
+						placeholder="Item type"
+						// data={categories}
+						clearable={false}
+						// value={categoryId}
+						// setValue={setCategoryId}
+						checkIconPosition="right"
+						isGrouped={false}
+					/>
+					<SelectComponent
+						label="Tags"
+						placeholder="Tags"
+						// data={categories}
+						clearable={false}
+						// value={categoryId}
+						// setValue={setCategoryId}
+						checkIconPosition="right"
+						isGrouped={false}
+					/>
+					<SelectComponent
+						label="Add-ons"
+						placeholder="Add-ons"
+						// data={categories}
+						clearable={false}
+						// value={categoryId}
+						// setValue={setCategoryId}
+						checkIconPosition="right"
+						isGrouped={false}
+					/>
+				</SimpleGridComponent>
+			</Fieldset>
+
+			<SpaceComponent showHeight />
+
+			<Fieldset legend={<TitleComponent title="Custom Arrtribute" order={5} />}>
+				<SimpleGridComponent
+					cols={{
+						base: 1,
+						sm: 2,
+						md: 3,
+						lg: 3,
+						xl: 3,
+					}}
+				>
+					{[1, 2, 3, 1, 2].map(() => getCustomAttribute())}
+				</SimpleGridComponent>
+			</Fieldset>
 
 			<SpaceComponent showHeight />
 

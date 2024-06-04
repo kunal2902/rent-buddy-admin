@@ -67,7 +67,7 @@ const AddCustomAttributeModal = (props: Props) => {
 				id: customAttributeId,
 				name: customAttributeName,
 				type,
-				defaultValue,
+				default_value: defaultValue,
 				is_tax: isTax,
 				tax_type: taxType,
 			};
@@ -76,7 +76,7 @@ const AddCustomAttributeModal = (props: Props) => {
 				id: customAttributeId,
 				name: customAttributeName,
 				type,
-				defaultValue,
+				default_value: defaultValue,
 				is_tax: isTax,
 			};
 		}
