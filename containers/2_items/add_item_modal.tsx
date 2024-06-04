@@ -1,25 +1,24 @@
 "use client";
 
-import { toast } from "react-toastify";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Checkbox, Fieldset, Grid, rgba, Stack } from "@mantine/core";
+import { Checkbox, Fieldset, Stack } from "@mantine/core";
 import { Image as ImageIcon } from "lucide-react";
 import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
-import { useDarkMode } from "storybook-dark-mode";
 import {
 	ActionIconComponent,
-	ButtonComponent, CardComponent,
+	ButtonComponent,
 	GroupComponent,
 	ImageComponent,
 	ModalComponent,
 	ScrollAreaComponent,
-	SelectComponent, SimpleGridComponent,
+	SelectComponent,
+	SimpleGridComponent,
 	SpaceComponent,
 	TextInputComponent,
 	TitleComponent,
 } from "@/components";
-import { getBackgroundColor, logoutUser, upsertItemApi, useThemeProvider } from "@/utils";
+import { logoutUser, upsertItemApi } from "@/utils";
 import { NumberInputComponent } from "@/components/mantine/number_input_component";
 import { TextAreaInputComponent } from "@/components/mantine/textarea_input_component";
 import { StackComponent } from "@/components/mantine/stack_component";
@@ -40,7 +39,6 @@ const AddItemModal = (props: Props) => {
 		initialItemName,
 		itemId,
 	} = props;
-	const darkMode = useThemeProvider();
 	const router = useRouter();
 	const isEditModal: boolean = initialItemName !== "";
 	const [itemName, setItemName] = useState<string>(initialItemName);
@@ -72,7 +70,7 @@ const AddItemModal = (props: Props) => {
 					setCallApi(true);
 				},
 				(message: string) => {
-					toast.error(message);
+					console.log(message);
 					setLoading(false);
 				},
 				() => {
@@ -92,7 +90,7 @@ const AddItemModal = (props: Props) => {
 					src="http://localhost:8000/image/5b694cb7-3dbe-44de-83df-2c042e57fb6d.jpeg"
 					w={160}
 					h={140}
-			/>
+				/>
 				<GroupComponent
 					gap={0}
 					mah={30}
@@ -105,7 +103,7 @@ const AddItemModal = (props: Props) => {
 						w={30}
 						color="red"
 						mr={5}
-				>
+					>
 						<MdOutlineDeleteForever size={18} />
 					</ActionIconComponent>
 
@@ -114,7 +112,7 @@ const AddItemModal = (props: Props) => {
 						h={30}
 						w={30}
 						ml={5}
-				>
+					>
 						<MdOutlineEdit size={18} />
 					</ActionIconComponent>
 				</GroupComponent>
@@ -134,7 +132,7 @@ const AddItemModal = (props: Props) => {
 					error={inputError}
 					setValue={setItemName}
 					placeholder="Enter Item Name"
-			/>
+				/>
 			</GroupComponent>
 		);
 	}
@@ -144,7 +142,7 @@ const AddItemModal = (props: Props) => {
 			fullScreen
 			opened={isOpen}
 			onClose={onClose}
-			title={<TitleComponent title={isEditModal ? "Edit Item" : "New Item"} />}
+			title={<TitleComponent title={isEditModal ? "Edit Item" : "Add New Item"} />}
 		>
 			<Fieldset legend={<TitleComponent title="Product Information" order={5} />}>
 				<StackComponent>
@@ -265,6 +263,9 @@ const AddItemModal = (props: Props) => {
 					}}
 				>
 					<SelectComponent
+						data={[]}
+						setValue={() => {
+						}}
 						required
 						label="Select category"
 						placeholder="Select category"
@@ -276,45 +277,45 @@ const AddItemModal = (props: Props) => {
 						isGrouped={false}
 					/>
 					<SelectComponent
+						data={[]}
+						clearable={false}
+						isGrouped={false}
+						setValue={() => {
+						}}
+						checkIconPosition="right"
 						label="Select sub-category"
 						placeholder="Select sub-category"
-						// data={categories}
-						clearable={false}
-						// value={categoryId}
-						// setValue={setCategoryId}
-						checkIconPosition="right"
-						isGrouped={false}
 					/>
 					<SelectComponent
 						required
+						data={[]}
 						label="Item type"
+						clearable={false}
+						isGrouped={false}
 						placeholder="Item type"
-						// data={categories}
-						clearable={false}
-						// value={categoryId}
-						// setValue={setCategoryId}
+						setValue={() => {
+						}}
 						checkIconPosition="right"
-						isGrouped={false}
 					/>
 					<SelectComponent
+						data={[]}
 						label="Tags"
-						placeholder="Tags"
-						// data={categories}
 						clearable={false}
-						// value={categoryId}
-						// setValue={setCategoryId}
-						checkIconPosition="right"
 						isGrouped={false}
+						placeholder="Tags"
+						setValue={() => {
+						}}
+						checkIconPosition="right"
 					/>
 					<SelectComponent
+						data={[]}
 						label="Add-ons"
-						placeholder="Add-ons"
-						// data={categories}
 						clearable={false}
-						// value={categoryId}
-						// setValue={setCategoryId}
-						checkIconPosition="right"
 						isGrouped={false}
+						placeholder="Add-ons"
+						setValue={() => {
+						}}
+						checkIconPosition="right"
 					/>
 				</SimpleGridComponent>
 			</Fieldset>

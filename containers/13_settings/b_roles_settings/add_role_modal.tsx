@@ -109,6 +109,7 @@ const AddRoleModal = (props: Props) => {
 			<SpaceComponent showHeight />
 
 			<ButtonComponent
+				//TODO get the selected permissions
 				px={10}
 				fullWidth
 				variant="light"
