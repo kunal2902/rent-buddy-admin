@@ -3,9 +3,8 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import React from "react";
-import { MantineProvider, ColorSchemeScript } from "@mantine/core";
+import { ColorSchemeScript } from "@mantine/core";
 import { Metadata } from "next";
-import { ToastContainer } from "react-toastify";
 import { mainTheme } from "@/constants";
 import { appDescription, appTitle, ReactQueryProvider, RecoilProvider, ThemeProvider } from "@/utils";
 import { MantineProviderComponent } from "@/components";
@@ -33,12 +32,6 @@ export default function RootLayout({ children }: { children: any }) {
 						<MantineProviderComponent theme={mainTheme}>
 							<ThemeProvider>
 								{children}
-								<ToastContainer
-									autoClose={2000}
-									hideProgressBar
-									closeOnClick
-									rtl={false}
-								/>
 							</ThemeProvider>
 						</MantineProviderComponent>
 					</RecoilProvider>

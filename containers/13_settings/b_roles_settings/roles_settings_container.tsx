@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Table } from "@mantine/core";
 import { MdOutlineEdit } from "react-icons/md";
 import { useDebouncedCallback } from "@mantine/hooks";
+import { useRouter } from "next/navigation";
 import {
 	ActionIconComponent,
 	BoxComponent,
@@ -18,11 +19,12 @@ import {
 	SortButtonComponentItemProps,
 	PaginationComponent, NoDataFound,
 } from "@/components";
-import { deleteRoleApi, disableRoleApi, formatDate, getRoleApi, getTagApi } from "@/utils";
+import { deleteRoleApi, disableRoleApi, formatDate, getRoleApi, logoutUser } from "@/utils";
 import { RoleModel } from "@/models";
 import AddRoleModal from "./add_role_modal";
 
 const RolesSettingsContainer = () => {
+	const router = useRouter();
 	const [roleId, setRoleId] = useState("");
 	const [page, setPage] = useState<number>(1);
 	const [total, setTotal] = useState<number>(0);
@@ -48,6 +50,7 @@ const RolesSettingsContainer = () => {
 			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
 				setRolesList(data.roles);
+				console.log(data.roles[0].isAdmin);
 				setTotal(data.roles_count);
 				setLoading(false);
 			},
@@ -56,6 +59,7 @@ const RolesSettingsContainer = () => {
 			},
 			() => {
 				setLoading(false);
+				logoutUser(router);
 			}
 		);
 	};
@@ -82,6 +86,7 @@ const RolesSettingsContainer = () => {
 			},
 			() => {
 				setSearchLoading(false);
+				logoutUser(router);
 			}
 		).then();
 		setLoading(false);
@@ -105,6 +110,7 @@ const RolesSettingsContainer = () => {
 				},
 				() => {
 					setCallApi(val => !val);
+					logoutUser(router);
 				}
 			);
 		} else {
@@ -118,6 +124,7 @@ const RolesSettingsContainer = () => {
 				},
 				() => {
 					setCallApi(val => !val);
+					logoutUser(router);
 				}
 			);
 		}
@@ -138,7 +145,7 @@ const RolesSettingsContainer = () => {
 			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.role_id}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
-			<Table.Td>{element.isAdmin}</Table.Td>
+			<Table.Td>{element.isAdmin ? "Yes" : "No"}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 			<Table.Td w={60}>
 				<PopConfirmComponent

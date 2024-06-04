@@ -1,20 +1,19 @@
 "use client";
 
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Checkbox, Collapse, Divider, Stack } from "@mantine/core";
-import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import {
 	ButtonComponent,
 	GroupComponent,
 	ModalComponent,
 	SpaceComponent,
-	TextComponent,
 	TextInputComponent,
 	TitleComponent,
 } from "@/components";
-import { getPermissionApi, logoutUser, mantineSize, upsertRoleApi } from "@/utils";
+import { logoutUser, upsertRoleApi } from "@/utils";
 import { StackComponent } from "@/components/mantine/stack_component";
+import { PermissionModal } from "@/components/custom/permission_modal";
+import { PermissionModel } from "@/models";
 
 interface Props {
 	isOpen: boolean;
@@ -22,10 +21,6 @@ interface Props {
 	setCallApi: Dispatch<SetStateAction<boolean>>;
 	initialRoleValue: string;
 	roleId: string;
-}
-
-interface SelectedPermissions {
-	[entity: string]: string[];
 }
 
 const AddRoleModal = (props: Props) => {
@@ -37,51 +32,18 @@ const AddRoleModal = (props: Props) => {
 		roleId,
 	} = props;
 	const router = useRouter();
-	const [roleName, setRoleName] = useState<string>(initialRoleValue);
-	const [permissions, setPermissions] = useState([]);
-	const [inputError, setInputError] = useState<string | null>(null);
-	const [isAdmin, setIsAdmin] = useState<boolean>(false);
-	const [openedIndex, setOpenedIndex] = useState(null);
-	const [selectedPermissions, setSelectedPermissions] = useState<SelectedPermissions>({});
 	const [loading, setLoading] = useState(false);
+	const [isAdmin, setIsAdmin] = useState<boolean>(false);
+	const [roleName, setRoleName] = useState<string>(initialRoleValue);
+	const [openModal, setOpenModal] = useState<boolean>(false);
+	const [inputError, setInputError] = useState<string | null>(null);
+	const [selectedPermissions, setSelectedPermissions] = useState<PermissionModel[]>([]);
 	const isEditModal: boolean = initialRoleValue !== "";
-
-	const handleToggle = (index: any) => {
-		setOpenedIndex((prevIndex) => (prevIndex === index ? null : index));
-	};
-
-	const handleCheckboxChange = (entity: string, permission: string) => {
-		setSelectedPermissions((prevState) => {
-			const entityPermissions = prevState[entity] || [];
-			const isSelected = entityPermissions.includes(permission);
-			const newPermissions = isSelected
-				? entityPermissions.filter((perm) => perm !== permission)
-				: [...entityPermissions, permission];
-			return {
-				...prevState,
-				[entity]: newPermissions,
-			};
-		});
-	};
-
-	const formatPermissionsForSubmit = (selectedPerms: SelectedPermissions) =>
-		Object.entries(selectedPerms).map(([entity, perms]) => ({
-			entity,
-			permissions: perms,
-		}));
 
 	useEffect(() => {
 		if (roleName) {
 			setInputError(null);
 		}
-		getPermissionApi("",
-			(data: any) => {
-				setPermissions(data.permissions);
-			},
-			() => {
-			},
-			() => logoutUser(router)
-		).then();
 	}, [roleName]);
 
 	const handleSubmitRole = async (event: React.FormEvent) => {
@@ -101,7 +63,7 @@ const AddRoleModal = (props: Props) => {
 				id: roleId,
 				name: roleName,
 				isAdmin,
-				permissions: formatPermissionsForSubmit(selectedPermissions),
+				permissions: selectedPermissions,
 			};
 		}
 		console.log("Submitting role:", roleBody);
@@ -115,7 +77,7 @@ const AddRoleModal = (props: Props) => {
 					setLoading(false);
 				},
 				(message: string) => {
-					toast.error(message);
+					console.log(message);
 					setLoading(false);
 				},
 				() => logoutUser(router)
@@ -124,14 +86,15 @@ const AddRoleModal = (props: Props) => {
 			console.error("Error:", error);
 		}
 	};
+
 	return (
 		<ModalComponent
 			opened={isOpen}
 			onClose={onClose}
-			className="border-grey-800"
+			closeOnEscape={false}
 			title={<TitleComponent title={isEditModal ? "Edit Role" : "New Role"} />}
 		>
-			<Stack>
+			<StackComponent>
 				<TextInputComponent
 					required
 					title="Name"
@@ -141,45 +104,17 @@ const AddRoleModal = (props: Props) => {
 					setValue={setRoleName}
 					placeholder="Enter role Name"
 				/>
-				<Checkbox
-					label="Is Admin?"
-					size={mantineSize}
-					onChange={(event) => setIsAdmin(event.currentTarget.checked)}
-				/>
-				{!isAdmin &&
-					<>
-						<TitleComponent title="Choose Permission" size="h5" />
-						{permissions.map((item: any, index) => (
-							<Stack key={index}>
-								///todo work on this
-								<Checkbox
-									key={item.entity}
-									label={item.entity}
-									checked={false}
-									onChange={() => {
-										// eslint-disable-next-line no-plusplus
-										for (let i = 0; i < item.permissions.length; i++) {
-											handleCheckboxChange(item.entity, item.permissions[i]);
-										}
-									}}
-								/>
-								{item.permissions.map((permission: any) => (
-									<Checkbox
-										ml={10}
-										key={permission}
-										label={permission}
-										checked={selectedPermissions[item.entity]
-											?.includes(permission) || false}
-										onChange={() =>
-											handleCheckboxChange(item.entity, permission)}
-									/>
-								))}
-								<Divider />
-							</Stack>
-						))}
-					</>
-				}
-			</Stack>
+			</StackComponent>
+
+			<SpaceComponent showHeight />
+
+			<ButtonComponent
+				px={10}
+				fullWidth
+				variant="light"
+				title="Select Permissions"
+				onClick={() => setOpenModal(true)}
+			/>
 
 			<SpaceComponent showHeight />
 
@@ -191,6 +126,12 @@ const AddRoleModal = (props: Props) => {
 					onClick={handleSubmitRole}
 				/>
 			</GroupComponent>
+
+			<PermissionModal
+				openModal={openModal}
+				setOpenModal={setOpenModal}
+			/>
+
 		</ModalComponent>
 	);
 };

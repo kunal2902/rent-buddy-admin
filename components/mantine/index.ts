@@ -5,6 +5,7 @@ export * from "@/components/mantine/button_component";
 export * from "@/components/mantine/card_component";
 export * from "@/components/mantine/center_component";
 export * from "@/components/mantine/chip_component";
+export * from "@/components/mantine/divider_component";
 export * from "@/components/mantine/file_input_component";
 export * from "@/components/mantine/group_component";
 export * from "@/components/mantine/image_component";
