@@ -76,7 +76,7 @@ const AddSubCategoryModal = (props: Props) => {
 			},
 			() => {
 				setCallApi(val => !val);
-			}).then();
+			});
 	}, []);
 
 	const onChooseIconClick = () => {
