@@ -109,13 +109,14 @@ const AddRoleModal = (props: Props) => {
 			<SpaceComponent showHeight />
 
 			<ButtonComponent
-				//TODO get the selected permissions
 				px={10}
 				fullWidth
 				variant="light"
 				title="Select Permissions"
 				onClick={() => setOpenModal(true)}
 			/>
+
+			<TitleComponent title={isAdmin ? "Admin" : "Non-admin"} />
 
 			<SpaceComponent showHeight />
 
@@ -130,7 +131,9 @@ const AddRoleModal = (props: Props) => {
 
 			<PermissionModal
 				openModal={openModal}
+				setIsAdmin={setIsAdmin}
 				setOpenModal={setOpenModal}
+				setSelectedPermission={setSelectedPermissions}
 			/>
 
 		</ModalComponent>

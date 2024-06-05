@@ -2,20 +2,27 @@
 
 import { useListState } from "@mantine/hooks";
 import { useEffect } from "react";
-import { SelectedPermissionModel } from "@/models";
+import { PermissionModel, SelectedPermissionModel } from "@/models";
 import { CheckboxComponent } from "@/components/mantine/checkbox_component";
 import { getBackgroundColor, toTitleCase, useThemeProvider } from "@/utils";
 import { GroupComponent, TooltipComponent } from "@/components";
 import { StackComponent } from "@/components/mantine/stack_component";
 
 export interface IndeterminateCheckboxProps {
-	selectedPermissionModel: SelectedPermissionModel;
 	selectAll: boolean;
+	setAllChecked: (val: boolean) => void;
+	selectedPermissionModel: SelectedPermissionModel;
+	setSelectedPermissionModel: (perm: PermissionModel) => void;
 }
 
 export function IndeterminateCheckbox(props: IndeterminateCheckboxProps) {
+	const {
+		selectAll,
+		setAllChecked,
+		selectedPermissionModel,
+		setSelectedPermissionModel,
+	} = props;
 	const { darkMode } = useThemeProvider();
-	const { selectedPermissionModel, selectAll } = props;
 	const [values, handlers] = useListState(selectedPermissionModel.permissions);
 
 	const allChecked = values.every((value) => value.checked);
@@ -23,8 +30,21 @@ export function IndeterminateCheckbox(props: IndeterminateCheckboxProps) {
 		&& !allChecked;
 
 	useEffect(() => {
+		setAllChecked(allChecked);
+	}, [allChecked]);
+
+	useEffect(() => {
 		checkAll(selectAll);
 	}, [selectAll]);
+
+	useEffect(() => {
+		const tempArray = values.map((value) => value.checked ? value.permission : "");
+		tempArray.filter(n => n);
+		setSelectedPermissionModel({
+			entity: selectedPermissionModel.entity,
+			permissions: tempArray,
+		});
+	}, [values]);
 
 	const items = values.map((value, index) => (
 		<CheckboxComponent

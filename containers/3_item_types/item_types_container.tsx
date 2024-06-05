@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Table } from "@mantine/core";
 import { MdOutlineEdit } from "react-icons/md";
 import { useDebouncedCallback } from "@mantine/hooks";
+import { useRouter } from "next/navigation";
 import {
 	ActionIconComponent,
 	BoxComponent,
@@ -23,7 +24,6 @@ import {
 import { ItemTypeModel } from "@/models";
 import { deleteItemTypeApi, disableItemTypeApi, formatDate, getItemTypeApi, imageUrl, logoutUser } from "@/utils";
 import AddItemTypeModal from "./add_item_type_modal";
-import { useRouter } from "next/navigation";
 
 const ItemTypesContainer = () => {
 	const router = useRouter();

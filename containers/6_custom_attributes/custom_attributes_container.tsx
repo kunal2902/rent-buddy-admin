@@ -4,6 +4,7 @@ import { Table } from "@mantine/core";
 import { MdOutlineEdit } from "react-icons/md";
 import { useDebouncedCallback } from "@mantine/hooks";
 import React, { useEffect, useState } from "react";
+import { elementType } from "prop-types";
 import {
 	ActionIconComponent,
 	BoxComponent,
@@ -22,7 +23,6 @@ import {
 import AddCustomAttributeModal from "./add_custom_attribute_modal";
 import { CustomAttributeModel } from "@/models";
 import { deleteAttributeApi, disableAttributeApi, formatDate, getAttributeApi } from "@/utils";
-import { elementType } from "prop-types";
 
 const CustomAttributesContainer = () => {
 	const [page, setPage] = useState<number>(1);
