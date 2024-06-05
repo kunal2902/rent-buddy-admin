@@ -77,6 +77,9 @@ isProduction ?
 	"http://localhost:8000/image";
 export const loginAPIPath: string = `${apiUrl}/auth/login`;
 
+// Dashboard path
+export const dashboardAPIPath: string = `${apiUrl}/dashboard/summary-count`;
+
 // Permission path
 export const permissionAPIPath: string = `${apiUrl}/permission`;
 

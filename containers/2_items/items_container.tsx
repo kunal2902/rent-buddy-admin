@@ -128,6 +128,11 @@ const ItemsContainer = () => {
 		"Index",
 		"Item Id",
 		"Name",
+		"Category",
+		"Sub category",
+		"Item type",
+		"Quantity",
+		"Created By",
 		"Created At",
 		"Disable",
 		"Action",
@@ -138,6 +143,11 @@ const ItemsContainer = () => {
 			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.item_id}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
+			<Table.Td>{element.category.name}</Table.Td>
+			<Table.Td>{element.sub_category.name}</Table.Td>
+			<Table.Td>{element.type.name}</Table.Td>
+			<Table.Td>{element.stock_quantity}</Table.Td>
+			<Table.Td>{element.created_by.name}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 			<Table.Td w={60}>
 				<PopConfirmComponent

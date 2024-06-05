@@ -6,6 +6,7 @@ export * from "@/models/category_model";
 export * from "@/models/commission_settings_model";
 export * from "@/models/custom_attribute_model";
 export * from "@/models/customer_model";
+export * from "@/models/dashboard_model";
 export * from "@/models/ehf_marr_fee_model";
 export * from "@/models/invoice_item_model";
 export * from "@/models/invoice_model";
