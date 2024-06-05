@@ -67,7 +67,7 @@ const SubCategoriesContainer = () => {
 			() => {
 				setLoading(false);
 			}
-		).then();
+		);
 	};
 
 	useEffect(() => {

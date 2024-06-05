@@ -41,7 +41,7 @@ const ItemsContainer = () => {
 		getItemApi(
 			`orderBy=${filter}&page=${page}&order=asc`,
 			(data: any) => {
-				setItemList(data.item);
+				setItemList(data.items);
 				setLoading(false);
 			},
 			() => {
@@ -68,7 +68,7 @@ const ItemsContainer = () => {
 			getItemApi(
 				`name=${query}`,
 				(data: any) => {
-					setItemList(data.tags);
+					setItemList(data.items);
 					setSearchLoading(false);
 				},
 				() => {
@@ -124,7 +124,7 @@ const ItemsContainer = () => {
 		"Disable",
 		"Action",
 	];
-
+	console.log("itemList", itemList);
 	const rows = itemList.map((element, index) => (
 		<Table.Tr key={index}>
 			<Table.Td>{index + 1}</Table.Td>
