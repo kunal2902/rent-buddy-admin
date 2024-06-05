@@ -1,6 +1,5 @@
 "use client";
 
-import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { setCookie } from "cookies-next";
 import { useState } from "react";
@@ -66,7 +65,8 @@ const LoginContainer = () => {
 				},
 				(err: any) => {
 					setLoading(false);
-					toast.error(err);
+					console.log(err.message);
+					// toast.error(err);
 				}
 			);
 		} catch (error) {

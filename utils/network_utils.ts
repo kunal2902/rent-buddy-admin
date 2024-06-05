@@ -132,6 +132,7 @@ export const getPermissionApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -166,6 +167,7 @@ export const getTagApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -198,6 +200,7 @@ export const getTagByIdApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -226,6 +229,7 @@ export const upsertTagApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -258,6 +262,7 @@ export const disableTagApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -290,6 +295,7 @@ export const deleteTagApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -324,6 +330,7 @@ export const getRoleApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -356,6 +363,7 @@ export const getRoleByIdApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -388,6 +396,7 @@ export const upsertRoleApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -420,6 +429,7 @@ export const disableRoleApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -452,6 +462,7 @@ export const deleteRoleApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -486,6 +497,7 @@ export const getAttributeApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -518,6 +530,7 @@ export const getAttributeByIdApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -550,6 +563,7 @@ export const upsertAttributeApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -582,6 +596,7 @@ export const disableAttributeApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -614,6 +629,7 @@ export const deleteAttributeApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -648,6 +664,7 @@ export const getCategoryApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -680,6 +697,7 @@ export const getcategoryByIdApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -712,6 +730,7 @@ export const upsertCategoryApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -744,6 +763,7 @@ export const disableCategoryApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -776,6 +796,7 @@ export const deleteCategoryApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -810,6 +831,7 @@ export const getSubCategoryApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -842,6 +864,7 @@ export const getSubCategoryByIdApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -874,6 +897,7 @@ export const upsertSubCategoryApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -906,6 +930,7 @@ export const disableSubCategoryApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -938,6 +963,7 @@ export const deleteSubCategoryApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -972,6 +998,7 @@ export const getItemTypeApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1004,6 +1031,7 @@ export const getItemTypeByIdApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1036,6 +1064,7 @@ export const upsertItemTypeApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1068,6 +1097,7 @@ export const disableItemTypeApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1100,6 +1130,7 @@ export const deleteItemTypeApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1134,6 +1165,7 @@ export const getItemApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1166,6 +1198,7 @@ export const getItemByIdApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1198,6 +1231,7 @@ export const upsertItemApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1230,6 +1264,7 @@ export const disableItemApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1262,6 +1297,7 @@ export const deleteItemApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1296,6 +1332,7 @@ export const getAddOnApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1328,6 +1365,7 @@ export const getAddOnByIdApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1360,6 +1398,7 @@ export const upsertAddOnApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1392,6 +1431,7 @@ export const disableAddOnApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1424,6 +1464,7 @@ export const deleteAddOnApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1458,6 +1499,7 @@ export const getActivityLogsApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1490,6 +1532,7 @@ export const getActivityLogsByIdApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1524,6 +1567,7 @@ export const getUsersApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1556,6 +1600,7 @@ export const getUserByIdApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1588,6 +1633,7 @@ export const upsertUserApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1620,6 +1666,7 @@ export const disableUserApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1652,6 +1699,7 @@ export const deleteUserApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1686,6 +1734,7 @@ export const getCustomersApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1718,6 +1767,7 @@ export const getCustomerByIdApi = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:
@@ -1752,6 +1802,7 @@ export const getReportsAPI = async (
 		case 200:
 			successCallback(response.data);
 			break;
+		case 403:
 		case 420:
 		case 498:
 		case 499:

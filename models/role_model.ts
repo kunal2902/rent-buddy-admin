@@ -1,10 +1,10 @@
-import { UserModel } from "@/models";
+import { PermissionModel, UserModel } from "@/models";
 
 export interface RoleModel {
     role_id: string;
     name: string;
     isAdmin: boolean;
-    permissions: Record<string, any>[];
+    permissions_entities: PermissionModel[];
     created_by_id: string;
     created_by: UserModel;
     created_at: Date;

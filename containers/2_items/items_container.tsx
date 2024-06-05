@@ -21,7 +21,7 @@ import {
 	SortButtonComponentItemProps,
 } from "@/components";
 import { ItemModel } from "@/models";
-import { deleteItemApi, disableItemApi, formatDate, getItemApi, logoutUser } from "@/utils";
+import { deleteItemApi, disableItemApi, formatDate, getAddOnApi, getItemApi, logoutUser } from "@/utils";
 import AddItemModal from "./add_item_modal";
 
 const ItemsContainer = () => {
@@ -33,15 +33,24 @@ const ItemsContainer = () => {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [searchValue, setSearchValue] = useState<string>("");
 	const [itemList, setItemList] = useState<ItemModel[]>([]);
-	const [filter, setFilter] = useState<string | null>("item_id");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
-
+	const [total, setTotal] = useState<number>(0);
+	const [filter, setFilter] = useState<string>("name");
+	const [orderBy, setOrderBy] = useState<string>("item_id");
+	const [order, setOrder] = useState<string>("asc");
+	const [pageSize, setPageSize] = useState<number>(15);
 	useEffect(() => {
-		getItemApi(
-			`orderBy=${filter}&page=${page}&order=asc`,
+		initState().then();
+	}, [filter, page, callApi, orderBy, order]);
+
+	const initState = async () => {
+		setLoading(true);
+		await getItemApi(
+			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
 				setItemList(data.items);
+				setTotal(data.items_count);
 				setLoading(false);
 			},
 			() => {
@@ -51,22 +60,22 @@ const ItemsContainer = () => {
 				setLoading(false);
 				logoutUser(router);
 			}
-		).then();
-	}, [filter, page, callApi]);
+		);
+	};
 
 	useEffect(() => {
 		if (searchValue) {
 			handleSearch(searchValue);
+		} else {
+			setSearchLoading(false);
+			initState().then();
 		}
 	}, [searchValue]);
 
-	const handleSearch = useDebouncedCallback(async (query: string) => {
+	const handleSearch = useDebouncedCallback(async (q: string) => {
 		setSearchLoading(true);
-		if (query === "") {
-			setSearchLoading(false);
-		} else {
 			getItemApi(
-				`name=${query}`,
+				`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 				(data: any) => {
 					setItemList(data.items);
 					setSearchLoading(false);
@@ -78,8 +87,7 @@ const ItemsContainer = () => {
 					setSearchLoading(false);
 					logoutUser(router);
 				}
-			).then();
-		}
+			);
 	}, 500);
 
 	const handleAddOpenModal = (id: string, name: string) => {
@@ -92,25 +100,25 @@ const ItemsContainer = () => {
 		if (itemType === "disable") {
 			await disableItemApi(id,
 				() => {
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 					logoutUser(router);
 				});
 		} else {
 			await deleteItemApi(id,
 				() => {
-					setCallApi(true);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 				},
 				() => {
-					setCallApi(false);
+					setCallApi(val => !val);
 					logoutUser(router);
 				});
 		}
@@ -124,7 +132,7 @@ const ItemsContainer = () => {
 		"Disable",
 		"Action",
 	];
-	console.log("itemList", itemList);
+
 	const rows = itemList.map((element, index) => (
 		<Table.Tr key={index}>
 			<Table.Td>{index + 1}</Table.Td>
@@ -160,7 +168,9 @@ const ItemsContainer = () => {
 	return (
 		<MainComponent>
 			<DashboardPageHeader
+				total={total}
 				title="Items"
+				filter={filter}
 				idLabel="Item Id"
 				idVariable="item_id"
 				setFilter={setFilter}
@@ -171,7 +181,8 @@ const ItemsContainer = () => {
 				onClick={() => handleAddOpenModal("", "")}
 				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
-					console.log(selected.label);
+					setOrderBy(selected.value);
+					setOrder(selected.direction);
 				}}
 			/>
 
@@ -196,9 +207,9 @@ const ItemsContainer = () => {
 								</PaperComponent>
 								<CenterComponent>
 									<PaginationComponent
-										total={10}
 										value={page}
 										onChange={setPage}
+										total={Math.ceil(total / 15)}
 									/>
 								</CenterComponent>
 							</BoxComponent>

@@ -12,6 +12,7 @@ export * from "@/models/invoice_model";
 export * from "@/models/item_model";
 export * from "@/models/item_type_model";
 export * from "@/models/location_model";
+export * from "@/models/permission_model";
 export * from "@/models/report_model";
 export * from "@/models/role_model";
 export * from "@/models/sub_category_model";

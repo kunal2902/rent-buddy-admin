@@ -1,31 +1,33 @@
 "use client";
 
-import { toast } from "react-toastify";
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Checkbox, Fieldset, Grid, rgba, Stack } from "@mantine/core";
+import { Checkbox, Fieldset, Loader, Stack } from "@mantine/core";
 import { Image as ImageIcon } from "lucide-react";
 import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
-import { useDarkMode } from "storybook-dark-mode";
 import {
 	ActionIconComponent,
-	ButtonComponent, CardComponent, FileInputComponent,
+	ButtonComponent,
+	FileInputComponent,
 	GroupComponent,
 	ImageComponent,
 	ModalComponent,
 	ScrollAreaComponent,
-	SelectComponent, SimpleGridComponent,
+	SelectComponent,
+	SimpleGridComponent,
 	SpaceComponent,
 	TextInputComponent,
 	TitleComponent,
 } from "@/components";
 import {
-	getAddOnApi, getAttributeApi,
-	getCategoryApi, getItemTypeApi, getSubCategoryApi,
+	getAddOnApi,
+	getAttributeApi,
+	getCategoryApi,
+	getItemTypeApi,
+	getSubCategoryApi,
 	getTagApi,
 	logoutUser,
 	upsertItemApi,
-	useThemeProvider,
 } from "@/utils";
 import { NumberInputComponent } from "@/components/mantine/number_input_component";
 import { TextAreaInputComponent } from "@/components/mantine/textarea_input_component";
@@ -41,6 +43,11 @@ interface Props {
 	itemId: string;
 }
 
+interface AttributeState {
+	checked: boolean;
+	value: string;
+}
+
 const AddItemModal = (props: Props) => {
 	const {
 		isOpen,
@@ -49,13 +56,12 @@ const AddItemModal = (props: Props) => {
 		initialItemName,
 		itemId,
 	} = props;
-	const darkMode = useThemeProvider();
 	const router = useRouter();
 	const isEditModal: boolean = initialItemName !== "";
 	const [itemName, setItemName] = useState<string>(initialItemName);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [inputError, setInputError] = useState<string | null>(null);
-
+	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const [categories, setCategories] = useState([]);
 	const [subCategoryList, setSubCategoryList] = useState([]);
 	const [itemTypesList, setItemTypesList] = useState([]);
@@ -70,7 +76,15 @@ const AddItemModal = (props: Props) => {
 	const [customAttributesList, setCustomAttributesList] = useState<CustomAttributeModel[]>([]);
 	const [replaceIndex, setReplaceIndex] = useState<number | null>(null);
 	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
-	const [checkedAttributes, setCheckedAttributes] = useState<string[]>([]);
+	const [attributesState, setAttributesState] = useState<Record<string, AttributeState>>({});
+
+	useEffect(() => {
+		const initialState = customAttributesList.reduce((acc, attr) => {
+			acc[attr.custom_attribute_id] = { checked: false, value: attr.default_value };
+			return acc;
+		}, {} as Record<string, AttributeState>);
+		setAttributesState(initialState);
+	}, [customAttributesList]);
 
 	useEffect(() => {
 		if (itemName) {
@@ -88,8 +102,10 @@ const AddItemModal = (props: Props) => {
 					}));
 				setCategories(formattedCategories);
 			},
-			() => {},
-			() => {});
+			() => {
+			},
+			() => {
+			});
 		getItemTypeApi("",
 			(data: any) => {
 				const formattedItemType = data.item_types.map(
@@ -102,8 +118,10 @@ const AddItemModal = (props: Props) => {
 					}));
 				setItemTypesList(formattedItemType);
 			},
-			() => {},
-			() => {}
+			() => {
+			},
+			() => {
+			}
 		);
 		getTagApi("",
 			(data: any) => {
@@ -117,8 +135,10 @@ const AddItemModal = (props: Props) => {
 					}));
 				setTagsList(formattedTags);
 			},
-			() => {},
-			() => {}
+			() => {
+			},
+			() => {
+			}
 		);
 		getAddOnApi("",
 			(data: any) => {
@@ -132,20 +152,25 @@ const AddItemModal = (props: Props) => {
 					}));
 				setAddOnsList(formattedAddOns);
 			},
-			() => {},
-			() => {}
+			() => {
+			},
+			() => {
+			}
 		);
 		getAttributeApi("",
 			(data: any) => {
 				setCustomAttributesList(data.custom_attributes);
 			},
-			() => {},
-			() => {}
+			() => {
+			},
+			() => {
+			}
 		);
 	}, [itemName]);
 
 	useEffect(() => {
 		if (categoryId) {
+			setSearchLoading(true);
 			getSubCategoryApi(`filter_type=category&filter_query=${categoryId}`,
 				(data: any) => {
 					const formattedCategories = data.sub_categories.map(
@@ -157,9 +182,14 @@ const AddItemModal = (props: Props) => {
 							label: subCategory.name,
 						}));
 					setSubCategoryList(formattedCategories);
+					setSearchLoading(false);
 				},
-				() => {},
-				() => {}
+				() => {
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+				}
 			);
 		}
 	}, [categoryId]);
@@ -183,7 +213,7 @@ const AddItemModal = (props: Props) => {
 					setCallApi(true);
 				},
 				(message: string) => {
-					toast.error(message);
+					console.log(message);
 					setLoading(false);
 				},
 				() => {
@@ -243,19 +273,40 @@ const AddItemModal = (props: Props) => {
 	};
 
 	const handleCheckboxChange = (custom_attribute_id: string) => {
-		setCheckedAttributes(prevState =>
-			prevState.includes(custom_attribute_id)
-				? prevState.filter(id => id !== custom_attribute_id)
-				: [...prevState, custom_attribute_id]
-		);
+		setAttributesState(prevState => ({
+			...prevState,
+			[custom_attribute_id]: {
+				...prevState[custom_attribute_id],
+				checked: !prevState[custom_attribute_id]?.checked,
+			},
+		}));
 	};
+
+	const handleInputChange = (custom_attribute_id: string, value: string) => {
+		setAttributesState(prevState => ({
+			...prevState,
+			[custom_attribute_id]: {
+				...prevState[custom_attribute_id],
+				value,
+			},
+		}));
+	};
+
+	const checkedAttributes = useMemo(() => Object.entries(attributesState)
+			.filter(([, value]) => value.checked)
+			.map(([key, value]) =>
+				({ custom_attribute_id: key, value: value.value })), [attributesState]);
+
+	useEffect(() => {
+		console.log("Checked Attributes:", checkedAttributes);
+	}, [checkedAttributes]);
 
 	return (
 		<ModalComponent
 			fullScreen
 			opened={isOpen}
 			onClose={onClose}
-			title={<TitleComponent title={isEditModal ? "Edit Item" : "New Item"} />}
+			title={<TitleComponent title={isEditModal ? "Edit Item" : "Add New Item"} />}
 		>
 			<Fieldset legend={<TitleComponent title="Product Information" order={5} />}>
 				<StackComponent>
@@ -281,7 +332,6 @@ const AddItemModal = (props: Props) => {
 							title="Internal Name"
 							label="Internal Name"
 							value={itemName}
-							error={inputError}
 							setValue={setItemName}
 							placeholder="Enter Item Name"
 						/>
@@ -328,7 +378,6 @@ const AddItemModal = (props: Props) => {
 							title="Dscription"
 							label="Dscription"
 							value={itemName}
-							error={inputError}
 							setValue={setItemName}
 							resize="vertical"
 							placeholder="Enter Item Name"
@@ -345,9 +394,12 @@ const AddItemModal = (props: Props) => {
 					w="100%"
 					scrollbars="x"
 				>
-					<GroupComponent gap={10} maw={12 * 170} w={(images.length + 1) * 170}>
+					<GroupComponent
+						gap={10}
+						maw={(images.length + 1) * 170}
+						w={(images.length + 1) * 170}
+					>
 						<FileInputComponent
-							multiple
 							required
 							label="Please select category icon"
 							placeholder="Category icon"
@@ -422,35 +474,38 @@ const AddItemModal = (props: Props) => {
 				>
 					<SelectComponent
 						required
-						label="Select category"
-						placeholder="Select category"
 						data={categories}
 						clearable={false}
+						isGrouped={false}
 						value={categoryId}
+						label="Select category"
 						setValue={setCategoryId}
 						checkIconPosition="right"
-						isGrouped={false}
+						placeholder="Select category"
 					/>
 					<SelectComponent
-						label="Select sub-category"
-						placeholder="Select sub-category"
-						data={subCategoryList}
 						clearable={false}
-						value={subCategoryId}
-						setValue={setSubCategoryId}
-						checkIconPosition="right"
 						isGrouped={false}
+						value={subCategoryId}
+						data={subCategoryList}
+						checkIconPosition="right"
+						label="Select sub-category"
+						setValue={setSubCategoryId}
+						placeholder="Select sub-category"
+						rightSection={
+							searchLoading && <Loader size={20} />
+						}
 					/>
 					<SelectComponent
 						required
 						label="Item type"
-						placeholder="Item type"
-						data={itemTypesList}
 						clearable={false}
+						isGrouped={false}
 						value={itemTypeId}
+						data={itemTypesList}
+						placeholder="Item type"
 						setValue={setItemTypeId}
 						checkIconPosition="right"
-						isGrouped={false}
 					/>
 					<MultiSelectComponent
 						label="Tags"
@@ -489,16 +544,17 @@ const AddItemModal = (props: Props) => {
 						<GroupComponent align="start" key={index}>
 							<Checkbox
 								mt={7}
-								checked={checkedAttributes.includes(element.custom_attribute_id)}
+								checked={
+								attributesState[element.custom_attribute_id]?.checked || false}
 								onChange={() => handleCheckboxChange(element.custom_attribute_id)}
 							/>
 							<TextInputComponent
 								className="flex-grow"
 								title={element.name}
 								label={element.name}
-								value={element.default_value}
-								error={inputError}
-								setValue={setItemName}
+								value={attributesState[element.custom_attribute_id]?.value || ""}
+								setValue={(value) =>
+									handleInputChange(element.custom_attribute_id, value)}
 								placeholder="Enter Item Name"
 							/>
 						</GroupComponent>
