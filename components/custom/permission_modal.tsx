@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
+	ButtonComponent,
 	DividerComponent,
 	GroupComponent,
 	IndeterminateCheckbox,
@@ -20,6 +21,7 @@ export interface PermissionModalProps {
 	openModal: boolean,
 	setOpenModal: (val: boolean) => void;
 	setIsAdmin: (val: boolean) => void;
+	setTotalPermissions: (val: PermissionModel[]) => void
 	setSelectedPermission: (val: PermissionModel[]) => void
 }
 
@@ -29,6 +31,7 @@ export const PermissionModal = (props: PermissionModalProps) => {
 		openModal,
 		setIsAdmin,
 		setOpenModal,
+		setTotalPermissions,
 		setSelectedPermission,
 	} = props;
 	const [selectAll, setSelectAll] = useState<boolean>(false);
@@ -40,6 +43,7 @@ export const PermissionModal = (props: PermissionModalProps) => {
 		getPermissionApi("",
 			(data: any) => {
 				setPermissions(data.permissions);
+				setTotalPermissions(data.permissions);
 			},
 			() => {
 			},
@@ -47,38 +51,44 @@ export const PermissionModal = (props: PermissionModalProps) => {
 		).then();
 	}, []);
 
-	useEffect(() => {
-		setSelectedPermission(selectedPermissions);
-	}, [selectedPermissions]);
-
-	useEffect(() => {
-		setIsAdmin(selectAll);
-	}, [selectAll]);
-
 	return (
 		<ModalComponent
-			w={300}
+			// w={400}
 			opened={openModal}
 			closeOnEscape={false}
 			closeOnClickOutside={false}
 			onClose={() => setOpenModal(false)}
 			title={
-				<GroupComponent>
-					<TooltipComponent label="Select All (Admin)">
-						<CheckboxComponent
-							label=""
-							checked={selectAll}
-							size={mantineSize}
-							onChecked={setSelectAll}
-						/>
-					</TooltipComponent>
-					<TitleComponent title="Choose Permissions" />
+				<GroupComponent justify="space-between" w="360">
+					<GroupComponent>
+						<TooltipComponent label="Select All (Admin)">
+							<CheckboxComponent
+								label=""
+								checked={selectAll}
+								size={mantineSize}
+								onChecked={setSelectAll}
+							/>
+						</TooltipComponent>
+						<GroupComponent grow>
+							<TitleComponent title="Choose Permissions" />
+						</GroupComponent>
+					</GroupComponent>
+					<ButtonComponent
+						title="Submit"
+						variant="light"
+						onClick={() => {
+							setIsAdmin(selectAll);
+							setOpenModal(false);
+							setSelectedPermission(selectedPermissions);
+						}}
+					/>
 				</GroupComponent>
 			}
 		>
-			{permissions.map((item, index) => (
-				<ScrollAreaComponent key={index}>
-					<StackComponent>
+			<ScrollAreaComponent>
+				{permissions.map((item, index) => (
+					<StackComponent key={index}>
+						<DividerComponent mt={index === 0 ? 0 : mantineSpaceHeight} />
 						<IndeterminateCheckbox
 							selectAll={selectAll}
 							selectedPermissionModel={
@@ -106,10 +116,9 @@ export const PermissionModal = (props: PermissionModalProps) => {
 								setSelectAll(allChecked);
 							}}
 						/>
-						<DividerComponent mb={mantineSpaceHeight} />
 					</StackComponent>
-				</ScrollAreaComponent>
-			))}
+				))}
+			</ScrollAreaComponent>
 		</ModalComponent>
 	);
 };
