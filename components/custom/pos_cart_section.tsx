@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { Box, Divider, Stack } from "@mantine/core";
 import { AddIcon } from "@storybook/icons";
@@ -15,12 +15,16 @@ import {
 	TooltipComponent,
 } from "@/components";
 import AddUserModal from "@/containers/10_users/add_user_modal";
-import { appAccentColorRGBA, currencySign } from "@/utils";
+import { appAccentColorRGBA, currencySign, getCustomersApi } from "@/utils";
 import { ComboBoxProps } from "@/types";
+import { CustomerModel } from "@/models";
 
 export const PosCartSection = () => {
 	const [isUserModalOpen, setUserModalOpen] = useState(false);
+	const [callApi, setCallApi] = useState(true);
 	const [selectedCustomer, setSelectedCustomer] = useState<string | null>("");
+	const [customersList, setCustomersList] = useState([]);
+
 	const customerData: Array<ComboBoxProps> = [
 		{
 			id: "1",
@@ -34,6 +38,24 @@ export const PosCartSection = () => {
 		},
 	];
 
+	useEffect(() => {
+		getCustomersApi("",
+			(data: any) => {
+				const formattedCustomers = data.customers.map(
+					(customer: {
+						customer_id: string;
+						name: string;
+					}) => ({
+						value: customer.customer_id,
+						label: customer.name,
+					}));
+				setCustomersList(formattedCustomers);
+			},
+			() => {},
+			() => {}
+		).then();
+	}, []);
+
 	return (
 		<>
 			<AddUserModal
@@ -42,6 +64,7 @@ export const PosCartSection = () => {
 					setUserModalOpen(false);
 				}}
 				setCallApi={() => {
+					setCallApi(true);
 				}}
 			/>
 			<div
@@ -52,7 +75,7 @@ export const PosCartSection = () => {
 					<GroupComponent>
 						<SelectComponent
 							required
-							data={customerData}
+							data={customersList}
 							value={selectedCustomer}
 							placeholder="Select Customer"
 							setValue={setSelectedCustomer}

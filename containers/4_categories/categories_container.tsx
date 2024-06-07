@@ -63,7 +63,7 @@ const CategoriesContainer = () => {
 				setLoading(false);
 				logoutUser(router);
 			}
-		);
+		).then();
 	};
 
 	useEffect(() => {

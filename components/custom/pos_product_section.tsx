@@ -3,6 +3,7 @@
 import { Minus, Plus, SearchIcon } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { Box, Card, Chip, NumberInputHandlers, Spoiler } from "@mantine/core";
+import { useRouter } from "next/navigation";
 import {
 	ButtonComponent,
 	CardComponent,
@@ -16,21 +17,56 @@ import {
 	TextComponent,
 	TextInputComponent,
 } from "@/components";
-import { currencySign } from "@/utils";
+import { currencySign, getCategoryApi, getSubCategoryApi, logoutUser } from "@/utils";
 import { NumberInputComponent } from "@/components/mantine/number_input_component";
 import { centeredInputTheme } from "@/constants";
+import { CategoryModel } from "@/models";
 
 export interface Categories {
 	categoryName: string;
 }
 
 export const PosProductSection = () => {
+	const router = useRouter();
+	const [catValue, setCatValue] = useState<string | string[]>("");
+	const [catSubValue, setSubCatValue] = useState<string | string[]>("");
 	const [subCategories, setSubCategories] = useState([]);
 	const [searchQuery, setSearchQuery] = useState("");
-
+	const [categoriesList, setCategoriesList] = useState<CategoryModel[]>([]);
+	console.log(catValue);
 	useEffect(() => {
-		setSubCategories([]);
+		getCategoryApi("",
+			(data: any) => {
+				setCategoriesList(data.categories);
+			},
+			() => {
+			},
+			() => {
+				logoutUser(router);
+			}
+		).then();
 	}, []);
+
+	const fetchSubCategories = (value: string) => {
+		if (value !== "") {
+			getSubCategoryApi(`filter_type=category&filter_query=${value}`,
+				(data: any) => {
+					setSubCategories(data.sub_categories);
+				},
+				() => {
+				},
+				() => {
+					logoutUser(router);
+				}
+			).then();
+		}
+	};
+
+	function handleCategoryChange(val: string | string[]) {
+			setCatValue(val as string);
+			setSubCategories([]);
+			fetchSubCategories(val as string);
+	}
 
 	return (
 		<div className="w-[70%] max-h-screen overflow-hidden">
@@ -47,18 +83,14 @@ export const PosProductSection = () => {
 				</GroupComponent>
 			</Box>
 			<Box h={30} className="px-3 mt-3">
-				<Chip.Group defaultValue="1">
+				<Chip.Group
+					value={catValue}
+					onChange={handleCategoryChange}>
 					<GroupComponent justify="start">
-						<ChipComponent value="1">All items</ChipComponent>
-						<ChipComponent value="2">Pizza</ChipComponent>
-						<ChipComponent value="3">Burger</ChipComponent>
-						<ChipComponent value="4">Fries</ChipComponent>
-						<ChipComponent value="5">Burger</ChipComponent>
-						<ChipComponent value="6">Meals</ChipComponent>
-						<ChipComponent value="7">Pasta</ChipComponent>
-						<ChipComponent value="8">Non-veg</ChipComponent>
-						<ChipComponent value="9">Burger</ChipComponent>
-						<ChipComponent value="10">Meals</ChipComponent>
+						<ChipComponent value="">All items</ChipComponent>
+						{categoriesList.map((item: any) => (
+							<ChipComponent value={item.category_id}>{item.name}</ChipComponent>
+						))}
 					</GroupComponent>
 				</Chip.Group>
 			</Box>
@@ -67,18 +99,16 @@ export const PosProductSection = () => {
 				<Box h={70} className="px-3 mt-1">
 					<TextComponent text="Categories" bold size="xl" />
 					<SpaceComponent showHeight />
-					<Chip.Group defaultValue="1">
+					<Chip.Group value={catSubValue} onChange={(val) => setSubCatValue(val)}>
 						<GroupComponent justify="start">
-							<ChipComponent value="1">All items</ChipComponent>
-							<ChipComponent value="2">Pizza</ChipComponent>
-							<ChipComponent value="3">Burger</ChipComponent>
-							<ChipComponent value="4">Fries</ChipComponent>
-							<ChipComponent value="5">Burger</ChipComponent>
-							<ChipComponent value="6">Meals</ChipComponent>
-							<ChipComponent value="7">Pasta</ChipComponent>
-							<ChipComponent value="8">Non-veg</ChipComponent>
-							<ChipComponent value="9">Burger</ChipComponent>
-							<ChipComponent value="10">Meals</ChipComponent>
+							<ChipComponent value="">All items</ChipComponent>
+							{subCategories.map((item: any) => (
+								<ChipComponent
+									value={item.sub_category_id}
+								>
+									{item.name}
+								</ChipComponent>
+							))}
 						</GroupComponent>
 					</Chip.Group>
 				</Box>
