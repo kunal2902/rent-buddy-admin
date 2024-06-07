@@ -1,9 +1,8 @@
 "use client";
 
 import React from "react";
-import { Loader } from "@mantine/core";
 import { getSurfaceColor, useThemeProvider } from "@/utils";
-import { CenterComponent } from "@/components";
+import { CenterComponent, LoaderComponent } from "@/components";
 
 export const LoadingOverlayComponent = () => {
 	const { darkMode } = useThemeProvider();
@@ -18,7 +17,7 @@ export const LoadingOverlayComponent = () => {
 			}}
 		>
 			<CenterComponent h="100%">
-				<Loader />
+				<LoaderComponent size="sm" />
 			</CenterComponent>
 		</div>
 	);

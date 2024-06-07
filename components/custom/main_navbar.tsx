@@ -9,6 +9,7 @@ import {
 	CenterComponent,
 	ImageComponent,
 	SpaceComponent,
+	TextComponent,
 	UnstyledButtonComponent,
 	useMainNavbar,
 } from "@/components";
@@ -21,7 +22,6 @@ import {
 	posRoute,
 	useThemeProvider,
 } from "@/utils";
-import { TextComponent } from "@/components/mantine/text_component";
 
 export const MainNavbar = () => {
 	const { toggleSidebar } = useMainNavbar();

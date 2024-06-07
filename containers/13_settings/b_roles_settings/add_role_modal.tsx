@@ -38,6 +38,7 @@ const AddRoleModal = (props: Props) => {
 	const [openModal, setOpenModal] = useState<boolean>(false);
 	const [inputError, setInputError] = useState<string | null>(null);
 	const [selectedPermissions, setSelectedPermissions] = useState<PermissionModel[]>([]);
+	const [totalPermissions, setTotalPermissions] = useState<PermissionModel[]>([]);
 	const isEditModal: boolean = initialRoleValue !== "";
 
 	useEffect(() => {
@@ -52,18 +53,28 @@ const AddRoleModal = (props: Props) => {
 			setInputError("Please enter the name first");
 		}
 		let roleBody: {};
+		const tempPerm: PermissionModel[] = [];
+		for (let i = 0; i < selectedPermissions.length; i += 1) {
+			const model = selectedPermissions[i];
+			model.permissions = model.permissions.filter(n => n);
+			if (model.permissions.some(val => val != null && val !== "")) {
+				tempPerm.push(model);
+			}
+		}
+
 		if (isAdmin) {
 			roleBody = {
 				id: roleId,
 				name: roleName,
 				isAdmin,
+				permission_entities: totalPermissions,
 			};
 		} else {
 			roleBody = {
 				id: roleId,
 				name: roleName,
 				isAdmin,
-				permissions: selectedPermissions,
+				permission_entities: tempPerm,
 			};
 		}
 		console.log("Submitting role:", roleBody);
@@ -116,8 +127,6 @@ const AddRoleModal = (props: Props) => {
 				onClick={() => setOpenModal(true)}
 			/>
 
-			<TitleComponent title={isAdmin ? "Admin" : "Non-admin"} />
-
 			<SpaceComponent showHeight />
 
 			<GroupComponent justify="end">
@@ -133,6 +142,7 @@ const AddRoleModal = (props: Props) => {
 				openModal={openModal}
 				setIsAdmin={setIsAdmin}
 				setOpenModal={setOpenModal}
+				setTotalPermissions={setTotalPermissions}
 				setSelectedPermission={setSelectedPermissions}
 			/>
 

@@ -1,12 +1,13 @@
 "use client";
 
-import { Badge, Loader } from "@mantine/core";
 import { Plus } from "lucide-react";
 import React from "react";
 import { IoMdClose } from "react-icons/io";
 import {
+	BadgeComponent,
 	ButtonComponent,
 	GroupComponent,
+	LoaderComponent,
 	MantineProviderComponent,
 	SelectComponent,
 	SortButtonComponent,
@@ -68,7 +69,8 @@ export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
 				<TitleComponent title={title} />
 				{total && (
 					<TooltipComponent
-						label={`Total number of ${title}: ${total}`}><Badge>{total}</Badge>
+						label={`Total number of ${title}: ${total}`}>
+						<BadgeComponent>{total}</BadgeComponent>
 					</TooltipComponent>
 				)}
 			</GroupComponent>
@@ -102,7 +104,7 @@ export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
 								setValue={setSearchValue}
 								rightSection={
 									loading ?
-										<Loader size={20} /> :
+										<LoaderComponent /> :
 										searchValue ?
 											<IoMdClose
 												size={20}

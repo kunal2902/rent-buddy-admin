@@ -45,6 +45,7 @@ export const mantineButtonHeight: number = 36;
 export const mantineChipSize: MantineSize = "sm";
 export const mantineRadius: MantineRadius = "md";
 export const mantineButtonSize: MantineSize = "sm";
+export const mantineButtonLoaderSize: MantineSize = "xs";
 export const mantineSpaceWidth: MantineSize = "sm";
 export const mantineSpaceHeight: MantineSize = "sm";
 export const mantineActionIconSize: MantineSize = "lg";

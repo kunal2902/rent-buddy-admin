@@ -3,10 +3,8 @@
 import { useListState } from "@mantine/hooks";
 import { useEffect } from "react";
 import { PermissionModel, SelectedPermissionModel } from "@/models";
-import { CheckboxComponent } from "@/components/mantine/checkbox_component";
+import { CheckboxComponent, GroupComponent, StackComponent, TooltipComponent } from "@/components";
 import { getBackgroundColor, toTitleCase, useThemeProvider } from "@/utils";
-import { GroupComponent, TooltipComponent } from "@/components";
-import { StackComponent } from "@/components/mantine/stack_component";
 
 export interface IndeterminateCheckboxProps {
 	selectAll: boolean;
@@ -30,14 +28,6 @@ export function IndeterminateCheckbox(props: IndeterminateCheckboxProps) {
 		&& !allChecked;
 
 	useEffect(() => {
-		setAllChecked(allChecked);
-	}, [allChecked]);
-
-	useEffect(() => {
-		checkAll(selectAll);
-	}, [selectAll]);
-
-	useEffect(() => {
 		const tempArray = values.map((value) => value.checked ? value.permission : "");
 		tempArray.filter(n => n);
 		setSelectedPermissionModel({
@@ -49,10 +39,14 @@ export function IndeterminateCheckbox(props: IndeterminateCheckboxProps) {
 	const items = values.map((value, index) => (
 		<CheckboxComponent
 			size="xs"
+			disabled={selectAll}
 			checked={value.checked}
 			key={`${value.permission}_${index}`}
 			label={toTitleCase(value.permission)}
-			onChecked={(checked) => handlers.setItemProp(index, "checked", checked)}
+			onChecked={(checked) => {
+				handlers.setItemProp(index, "checked", checked);
+				setAllChecked(allChecked);
+			}}
 		/>
 	));
 
@@ -64,6 +58,7 @@ export function IndeterminateCheckbox(props: IndeterminateCheckboxProps) {
 			}))
 		);
 		selectedPermissionModel.checked = bool ?? allChecked;
+		setAllChecked(allChecked);
 	};
 
 	return (
@@ -73,6 +68,7 @@ export function IndeterminateCheckbox(props: IndeterminateCheckboxProps) {
 					size="sm"
 					checked={allChecked}
 					onChecked={checkAll}
+					disabled={selectAll}
 					indeterminate={indeterminate}
 					label={toTitleCase(selectedPermissionModel.entity)}
 				/>

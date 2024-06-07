@@ -1,13 +1,23 @@
 "use client";
 
-import React, { forwardRef, useState } from "react";
-import { Divider, Popover, PopoverProps } from "@mantine/core";
+import React, { forwardRef, useEffect, useState } from "react";
+import { PopoverProps } from "@mantine/core";
 import { IoIosLogOut } from "react-icons/io";
 import { MdOutlineDarkMode, MdOutlineLightMode } from "react-icons/md";
 import { useRouter } from "next/navigation";
-import { getEmail, getName, logoutUser, mantineRadius, useThemeProvider } from "@/utils";
-import { AvatarComponent, ButtonComponent, TextComponent, TitleComponent } from "@/components";
-import { StackComponent } from "@/components/mantine/stack_component";
+import { getEmail, getName, logoutUser, useThemeProvider } from "@/utils";
+import {
+	AvatarComponent,
+	ButtonComponent,
+	DividerComponent,
+	LoaderComponent,
+	PopoverComponent,
+	PopoverDropdownComponent,
+	PopoverTargetComponent,
+	StackComponent,
+	TextComponent,
+	TitleComponent,
+} from "@/components";
 
 /** Props list of Mantine's Popover component - https://mantine.dev/core/popover/?t=props */
 export interface AvatarPopupComponentProps extends PopoverProps {
@@ -16,53 +26,59 @@ export interface AvatarPopupComponentProps extends PopoverProps {
 
 /** This is the Mantine Menu component - https://mantine.dev/core/menu/ */
 export const AvatarPopupComponent = (props: AvatarPopupComponentProps) => {
-	const userName = getName();
-	const router = useRouter();
-	const [loading, setLoading] = useState<boolean>(false);
 	const {
 		darkMode,
 		toggleDarkMode,
 	} = useThemeProvider();
+	const router = useRouter();
+	const [name, setName] = useState<string>("");
+	const [loadingName, setLoadingName] = useState<boolean>(true);
+	const [loadingLogout, setLoadingLogout] = useState<boolean>(false);
+
+	useEffect(() => {
+		setTimeout(() => {
+			setName(getName());
+			setLoadingName(false);
+		}, 1000);
+	}, []);
 
 	const PopButton = forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<"div">>((buttonProps, ref) => (
 		<div ref={ref} {...buttonProps}>
 			<AvatarComponent
 				src={null}
-				alt={userName}
+				alt={name}
 				className="cursor-pointer"
 			>
-				{userName[0]}
+				{
+					loadingName ?
+						<LoaderComponent color="white" /> :
+						<TitleComponent title={name[0]} c="white" />
+				}
 			</AvatarComponent>
 		</div>
 	));
 
 	return (
-		<Popover
-			withArrow
-			offset={0}
-			shadow="md"
-			width={250}
-			arrowPosition="center"
-			radius={mantineRadius}
+		<PopoverComponent
 			{...props}
 		>
-			<Popover.Target>
+			<PopoverTargetComponent>
 				<PopButton />
-			</Popover.Target>
+			</PopoverTargetComponent>
 
-			<Popover.Dropdown p={0}>
+			<PopoverDropdownComponent p={0}>
 				<StackComponent gap={5} align="center" p={12}>
-					<AvatarComponent h={60} w={60} src={null} alt={userName}>
+					<AvatarComponent h={60} w={60} src={null} alt={name}>
 						<TitleComponent
 							size={26}
 							c="white"
-							title={userName[0]}
+							title={name[0]}
 						/>
 					</AvatarComponent>
-					<TitleComponent title={userName} />
+					<TitleComponent title={name} />
 					<TextComponent text={getEmail()} c="dimmed" />
 				</StackComponent>
-				<Divider orientation="horizontal" />
+				<DividerComponent orientation="horizontal" />
 				<ButtonComponent
 					fullWidth
 					radius={0}
@@ -75,26 +91,26 @@ export const AvatarPopupComponent = (props: AvatarPopupComponentProps) => {
 					}
 					title={darkMode ? "Change to Light mode" : "Change to Dark mode"}
 				/>
-				<Divider orientation="horizontal" />
+				<DividerComponent orientation="horizontal" />
 				<ButtonComponent
 					fullWidth
 					radius={0}
 					title="Logout"
 					justify="start"
 					variant="subtle"
-					loading={loading}
+					loading={loadingLogout}
 					leftSection={<IoIosLogOut size={18} />}
 					style={{ borderRadius: "0 0 8px 8px" }}
 					onClick={() => {
-						setLoading(true);
+						setLoadingLogout(true);
 						setTimeout(() => {
-							setLoading(false);
+							setLoadingLogout(false);
 							logoutUser(router);
 						}, 1500);
 					}}
 				/>
 
-			</Popover.Dropdown>
-		</Popover>
+			</PopoverDropdownComponent>
+		</PopoverComponent>
 	);
 };
