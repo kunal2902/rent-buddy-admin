@@ -20,7 +20,7 @@ import {
 	SortButtonComponentItemProps,
 } from "@/components";
 import { UserModel } from "@/models";
-import { deleteUserApi, disableUserApi, formatDate, getItemTypeApi, getUserId, getUsersApi } from "@/utils";
+import { deleteUserApi, disableUserApi, formatDate, getUserId, getUsersApi } from "@/utils";
 import AddUserModal from "./add_user_modal";
 
 const UsersContainer = () => {
@@ -32,7 +32,7 @@ const UsersContainer = () => {
 	const [initialValueName, setInitialValueName] = useState<string>("");
 	const [initialValueEmail, setInitialValueEmail] = useState<string>("");
 	const [initialValuePassword, setInitialValuePassword] = useState<string>("");
-	const [initialValueRoleId, setInitialValueRoleId] = useState<string>("");
+	const [initialValueRoleId, setInitialValueRoleId] = useState<string | undefined>("");
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [searchValue, setSearchValue] = useState<string>("");
@@ -97,7 +97,7 @@ const UsersContainer = () => {
 		userName: string,
 		email: string,
 		password: string,
-		roleId: string,
+		roleId?: string,
 		) => {
 		setUserId(id);
 		setInitialValueName(name);

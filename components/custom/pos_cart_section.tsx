@@ -14,12 +14,11 @@ import {
 	TextComponent,
 	TooltipComponent,
 } from "@/components";
-import AddUserModal from "@/containers/10_users/add_user_modal";
 import { appAccentColorRGBA, currencySign } from "@/utils";
 import { ComboBoxProps } from "@/types";
 
 export const PosCartSection = () => {
-	const [isUserModalOpen, setUserModalOpen] = useState(false);
+	const [customerModalOpen, setCustomerModalOpen] = useState(false);
 	const [selectedCustomer, setSelectedCustomer] = useState<string | null>("");
 	const customerData: Array<ComboBoxProps> = [
 		{
@@ -36,14 +35,6 @@ export const PosCartSection = () => {
 
 	return (
 		<>
-			<AddUserModal
-				isOpen={isUserModalOpen}
-				onClose={() => {
-					setUserModalOpen(false);
-				}}
-				setCallApi={() => {
-				}}
-			/>
 			<div
 				className="w-[30%] pr-3 mt-1"
 				style={{ height: "calc(100vh - 56px)" }}
@@ -64,7 +55,7 @@ export const PosCartSection = () => {
 								h={40}
 								variant="filled"
 								onClick={() => {
-									setUserModalOpen(true);
+									setCustomerModalOpen(true);
 								}}
 							>
 								<AddIcon />
