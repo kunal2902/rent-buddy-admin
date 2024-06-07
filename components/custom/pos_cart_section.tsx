@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { Box, Divider, Stack } from "@mantine/core";
 import { AddIcon } from "@storybook/icons";
@@ -14,12 +14,17 @@ import {
 	TextComponent,
 	TooltipComponent,
 } from "@/components";
-import { appAccentColorRGBA, currencySign } from "@/utils";
+import AddUserModal from "@/containers/10_users/add_user_modal";
+import { appAccentColorRGBA, currencySign, getCustomersApi } from "@/utils";
 import { ComboBoxProps } from "@/types";
+import { CustomerModel } from "@/models";
 
 export const PosCartSection = () => {
-	const [customerModalOpen, setCustomerModalOpen] = useState(false);
+	const [isUserModalOpen, setUserModalOpen] = useState(false);
+	const [callApi, setCallApi] = useState(true);
 	const [selectedCustomer, setSelectedCustomer] = useState<string | null>("");
+	const [customersList, setCustomersList] = useState([]);
+
 	const customerData: Array<ComboBoxProps> = [
 		{
 			id: "1",
@@ -33,8 +38,35 @@ export const PosCartSection = () => {
 		},
 	];
 
+	useEffect(() => {
+		getCustomersApi("",
+			(data: any) => {
+				const formattedCustomers = data.customers.map(
+					(customer: {
+						customer_id: string;
+						name: string;
+					}) => ({
+						value: customer.customer_id,
+						label: customer.name,
+					}));
+				setCustomersList(formattedCustomers);
+			},
+			() => {},
+			() => {}
+		).then();
+	}, []);
+
 	return (
 		<>
+			<AddUserModal
+				isOpen={isUserModalOpen}
+				onClose={() => {
+					setUserModalOpen(false);
+				}}
+				setCallApi={() => {
+					setCallApi(true);
+				}}
+			/>
 			<div
 				className="w-[30%] pr-3 mt-1"
 				style={{ height: "calc(100vh - 56px)" }}
@@ -43,7 +75,7 @@ export const PosCartSection = () => {
 					<GroupComponent>
 						<SelectComponent
 							required
-							data={customerData}
+							data={customersList}
 							value={selectedCustomer}
 							placeholder="Select Customer"
 							setValue={setSelectedCustomer}
@@ -55,7 +87,7 @@ export const PosCartSection = () => {
 								h={40}
 								variant="filled"
 								onClick={() => {
-									setCustomerModalOpen(true);
+									setUserModalOpen(true);
 								}}
 							>
 								<AddIcon />

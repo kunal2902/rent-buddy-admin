@@ -3,39 +3,62 @@
 import React, { useEffect, useState } from "react";
 import { Table } from "@mantine/core";
 import { useDebouncedCallback } from "@mantine/hooks";
+import { MdOutlineEdit } from "react-icons/md";
 import {
-	BoxComponent, CenterComponent,
-	DashboardPageHeader,
+	ActionIconComponent,
+	BoxComponent,
+	CenterComponent,
+	DashboardPageHeader, GroupComponent,
 	LoadingOverlayComponent,
-	MainComponent, NoDataFound, PaginationComponent, PaperComponent,
+	MainComponent,
+	NoDataFound,
+	PaginationComponent,
+	PaperComponent, PopConfirmComponent, PopConfirmType,
 	SortButtonComponentItemProps,
 } from "@/components";
 import { CustomerModel } from "@/models";
-import { formatDate, getCustomersApi } from "@/utils";
+import {
+	deleteCustomerApi,
+	deleteUserApi,
+	disableCustomerApi,
+	disableUserApi,
+	formatDate, getCustomerApi,
+	getCustomersApi,
+	getUserId,
+} from "@/utils";
+import AddCustomerModal from "@/containers/9_customers/add_customer_modal";
 
 const CustomersContainer = () => {
 	const [page, setPage] = useState<number>(1);
+	const [total, setTotal] = useState<number>(0);
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const [searchValue, setSearchValue] = useState<string>("");
 	const [customersList, setCustomersList] = useState<CustomerModel[]>([]);
-	const [filter, setFilter] = useState<string | null>("customer_id");
+	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
+	const [filter, setFilter] = useState<string>("name");
+	const [orderBy, setOrderBy] = useState<string>("user_id");
+	const [order, setOrder] = useState<string>("asc");
+	const [customerId, setCustomerId] = useState("");
+	const [customerInitialName, setCustomerInitialName] = useState("");
+	const [customerInitialPhoneNumber, setCustomerInitialPhoneNumber] = useState("");
+	const [customerInitialEmail, setCustomerInitialEmail] = useState("");
 
 	useEffect(() => {
-			getCustomersApi(
-				`orderBy=${filter}&page=${page}&order=asc`,
-				(data: any) => {
-					setCustomersList(data.customers);
-					setLoading(false);
-				},
-				() => {
-					setLoading(false);
-				},
-				() => {
-					setLoading(false);
-				}
-			).then();
+		getCustomerApi(
+			`orderBy=${filter}&page=${page}&order=asc`,
+			(data: any) => {
+				setCustomersList(data.customers);
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			}
+		).then();
 	}, [filter, page, callApi]);
 
 	useEffect(() => {
@@ -65,13 +88,59 @@ const CustomersContainer = () => {
 		}
 	}, 500);
 
+	const handleAddOpenModal = (
+		id: string,
+		name: string,
+		email: string,
+		phone: string,
+	) => {
+		setCustomerId(id);
+		setCustomerInitialName(name);
+		setCustomerInitialEmail(email);
+		setCustomerInitialPhoneNumber(phone);
+		setOpenAddModal(true);
+	};
+
+	const handleAction = async (id: string, actionType: string) => {
+		if (actionType === "disable") {
+			await disableCustomerApi(
+				id,
+				() => {
+					setCallApi(val => !val);
+				},
+				() => {
+					setCallApi(val => !val);
+				},
+				() => {
+					setCallApi(val => !val);
+				}
+			);
+		} else {
+			await deleteCustomerApi(
+				id,
+				() => {
+					setCallApi(val => !val);
+				},
+				() => {
+					setCallApi(val => !val);
+				},
+				() => {
+					setCallApi(val => !val);
+				}
+			);
+		}
+	};
+
 	const columns = [
 		"Index",
 		"Customer Id",
 		"Name",
 		"Email",
 		"Phone",
+		"Created By",
 		"Created At",
+		"Disable",
+		"Action",
 	];
 
 	const rows = customersList.map((element, index) => (
@@ -81,26 +150,63 @@ const CustomersContainer = () => {
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{element.email}</Table.Td>
 			<Table.Td>{element.phone}</Table.Td>
+			<Table.Td>{element.created_by_id}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
+			<Table.Td w={60}>
+				{
+					getUserId() !== element.customer_id &&
+					<PopConfirmComponent
+						entityName="user"
+						type={PopConfirmType.switch}
+						isDisabled={element.is_disabled}
+						actionName={element.is_disabled ? "enable" : "disable"}
+						onConfirm={async () => handleAction(element.customer_id, "disable")}
+					/>
+				}
+			</Table.Td>
+			<Table.Td w={110}>
+				<GroupComponent>
+					{
+						getUserId() !== element.customer_id &&
+						<PopConfirmComponent
+							entityName="user"
+							actionName="delete"
+							onConfirm={async () => handleAction(element.customer_id, "delete")}
+						/>
+					}
+					<ActionIconComponent
+						onClick={() => handleAddOpenModal(
+							element.customer_id,
+							element.name,
+							element.email,
+							element.phone,
+						)}
+						size="md">
+						<MdOutlineEdit size={18} />
+					</ActionIconComponent>
+				</GroupComponent>
+			</Table.Td>
 		</Table.Tr>
 	));
 
 	return (
 		<MainComponent>
 			<DashboardPageHeader
-				buttonTitle=""
+				total={total}
 				title="Customers"
+				filter={filter}
 				idLabel="Customer Id"
 				setFilter={setFilter}
-				showAddButton={false}
 				loading={searchLoading}
 				idVariable="customer_id"
-				onClick={() => {}}
+				buttonTitle="Add Customer"
 				searchValue={searchValue}
 				setSearchValue={setSearchValue}
 				setOption={(option) => setFilter(option.value)}
+				onClick={() => handleAddOpenModal("", "", "", "")}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
-					console.log(selected.label);
+					setOrderBy(selected.value);
+					setOrder(selected.direction);
 				}}
 			/>
 
@@ -116,8 +222,8 @@ const CustomersContainer = () => {
 										<Table.Thead>
 											<Table.Tr>
 												{columns.map((item) =>
-												(<Table.Th key={item}>{item}</Table.Th>)
-											)}
+													(<Table.Th key={item}>{item}</Table.Th>)
+												)}
 											</Table.Tr>
 										</Table.Thead>
 										<Table.Tbody>{rows}</Table.Tbody>
@@ -128,10 +234,22 @@ const CustomersContainer = () => {
 										total={10}
 										value={page}
 										onChange={setPage}
-								/>
+									/>
 								</CenterComponent>
 							</BoxComponent>
 						</BoxComponent>
+			}
+
+			{openAddModal &&
+				<AddCustomerModal
+					customerId={customerId}
+					isOpen={openAddModal}
+					onClose={() => setOpenAddModal(false)}
+					setCallApi={setCallApi}
+					initialValueName={customerInitialName}
+					initialValuePhoneNumber={customerInitialPhoneNumber}
+					initialValueEmail={customerInitialEmail}
+				/>
 			}
 		</MainComponent>
 	);
