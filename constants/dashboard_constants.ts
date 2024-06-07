@@ -1,5 +1,5 @@
 import { Blocks, Bookmark, List, ScanBarcode, ScanLine, ShieldCheck, Tag, Tags, Users } from "lucide-react";
-import { HiOutlineDocumentReport } from "react-Icons/hi";
+import { HiOutlineDocumentReport } from "react-icons/hi";
 import {
 	addOnsName,
 	categoriesName,
