@@ -1,6 +1,8 @@
 import { LocationModel, UserModel, CartModel, InvoiceModel } from "@/models";
 
 export interface CustomerModel {
+    is_disabled: boolean;
+    is_deleted: boolean;
     customer_id: string;
     name?: string;
     phone?: string;

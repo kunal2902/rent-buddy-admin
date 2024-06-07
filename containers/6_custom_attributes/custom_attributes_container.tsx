@@ -63,7 +63,7 @@ const CustomAttributesContainer = () => {
 			() => {
 				setLoading(false);
 			}
-		);
+		).then();
 	};
 
 	useEffect(() => {

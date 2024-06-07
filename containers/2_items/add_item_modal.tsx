@@ -190,7 +190,7 @@ const AddItemModal = (props: Props) => {
 				() => {
 					setSearchLoading(false);
 				}
-			);
+			).then();
 		}
 	}, [categoryId]);
 
