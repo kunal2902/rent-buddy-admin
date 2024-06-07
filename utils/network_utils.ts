@@ -4,7 +4,7 @@ import {
 	addOnAPIPath,
 	attributeAPIPath,
 	categoryAPIPath,
-	customerAPIPath,
+	customerAPIPath, dashboardAPIPath,
 	getCrmJWT,
 	isDebug,
 	itemAPIPath,
@@ -15,7 +15,7 @@ import {
 	roleAPIPath,
 	subCategoryAPIPath,
 	tagAPIPath,
-	usersAPIPath,
+	usersAPIPath
 } from "@/utils";
 
 const makeGetRequest = async (
@@ -106,6 +106,41 @@ export const loginApi = async (
 		toast.success(response.message);
 	} else {
 		errorCallback(response.error);
+	}
+};
+
+// Dashboard Api
+export const getDashboardApi = async (
+	query: string | undefined,
+	successCallback: (arg0: any) => void,
+	errorCallback: (arg0: any) => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === "" || token === "null") {
+		logoutCallback();
+		return;
+	}
+	const path = query === "" ? dashboardAPIPath : `${dashboardAPIPath}/${query}`;
+	const response = await makeGetRequest(path, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 403:
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback(response.message);
+			toast.error(response.message);
 	}
 };
 
