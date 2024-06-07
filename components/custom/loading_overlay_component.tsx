@@ -21,20 +21,4 @@ export const LoadingOverlayComponent = () => {
 			</CenterComponent>
 		</div>
 	);
-
-	/*return (
-		<LoadingOverlay
-			mt={116}
-			mr={12}
-			ml={68}
-			mb={12}
-			zIndex={10}
-			overlayProps={{
-			radius: mantineRadius,
-			backgroundOpacity: 1,
-			color: getSurfaceColor(darkMode).backgroundColor,
-		}}
-			{...props}
-	/>
-	);*/
 };

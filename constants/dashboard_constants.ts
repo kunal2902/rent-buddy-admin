@@ -1,5 +1,6 @@
-import { Blocks, Bookmark, List, ScanBarcode, ScanLine, ShieldCheck, Tag, Tags, Users } from "lucide-react";
+import { Blocks, Bookmark, List, LucideIcon, ScanBarcode, ScanLine, ShieldCheck, Tag, Tags, Users } from "lucide-react";
 import { HiOutlineDocumentReport } from "react-icons/hi";
+import { IconType } from "react-icons";
 import {
 	addOnsName,
 	categoriesName,
@@ -10,7 +11,12 @@ import {
 	subCategoriesName, tagsName, usersName,
 } from "@/utils";
 
-export const dashboardConstants = {
+export interface DashboardConstantsProps {
+	title: string;
+	Icon: IconType | LucideIcon;
+}
+
+export const dashboardConstants : Record<string, DashboardConstantsProps> = {
 	add_ons: {
 		title: addOnsName,
 		Icon: Blocks,

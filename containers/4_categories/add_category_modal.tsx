@@ -5,7 +5,6 @@ import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "re
 import { toast } from "react-toastify";
 import Image from "next/image";
 import { Image as ImageIcon } from "lucide-react";
-import { Stack } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import {
 	ActionIconComponent,
@@ -13,6 +12,7 @@ import {
 	FileInputComponent,
 	GroupComponent,
 	ModalComponent,
+	StackComponent,
 	TextInputComponent,
 	TitleComponent,
 } from "@/components";
@@ -29,12 +29,12 @@ interface Props {
 
 const AddCategoryModal = (props: Props) => {
 	const {
+		icon,
 		isOpen,
 		onClose,
 		setCallApi,
-		initialCategoryValue,
 		categoryId,
-		icon,
+		initialCategoryValue,
 	} = props;
 	const router = useRouter();
 	const isEditModal: boolean = initialCategoryValue !== "";
@@ -123,7 +123,7 @@ const AddCategoryModal = (props: Props) => {
 			title={<TitleComponent title={isEditModal ? "Edit Category" : "New Category"} />}
 		>
 			<GroupComponent grow align="start">
-				<Stack>
+				<StackComponent>
 					<FileInputComponent
 						required
 						label="Please select category icon"
@@ -169,7 +169,7 @@ const AddCategoryModal = (props: Props) => {
 
 						</GroupComponent>
 					)}
-				</Stack>
+				</StackComponent>
 
 				<TextInputComponent
 					required

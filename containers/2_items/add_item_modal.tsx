@@ -1,21 +1,27 @@
 "use client";
 
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState, useMemo } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Checkbox, Fieldset, Loader, Stack } from "@mantine/core";
 import { Image as ImageIcon } from "lucide-react";
 import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
 import {
 	ActionIconComponent,
 	ButtonComponent,
+	CheckboxComponent,
+	FieldsetComponent,
 	FileInputComponent,
 	GroupComponent,
 	ImageComponent,
+	LoaderComponent,
 	ModalComponent,
+	MultiSelectComponent,
+	NumberInputComponent,
 	ScrollAreaComponent,
 	SelectComponent,
 	SimpleGridComponent,
 	SpaceComponent,
+	StackComponent,
+	TextAreaInputComponent,
 	TextInputComponent,
 	TitleComponent,
 } from "@/components";
@@ -29,58 +35,57 @@ import {
 	logoutUser,
 	upsertItemApi,
 } from "@/utils";
-import { NumberInputComponent } from "@/components/mantine/number_input_component";
-import { TextAreaInputComponent } from "@/components/mantine/textarea_input_component";
-import { StackComponent } from "@/components/mantine/stack_component";
-import { MultiSelectComponent } from "@/components/mantine/multi_select_component";
 import { CustomAttributeModel } from "@/models";
 
 interface Props {
+	itemId: string;
 	isOpen: boolean;
 	onClose: () => void;
-	setCallApi: Dispatch<SetStateAction<boolean>>;
 	initialItemName: string;
-	itemId: string;
+	setCallApi: Dispatch<SetStateAction<boolean>>;
 }
 
 interface AttributeState {
-	checked: boolean;
 	value: string;
+	checked: boolean;
 }
 
 const AddItemModal = (props: Props) => {
 	const {
 		isOpen,
+		itemId,
 		onClose,
 		setCallApi,
 		initialItemName,
-		itemId,
 	} = props;
 	const router = useRouter();
 	const isEditModal: boolean = initialItemName !== "";
-	const [itemName, setItemName] = useState<string>(initialItemName);
-	const [loading, setLoading] = useState<boolean>(false);
-	const [inputError, setInputError] = useState<string | null>(null);
-	const [searchLoading, setSearchLoading] = useState<boolean>(false);
-	const [categories, setCategories] = useState([]);
-	const [subCategoryList, setSubCategoryList] = useState([]);
-	const [itemTypesList, setItemTypesList] = useState([]);
 	const [tagsList, setTagsList] = useState([]);
-	const [addOnsList, setAddOnsList] = useState([]);
-	const [categoryId, setCategoryId] = useState<string>("");
-	const [subCategoryId, setSubCategoryId] = useState<string>("");
-	const [itemTypeId, setItemTypeId] = useState<string>("");
 	const [tagsId, setTagsId] = useState<string[]>();
-	const [addOnsId, setAddOnsId] = useState<string[]>();
+	const [categories, setCategories] = useState([]);
+	const [addOnsList, setAddOnsList] = useState([]);
 	const [images, setImages] = useState<string[]>([]);
-	const [customAttributesList, setCustomAttributesList] = useState<CustomAttributeModel[]>([]);
-	const [replaceIndex, setReplaceIndex] = useState<number | null>(null);
+	const [addOnsId, setAddOnsId] = useState<string[]>();
 	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
+	const [itemName, setItemName] = useState<string>(initialItemName);
+	const [itemTypesList, setItemTypesList] = useState([]);
+	const [loading, setLoading] = useState<boolean>(false);
+	const [categoryId, setCategoryId] = useState<string>("");
+	const [itemTypeId, setItemTypeId] = useState<string>("");
+	const [subCategoryList, setSubCategoryList] = useState([]);
+	const [subCategoryId, setSubCategoryId] = useState<string>("");
+	const [searchLoading, setSearchLoading] = useState<boolean>(false);
+	const [inputError, setInputError] = useState<string | null>(null);
+	const [replaceIndex, setReplaceIndex] = useState<number | null>(null);
+	const [customAttributesList, setCustomAttributesList] = useState<CustomAttributeModel[]>([]);
 	const [attributesState, setAttributesState] = useState<Record<string, AttributeState>>({});
 
 	useEffect(() => {
 		const initialState = customAttributesList.reduce((acc, attr) => {
-			acc[attr.custom_attribute_id] = { checked: false, value: attr.default_value };
+			acc[attr.custom_attribute_id] = {
+				checked: false,
+				value: attr.default_value,
+			};
 			return acc;
 		}, {} as Record<string, AttributeState>);
 		setAttributesState(initialState);
@@ -105,7 +110,10 @@ const AddItemModal = (props: Props) => {
 			() => {
 			},
 			() => {
-			});
+				logoutUser(router);
+			}
+		).then();
+
 		getItemTypeApi("",
 			(data: any) => {
 				const formattedItemType = data.item_types.map(
@@ -121,8 +129,10 @@ const AddItemModal = (props: Props) => {
 			() => {
 			},
 			() => {
+				logoutUser(router);
 			}
-		);
+		).then();
+
 		getTagApi("",
 			(data: any) => {
 				const formattedTags = data.tags.map(
@@ -138,8 +148,10 @@ const AddItemModal = (props: Props) => {
 			() => {
 			},
 			() => {
+				logoutUser(router);
 			}
-		);
+		).then();
+
 		getAddOnApi("",
 			(data: any) => {
 				const formattedAddOns = data.add_ons.map(
@@ -155,8 +167,10 @@ const AddItemModal = (props: Props) => {
 			() => {
 			},
 			() => {
+				logoutUser(router);
 			}
-		);
+		).then();
+
 		getAttributeApi("",
 			(data: any) => {
 				setCustomAttributesList(data.custom_attributes);
@@ -164,8 +178,9 @@ const AddItemModal = (props: Props) => {
 			() => {
 			},
 			() => {
+				logoutUser(router);
 			}
-		);
+		).then();
 	}, [itemName]);
 
 	useEffect(() => {
@@ -188,6 +203,7 @@ const AddItemModal = (props: Props) => {
 					setSearchLoading(false);
 				},
 				() => {
+					logoutUser(router);
 					setSearchLoading(false);
 				}
 			).then();
@@ -293,9 +309,12 @@ const AddItemModal = (props: Props) => {
 	};
 
 	const checkedAttributes = useMemo(() => Object.entries(attributesState)
-			.filter(([, value]) => value.checked)
-			.map(([key, value]) =>
-				({ custom_attribute_id: key, value: value.value })), [attributesState]);
+		.filter(([, value]) => value.checked)
+		.map(([key, value]) =>
+			({
+				custom_attribute_id: key,
+				value: value.value,
+			})), [attributesState]);
 
 	useEffect(() => {
 		console.log("Checked Attributes:", checkedAttributes);
@@ -308,30 +327,30 @@ const AddItemModal = (props: Props) => {
 			onClose={onClose}
 			title={<TitleComponent title={isEditModal ? "Edit Item" : "Add New Item"} />}
 		>
-			<Fieldset legend={<TitleComponent title="Product Information" order={5} />}>
+			<FieldsetComponent legend={<TitleComponent title="Product Information" order={5} />}>
 				<StackComponent>
 					<SimpleGridComponent
 						cols={{
-							base: 1,
 							sm: 2,
 							md: 3,
 							lg: 3,
 							xl: 3,
+							base: 1,
 						}}
 					>
 						<TextInputComponent
 							required
 							title="Name"
-							label="Item Name"
 							value={itemName}
+							label="Item Name"
 							error={inputError}
 							setValue={setItemName}
 							placeholder="Enter Item Name"
 						/>
 						<TextInputComponent
+							value={itemName}
 							title="Internal Name"
 							label="Internal Name"
-							value={itemName}
 							setValue={setItemName}
 							placeholder="Enter Item Name"
 						/>
@@ -346,11 +365,12 @@ const AddItemModal = (props: Props) => {
 						/>
 						<NumberInputComponent
 							required
-							title="Stock Quantity"
-							label="Stock Quantity"
 							value={itemName}
 							error={inputError}
-							setValue={() => {}}
+							title="Stock Quantity"
+							label="Stock Quantity"
+							setValue={() => {
+							}}
 							placeholder="Enter Item Name"
 						/>
 						<NumberInputComponent
@@ -359,37 +379,37 @@ const AddItemModal = (props: Props) => {
 							label="Price"
 							value={itemName}
 							error={inputError}
-							setValue={() => {}}
-							// setValue={setItemName}
+							setValue={() => {
+							}}
 							placeholder="Enter Item Name"
 						/>
 					</SimpleGridComponent>
 					<GroupComponent grow>
 						<TextAreaInputComponent
 							required
-							title="Short Dscription"
-							label="Short Dscription"
 							value={itemName}
+							resize="vertical"
 							error={inputError}
 							setValue={setItemName}
-							resize="vertical"
+							title="Short Dscription"
+							label="Short Dscription"
 							placeholder="Enter Item Name"
 						/>
 						<TextAreaInputComponent
+							value={itemName}
+							resize="vertical"
 							title="Dscription"
 							label="Dscription"
-							value={itemName}
 							setValue={setItemName}
-							resize="vertical"
 							placeholder="Enter Item Name"
 						/>
 					</GroupComponent>
 				</StackComponent>
-			</Fieldset>
+			</FieldsetComponent>
 
 			<SpaceComponent showHeight />
 
-			<Fieldset legend={<TitleComponent title="Images" order={5} />}>
+			<FieldsetComponent legend={<TitleComponent title="Images" order={5} />}>
 				<ScrollAreaComponent
 					h={200}
 					w="100%"
@@ -397,80 +417,80 @@ const AddItemModal = (props: Props) => {
 				>
 					<GroupComponent
 						gap={10}
-						maw={(images.length + 1) * 170}
 						w={(images.length + 1) * 170}
+						maw={(images.length + 1) * 170}
 					>
 						<FileInputComponent
 							required
-							label="Please select category icon"
-							placeholder="Category icon"
 							className="hidden"
 							onChange={onFilePick}
 							ref={fileInputTriggerRef}
+							placeholder="Category icon"
+							label="Please select category icon"
 						/>
 						{images.map((img, index) => (
-							<Stack gap={10} h={180} mah={180} maw={160} w={160}>
+							<StackComponent gap={10} h={180} mah={180} maw={160} w={160}>
 								<ImageComponent
-									src={img}
-									fit="cover"
 									w={160}
 									h={140}
+									src={img}
 									mih={140}
+									fit="cover"
 								/>
 								<GroupComponent
+									h={30}
 									gap={0}
 									mah={30}
-									h={30}
 									justify="center">
 
 									<ActionIconComponent
-										size="xs"
 										h={30}
 										w={30}
-										color="red"
 										mr={5}
+										size="xs"
+										color="red"
 										onClick={() => handleRemoveImage(index)}
 									>
 										<MdOutlineDeleteForever size={18} />
 									</ActionIconComponent>
 
 									<ActionIconComponent
-										size="xs"
 										h={30}
 										w={30}
 										ml={5}
+										size="xs"
 										onClick={() => handleReplaceImage(index)}
 									>
 										<MdOutlineEdit size={18} />
 									</ActionIconComponent>
 								</GroupComponent>
-							</Stack>
+							</StackComponent>
 						))}
 						<StackComponent
-							onClick={onChooseIconClick}
-							className="cursor-pointer border border-dashed flex flex-col items-center justify-center rounded-md border-primary-darker text-primary-darker"
 							h={180}
 							w={160}
-							justify="center"
 							align="center"
+							justify="center"
+							onClick={onChooseIconClick}
+							className="cursor-pointer border border-dashed flex flex-col items-center justify-center rounded-md border-primary-darker text-primary-darker"
 						>
 							<ImageIcon size={50} />
 							<p className="text-center mt-0.5">Choose an Icon</p>
 						</StackComponent>
 					</GroupComponent>
 				</ScrollAreaComponent>
-			</Fieldset>
+			</FieldsetComponent>
 
 			<SpaceComponent showHeight />
 
-			<Fieldset legend={<TitleComponent title="Other Arrtributes" order={5} />}>
+			<FieldsetComponent legend={<TitleComponent title="Other Arrtributes" order={5} />}>
 				<SimpleGridComponent
 					cols={{
-						base: 1,
 						sm: 2,
 						md: 3,
 						lg: 3,
 						xl: 3,
+						base: 1,
 					}}
 				>
 					<SelectComponent
@@ -494,7 +514,7 @@ const AddItemModal = (props: Props) => {
 						setValue={setSubCategoryId}
 						placeholder="Select sub-category"
 						rightSection={
-							searchLoading && <Loader size={20} />
+							searchLoading && <LoaderComponent size={20} />
 						}
 					/>
 					<SelectComponent
@@ -510,58 +530,58 @@ const AddItemModal = (props: Props) => {
 					/>
 					<MultiSelectComponent
 						label="Tags"
-						placeholder="Tags"
+						value={tagsId}
 						data={tagsList}
 						clearable={false}
-						value={tagsId}
+						placeholder="Tags"
 						setValue={setTagsId}
 						checkIconPosition="right"
 					/>
 					<MultiSelectComponent
 						label="Add-ons"
-						placeholder="Add-ons"
+						value={addOnsId}
 						data={addOnsList}
 						clearable={false}
-						value={addOnsId}
+						placeholder="Add-ons"
 						setValue={setAddOnsId}
 						checkIconPosition="right"
 					/>
 				</SimpleGridComponent>
-			</Fieldset>
+			</FieldsetComponent>
 
 			<SpaceComponent showHeight />
 
-			<Fieldset legend={<TitleComponent title="Custom Arrtribute" order={5} />}>
+			<FieldsetComponent legend={<TitleComponent title="Custom Arrtribute" order={5} />}>
 				<SimpleGridComponent
 					cols={{
-						base: 1,
 						sm: 2,
 						md: 3,
 						lg: 3,
 						xl: 3,
+						base: 1,
 					}}
 				>
 					{customAttributesList.map((element, index) => (
 						<GroupComponent align="start" key={index}>
-							<Checkbox
+							<CheckboxComponent
 								mt={7}
 								checked={
-								attributesState[element.custom_attribute_id]?.checked || false}
-								onChange={() => handleCheckboxChange(element.custom_attribute_id)}
+									attributesState[element.custom_attribute_id]?.checked || false}
+								onChecked={() => handleCheckboxChange(element.custom_attribute_id)}
 							/>
 							<TextInputComponent
-								className="flex-grow"
 								title={element.name}
 								label={element.name}
-								value={attributesState[element.custom_attribute_id]?.value || ""}
+								className="flex-grow"
+								placeholder="Enter Item Name"
 								setValue={(value) =>
 									handleInputChange(element.custom_attribute_id, value)}
-								placeholder="Enter Item Name"
+								value={attributesState[element.custom_attribute_id]?.value || ""}
 							/>
 						</GroupComponent>
 					))}
 				</SimpleGridComponent>
-			</Fieldset>
+			</FieldsetComponent>
 
 			<SpaceComponent showHeight />
 

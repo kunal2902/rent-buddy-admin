@@ -15,7 +15,6 @@ export const DraftModal = (props: DraftModalProps) => {
 
 	return (
 		<ModalComponent opened={isOpen} onClose={onClose} className="border-grey-800" title="Draft Orders">
-
 			<GroupComponent justify="end">
 				<ButtonComponent title="Save" fullWidth px={5} />
 			</GroupComponent>

@@ -1,6 +1,5 @@
 "use client";
 
-import { Table } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { MdOutlineEdit } from "react-icons/md";
@@ -19,9 +18,15 @@ import {
 	PopConfirmComponent,
 	PopConfirmType,
 	SortButtonComponentItemProps,
+	TableComponent,
+	TableTbodyComponent,
+	TableTdComponent,
+	TableThComponent,
+	TableTheadComponent,
+	TableTrComponent,
 } from "@/components";
 import { ItemModel } from "@/models";
-import { deleteItemApi, disableItemApi, formatDate, getAddOnApi, getItemApi, logoutUser } from "@/utils";
+import { deleteItemApi, disableItemApi, formatDate, getItemApi, logoutUser } from "@/utils";
 import AddItemModal from "./add_item_modal";
 
 const ItemsContainer = () => {
@@ -74,20 +79,20 @@ const ItemsContainer = () => {
 
 	const handleSearch = useDebouncedCallback(async (q: string) => {
 		setSearchLoading(true);
-			getItemApi(
-				`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
-				(data: any) => {
-					setItemList(data.items);
-					setSearchLoading(false);
-				},
-				() => {
-					setSearchLoading(false);
-				},
-				() => {
-					setSearchLoading(false);
-					logoutUser(router);
-				}
-			);
+		getItemApi(
+			`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			(data: any) => {
+				setItemList(data.items);
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+				logoutUser(router);
+			}
+		).then();
 	}, 500);
 
 	const handleAddOpenModal = (id: string, name: string) => {
@@ -139,17 +144,17 @@ const ItemsContainer = () => {
 	];
 
 	const rows = itemList.map((element, index) => (
-		<Table.Tr key={index}>
-			<Table.Td>{index + 1}</Table.Td>
-			<Table.Td>{element.item_id}</Table.Td>
-			<Table.Td>{element.name}</Table.Td>
-			<Table.Td>{element.category.name}</Table.Td>
-			<Table.Td>{element.sub_category.name}</Table.Td>
-			<Table.Td>{element.type.name}</Table.Td>
-			<Table.Td>{element.stock_quantity}</Table.Td>
-			<Table.Td>{element.created_by.name}</Table.Td>
-			<Table.Td>{formatDate(element.created_at)}</Table.Td>
-			<Table.Td w={60}>
+		<TableTrComponent key={index}>
+			<TableTdComponent>{index + 1}</TableTdComponent>
+			<TableTdComponent>{element.item_id}</TableTdComponent>
+			<TableTdComponent>{element.name}</TableTdComponent>
+			<TableTdComponent>{element.category.name}</TableTdComponent>
+			<TableTdComponent>{element.sub_category.name}</TableTdComponent>
+			<TableTdComponent>{element.type.name}</TableTdComponent>
+			<TableTdComponent>{element.stock_quantity}</TableTdComponent>
+			<TableTdComponent>{element.created_by.name}</TableTdComponent>
+			<TableTdComponent>{formatDate(element.created_at)}</TableTdComponent>
+			<TableTdComponent w={60}>
 				<PopConfirmComponent
 					entityName="item"
 					type={PopConfirmType.switch}
@@ -157,8 +162,8 @@ const ItemsContainer = () => {
 					actionName={element.is_disabled ? "enable" : "disable"}
 					onConfirm={async () => handleActionItem(element.item_id, "disable")}
 				/>
-			</Table.Td>
-			<Table.Td w={110}>
+			</TableTdComponent>
+			<TableTdComponent w={110}>
 				<GroupComponent>
 					<PopConfirmComponent
 						entityName="item"
@@ -171,8 +176,8 @@ const ItemsContainer = () => {
 						<MdOutlineEdit size={18} />
 					</ActionIconComponent>
 				</GroupComponent>
-			</Table.Td>
-		</Table.Tr>
+			</TableTdComponent>
+		</TableTrComponent>
 	));
 
 	return (
@@ -204,17 +209,27 @@ const ItemsContainer = () => {
 						<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
 							<BoxComponent mx="auto">
 								<PaperComponent>
-									<Table highlightOnHover>
-										<Table.Thead>
-											<Table.Tr>
+									<TableComponent>
+										<TableTheadComponent>
+											<TableTrComponent>
 												{columns.map((item) =>
-													(<Table.Th key={item}>{item}</Table.Th>)
+													(
+														<TableThComponent
+															key={item}
+														>
+															{item}
+														</TableThComponent>
+													)
 												)}
-											</Table.Tr>
-										</Table.Thead>
-										<Table.Tbody>{rows}</Table.Tbody>
-									</Table>
+											</TableTrComponent>
+										</TableTheadComponent>
+
+										<TableTbodyComponent>
+											{rows}
+										</TableTbodyComponent>
+									</TableComponent>
 								</PaperComponent>
+
 								<CenterComponent>
 									<PaginationComponent
 										value={page}

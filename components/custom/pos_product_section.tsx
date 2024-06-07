@@ -2,23 +2,27 @@
 
 import { Minus, Plus, SearchIcon } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Card, Chip, NumberInputHandlers, Spoiler } from "@mantine/core";
+import { NumberInputHandlers } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import {
+	BoxComponent,
 	ButtonComponent,
 	CardComponent,
+	CardSectionComponent,
 	ChipComponent,
+	ChipGroupComponent,
 	GroupComponent,
 	ImageComponent,
 	MantineProviderComponent,
+	NumberInputComponent,
 	ScrollAreaComponent,
 	SimpleGridComponent,
 	SpaceComponent,
+	SpoilerComponent,
 	TextComponent,
 	TextInputComponent,
 } from "@/components";
 import { currencySign, getCategoryApi, getSubCategoryApi, logoutUser } from "@/utils";
-import { NumberInputComponent } from "@/components/mantine/number_input_component";
 import { centeredInputTheme } from "@/constants";
 import { CategoryModel } from "@/models";
 
@@ -63,14 +67,14 @@ export const PosProductSection = () => {
 	};
 
 	function handleCategoryChange(val: string | string[]) {
-			setCatValue(val as string);
-			setSubCategories([]);
-			fetchSubCategories(val as string);
+		setCatValue(val as string);
+		setSubCategories([]);
+		fetchSubCategories(val as string);
 	}
 
 	return (
 		<div className="w-[70%] max-h-screen overflow-hidden">
-			<Box h={40} className="px-3 mt-1">
+			<BoxComponent h={40} className="px-3 mt-1">
 				<GroupComponent justify="space-between">
 					<TextComponent text="Categories" bold size="xl" />
 					<TextInputComponent
@@ -81,9 +85,9 @@ export const PosProductSection = () => {
 						leftSection={<SearchIcon size={16} />}
 					/>
 				</GroupComponent>
-			</Box>
-			<Box h={30} className="px-3 mt-3">
-				<Chip.Group
+			</BoxComponent>
+			<BoxComponent h={30} className="px-3 mt-3">
+				<ChipGroupComponent
 					value={catValue}
 					onChange={handleCategoryChange}>
 					<GroupComponent justify="start">
@@ -92,14 +96,14 @@ export const PosProductSection = () => {
 							<ChipComponent value={item.category_id}>{item.name}</ChipComponent>
 						))}
 					</GroupComponent>
-				</Chip.Group>
-			</Box>
+				</ChipGroupComponent>
+			</BoxComponent>
 
 			{subCategories.length > 0 && (
-				<Box h={70} className="px-3 mt-1">
+				<BoxComponent h={70} className="px-3 mt-1">
 					<TextComponent text="Categories" bold size="xl" />
 					<SpaceComponent showHeight />
-					<Chip.Group value={catSubValue} onChange={(val) => setSubCatValue(val)}>
+					<ChipGroupComponent value={catSubValue} onChange={(val) => setSubCatValue(val)}>
 						<GroupComponent justify="start">
 							<ChipComponent value="">All items</ChipComponent>
 							{subCategories.map((item: any) => (
@@ -110,8 +114,8 @@ export const PosProductSection = () => {
 								</ChipComponent>
 							))}
 						</GroupComponent>
-					</Chip.Group>
-				</Box>
+					</ChipGroupComponent>
+				</BoxComponent>
 			)}
 			<ScrollAreaComponent
 				style={{
@@ -164,25 +168,25 @@ const ProductCard = ({ index }) => {
 	const numberInputRef = useRef<NumberInputHandlers>(null);
 	return (
 		<CardComponent shadow="sm" padding="sm" radius="md" withBorder>
-			<Card.Section>
+			<CardSectionComponent>
 				<ImageComponent
 					h={150}
 					fit="fill"
 					src={`https://source.unsplash.com/random/150x100?food,eat,dinner&sig=${index}`}
 				/>
-			</Card.Section>
+			</CardSectionComponent>
 
 			<GroupComponent justify="space-between" mt="md" mb="xs">
 				<TextComponent text={`Product Name ${index}`} bold className="text-justify" />
 			</GroupComponent>
 
-			<Spoiler maxHeight={45} showLabel="more" hideLabel="less">
+			<SpoilerComponent maxHeight={45} showLabel="more" hideLabel="less">
 				<TextComponent
 					size="sm"
 					c="dimmed"
 					className="text-justify"
 					text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
-			</Spoiler>
+			</SpoilerComponent>
 
 			<GroupComponent justify="space-between" mt="md">
 				<TextComponent

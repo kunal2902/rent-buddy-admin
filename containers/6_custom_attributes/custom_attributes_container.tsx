@@ -4,7 +4,6 @@ import { Table } from "@mantine/core";
 import { MdOutlineEdit } from "react-icons/md";
 import { useDebouncedCallback } from "@mantine/hooks";
 import React, { useEffect, useState } from "react";
-import { elementType } from "prop-types";
 import {
 	ActionIconComponent,
 	BoxComponent,
@@ -30,8 +29,8 @@ const CustomAttributesContainer = () => {
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [total, setTotal] = useState<number>(0);
-	const [customAttributId, setCustomAttributeId] = useState<string>("");
-	const [customAttributName, setCustomAttributName] = useState<string>("");
+	const [customAttributeId, setCustomAttributeId] = useState<string>("");
+	const [customAttributeName, setCustomAttributeName] = useState<string>("");
 	const [type, setType] = useState<string>("");
 	const [defaultValue, setDefaultValue] = useState<string>("");
 	const [isTax, setIsTax] = useState<boolean>(false);
@@ -101,7 +100,7 @@ const CustomAttributesContainer = () => {
 		tax_type: string,
 	) => {
 		setCustomAttributeId(id);
-		setCustomAttributName(name);
+		setCustomAttributeName(name);
 		setType(customAttributeType);
 		setDefaultValue(default_value);
 		setIsTax(is_tax);
@@ -252,8 +251,8 @@ const CustomAttributesContainer = () => {
 				<AddCustomAttributeModal
 					isOpen={openAddModal}
 					setCallApi={setCallApi}
-					customAttributeId={customAttributId}
-					initialValueName={customAttributName}
+					customAttributeId={customAttributeId}
+					initialValueName={customAttributeName}
 					initialValueType={type}
 					initialValueDefaultValue={defaultValue}
 					initialValueIsTax={isTax}

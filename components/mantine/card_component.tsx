@@ -17,3 +17,5 @@ export const CardComponent = (props: CardComponentProps) =>
 	>
 		{props.children}
 	</Card>;
+
+export const CardSectionComponent = Card.Section;

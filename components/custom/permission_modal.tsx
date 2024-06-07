@@ -4,17 +4,17 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
 	ButtonComponent,
+	CheckboxComponent,
 	DividerComponent,
 	GroupComponent,
 	IndeterminateCheckbox,
 	ModalComponent,
 	ScrollAreaComponent,
+	StackComponent,
 	TitleComponent,
 	TooltipComponent,
 } from "@/components";
 import { getPermissionApi, logoutUser, mantineSize, mantineSpaceHeight } from "@/utils";
-import { StackComponent } from "@/components/mantine/stack_component";
-import { CheckboxComponent } from "@/components/mantine/checkbox_component";
 import { PermissionModel } from "@/models";
 
 export interface PermissionModalProps {

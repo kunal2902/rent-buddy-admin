@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Table } from "@mantine/core";
 import { MdOutlineEdit } from "react-icons/md";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { useRouter } from "next/navigation";
@@ -20,6 +19,12 @@ import {
 	PopConfirmComponent,
 	PopConfirmType,
 	SortButtonComponentItemProps,
+	TableComponent,
+	TableTbodyComponent,
+	TableTdComponent,
+	TableThComponent,
+	TableTheadComponent,
+	TableTrComponent,
 } from "@/components";
 import { ItemTypeModel } from "@/models";
 import { deleteItemTypeApi, disableItemTypeApi, formatDate, getItemTypeApi, imageUrl, logoutUser } from "@/utils";
@@ -144,20 +149,20 @@ const ItemTypesContainer = () => {
 	];
 
 	const rows = itemTypesList.map((element, index) => (
-		<Table.Tr key={index}>
-			<Table.Td>{index + 1}</Table.Td>
-			<Table.Td>{element.item_type_id}</Table.Td>
-			<Table.Td>
+		<TableTrComponent key={index}>
+			<TableTdComponent>{index + 1}</TableTdComponent>
+			<TableTdComponent>{element.item_type_id}</TableTdComponent>
+			<TableTdComponent>
 				<ImageComponent
 					h={50}
 					w="auto"
 					src={`${imageUrl}/${element.icon}`}
 				/>
-			</Table.Td>
-			<Table.Td>{element.name}</Table.Td>
-			<Table.Td>{formatDate(element.created_at)}</Table.Td>
-			<Table.Td>{element.created_by.name}</Table.Td>
-			<Table.Td w={60}>
+			</TableTdComponent>
+			<TableTdComponent>{element.name}</TableTdComponent>
+			<TableTdComponent>{formatDate(element.created_at)}</TableTdComponent>
+			<TableTdComponent>{element.created_by.name}</TableTdComponent>
+			<TableTdComponent w={60}>
 				<PopConfirmComponent
 					entityName="item type"
 					type={PopConfirmType.switch}
@@ -165,8 +170,8 @@ const ItemTypesContainer = () => {
 					actionName={element.is_disabled ? "enable" : "disable"}
 					onConfirm={async () => handleAction(element.item_type_id, "disable")}
 				/>
-			</Table.Td>
-			<Table.Td w={110}>
+			</TableTdComponent>
+			<TableTdComponent w={110}>
 				<GroupComponent>
 					<PopConfirmComponent
 						entityName="item type"
@@ -182,8 +187,8 @@ const ItemTypesContainer = () => {
 						<MdOutlineEdit size={18} />
 					</ActionIconComponent>
 				</GroupComponent>
-			</Table.Td>
-		</Table.Tr>
+			</TableTdComponent>
+		</TableTrComponent>
 	));
 
 	return (
@@ -215,16 +220,22 @@ const ItemTypesContainer = () => {
 						<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
 							<BoxComponent mx="auto">
 								<PaperComponent>
-									<Table highlightOnHover>
-										<Table.Thead>
-											<Table.Tr>
+									<TableComponent highlightOnHover>
+										<TableTheadComponent>
+											<TableTrComponent>
 												{columns.map((item) =>
-													(<Table.Th key={item}>{item}</Table.Th>)
+													(
+														<TableThComponent
+															key={item}
+														>
+															{item}
+														</TableThComponent>
+													)
 												)}
-											</Table.Tr>
-										</Table.Thead>
-										<Table.Tbody>{rows}</Table.Tbody>
-									</Table>
+											</TableTrComponent>
+										</TableTheadComponent>
+										<TableTbodyComponent>{rows}</TableTbodyComponent>
+									</TableComponent>
 								</PaperComponent>
 								<CenterComponent>
 									<PaginationComponent
