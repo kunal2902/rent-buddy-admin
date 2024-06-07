@@ -350,7 +350,7 @@ const AddItemModal = (props: Props) => {
 							label="Stock Quantity"
 							value={itemName}
 							error={inputError}
-							// setValue={setItemName}
+							setValue={() => {}}
 							placeholder="Enter Item Name"
 						/>
 						<NumberInputComponent
@@ -359,6 +359,7 @@ const AddItemModal = (props: Props) => {
 							label="Price"
 							value={itemName}
 							error={inputError}
+							setValue={() => {}}
 							// setValue={setItemName}
 							placeholder="Enter Item Name"
 						/>

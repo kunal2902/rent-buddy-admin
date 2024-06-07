@@ -4,8 +4,8 @@ export interface CustomerModel {
     is_disabled: boolean;
     is_deleted: boolean;
     customer_id: string;
-    name?: string;
-    phone?: string;
+    name: string;
+    phone: string;
     email?: string;
     address?: string;
     location_id?: string;

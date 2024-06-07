@@ -17,7 +17,7 @@ interface Props {
 	setCallApi: Dispatch<SetStateAction<boolean>>;
 	initialValueName: string;
 	initialValuePhoneNumber: string;
-	initialValueEmail: string;
+	initialValueEmail?: string;
 	customerId?: string;
 }
 
@@ -32,7 +32,7 @@ const AddCustomerModal = (props: Props) => {
 		customerId,
 	} = props;
 	const [name, setName] = useState<string>(initialValueName);
-	const [email, setEmail] = useState<string>(initialValueEmail);
+	const [email, setEmail] = useState<string | undefined>(initialValueEmail);
 	const [phoneNumber, setPhoneNumber] = useState<string | number>(initialValuePhoneNumber);
 	const [inputError, setInputError] = useState<string | null>(null);
 

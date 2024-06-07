@@ -14,32 +14,15 @@ import {
 	TextComponent,
 	TooltipComponent,
 } from "@/components";
-import AddUserModal from "@/containers/10_users/add_user_modal";
-import { appAccentColorRGBA, currencySign, getCustomersApi } from "@/utils";
-import { ComboBoxProps } from "@/types";
-import { CustomerModel } from "@/models";
+import { appAccentColorRGBA, currencySign, getCustomerApi } from "@/utils";
 
 export const PosCartSection = () => {
-	const [isUserModalOpen, setUserModalOpen] = useState(false);
-	const [callApi, setCallApi] = useState(true);
-	const [selectedCustomer, setSelectedCustomer] = useState<string | null>("");
 	const [customersList, setCustomersList] = useState([]);
-
-	const customerData: Array<ComboBoxProps> = [
-		{
-			id: "1",
-			value: "1",
-			label: "User 1",
-		},
-		{
-			id: "2",
-			value: "2",
-			label: "User 2",
-		},
-	];
+	const [customerModalOpen, setCustomerModalOpen] = useState(false);
+	const [selectedCustomer, setSelectedCustomer] = useState<string | null>("");
 
 	useEffect(() => {
-		getCustomersApi("",
+		getCustomerApi("",
 			(data: any) => {
 				const formattedCustomers = data.customers.map(
 					(customer: {
@@ -58,7 +41,7 @@ export const PosCartSection = () => {
 
 	return (
 		<>
-			<AddUserModal
+			{/*<AddUserModal
 				isOpen={isUserModalOpen}
 				onClose={() => {
 					setUserModalOpen(false);
@@ -66,7 +49,7 @@ export const PosCartSection = () => {
 				setCallApi={() => {
 					setCallApi(true);
 				}}
-			/>
+			/>*/}
 			<div
 				className="w-[30%] pr-3 mt-1"
 				style={{ height: "calc(100vh - 56px)" }}
@@ -87,7 +70,7 @@ export const PosCartSection = () => {
 								h={40}
 								variant="filled"
 								onClick={() => {
-									setUserModalOpen(true);
+									setCustomerModalOpen(true);
 								}}
 							>
 								<AddIcon />

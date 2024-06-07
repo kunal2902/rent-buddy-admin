@@ -228,7 +228,7 @@ const ProductCard = ({ index }) => {
 								step={1}
 								hideControls
 								placeholder="0"
-								onChange={(val: string | number) => {
+								setValue={(val: string | number) => {
 									if (parseInt(val.toString(), 10) < 1) {
 										setAdd(false);
 									} else {
