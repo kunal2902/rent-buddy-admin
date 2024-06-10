@@ -13,14 +13,15 @@ import {
 	GroupComponent,
 	LoadingOverlayComponent,
 	MainComponent,
+	NoDataFound,
+	PaginationComponent,
 	PaperComponent,
 	PopConfirmComponent,
 	PopConfirmType,
 	SortButtonComponentItemProps,
-	PaginationComponent, NoDataFound,
 } from "@/components";
 import { deleteRoleApi, disableRoleApi, formatDate, getRoleApi, logoutUser } from "@/utils";
-import { RoleModel } from "@/models";
+import { PermissionModel, RoleModel } from "@/models";
 import AddRoleModal from "./add_role_modal";
 
 const RolesSettingsContainer = () => {
@@ -28,17 +29,18 @@ const RolesSettingsContainer = () => {
 	const [roleId, setRoleId] = useState("");
 	const [page, setPage] = useState<number>(1);
 	const [total, setTotal] = useState<number>(0);
-	const [pageSize, setPageSize] = useState<number>(15);
+	const [order, setOrder] = useState<string>("asc");
+	const [filter, setFilter] = useState<string>("name");
 	const [roleName, setRoleName] = useState<string>("");
+	const [pageSize, setPageSize] = useState<number>(15);
 	const [callApi, setCallApi] = useState<boolean>(true);
-	const [loading, setLoading] = useState<boolean>(false);
+	const [loading, setLoading] = useState<boolean>(true);
+	const [orderBy, setOrderBy] = useState<string>("role_id");
+	const [searchValue, setSearchValue] = useState<string>("");
 	const [rolesList, setRolesList] = useState<RoleModel[]>([]);
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
-	const [searchValue, setSearchValue] = useState<string>("");
-	const [filter, setFilter] = useState<string>("name");
-	const [orderBy, setOrderBy] = useState<string>("role_id");
-	const [order, setOrder] = useState<string>("asc");
+	const [rolePermissions, setRolePermissions] = useState<PermissionModel[]>([]);
 
 	useEffect(() => {
 		initState().then();
@@ -49,8 +51,10 @@ const RolesSettingsContainer = () => {
 		await getRoleApi(
 			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
+				console.log("\n\n\n Printing Data");
+				console.log(data);
+				console.log("Printing Data\n\n\n");
 				setRolesList(data.roles);
-				console.log(data.roles[0].isAdmin);
 				setTotal(data.roles_count);
 				setLoading(false);
 			},
@@ -92,9 +96,11 @@ const RolesSettingsContainer = () => {
 		setLoading(false);
 	}, 500);
 
-	const handleAddOpenModal = (id: string, name: string) => {
+	const handleAddOpenModal = (id: string, name: string, permissions: PermissionModel[]) => {
+		console.log(permissions);
 		setRoleId(id);
 		setRoleName(name);
+		setRolePermissions(permissions);
 		setOpenAddModal(true);
 	};
 
@@ -164,7 +170,12 @@ const RolesSettingsContainer = () => {
 						onConfirm={async () => handleAction(element.role_id, "delete")}
 					/>
 					<ActionIconComponent
-						onClick={() => handleAddOpenModal(element.role_id, element.name)}
+						onClick={() =>
+							handleAddOpenModal(
+								element.role_id,
+								element.name,
+								element.permission_entities
+							)}
 						size="md">
 						<MdOutlineEdit size={18} />
 					</ActionIconComponent>
@@ -189,7 +200,7 @@ const RolesSettingsContainer = () => {
 				setOption={(option) => {
 					setFilter(option.value);
 				}}
-				onClick={() => handleAddOpenModal("", "")}
+				onClick={() => handleAddOpenModal("", "", [])}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
 					setOrderBy(selected.value);
 					setOrder(selected.direction);
@@ -231,7 +242,8 @@ const RolesSettingsContainer = () => {
 					roleId={roleId}
 					isOpen={openAddModal}
 					setCallApi={setCallApi}
-					initialRoleValue={roleName}
+					initialRoleName={roleName}
+					initialSelectedPermissions={rolePermissions}
 					onClose={() => setOpenAddModal(false)}
 				/>
 			}

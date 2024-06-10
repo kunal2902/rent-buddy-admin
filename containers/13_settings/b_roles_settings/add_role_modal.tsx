@@ -16,30 +16,33 @@ import { PermissionModal } from "@/components/custom/permission_modal";
 import { PermissionModel } from "@/models";
 
 interface Props {
+	roleId: string;
 	isOpen: boolean;
 	onClose: () => void;
+	initialRoleName: string;
+	initialSelectedPermissions: PermissionModel[];
 	setCallApi: Dispatch<SetStateAction<boolean>>;
-	initialRoleValue: string;
-	roleId: string;
 }
 
 const AddRoleModal = (props: Props) => {
 	const {
-		isOpen,
 		onClose,
-		setCallApi,
-		initialRoleValue,
+		isOpen,
 		roleId,
+		setCallApi,
+		initialRoleName,
+		initialSelectedPermissions,
 	} = props;
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 	const [isAdmin, setIsAdmin] = useState<boolean>(false);
-	const [roleName, setRoleName] = useState<string>(initialRoleValue);
+	const [roleName, setRoleName] = useState<string>(initialRoleName);
 	const [openModal, setOpenModal] = useState<boolean>(false);
 	const [inputError, setInputError] = useState<string | null>(null);
-	const [selectedPermissions, setSelectedPermissions] = useState<PermissionModel[]>([]);
+	const [selectedPermissions, setSelectedPermissions] =
+		useState<PermissionModel[]>(initialSelectedPermissions);
 	const [totalPermissions, setTotalPermissions] = useState<PermissionModel[]>([]);
-	const isEditModal: boolean = initialRoleValue !== "";
+	const isEditModal: boolean = initialRoleName !== "";
 
 	useEffect(() => {
 		if (roleName) {
@@ -103,7 +106,7 @@ const AddRoleModal = (props: Props) => {
 			opened={isOpen}
 			onClose={onClose}
 			closeOnEscape={false}
-			title={<TitleComponent title={isEditModal ? "Edit Role" : "New Role"} />}
+			title={isEditModal ? "Edit Role" : "New Role"}
 		>
 			<StackComponent>
 				<TextInputComponent
@@ -123,8 +126,8 @@ const AddRoleModal = (props: Props) => {
 				px={10}
 				fullWidth
 				variant="light"
-				title="Select Permissions"
 				onClick={() => setOpenModal(true)}
+				title={initialSelectedPermissions.length > 0 ? "Change Permissions" : "Select Permissions"}
 			/>
 
 			<SpaceComponent showHeight />
@@ -144,6 +147,7 @@ const AddRoleModal = (props: Props) => {
 				setOpenModal={setOpenModal}
 				setTotalPermissions={setTotalPermissions}
 				setSelectedPermission={setSelectedPermissions}
+				initialSelectedPermissions={selectedPermissions}
 			/>
 
 		</ModalComponent>
