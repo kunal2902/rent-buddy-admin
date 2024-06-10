@@ -13,14 +13,15 @@ import {
 	GroupComponent,
 	LoadingOverlayComponent,
 	MainComponent,
+	NoDataFound,
+	PaginationComponent,
 	PaperComponent,
 	PopConfirmComponent,
 	PopConfirmType,
 	SortButtonComponentItemProps,
-	PaginationComponent, NoDataFound,
 } from "@/components";
 import { deleteRoleApi, disableRoleApi, formatDate, getRoleApi, logoutUser } from "@/utils";
-import { RoleModel } from "@/models";
+import { PermissionModel, RoleModel } from "@/models";
 import AddRoleModal from "./add_role_modal";
 
 const RolesSettingsContainer = () => {
@@ -39,6 +40,7 @@ const RolesSettingsContainer = () => {
 	const [filter, setFilter] = useState<string>("name");
 	const [orderBy, setOrderBy] = useState<string>("role_id");
 	const [order, setOrder] = useState<string>("asc");
+	const [rolePermissions, setRolePermissions] = useState<PermissionModel[]>([]);
 
 	useEffect(() => {
 		initState().then();
@@ -50,7 +52,6 @@ const RolesSettingsContainer = () => {
 			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
 				setRolesList(data.roles);
-				console.log(data.roles[0].isAdmin);
 				setTotal(data.roles_count);
 				setLoading(false);
 			},
@@ -92,10 +93,13 @@ const RolesSettingsContainer = () => {
 		setLoading(false);
 	}, 500);
 
-	const handleAddOpenModal = (id: string, name: string) => {
+	const handleAddOpenModal = (id: string, name: string, permissions: PermissionModel[] = []) => {
 		setRoleId(id);
 		setRoleName(name);
+		setRolePermissions(permissions);
 		setOpenAddModal(true);
+		// Log the permissions array to the console
+		console.log(permissions);
 	};
 
 	const handleAction = async (id: string, actionType: string) => {
@@ -135,6 +139,7 @@ const RolesSettingsContainer = () => {
 		"Role Id",
 		"Name",
 		"Is Admin",
+		"Created By",
 		"Created At",
 		"Disable",
 		"Action",
@@ -146,6 +151,7 @@ const RolesSettingsContainer = () => {
 			<Table.Td>{element.role_id}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{element.isAdmin ? "Yes" : "No"}</Table.Td>
+			<Table.Td>{element.created_by.name}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 			<Table.Td w={60}>
 				<PopConfirmComponent
@@ -164,7 +170,11 @@ const RolesSettingsContainer = () => {
 						onConfirm={async () => handleAction(element.role_id, "delete")}
 					/>
 					<ActionIconComponent
-						onClick={() => handleAddOpenModal(element.role_id, element.name)}
+						onClick={() => handleAddOpenModal(
+							element.role_id,
+							element.name,
+							element.permission_entities,
+						)}
 						size="md">
 						<MdOutlineEdit size={18} />
 					</ActionIconComponent>
@@ -189,7 +199,7 @@ const RolesSettingsContainer = () => {
 				setOption={(option) => {
 					setFilter(option.value);
 				}}
-				onClick={() => handleAddOpenModal("", "")}
+				onClick={() => handleAddOpenModal("", "", [])}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
 					setOrderBy(selected.value);
 					setOrder(selected.direction);
@@ -232,6 +242,7 @@ const RolesSettingsContainer = () => {
 					isOpen={openAddModal}
 					setCallApi={setCallApi}
 					initialRoleValue={roleName}
+					rolePermissions={{rolePermissions}}
 					onClose={() => setOpenAddModal(false)}
 				/>
 			}

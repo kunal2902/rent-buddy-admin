@@ -21,6 +21,7 @@ interface Props {
 	setCallApi: Dispatch<SetStateAction<boolean>>;
 	initialRoleValue: string;
 	roleId: string;
+	rolePermissions: PermissionModel[];
 }
 
 const AddRoleModal = (props: Props) => {
@@ -30,6 +31,7 @@ const AddRoleModal = (props: Props) => {
 		setCallApi,
 		initialRoleValue,
 		roleId,
+		rolePermissions,
 	} = props;
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
@@ -142,6 +144,7 @@ const AddRoleModal = (props: Props) => {
 				openModal={openModal}
 				setIsAdmin={setIsAdmin}
 				setOpenModal={setOpenModal}
+				rolePermissions={rolePermissions}
 				setTotalPermissions={setTotalPermissions}
 				setSelectedPermission={setSelectedPermissions}
 			/>

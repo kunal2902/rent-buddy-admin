@@ -21,8 +21,9 @@ export interface PermissionModalProps {
 	openModal: boolean,
 	setOpenModal: (val: boolean) => void;
 	setIsAdmin: (val: boolean) => void;
-	setTotalPermissions: (val: PermissionModel[]) => void
-	setSelectedPermission: (val: PermissionModel[]) => void
+	setTotalPermissions: (val: PermissionModel[]) => void;
+	setSelectedPermission: (val: PermissionModel[]) => void;
+	rolePermissions: PermissionModel[];
 }
 
 export const PermissionModal = (props: PermissionModalProps) => {
@@ -33,12 +34,13 @@ export const PermissionModal = (props: PermissionModalProps) => {
 		setOpenModal,
 		setTotalPermissions,
 		setSelectedPermission,
+		rolePermissions,
 	} = props;
 	const [selectAll, setSelectAll] = useState<boolean>(false);
 	const [allCheckedList, setAllCheckedList] = useState<Array<boolean>>([]);
 	const [permissions, setPermissions] = useState<PermissionModel[]>([]);
 	const [selectedPermissions, setSelectedPermissions] = useState<PermissionModel[]>([]);
-
+	console.log("permissions", permissions);
 	useEffect(() => {
 		getPermissionApi("",
 			(data: any) => {
