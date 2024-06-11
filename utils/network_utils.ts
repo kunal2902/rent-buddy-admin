@@ -1256,7 +1256,7 @@ export const upsertItemApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePostRequest(itemAPIPath, {
+	const response = await makePostRequest(itemAPIPath, body, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {

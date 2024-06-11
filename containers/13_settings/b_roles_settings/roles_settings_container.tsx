@@ -29,17 +29,17 @@ const RolesSettingsContainer = () => {
 	const [roleId, setRoleId] = useState("");
 	const [page, setPage] = useState<number>(1);
 	const [total, setTotal] = useState<number>(0);
-	const [pageSize, setPageSize] = useState<number>(15);
+	const [order, setOrder] = useState<string>("asc");
+	const [filter, setFilter] = useState<string>("name");
 	const [roleName, setRoleName] = useState<string>("");
+	const [pageSize, setPageSize] = useState<number>(15);
 	const [callApi, setCallApi] = useState<boolean>(true);
-	const [loading, setLoading] = useState<boolean>(false);
+	const [loading, setLoading] = useState<boolean>(true);
+	const [orderBy, setOrderBy] = useState<string>("role_id");
+	const [searchValue, setSearchValue] = useState<string>("");
 	const [rolesList, setRolesList] = useState<RoleModel[]>([]);
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
-	const [searchValue, setSearchValue] = useState<string>("");
-	const [filter, setFilter] = useState<string>("name");
-	const [orderBy, setOrderBy] = useState<string>("role_id");
-	const [order, setOrder] = useState<string>("asc");
 	const [rolePermissions, setRolePermissions] = useState<PermissionModel[]>([]);
 
 	useEffect(() => {
@@ -51,6 +51,9 @@ const RolesSettingsContainer = () => {
 		await getRoleApi(
 			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
+				console.log("\n\n\n Printing Data");
+				console.log(data);
+				console.log("Printing Data\n\n\n");
 				setRolesList(data.roles);
 				setTotal(data.roles_count);
 				setLoading(false);
@@ -93,13 +96,12 @@ const RolesSettingsContainer = () => {
 		setLoading(false);
 	}, 500);
 
-	const handleAddOpenModal = (id: string, name: string, permissions: PermissionModel[] = []) => {
+	const handleAddOpenModal = (id: string, name: string, permissions: PermissionModel[]) => {
+		console.log(permissions);
 		setRoleId(id);
 		setRoleName(name);
 		setRolePermissions(permissions);
 		setOpenAddModal(true);
-		// Log the permissions array to the console
-		console.log(permissions);
 	};
 
 	const handleAction = async (id: string, actionType: string) => {
@@ -139,7 +141,6 @@ const RolesSettingsContainer = () => {
 		"Role Id",
 		"Name",
 		"Is Admin",
-		"Created By",
 		"Created At",
 		"Disable",
 		"Action",
@@ -151,7 +152,6 @@ const RolesSettingsContainer = () => {
 			<Table.Td>{element.role_id}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
 			<Table.Td>{element.isAdmin ? "Yes" : "No"}</Table.Td>
-			<Table.Td>{element.created_by.name}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 			<Table.Td w={60}>
 				<PopConfirmComponent
@@ -170,11 +170,12 @@ const RolesSettingsContainer = () => {
 						onConfirm={async () => handleAction(element.role_id, "delete")}
 					/>
 					<ActionIconComponent
-						onClick={() => handleAddOpenModal(
-							element.role_id,
-							element.name,
-							element.permission_entities,
-						)}
+						onClick={() =>
+							handleAddOpenModal(
+								element.role_id,
+								element.name,
+								element.permission_entities
+							)}
 						size="md">
 						<MdOutlineEdit size={18} />
 					</ActionIconComponent>
@@ -241,8 +242,8 @@ const RolesSettingsContainer = () => {
 					roleId={roleId}
 					isOpen={openAddModal}
 					setCallApi={setCallApi}
-					initialRoleValue={roleName}
-					rolePermissions={{rolePermissions}}
+					initialRoleName={roleName}
+					initialSelectedPermissions={rolePermissions}
 					onClose={() => setOpenAddModal(false)}
 				/>
 			}

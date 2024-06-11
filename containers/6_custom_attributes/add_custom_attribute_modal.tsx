@@ -1,18 +1,18 @@
 "use client";
 
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Checkbox, Stack } from "@mantine/core";
 import { toast } from "react-toastify";
 import {
 	ButtonComponent,
+	CheckboxComponent,
 	ModalComponent,
 	SelectComponent,
+	StackComponent,
 	TextInputComponent,
 	TitleComponent,
 } from "@/components";
 import { CustomAttributeTaxTypeOptions, CustomAttributeTypeOptions } from "@/constants";
-import { CustomAttributeModel } from "@/models";
-import { mantineSize, upsertAttributeApi, upsertTagApi } from "@/utils";
+import { mantineSize, upsertAttributeApi } from "@/utils";
 
 interface Props {
 	isOpen: boolean;
@@ -31,22 +31,21 @@ const AddCustomAttributeModal = (props: Props) => {
 		isOpen,
 		onClose,
 		setCallApi,
-		customAttributeId,
 		initialValueName,
 		initialValueType,
-		initialValueDefaultValue,
+		customAttributeId,
 		initialValueIsTax,
 		initialValueTaxType,
+		initialValueDefaultValue,
 	} = props;
+	const isEditModal: boolean = true;
 	const [loading, setLoading] = useState(false);
-	const [customAttributeName, setCustomAttributeName] = useState<string>(initialValueName);
 	const [isTax, setIsTax] = useState<boolean>(initialValueIsTax);
 	const [type, setType] = useState<string | null>(initialValueType);
 	const [taxType, setTaxType] = useState<string | null>(initialValueTaxType);
-	const [defaultValue, setDefaultValue] = useState<string>(initialValueDefaultValue);
 	const [inputError, setInputError] = useState<string | null>(null);
-	// const isEditModal: boolean = initialItemTypeValue !== "";
-	const isEditModal: boolean = true;
+	const [defaultValue, setDefaultValue] = useState<string>(initialValueDefaultValue);
+	const [customAttributeName, setCustomAttributeName] = useState<string>(initialValueName);
 
 	useEffect(() => {
 		if (customAttributeName) {
@@ -61,9 +60,9 @@ const AddCustomAttributeModal = (props: Props) => {
 			setInputError("Please enter the name first");
 		}
 
-		let customAttributBody = {};
+		let customAttributeBody;
 		if (isTax) {
-			customAttributBody = {
+			customAttributeBody = {
 				id: customAttributeId,
 				name: customAttributeName,
 				type,
@@ -72,7 +71,7 @@ const AddCustomAttributeModal = (props: Props) => {
 				tax_type: taxType,
 			};
 		} else {
-			customAttributBody = {
+			customAttributeBody = {
 				id: customAttributeId,
 				name: customAttributeName,
 				type,
@@ -83,7 +82,7 @@ const AddCustomAttributeModal = (props: Props) => {
 		setLoading(true);
 		try {
 			await upsertAttributeApi(
-				customAttributBody,
+				customAttributeBody,
 				() => {
 					onClose();
 					setCallApi(val => !val);
@@ -107,7 +106,7 @@ const AddCustomAttributeModal = (props: Props) => {
 			className="border-grey-800"
 			title={<TitleComponent title={isEditModal ? "Edit Custom Attribute" : "New Custom Attribute"} />}
 		>
-			<Stack>
+			<StackComponent>
 				<TextInputComponent
 					required
 					title="Name"
@@ -138,10 +137,10 @@ const AddCustomAttributeModal = (props: Props) => {
 					placeholder="Enter Default Value"
 				/>
 
-				<Checkbox
+				<CheckboxComponent
 					label="Is this a tax?"
 					size={mantineSize}
-					onChange={(event) => setIsTax(event.currentTarget.checked)}
+					onChecked={(checked) => setIsTax(checked)}
 				/>
 				{isTax &&
 					<SelectComponent
@@ -155,7 +154,7 @@ const AddCustomAttributeModal = (props: Props) => {
 					/>
 				}
 
-			</Stack>
+			</StackComponent>
 
 			<div className="mt-1 flex items-center justify-end">
 				<ButtonComponent

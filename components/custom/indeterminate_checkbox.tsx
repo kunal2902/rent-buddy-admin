@@ -28,6 +28,10 @@ export function IndeterminateCheckbox(props: IndeterminateCheckboxProps) {
 		&& !allChecked;
 
 	useEffect(() => {
+		setAllChecked(allChecked);
+	}, [allChecked]);
+
+	useEffect(() => {
 		const tempArray = values.map((value) => value.checked ? value.permission : "");
 		tempArray.filter(n => n);
 		setSelectedPermissionModel({
@@ -45,7 +49,7 @@ export function IndeterminateCheckbox(props: IndeterminateCheckboxProps) {
 			label={toTitleCase(value.permission)}
 			onChecked={(checked) => {
 				handlers.setItemProp(index, "checked", checked);
-				setAllChecked(allChecked);
+				// setAllChecked(allChecked);
 			}}
 		/>
 	));
@@ -58,7 +62,7 @@ export function IndeterminateCheckbox(props: IndeterminateCheckboxProps) {
 			}))
 		);
 		selectedPermissionModel.checked = bool ?? allChecked;
-		setAllChecked(allChecked);
+		// setAllChecked(allChecked);
 	};
 
 	return (

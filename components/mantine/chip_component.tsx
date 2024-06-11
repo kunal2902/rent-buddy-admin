@@ -19,3 +19,5 @@ export const ChipComponent = (props: ChipComponentProps) =>
 	>
 		{props.children}
 	</Chip>;
+
+export const ChipGroupComponent = Chip.Group;

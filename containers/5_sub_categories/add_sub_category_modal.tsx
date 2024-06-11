@@ -5,19 +5,18 @@ import { toast } from "react-toastify";
 import { Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
-import { Stack } from "@mantine/core";
 import {
 	ActionIconComponent,
 	ButtonComponent,
+	FileInputComponent,
 	GroupComponent,
 	ModalComponent,
 	SelectComponent,
+	StackComponent,
 	TextInputComponent,
 	TitleComponent,
 } from "@/components";
-import { FileInputComponent } from "@/components/mantine/file_input_component";
 import { getCategoryApi, imageUrl, upsertSubCategoryApi } from "@/utils";
-import { StackComponent } from "@/components/mantine/stack_component";
 
 interface Props {
 	isOpen: boolean;
@@ -150,7 +149,7 @@ const AddSubCategoryModal = (props: Props) => {
 			title={<TitleComponent title={isEditModal ? "Edit Item Type" : "New Item Type"} />}
 		>
 			<GroupComponent grow align="start">
-				<Stack>
+				<StackComponent>
 					<FileInputComponent
 						required
 						label="Please select category icon"
@@ -196,7 +195,7 @@ const AddSubCategoryModal = (props: Props) => {
 
 						</GroupComponent>
 					)}
-				</Stack>
+				</StackComponent>
 
 				<GroupComponent>
 					<TextInputComponent

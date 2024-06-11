@@ -2,25 +2,29 @@
 
 import { Minus, Plus, SearchIcon } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Card, Chip, NumberInputHandlers, Spoiler } from "@mantine/core";
+import { NumberInputHandlers } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import {
+	BoxComponent,
 	ButtonComponent,
 	CardComponent,
+	CardSectionComponent,
 	ChipComponent,
+	ChipGroupComponent,
 	GroupComponent,
 	ImageComponent,
 	MantineProviderComponent,
+	NumberInputComponent,
 	ScrollAreaComponent,
 	SimpleGridComponent,
 	SpaceComponent,
+	SpoilerComponent,
 	TextComponent,
 	TextInputComponent,
 } from "@/components";
-import { currencySign, getCategoryApi, getSubCategoryApi, logoutUser } from "@/utils";
-import { NumberInputComponent } from "@/components/mantine/number_input_component";
+import { currencySign, getCategoryApi, getItemApi, getSubCategoryApi, logoutUser } from "@/utils";
 import { centeredInputTheme } from "@/constants";
-import { CategoryModel } from "@/models";
+import { CategoryModel, ItemModel } from "@/models";
 
 export interface Categories {
 	categoryName: string;
@@ -33,7 +37,8 @@ export const PosProductSection = () => {
 	const [subCategories, setSubCategories] = useState([]);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [categoriesList, setCategoriesList] = useState<CategoryModel[]>([]);
-	console.log(catValue);
+	const [itemList, setItemList] = useState<ItemModel[]>([]);
+
 	useEffect(() => {
 		getCategoryApi("",
 			(data: any) => {
@@ -45,6 +50,17 @@ export const PosProductSection = () => {
 				logoutUser(router);
 			}
 		).then();
+
+		getItemApi(
+			"page_size=100",
+			(data: any) => {
+				setItemList(data.items);
+			},
+			() => {},
+			() => {
+				logoutUser(router);
+			}
+		);
 	}, []);
 
 	const fetchSubCategories = (value: string) => {
@@ -63,14 +79,14 @@ export const PosProductSection = () => {
 	};
 
 	function handleCategoryChange(val: string | string[]) {
-			setCatValue(val as string);
-			setSubCategories([]);
-			fetchSubCategories(val as string);
+		setCatValue(val as string);
+		setSubCategories([]);
+		fetchSubCategories(val as string);
 	}
 
 	return (
 		<div className="w-[70%] max-h-screen overflow-hidden">
-			<Box h={40} className="px-3 mt-1">
+			<BoxComponent h={40} className="px-3 mt-1">
 				<GroupComponent justify="space-between">
 					<TextComponent text="Categories" bold size="xl" />
 					<TextInputComponent
@@ -81,9 +97,9 @@ export const PosProductSection = () => {
 						leftSection={<SearchIcon size={16} />}
 					/>
 				</GroupComponent>
-			</Box>
-			<Box h={30} className="px-3 mt-3">
-				<Chip.Group
+			</BoxComponent>
+			<BoxComponent h={30} className="px-3 mt-3">
+				<ChipGroupComponent
 					value={catValue}
 					onChange={handleCategoryChange}>
 					<GroupComponent justify="start">
@@ -92,14 +108,14 @@ export const PosProductSection = () => {
 							<ChipComponent value={item.category_id}>{item.name}</ChipComponent>
 						))}
 					</GroupComponent>
-				</Chip.Group>
-			</Box>
+				</ChipGroupComponent>
+			</BoxComponent>
 
 			{subCategories.length > 0 && (
-				<Box h={70} className="px-3 mt-1">
+				<BoxComponent h={70} className="px-3 mt-1">
 					<TextComponent text="Categories" bold size="xl" />
 					<SpaceComponent showHeight />
-					<Chip.Group value={catSubValue} onChange={(val) => setSubCatValue(val)}>
+					<ChipGroupComponent value={catSubValue} onChange={(val) => setSubCatValue(val)}>
 						<GroupComponent justify="start">
 							<ChipComponent value="">All items</ChipComponent>
 							{subCategories.map((item: any) => (
@@ -110,8 +126,8 @@ export const PosProductSection = () => {
 								</ChipComponent>
 							))}
 						</GroupComponent>
-					</Chip.Group>
-				</Box>
+					</ChipGroupComponent>
+				</BoxComponent>
 			)}
 			<ScrollAreaComponent
 				style={{
@@ -129,28 +145,9 @@ export const PosProductSection = () => {
 						xl: 4,
 					}}
 				>
-					<ProductCard index={1} />
-					<ProductCard index={2} />
-					<ProductCard index={3} />
-					<ProductCard index={4} />
-					<ProductCard index={5} />
-					<ProductCard index={6} />
-					<ProductCard index={7} />
-					<ProductCard index={8} />
-					<ProductCard index={9} />
-					<ProductCard index={10} />
-					<ProductCard index={11} />
-					<ProductCard index={12} />
-					<ProductCard index={13} />
-					<ProductCard index={14} />
-					<ProductCard index={15} />
-					<ProductCard index={16} />
-					<ProductCard index={17} />
-					<ProductCard index={18} />
-					<ProductCard index={19} />
-					<ProductCard index={21} />
-					<ProductCard index={22} />
-					<ProductCard index={23} />
+					{itemList.map((item, index) => (
+						<ProductCard index={index + 1} item={item} />
+					))}
 				</SimpleGridComponent>
 			</ScrollAreaComponent>
 		</div>
@@ -158,37 +155,37 @@ export const PosProductSection = () => {
 };
 
 // @ts-ignore
-const ProductCard = ({ index }) => {
+const ProductCard = ({ index, item }) => {
 	const [add, setAdd] = useState(false);
 	const [quantity, setQuantity] = useState<string | number>(1);
 	const numberInputRef = useRef<NumberInputHandlers>(null);
 	return (
 		<CardComponent shadow="sm" padding="sm" radius="md" withBorder>
-			<Card.Section>
+			<CardSectionComponent>
 				<ImageComponent
 					h={150}
 					fit="fill"
-					src={`https://source.unsplash.com/random/150x100?food,eat,dinner&sig=${index}`}
+					src={`${item.images[0]}`}
 				/>
-			</Card.Section>
+			</CardSectionComponent>
 
 			<GroupComponent justify="space-between" mt="md" mb="xs">
-				<TextComponent text={`Product Name ${index}`} bold className="text-justify" />
+				<TextComponent text={`${item.name} ${index}`} bold className="text-justify" />
 			</GroupComponent>
 
-			<Spoiler maxHeight={45} showLabel="more" hideLabel="less">
+			<SpoilerComponent maxHeight={45} showLabel="more" hideLabel="less">
 				<TextComponent
 					size="sm"
 					c="dimmed"
 					className="text-justify"
-					text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
-			</Spoiler>
+					text={item.short_description} />
+			</SpoilerComponent>
 
 			<GroupComponent justify="space-between" mt="md">
 				<TextComponent
 					bold
 					size="xl"
-					text={`${currencySign} ${110 * parseInt(quantity.toString(), 10)}`}
+					text={`${currencySign} ${item.price * parseInt(quantity.toString(), 10)}`}
 					c="green"
 					className="text-justify" />
 
@@ -228,7 +225,7 @@ const ProductCard = ({ index }) => {
 								step={1}
 								hideControls
 								placeholder="0"
-								onChange={(val: string | number) => {
+								setValue={(val: string | number) => {
 									if (parseInt(val.toString(), 10) < 1) {
 										setAdd(false);
 									} else {

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Table } from "@mantine/core";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { MdOutlineEdit } from "react-icons/md";
+import { useRouter } from "next/navigation";
 import {
 	ActionIconComponent,
 	BoxComponent,
@@ -19,37 +20,42 @@ import {
 import { CustomerModel } from "@/models";
 import {
 	deleteCustomerApi,
-	deleteUserApi,
 	disableCustomerApi,
-	disableUserApi,
-	formatDate, getCustomerApi,
-	getCustomersApi,
-	getUserId,
+	formatDate, getCustomerApi, getItemTypeApi,
+	getUserId, logoutUser,
 } from "@/utils";
 import AddCustomerModal from "@/containers/9_customers/add_customer_modal";
 
 const CustomersContainer = () => {
+	const router = useRouter();
 	const [page, setPage] = useState<number>(1);
 	const [total, setTotal] = useState<number>(0);
+	const [customerId, setCustomerId] = useState("");
+	const [order, setOrder] = useState<string>("asc");
+	const [filter, setFilter] = useState<string>("name");
+	const [pageSize, setPageSize] = useState<number>(15);
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [loading, setLoading] = useState<boolean>(true);
-	const [searchLoading, setSearchLoading] = useState<boolean>(false);
-	const [searchValue, setSearchValue] = useState<string>("");
-	const [customersList, setCustomersList] = useState<CustomerModel[]>([]);
-	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
-	const [filter, setFilter] = useState<string>("name");
 	const [orderBy, setOrderBy] = useState<string>("user_id");
-	const [order, setOrder] = useState<string>("asc");
-	const [customerId, setCustomerId] = useState("");
+	const [searchValue, setSearchValue] = useState<string>("");
+	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [customerInitialName, setCustomerInitialName] = useState("");
+	const [searchLoading, setSearchLoading] = useState<boolean>(false);
+	const [customersList, setCustomersList] = useState<CustomerModel[]>([]);
 	const [customerInitialPhoneNumber, setCustomerInitialPhoneNumber] = useState("");
-	const [customerInitialEmail, setCustomerInitialEmail] = useState("");
+	const [customerInitialEmail, setCustomerInitialEmail] = useState<string | undefined>();
 
 	useEffect(() => {
-		getCustomerApi(
-			`orderBy=${filter}&page=${page}&order=asc`,
+		initState().then();
+	}, [filter, page, callApi, orderBy, order]);
+
+	const initState = async () => {
+		setLoading(true);
+		await getCustomerApi(
+			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
 				setCustomersList(data.customers);
+				setTotal(data.customers_count);
 				setLoading(false);
 			},
 			() => {
@@ -57,24 +63,25 @@ const CustomersContainer = () => {
 			},
 			() => {
 				setLoading(false);
+				logoutUser(router);
 			}
-		).then();
-	}, [filter, page, callApi]);
+		);
+	};
 
 	useEffect(() => {
 		if (searchValue) {
 			handleSearch(searchValue);
+		} else {
+			setSearchLoading(false);
+			initState().then();
 		}
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (query: string) => {
 		setSearchLoading(true);
-		if (query === "") {
-			setSearchLoading(false);
-		} else {
-			getCustomersApi(
-				`name=${query}`,
-				(data: any) => {
+		await getCustomerApi(
+			`filter_type=${filter}&filter_query=${query}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			(data: any) => {
 					setCustomersList(data.customers);
 					setSearchLoading(false);
 				},
@@ -83,16 +90,16 @@ const CustomersContainer = () => {
 				},
 				() => {
 					setSearchLoading(false);
+					logoutUser(router);
 				}
 			).then();
-		}
 	}, 500);
 
 	const handleAddOpenModal = (
 		id: string,
 		name: string,
-		email: string,
 		phone: string,
+		email?: string,
 	) => {
 		setCustomerId(id);
 		setCustomerInitialName(name);
@@ -113,6 +120,7 @@ const CustomersContainer = () => {
 				},
 				() => {
 					setCallApi(val => !val);
+					logoutUser(router);
 				}
 			);
 		} else {
@@ -126,6 +134,7 @@ const CustomersContainer = () => {
 				},
 				() => {
 					setCallApi(val => !val);
+					logoutUser(router);
 				}
 			);
 		}
@@ -178,8 +187,8 @@ const CustomersContainer = () => {
 						onClick={() => handleAddOpenModal(
 							element.customer_id,
 							element.name,
-							element.email,
 							element.phone,
+							element.email,
 						)}
 						size="md">
 						<MdOutlineEdit size={18} />
@@ -231,9 +240,9 @@ const CustomersContainer = () => {
 								</PaperComponent>
 								<CenterComponent>
 									<PaginationComponent
-										total={10}
 										value={page}
 										onChange={setPage}
+										total={Math.ceil(total / 15)}
 									/>
 								</CenterComponent>
 							</BoxComponent>

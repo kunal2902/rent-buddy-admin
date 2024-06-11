@@ -9,10 +9,14 @@ export interface CheckboxComponentProps extends CheckboxProps {
 }
 
 /** This is the Mantine Checkbox component - https://mantine.dev/core/checkbox/ */
-export const CheckboxComponent = (props: CheckboxComponentProps) =>
-	<Checkbox
-		{...props}
-		onChange={(e) => props.onChecked(e.target.checked)}
+export const CheckboxComponent = (props: CheckboxComponentProps) => {
+	const { onChecked, ...rest } = props;
+	return (
+		<Checkbox
+			{...rest}
+			onChange={(e) => onChecked(e.target.checked)}
 	>
-		{props.children}
-	</Checkbox>;
+			{props.children}
+		</Checkbox>
+	);
+};

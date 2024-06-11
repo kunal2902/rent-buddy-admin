@@ -4,26 +4,26 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
 	ButtonComponent,
+	CheckboxComponent,
 	DividerComponent,
 	GroupComponent,
 	IndeterminateCheckbox,
 	ModalComponent,
 	ScrollAreaComponent,
+	StackComponent,
 	TitleComponent,
 	TooltipComponent,
 } from "@/components";
 import { getPermissionApi, logoutUser, mantineSize, mantineSpaceHeight } from "@/utils";
-import { StackComponent } from "@/components/mantine/stack_component";
-import { CheckboxComponent } from "@/components/mantine/checkbox_component";
 import { PermissionModel } from "@/models";
 
 export interface PermissionModalProps {
-	openModal: boolean,
-	setOpenModal: (val: boolean) => void;
+	openModal: boolean;
 	setIsAdmin: (val: boolean) => void;
+	setOpenModal: (val: boolean) => void;
+	initialSelectedPermissions: PermissionModel[];
 	setTotalPermissions: (val: PermissionModel[]) => void;
 	setSelectedPermission: (val: PermissionModel[]) => void;
-	rolePermissions: PermissionModel[];
 }
 
 export const PermissionModal = (props: PermissionModalProps) => {
@@ -34,13 +34,30 @@ export const PermissionModal = (props: PermissionModalProps) => {
 		setOpenModal,
 		setTotalPermissions,
 		setSelectedPermission,
-		rolePermissions,
+		initialSelectedPermissions,
 	} = props;
 	const [selectAll, setSelectAll] = useState<boolean>(false);
 	const [allCheckedList, setAllCheckedList] = useState<Array<boolean>>([]);
 	const [permissions, setPermissions] = useState<PermissionModel[]>([]);
-	const [selectedPermissions, setSelectedPermissions] = useState<PermissionModel[]>([]);
-	console.log("permissions", permissions);
+	const [selectedPermissions, setSelectedPermissions] =
+		useState<PermissionModel[]>(initialSelectedPermissions);
+
+	const isEntityChecked = (item: PermissionModel) => {
+		const selectedItem = initialSelectedPermissions.find(value => value.entity === item.entity);
+		if (selectedItem) {
+			return item.permissions.length === selectedItem?.permissions.length;
+		}
+		return false;
+	};
+
+	const isPermissionChecked = (entityName: string, permission: string) => {
+		const selectedItem = initialSelectedPermissions.find(value => value.entity === entityName);
+		if (selectedItem && selectedItem.permissions.length !== 0) {
+			return selectedItem.permissions.includes(permission);
+		}
+		return false;
+	};
+
 	useEffect(() => {
 		getPermissionApi("",
 			(data: any) => {
@@ -72,7 +89,7 @@ export const PermissionModal = (props: PermissionModalProps) => {
 							/>
 						</TooltipComponent>
 						<GroupComponent grow>
-							<TitleComponent title="Choose Permissions" />
+							<TitleComponent order={2} title="Choose Permissions" size={18} />
 						</GroupComponent>
 					</GroupComponent>
 					<ButtonComponent
@@ -96,11 +113,11 @@ export const PermissionModal = (props: PermissionModalProps) => {
 							selectedPermissionModel={
 								{
 									entity: item.entity,
+									checked: isEntityChecked(item),
 									permissions: item.permissions.map(str => ({
 										permission: str,
-										checked: false,
+										checked: isPermissionChecked(item.entity, str),
 									})),
-									checked: false,
 								}
 							}
 							setSelectedPermissionModel={(perm) => {

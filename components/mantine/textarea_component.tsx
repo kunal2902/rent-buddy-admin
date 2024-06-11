@@ -11,7 +11,10 @@ export interface TextAreaInputComponentProps extends TextareaProps {
 
 /** This is the Mantine Textarea component - https://mantine.dev/core/textarea/ */
 export const TextAreaInputComponent = (props: TextAreaInputComponentProps) => {
-	const { setValue, ...rest } = props;
+	const {
+		setValue,
+		...rest
+	} = props;
 
 	const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setValue(event.currentTarget.value);

@@ -1,86 +1,110 @@
 "use client";
 
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState, useMemo } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Checkbox, Fieldset, Loader, Stack } from "@mantine/core";
 import { Image as ImageIcon } from "lucide-react";
 import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
+import { MultiSelectProps } from "@mantine/core";
 import {
-	ActionIconComponent,
+	ActionIconComponent, AvatarComponent,
 	ButtonComponent,
+	CheckboxComponent,
+	FieldsetComponent,
 	FileInputComponent,
 	GroupComponent,
 	ImageComponent,
+	LoaderComponent,
 	ModalComponent,
+	MultiSelectComponent,
+	NumberInputComponent,
 	ScrollAreaComponent,
 	SelectComponent,
 	SimpleGridComponent,
 	SpaceComponent,
+	StackComponent,
+	TextAreaInputComponent, TextComponent,
 	TextInputComponent,
 	TitleComponent,
 } from "@/components";
 import {
 	getAddOnApi,
 	getAttributeApi,
-	getCategoryApi,
+	getCategoryApi, getCrmJWT,
 	getItemTypeApi,
 	getSubCategoryApi,
 	getTagApi,
+	imageUrl,
 	logoutUser,
 	upsertItemApi,
 } from "@/utils";
-import { NumberInputComponent } from "@/components/mantine/number_input_component";
-import { TextAreaInputComponent } from "@/components/mantine/textarea_input_component";
-import { StackComponent } from "@/components/mantine/stack_component";
-import { MultiSelectComponent } from "@/components/mantine/multi_select_component";
 import { CustomAttributeModel } from "@/models";
 
 interface Props {
+	itemId: string | undefined;
 	isOpen: boolean;
 	onClose: () => void;
-	setCallApi: Dispatch<SetStateAction<boolean>>;
 	initialItemName: string;
-	itemId: string;
+	setCallApi: Dispatch<SetStateAction<boolean>>;
 }
 
 interface AttributeState {
-	checked: boolean;
 	value: string;
+	checked: boolean;
+}
+
+interface AddOn {
+	icon: string;
+	price: string;
+	label: string;
+}
+
+interface AddOnData {
+	[key: string]: AddOn;
 }
 
 const AddItemModal = (props: Props) => {
 	const {
 		isOpen,
+		itemId,
 		onClose,
 		setCallApi,
 		initialItemName,
-		itemId,
 	} = props;
 	const router = useRouter();
 	const isEditModal: boolean = initialItemName !== "";
-	const [itemName, setItemName] = useState<string>(initialItemName);
-	const [loading, setLoading] = useState<boolean>(false);
-	const [inputError, setInputError] = useState<string | null>(null);
-	const [searchLoading, setSearchLoading] = useState<boolean>(false);
-	const [categories, setCategories] = useState([]);
-	const [subCategoryList, setSubCategoryList] = useState([]);
-	const [itemTypesList, setItemTypesList] = useState([]);
+	const [sku, setSku] = useState<string>("");
 	const [tagsList, setTagsList] = useState([]);
+	const [categories, setCategories] = useState([]);
 	const [addOnsList, setAddOnsList] = useState([]);
-	const [categoryId, setCategoryId] = useState<string>("");
-	const [subCategoryId, setSubCategoryId] = useState<string>("");
-	const [itemTypeId, setItemTypeId] = useState<string>("");
-	const [tagsId, setTagsId] = useState<string[]>();
-	const [addOnsId, setAddOnsId] = useState<string[]>();
-	const [images, setImages] = useState<string[]>([]);
-	const [customAttributesList, setCustomAttributesList] = useState<CustomAttributeModel[]>([]);
-	const [replaceIndex, setReplaceIndex] = useState<number | null>(null);
+	const [tagsId, setTagsId] = useState<string[]>([]);
+	const [longDesc, setLongDesc] = useState<string>("");
+	const [addOnsId, setAddOnsId] = useState<string[]>([]);
 	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
+	const [shortDesc, setShortDesc] = useState<string>("");
+	const [itemName, setItemName] = useState<string>(initialItemName);
+	const [itemTypesList, setItemTypesList] = useState([]);
+	const [loading, setLoading] = useState<boolean>(false);
+	const [categoryId, setCategoryId] = useState<string>("");
+	const [itemTypeId, setItemTypeId] = useState<string>("");
+	const [subCategoryList, setSubCategoryList] = useState([]);
+	const [addOnData, setAddOnData] = useState<AddOnData>({});
+	const [subCategoryId, setSubCategoryId] = useState<string>("");
+	const [price, setPrice] = useState<string | number>("");
+	const [searchLoading, setSearchLoading] = useState<boolean>(false);
+	const [itemInternalName, setItemInternalName] = useState<string>("");
+	const [inputError, setInputError] = useState<string | null>(null);
+	const [replaceIndex, setReplaceIndex] = useState<number | null>(null);
+	const [stockQuantity, setStockQuantity] = useState<string | number>("");
+	const [images, setImages] = useState<{ file: File, previewURL: string }[]>([]);
+	const [customAttributesList, setCustomAttributesList] = useState<CustomAttributeModel[]>([]);
 	const [attributesState, setAttributesState] = useState<Record<string, AttributeState>>({});
 
 	useEffect(() => {
 		const initialState = customAttributesList.reduce((acc, attr) => {
-			acc[attr.custom_attribute_id] = { checked: false, value: attr.default_value };
+			acc[attr.custom_attribute_id] = {
+				checked: false,
+				value: attr.default_value,
+			};
 			return acc;
 		}, {} as Record<string, AttributeState>);
 		setAttributesState(initialState);
@@ -105,7 +129,10 @@ const AddItemModal = (props: Props) => {
 			() => {
 			},
 			() => {
-			});
+				logoutUser(router);
+			}
+		).then();
+
 		getItemTypeApi("",
 			(data: any) => {
 				const formattedItemType = data.item_types.map(
@@ -121,8 +148,10 @@ const AddItemModal = (props: Props) => {
 			() => {
 			},
 			() => {
+				logoutUser(router);
 			}
-		);
+		).then();
+
 		getTagApi("",
 			(data: any) => {
 				const formattedTags = data.tags.map(
@@ -138,25 +167,45 @@ const AddItemModal = (props: Props) => {
 			() => {
 			},
 			() => {
+				logoutUser(router);
 			}
-		);
+		).then();
+
 		getAddOnApi("",
 			(data: any) => {
 				const formattedAddOns = data.add_ons.map(
 					(addOn: {
+						icon: string;
+						price: string;
 						add_on_id: string;
 						name: string;
 					}) => ({
-						value: addOn.add_on_id,
-						label: addOn.name,
+						value: addOn.add_on_id.toString(),
+						label: addOn.name.toString(),
+						icon: addOn.icon,
+						price: addOn.price,
 					}));
 				setAddOnsList(formattedAddOns);
+
+				const tempAddOnData: AddOnData = {};
+				data.add_ons.forEach(
+					(addOn: { add_on_id: string; name: string; icon: string; price: string }) => {
+						tempAddOnData[addOn.add_on_id] = {
+							icon: addOn.icon,
+							price: addOn.price,
+							label: addOn.name,
+						};
+					}
+				);
+				setAddOnData(tempAddOnData);
 			},
 			() => {
 			},
 			() => {
+				logoutUser(router);
 			}
-		);
+		).then();
+
 		getAttributeApi("",
 			(data: any) => {
 				setCustomAttributesList(data.custom_attributes);
@@ -164,8 +213,9 @@ const AddItemModal = (props: Props) => {
 			() => {
 			},
 			() => {
+				logoutUser(router);
 			}
-		);
+		).then();
 	}, [itemName]);
 
 	useEffect(() => {
@@ -188,11 +238,14 @@ const AddItemModal = (props: Props) => {
 					setSearchLoading(false);
 				},
 				() => {
+					logoutUser(router);
 					setSearchLoading(false);
 				}
 			).then();
 		}
 	}, [categoryId]);
+
+	console.log("images", images);
 
 	const handleSubmitItem = async (event: React.FormEvent) => {
 		event.preventDefault();
@@ -200,13 +253,28 @@ const AddItemModal = (props: Props) => {
 			setInputError("Please enter the name first");
 		}
 		setLoading(true);
-		const body = {
-			name: itemName,
-			id: itemId,
-		};
+		const itemBody = new FormData();
+		itemBody.append("sku", sku);
+		itemBody.append("id", itemId || "");
+		itemBody.append("name", itemName);
+		itemBody.append("price", String(price));
+		itemBody.append("description", longDesc);
+		itemBody.append("short_description", shortDesc);
+		itemBody.append("sub_category_id", subCategoryId);
+		itemBody.append("category_id", categoryId);
+		itemBody.append("item_type_id", itemTypeId);
+		itemBody.append("tags", JSON.stringify(tagsId));
+		itemBody.append("internal_name", itemInternalName);
+		itemBody.append("add_ons", JSON.stringify(addOnsId));
+		itemBody.append("stock_quantity", String(stockQuantity));
+		itemBody.append("attributes", JSON.stringify(checkedAttributes));
+		images.forEach((image) => {
+			itemBody.append("image_files_added", image.file);
+		});
+
 		try {
 			await upsertItemApi(
-				body,
+				itemBody,
 				() => {
 					onClose();
 					setLoading(false);
@@ -226,15 +294,64 @@ const AddItemModal = (props: Props) => {
 		}
 	};
 
+	console.log("itemId", itemId);
+
+	const handleCLick = async () => {
+		const myHeaders = new Headers();
+		myHeaders.append("authorization", `Bearer ${getCrmJWT()}`);
+
+		const formdata = new FormData();
+		formdata.append("id", itemId || "");
+		formdata.append("name", itemName);
+		formdata.append("internal_name", itemInternalName);
+		formdata.append("short_description", shortDesc);
+		formdata.append("description", longDesc);
+		formdata.append("sku", sku);
+		formdata.append("stock_quantity", JSON.stringify(stockQuantity));
+		formdata.append("item_type_id", itemTypeId);
+		formdata.append("category_id", categoryId);
+		formdata.append("sub_category_id", subCategoryId);
+		formdata.append("add_ons", JSON.stringify(addOnsId));
+		formdata.append("price", JSON.stringify(price));
+		images.forEach((image) => {
+			formdata.append("image_files_added[]", image.file);
+		});
+		formdata.append("tags", JSON.stringify(tagsId));
+		formdata.append("attributes", JSON.stringify(checkedAttributes));
+
+		const requestOptions = {
+			method: "POST",
+			headers: myHeaders,
+			body: formdata,
+			redirect: "follow" as RequestRedirect,
+		};
+
+		try {
+			const response = await fetch("http://localhost:8000/api/v1/item", requestOptions);
+			const result = await response.text();
+			console.log(result);
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
 	const onChooseIconClick = () => {
 		if (fileInputTriggerRef.current) {
 			fileInputTriggerRef.current.click();
 		}
 	};
 
+	const createPreviewURL = (file: File): string => URL.createObjectURL(file);
+
 	const onFilePick = (files: File[] | File | null) => {
-		if (Array.isArray(files)) {
-			const newImages = files.map(file => URL.createObjectURL(file));
+		if (files) {
+			const fileArray = Array.isArray(files) ? files : [files];
+
+			const newImages = fileArray.map(file => {
+				const previewURL = createPreviewURL(file);
+				return { file, previewURL };
+			});
+
 			if (replaceIndex !== null) {
 				setImages(prevImages => {
 					const updatedImages = [...prevImages];
@@ -246,20 +363,15 @@ const AddItemModal = (props: Props) => {
 			} else {
 				setImages(prevImages => [...prevImages, ...newImages]);
 			}
-		} else if (files) {
-			const newImage = URL.createObjectURL(files);
-			if (replaceIndex !== null) {
-				setImages(prevImages => {
-					const updatedImages = [...prevImages];
-					updatedImages[replaceIndex] = newImage;
-					return updatedImages;
-				});
-				setReplaceIndex(null);
-			} else {
-				setImages(prevImages => [...prevImages, newImage]);
-			}
 		}
 	};
+
+	const convertToBase64 = (file: File): Promise<string> => new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = () => resolve(reader.result as string);
+			reader.onerror = (error) => reject(error);
+		});
 
 	const handleRemoveImage = (index: number) => {
 		setImages(prevImages => prevImages.filter((_, i) => i !== index));
@@ -293,13 +405,25 @@ const AddItemModal = (props: Props) => {
 	};
 
 	const checkedAttributes = useMemo(() => Object.entries(attributesState)
-			.filter(([, value]) => value.checked)
-			.map(([key, value]) =>
-				({ custom_attribute_id: key, value: value.value })), [attributesState]);
+		.filter(([, value]) => value.checked)
+		.map(([key, value]) =>
+			({
+				attribute_id: key,
+				value: value.value,
+			})), [attributesState]);
 
-	useEffect(() => {
-		console.log("Checked Attributes:", checkedAttributes);
-	}, [checkedAttributes]);
+	const renderMultiSelectOption: MultiSelectProps["renderOption"] = ({ option }) => (
+		<GroupComponent gap="sm">
+			<AvatarComponent src={`${imageUrl}/${addOnData[option.value]?.icon}`} size={36} radius="xl" />
+			<div>
+				<TextComponent text={addOnData[option.value].label} />
+				<TextComponent
+					opacity={0.5}
+					text={addOnData[option.value]?.price}
+					/>
+			</div>
+		</GroupComponent>
+	);
 
 	return (
 		<ModalComponent
@@ -308,87 +432,87 @@ const AddItemModal = (props: Props) => {
 			onClose={onClose}
 			title={<TitleComponent title={isEditModal ? "Edit Item" : "Add New Item"} />}
 		>
-			<Fieldset legend={<TitleComponent title="Product Information" order={5} />}>
+			<FieldsetComponent legend={<TitleComponent title="Product Information" order={5} />}>
 				<StackComponent>
 					<SimpleGridComponent
 						cols={{
-							base: 1,
 							sm: 2,
 							md: 3,
 							lg: 3,
 							xl: 3,
+							base: 1,
 						}}
 					>
 						<TextInputComponent
 							required
 							title="Name"
-							label="Item Name"
 							value={itemName}
+							label="Item Name"
 							error={inputError}
 							setValue={setItemName}
 							placeholder="Enter Item Name"
 						/>
 						<TextInputComponent
+							value={itemInternalName}
 							title="Internal Name"
 							label="Internal Name"
-							value={itemName}
-							setValue={setItemName}
+							setValue={setItemInternalName}
 							placeholder="Enter Item Name"
 						/>
 						<TextInputComponent
 							required
 							title="SKU"
 							label="SKU"
-							value={itemName}
+							value={sku}
 							error={inputError}
-							setValue={setItemName}
+							setValue={setSku}
 							placeholder="Enter Item Name"
 						/>
 						<NumberInputComponent
 							required
+							error={inputError}
+							value={stockQuantity}
 							title="Stock Quantity"
 							label="Stock Quantity"
-							value={itemName}
-							error={inputError}
-							// setValue={setItemName}
+							setValue={setStockQuantity}
 							placeholder="Enter Item Name"
 						/>
 						<NumberInputComponent
 							required
 							title="Price"
 							label="Price"
-							value={itemName}
+							value={price}
 							error={inputError}
-							// setValue={setItemName}
+							setValue={setPrice}
 							placeholder="Enter Item Name"
 						/>
 					</SimpleGridComponent>
 					<GroupComponent grow>
 						<TextAreaInputComponent
 							required
+							value={shortDesc}
+							resize="vertical"
+							error={inputError}
+							setValue={setShortDesc}
 							title="Short Dscription"
 							label="Short Dscription"
-							value={itemName}
-							error={inputError}
-							setValue={setItemName}
-							resize="vertical"
 							placeholder="Enter Item Name"
 						/>
 						<TextAreaInputComponent
+							value={longDesc}
+							resize="vertical"
 							title="Dscription"
 							label="Dscription"
-							value={itemName}
-							setValue={setItemName}
-							resize="vertical"
+							setValue={setLongDesc}
 							placeholder="Enter Item Name"
 						/>
 					</GroupComponent>
 				</StackComponent>
-			</Fieldset>
+			</FieldsetComponent>
 
 			<SpaceComponent showHeight />
 
-			<Fieldset legend={<TitleComponent title="Images" order={5} />}>
+			<FieldsetComponent legend={<TitleComponent title="Images" order={5} />}>
 				<ScrollAreaComponent
 					h={200}
 					w="100%"
@@ -396,80 +520,80 @@ const AddItemModal = (props: Props) => {
 				>
 					<GroupComponent
 						gap={10}
-						maw={(images.length + 1) * 170}
 						w={(images.length + 1) * 170}
+						maw={(images.length + 1) * 170}
 					>
 						<FileInputComponent
 							required
-							label="Please select category icon"
-							placeholder="Category icon"
 							className="hidden"
 							onChange={onFilePick}
 							ref={fileInputTriggerRef}
+							placeholder="Category icon"
+							label="Please select category icon"
 						/>
 						{images.map((img, index) => (
-							<Stack gap={10} h={180} mah={180} maw={160} w={160}>
+							<StackComponent gap={10} h={180} mah={180} maw={160} w={160}>
 								<ImageComponent
-									src={img}
-									fit="cover"
 									w={160}
 									h={140}
+									src={img.previewURL}
 									mih={140}
+									fit="cover"
 								/>
 								<GroupComponent
+									h={30}
 									gap={0}
 									mah={30}
-									h={30}
 									justify="center">
 
 									<ActionIconComponent
-										size="xs"
 										h={30}
 										w={30}
-										color="red"
 										mr={5}
+										size="xs"
+										color="red"
 										onClick={() => handleRemoveImage(index)}
 									>
 										<MdOutlineDeleteForever size={18} />
 									</ActionIconComponent>
 
 									<ActionIconComponent
-										size="xs"
 										h={30}
 										w={30}
 										ml={5}
+										size="xs"
 										onClick={() => handleReplaceImage(index)}
 									>
 										<MdOutlineEdit size={18} />
 									</ActionIconComponent>
 								</GroupComponent>
-							</Stack>
+							</StackComponent>
 						))}
 						<StackComponent
-							onClick={onChooseIconClick}
-							className="cursor-pointer border border-dashed flex flex-col items-center justify-center rounded-md border-primary-darker text-primary-darker"
 							h={180}
 							w={160}
-							justify="center"
 							align="center"
+							justify="center"
+							onClick={onChooseIconClick}
+							className="cursor-pointer border border-dashed flex flex-col items-center justify-center rounded-md border-primary-darker text-primary-darker"
 						>
 							<ImageIcon size={50} />
 							<p className="text-center mt-0.5">Choose an Icon</p>
 						</StackComponent>
 					</GroupComponent>
 				</ScrollAreaComponent>
-			</Fieldset>
+			</FieldsetComponent>
 
 			<SpaceComponent showHeight />
 
-			<Fieldset legend={<TitleComponent title="Other Arrtributes" order={5} />}>
+			<FieldsetComponent legend={<TitleComponent title="Other Arrtributes" order={5} />}>
 				<SimpleGridComponent
 					cols={{
-						base: 1,
 						sm: 2,
 						md: 3,
 						lg: 3,
 						xl: 3,
+						base: 1,
 					}}
 				>
 					<SelectComponent
@@ -493,7 +617,7 @@ const AddItemModal = (props: Props) => {
 						setValue={setSubCategoryId}
 						placeholder="Select sub-category"
 						rightSection={
-							searchLoading && <Loader size={20} />
+							searchLoading && <LoaderComponent size={20} />
 						}
 					/>
 					<SelectComponent
@@ -509,58 +633,59 @@ const AddItemModal = (props: Props) => {
 					/>
 					<MultiSelectComponent
 						label="Tags"
-						placeholder="Tags"
+						value={tagsId}
 						data={tagsList}
 						clearable={false}
-						value={tagsId}
+						placeholder="Tags"
 						setValue={setTagsId}
 						checkIconPosition="right"
 					/>
 					<MultiSelectComponent
 						label="Add-ons"
-						placeholder="Add-ons"
+						value={addOnsId}
 						data={addOnsList}
 						clearable={false}
-						value={addOnsId}
+						placeholder="Add-ons"
 						setValue={setAddOnsId}
 						checkIconPosition="right"
+						renderOption={renderMultiSelectOption}
 					/>
 				</SimpleGridComponent>
-			</Fieldset>
+			</FieldsetComponent>
 
 			<SpaceComponent showHeight />
 
-			<Fieldset legend={<TitleComponent title="Custom Arrtribute" order={5} />}>
+			<FieldsetComponent legend={<TitleComponent title="Custom Arrtribute" order={5} />}>
 				<SimpleGridComponent
 					cols={{
-						base: 1,
 						sm: 2,
 						md: 3,
 						lg: 3,
 						xl: 3,
+						base: 1,
 					}}
 				>
 					{customAttributesList.map((element, index) => (
 						<GroupComponent align="start" key={index}>
-							<Checkbox
+							<CheckboxComponent
 								mt={7}
 								checked={
-								attributesState[element.custom_attribute_id]?.checked || false}
-								onChange={() => handleCheckboxChange(element.custom_attribute_id)}
+									attributesState[element.custom_attribute_id]?.checked || false}
+								onChecked={() => handleCheckboxChange(element.custom_attribute_id)}
 							/>
 							<TextInputComponent
-								className="flex-grow"
 								title={element.name}
 								label={element.name}
-								value={attributesState[element.custom_attribute_id]?.value || ""}
+								className="flex-grow"
+								placeholder="Enter Item Name"
 								setValue={(value) =>
 									handleInputChange(element.custom_attribute_id, value)}
-								placeholder="Enter Item Name"
+								value={attributesState[element.custom_attribute_id]?.value || ""}
 							/>
 						</GroupComponent>
 					))}
 				</SimpleGridComponent>
-			</Fieldset>
+			</FieldsetComponent>
 
 			<SpaceComponent showHeight />
 
@@ -568,7 +693,7 @@ const AddItemModal = (props: Props) => {
 				<ButtonComponent
 					w={100}
 					title="Save"
-					loading={loading}
+					// loading={loading}
 					onClick={handleSubmitItem}
 				/>
 			</GroupComponent>

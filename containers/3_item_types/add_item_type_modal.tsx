@@ -1,7 +1,6 @@
 "use client";
 
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
-import { Stack } from "@mantine/core";
 import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
 import { Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
@@ -10,12 +9,13 @@ import { useRouter } from "next/navigation";
 import {
 	ActionIconComponent,
 	ButtonComponent,
+	FileInputComponent,
 	GroupComponent,
 	ModalComponent,
+	StackComponent,
 	TextInputComponent,
 	TitleComponent,
 } from "@/components";
-import { FileInputComponent } from "@/components/mantine/file_input_component";
 import { imageUrl, logoutUser, upsertItemTypeApi } from "@/utils";
 
 interface Props {
@@ -123,21 +123,21 @@ const AddItemTypeModal: React.FC<Props> = (props: Props) => {
 			title={<TitleComponent title={isEditModal ? "Edit Item Type" : "New Item Type"} />}
 		>
 			<GroupComponent grow align="start">
-				<Stack>
+				<StackComponent>
 					<FileInputComponent
 						required
-						label="Please select category icon"
-						placeholder="C 111ategory icon"
 						className="hidden"
 						onChange={onFilePick}
 						ref={fileInputTriggerRef}
+						placeholder="Category icon"
+						label="Please select category icon"
 					/>
 					{selectedFile ? (
 						<div className="w-full flex flex-col items-center justify-center h-40">
 							<Image
-								src={selectedFile}
 								width={500}
 								height={500}
+								src={selectedFile}
 								alt="Selected Icon"
 								className="w-full h-full object-contain" />
 						</div>
@@ -169,14 +169,14 @@ const AddItemTypeModal: React.FC<Props> = (props: Props) => {
 
 						</GroupComponent>
 					)}
-				</Stack>
+				</StackComponent>
 
 				<TextInputComponent
 					required
 					title="Name"
-					label="Item Type Name"
-					value={itemTypeName}
 					error={inputError}
+					value={itemTypeName}
+					label="Item Type Name"
 					setValue={setItemTypeName}
 					placeholder="Enter Item Type Name"
 				/>
@@ -185,9 +185,9 @@ const AddItemTypeModal: React.FC<Props> = (props: Props) => {
 
 			<GroupComponent justify="end">
 				<ButtonComponent
-					loading={loading}
 					w={100}
 					title="Save"
+					loading={loading}
 					onClick={handleSubmitItemType}
 				/>
 			</GroupComponent>

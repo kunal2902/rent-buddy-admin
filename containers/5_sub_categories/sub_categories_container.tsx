@@ -1,6 +1,5 @@
 "use client";
 
-import { Table } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { MdOutlineEdit } from "react-icons/md";
@@ -19,16 +18,16 @@ import {
 	PopConfirmComponent,
 	PopConfirmType,
 	SortButtonComponentItemProps,
+	TableComponent,
+	TableTbodyComponent,
+	TableTdComponent,
+	TableThComponent,
+	TableTheadComponent,
+	TableTrComponent,
 } from "@/components";
 import { SubCategoryModel } from "@/models";
-import {
-	deleteSubCategoryApi,
-	disableSubCategoryApi,
-	formatDate,
-	getSubCategoryApi,
-	imageUrl,
-} from "@/utils";
-import AddSubCategoryModal from "@/containers/5_sub_categories/add_sub_category_modal";
+import { deleteSubCategoryApi, disableSubCategoryApi, formatDate, getSubCategoryApi, imageUrl } from "@/utils";
+import AddSubCategoryModal from "./add_sub_category_modal";
 
 const SubCategoriesContainer = () => {
 	const [pageSize, setPageSize] = useState<number>(15);
@@ -152,21 +151,21 @@ const SubCategoriesContainer = () => {
 	];
 
 	const rows = subCategoryList.map((element, index) => (
-		<Table.Tr key={index}>
-			<Table.Td>{index + 1}</Table.Td>
-			<Table.Td>{element.sub_category_id}</Table.Td>
-			<Table.Td>
+		<TableTrComponent key={index}>
+			<TableTdComponent>{index + 1}</TableTdComponent>
+			<TableTdComponent>{element.sub_category_id}</TableTdComponent>
+			<TableTdComponent>
 				<ImageComponent
 					h={50}
 					w="auto"
 					src={`${imageUrl}/${element.icon}`}
 				/>
-			</Table.Td>
-			<Table.Td>{element.name}</Table.Td>
-			<Table.Td>{element.category.name}</Table.Td>
-			<Table.Td>{formatDate(element.created_at)}</Table.Td>
-			<Table.Td>{element.created_by.name}</Table.Td>
-			<Table.Td w={60}>
+			</TableTdComponent>
+			<TableTdComponent>{element.name}</TableTdComponent>
+			<TableTdComponent>{element.category.name}</TableTdComponent>
+			<TableTdComponent>{formatDate(element.created_at)}</TableTdComponent>
+			<TableTdComponent>{element.created_by.name}</TableTdComponent>
+			<TableTdComponent w={60}>
 				<PopConfirmComponent
 					entityName="sub category"
 					type={PopConfirmType.switch}
@@ -174,8 +173,8 @@ const SubCategoriesContainer = () => {
 					actionName={element.is_disabled ? "enable" : "disable"}
 					onConfirm={async () => handleAction(element.sub_category_id, "disable")}
 				/>
-			</Table.Td>
-			<Table.Td w={110}>
+			</TableTdComponent>
+			<TableTdComponent w={110}>
 				<GroupComponent>
 					<PopConfirmComponent
 						entityName="sub category"
@@ -193,8 +192,8 @@ const SubCategoriesContainer = () => {
 						<MdOutlineEdit size={18} />
 					</ActionIconComponent>
 				</GroupComponent>
-			</Table.Td>
-		</Table.Tr>
+			</TableTdComponent>
+		</TableTrComponent>
 	));
 
 	return (
@@ -226,16 +225,25 @@ const SubCategoriesContainer = () => {
 						<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
 							<BoxComponent mx="auto">
 								<PaperComponent>
-									<Table highlightOnHover>
-										<Table.Thead>
-											<Table.Tr>
+									<TableComponent highlightOnHover>
+										<TableTheadComponent>
+											<TableTrComponent>
 												{columns.map((item) =>
-													(<Table.Th key={item}>{item}</Table.Th>)
+													(
+														<TableThComponent
+															key={item}
+														>
+															{item}
+														</TableThComponent>
+													)
 												)}
-											</Table.Tr>
-										</Table.Thead>
-										<Table.Tbody>{rows}</Table.Tbody>
-									</Table>
+											</TableTrComponent>
+										</TableTheadComponent>
+
+										<TableTbodyComponent>
+											{rows}
+										</TableTbodyComponent>
+									</TableComponent>
 								</PaperComponent>
 								<CenterComponent>
 									<PaginationComponent

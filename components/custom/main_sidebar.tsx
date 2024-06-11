@@ -4,10 +4,9 @@
 
 import { twMerge } from "tailwind-merge";
 import { useState } from "react";
-import { ScrollArea } from "@mantine/core";
 import { usePathname } from "next/navigation";
+import { NavLinkComponent, ScrollAreaComponent, TooltipComponent } from "@/components";
 import { LinkType, SidebarItems, SideBarProps, SideBarType, SubMenuType } from "@/constants";
-import { NavLinkComponent, TooltipComponent } from "@/components";
 import { appColorRGBA, getSurfaceColor, mantineNavLinkChildOffset, useSidebarState, useThemeProvider } from "@/utils";
 
 export const MainSidebar = () => {
@@ -31,7 +30,7 @@ export const MainSidebar = () => {
 			} h-screen flex flex-col fixed z-20 top-0 left-0 pt-16 shadow`}
 			style={getSurfaceColor(darkMode)}
 		>
-			<ScrollArea
+			<ScrollAreaComponent
 				scrollbars="y"
 				style={{ height: "100%" }}
 				className={isSidebarOpen ? "lg:w-64 w-56" : "w-[56px]"}
@@ -323,7 +322,7 @@ export const MainSidebar = () => {
 						);
 					})}
 				</div>
-			</ScrollArea>
+			</ScrollAreaComponent>
 		</div>
 	);
 };

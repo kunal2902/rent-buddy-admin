@@ -11,11 +11,11 @@ import {
 	CenterComponent,
 	DraftModal,
 	SpaceComponent,
+	TextComponent,
 	TooltipComponent,
 	UnstyledButtonComponent,
 } from "@/components";
 import { appLogoHeight, appLogoWidth, dashboardRoute, posRoute } from "@/utils";
-import { TextComponent } from "@/components/mantine/text_component";
 
 export const PosNavbar = () => {
 	const {

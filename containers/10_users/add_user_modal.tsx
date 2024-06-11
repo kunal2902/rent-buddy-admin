@@ -8,7 +8,7 @@ import {
 	ModalComponent, PasswordInputComponent, SelectComponent, SpaceComponent,
 	TextInputComponent, TitleComponent,
 } from "@/components";
-import { getCategoryApi, getPermissionApi, getRoleApi, upsertUserApi } from "@/utils";
+import { getRoleApi, upsertUserApi } from "@/utils";
 
 interface Props {
 	isOpen: boolean;
@@ -18,7 +18,7 @@ interface Props {
 	initialValueUserName: string;
 	initialValueEmail: string;
 	initialValuePassword: string;
-	initialRoleId: string;
+	initialRoleId?: string;
 	userId?: string;
 }
 
@@ -41,7 +41,7 @@ const AddUserModal = (props: Props) => {
 	const [inputError, setInputError] = useState<string | null>(null);
 	const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 	const [rolesList, setRolesList] = useState([]);
-	const [roleId, setRoleId] = useState<string>(initialRoleId);
+	const [roleId, setRoleId] = useState<string>(initialRoleId ?? "");
 	const isEditModal: boolean = initialValueName !== "";
 
 	useEffect(() => {
