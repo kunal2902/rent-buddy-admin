@@ -1,9 +1,11 @@
 "use client";
 
 import { Minus, Plus, SearchIcon } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { NumberInputHandlers } from "@mantine/core";
 import { useRouter } from "next/navigation";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { toast } from "react-toastify";
 import {
 	BoxComponent,
 	ButtonComponent,
@@ -22,9 +24,20 @@ import {
 	TextComponent,
 	TextInputComponent,
 } from "@/components";
-import { currencySign, getCategoryApi, getItemApi, getSubCategoryApi, logoutUser } from "@/utils";
+import {
+	callCartApiAtom, cartAtom,
+	cartIdAtom,
+	currencySign,
+	customerAtom,
+	deleteCartApi,
+	getCategoryApi,
+	getItemApi,
+	getSubCategoryApi,
+	logoutUser,
+	upsertCartApi,
+} from "@/utils";
 import { centeredInputTheme } from "@/constants";
-import { CategoryModel, ItemModel } from "@/models";
+import { CartItemModel, CategoryModel, ItemModel } from "@/models";
 
 export interface Categories {
 	categoryName: string;
@@ -38,6 +51,7 @@ export const PosProductSection = () => {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [categoriesList, setCategoriesList] = useState<CategoryModel[]>([]);
 	const [itemList, setItemList] = useState<ItemModel[]>([]);
+	const [cart, setCart] = useRecoilState<Array<CartItemModel>>(cartAtom);
 
 	useEffect(() => {
 		getCategoryApi("",
@@ -56,14 +70,15 @@ export const PosProductSection = () => {
 			(data: any) => {
 				setItemList(data.items);
 			},
-			() => {},
+			() => {
+			},
 			() => {
 				logoutUser(router);
 			}
 		);
-	}, []);
+	}, [router]);
 
-	const fetchSubCategories = (value: string) => {
+	const fetchSubCategories = useCallback((value: string) => {
 		if (value !== "") {
 			getSubCategoryApi(`filter_type=category&filter_query=${value}`,
 				(data: any) => {
@@ -76,13 +91,13 @@ export const PosProductSection = () => {
 				}
 			).then();
 		}
-	};
+	}, [router]);
 
-	function handleCategoryChange(val: string | string[]) {
+	const handleCategoryChange = (val: string | string[]) => {
 		setCatValue(val as string);
 		setSubCategories([]);
 		fetchSubCategories(val as string);
-	}
+	};
 
 	return (
 		<div className="w-[70%] max-h-screen overflow-hidden">
@@ -105,7 +120,10 @@ export const PosProductSection = () => {
 					<GroupComponent justify="start">
 						<ChipComponent value="">All items</ChipComponent>
 						{categoriesList.map((item: any) => (
-							<ChipComponent value={item.category_id}>{item.name}</ChipComponent>
+							<ChipComponent
+								key={item.category_id}
+								value={item.category_id}>{item.name}
+							</ChipComponent>
 						))}
 					</GroupComponent>
 				</ChipGroupComponent>
@@ -120,8 +138,8 @@ export const PosProductSection = () => {
 							<ChipComponent value="">All items</ChipComponent>
 							{subCategories.map((item: any) => (
 								<ChipComponent
-									value={item.sub_category_id}
-								>
+									key={item.sub_category_id}
+									value={item.sub_category_id}>
 									{item.name}
 								</ChipComponent>
 							))}
@@ -146,7 +164,7 @@ export const PosProductSection = () => {
 					}}
 				>
 					{itemList.map((item, index) => (
-						<ProductCard index={index + 1} item={item} />
+						<ProductCard key={item.item_id} index={index + 1} item={item} cartItem={cart.filter((c_item) => c_item.item_id === item.item_id)[0]} />
 					))}
 				</SimpleGridComponent>
 			</ScrollAreaComponent>
@@ -154,18 +172,84 @@ export const PosProductSection = () => {
 	);
 };
 
-// @ts-ignore
-const ProductCard = ({ index, item }) => {
-	const [add, setAdd] = useState(false);
-	const [quantity, setQuantity] = useState<string | number>(1);
+const ProductCard = React.memo(({ index, item, cartItem }: { index: number, item: ItemModel, cartItem: CartItemModel | undefined }) => {
+	const router = useRouter();
+	// const [add, setAdd] = useState<boolean>(false);
 	const numberInputRef = useRef<NumberInputHandlers>(null);
+	const [createCart, setCreateCart] = useState<boolean>(true);
+	const [quantity, setQuantity] = useState<string | number>(0);
+	const [itemIdToUpdate, setItemIdToUpdate] = useState<string | null>(null);
+	console.log("createCart", createCart);
+	const custId = useRecoilValue(customerAtom);
+	const setCallCart = useSetRecoilState(callCartApiAtom);
+	const [cartId, setCartId] = useRecoilState(cartIdAtom);
+	// const [cart, setCart] = useRecoilState<Array<CartItemModel>>(cartAtom);
+
+	// const [cartItem, setCartItem] = useState<CartItemModel | null>(null);
+
+	// useEffect(() => {
+	// 	// cart.forEach((c_item) => {
+	// 	// 	if (c_item.item_id === item.item_id) {
+	// 	// 		setCartItem(c_item);
+	// 	// 	}
+	// 	// });
+	//
+	// 	let found = false;
+	//
+	// 	for (const c_item of cart) {
+	// 		if (c_item.item_id === item.item_id) {
+	// 			found = true;
+	// 			setCartItem(c_item);
+	// 		}
+	// 	}
+	//
+	// 	if (!found)setCartItem(null);
+	// }, [cart]);
+
+	const handleAddItem = () => {
+		if (createCart) {
+			upsertCartApi(
+				{},
+				(response: any) => {
+					setCartId(response.cart.cart_id);
+					handleAddButtonClick(item.item_id);
+				},
+				(message) => {
+					toast.error(message);
+				},
+				() => {
+					logoutUser(router);
+				}
+			);
+		}
+	};
+
+	const handleAddButtonClick = (id: string) => {
+		setQuantity((prevQuantity: any) => {
+			const newQuantity = prevQuantity === 0 ? 1 : prevQuantity + 1;
+			setItemIdToUpdate(id);
+			return newQuantity;
+		});
+	};
+
+	const handleMinusButtonClick = (id: string) => {
+		setQuantity((prevQuantity: any) => {
+			const newQuantity = prevQuantity - 1;
+			if (newQuantity < 1) {
+				setAdd(false);
+			}
+			setItemIdToUpdate(id);
+			return newQuantity;
+		});
+	};
+
 	return (
 		<CardComponent shadow="sm" padding="sm" radius="md" withBorder>
 			<CardSectionComponent>
 				<ImageComponent
 					h={150}
 					fit="fill"
-					src={`${item.images[0]}`}
+					src={item.images[0]}
 				/>
 			</CardSectionComponent>
 
@@ -185,17 +269,15 @@ const ProductCard = ({ index, item }) => {
 				<TextComponent
 					bold
 					size="xl"
-					text={`${currencySign} ${item.price * parseInt(quantity.toString(), 10)}`}
+					text={`${currencySign} ${item.price}`}
 					c="green"
 					className="text-justify" />
 
-				{!add ?
+				{!cartItem ?
 					<ButtonComponent
 						w="50%"
 						h={40}
-						onClick={() => {
-							setAdd(true);
-						}}
+						onClick={handleAddItem}
 					>
 						Add
 					</ButtonComponent>
@@ -214,7 +296,10 @@ const ProductCard = ({ index, item }) => {
 								borderRadius: "8px 0 0 8px",
 							}}
 							px={5}
-							onClick={() => numberInputRef.current?.decrement()}
+							onClick={() => {
+								handleMinusButtonClick(item.item_id);
+								numberInputRef.current?.decrement();
+							}}
 						>
 							<Minus size={16} />
 						</ButtonComponent>
@@ -232,7 +317,7 @@ const ProductCard = ({ index, item }) => {
 										setQuantity(val);
 									}
 								}}
-								value={quantity}
+								value={cartItem.quantity}
 								variant="unstyled"
 								handlersRef={numberInputRef}
 								style={{
@@ -259,7 +344,10 @@ const ProductCard = ({ index, item }) => {
 								borderRadius: "0 8px 8px 0",
 							}}
 							px={5}
-							onClick={() => numberInputRef.current?.increment()}
+							onClick={() => {
+								handleAddButtonClick(item.item_id);
+								numberInputRef.current?.increment();
+							}}
 						>
 							<Plus size={16} />
 						</ButtonComponent>
@@ -269,4 +357,6 @@ const ProductCard = ({ index, item }) => {
 
 		</CardComponent>
 	);
-};
+});
+
+export default PosProductSection;

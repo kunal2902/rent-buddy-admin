@@ -27,7 +27,7 @@ import {
 	TableTrComponent,
 } from "@/components";
 import { CategoryModel } from "@/models";
-import { deleteCategoryApi, disableCategoryApi, formatDate, getCategoryApi, imageUrl, logoutUser } from "@/utils";
+import { deleteCategoryApi, disableCategoryApi, formatDate, getCategoryApi, logoutUser } from "@/utils";
 import AddCategoryModal from "./add_category_modal";
 
 const CategoriesContainer = () => {
@@ -156,7 +156,7 @@ const CategoriesContainer = () => {
 				<ImageComponent
 					h={50}
 					w="auto"
-					src={`${imageUrl}/${element.icon}`}
+					src={element.icon}
 				/>
 			</TableTdComponent>
 			<TableTdComponent>{element.name}</TableTdComponent>

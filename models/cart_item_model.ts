@@ -14,4 +14,5 @@ export interface CartItemModel {
     updated_at?: Date;
     cart?: CartModel;
     item: ItemModel;
+    quantity: number;
 }

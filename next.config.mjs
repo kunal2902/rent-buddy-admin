@@ -24,7 +24,7 @@ export default withBundleAnalyzer({
 			},
 			{
 				protocol: "https",
-				hostname: "nca-crm-api-peggi.ondigitalocean.app"
+				hostname: "nca-crm.s3.ap-south-1.amazonaws.com"
 			}
 		]
 	}

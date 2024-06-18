@@ -2,7 +2,7 @@ import { toast } from "react-toastify";
 import {
 	activityLogsAPIPath,
 	addOnAPIPath,
-	attributeAPIPath,
+	attributeAPIPath, cartAPIPath,
 	categoryAPIPath,
 	customerAPIPath, dashboardAPIPath,
 	getCrmJWT,
@@ -15,7 +15,7 @@ import {
 	roleAPIPath,
 	subCategoryAPIPath,
 	tagAPIPath,
-	usersAPIPath,
+	usersAPIPath
 } from "@/utils";
 
 const makeGetRequest = async (
@@ -1888,6 +1888,135 @@ export const deleteCustomerApi = async (
 		return;
 	}
 	const response = await makeDeleteRequest(`${customerAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 403:
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback(response.message);
+			toast.error(response.message);
+	}
+};
+
+// Cart api
+export const upsertCartApi = async (
+	body: any,
+	successCallback: (arg0: any) => void,
+	errorCallback: (message: string) => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	const response = await makePostRequest(cartAPIPath, body, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 403:
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback(response.message);
+			toast.error(response.message);
+	}
+};
+
+export const cartDraftApi = async (
+	id: string | undefined,
+	successCallback: (arg0: any) => void,
+	errorCallback: (arg0: any) => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === "" || token === "null") {
+		logoutCallback();
+		return;
+	}
+	const response = await makePutRequest(`${cartAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 403:
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback(response.message);
+			toast.error(response.message);
+	}
+};
+
+export const deleteCartApi = async (
+	id: string | undefined,
+	successCallback: (arg0: any) => void,
+	errorCallback: (arg0: any) => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === "" || token === "null") {
+		logoutCallback();
+		return;
+	}
+	const response = await makeDeleteRequest(`${cartAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 403:
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback(response.message);
+			toast.error(response.message);
+	}
+};
+
+export const getCartByIdApi = async (
+	id: string | undefined,
+	successCallback: (arg0: any) => void,
+	errorCallback: (arg0: any) => void,
+	logoutCallback: () => void
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === "" || token === "null") {
+		logoutCallback();
+		return;
+	}
+	const response = await makeGetRequest(`${cartAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {

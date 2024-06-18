@@ -16,7 +16,7 @@ import {
 	TextInputComponent,
 	TitleComponent,
 } from "@/components";
-import { imageUrl, logoutUser, upsertItemTypeApi } from "@/utils";
+import { logoutUser, upsertItemTypeApi } from "@/utils";
 
 interface Props {
 	isOpen: boolean;
@@ -46,8 +46,7 @@ const AddItemTypeModal: React.FC<Props> = (props: Props) => {
 
 	useEffect(() => {
 		if (itemTypeName && icon) {
-			const imgUrl = `${imageUrl}/${icon}`;
-			setSelectedFile(imgUrl);
+			setSelectedFile(icon);
 			setInputError(null);
 		}
 	}, [itemTypeName, icon]);

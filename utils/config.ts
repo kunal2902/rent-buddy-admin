@@ -71,12 +71,8 @@ export const themeModeConstant: string = "theme_mode";
 /** API Constants */
 export const apiUrl: string = process.env.NODE_ENV === "production" ||
 isProduction ?
-	"https://nca-crm-api-peggi.ondigitalocean.app/api/v1" :
+	"https://decimal-graphics-performs-anna.trycloudflare.com/api/v1" :
 	"http://localhost:8000/api/v1";
-export const imageUrl: string = process.env.NODE_ENV === "production" ||
-isProduction ?
-	"https://nca-crm-api-peggi.ondigitalocean.app/image" :
-	"http://localhost:8000/image";
 export const loginAPIPath: string = `${apiUrl}/auth/login`;
 
 // Dashboard path
@@ -132,6 +128,9 @@ export const customerAPIPath: string = `${apiUrl}/customers`;
 // Reports path
 /** get all reports based on filter, sorting and search */
 export const reportsAPIPath: string = `${apiUrl}/reports`;
+
+// Cart path
+export const cartAPIPath: string = `${apiUrl}/cart`;
 
 /** Constant Functions */
 /** To get the CRM JWT stored in Cookies */

@@ -27,7 +27,7 @@ import {
 	TableTrComponent,
 } from "@/components";
 import { ItemTypeModel } from "@/models";
-import { deleteItemTypeApi, disableItemTypeApi, formatDate, getItemTypeApi, imageUrl, logoutUser } from "@/utils";
+import { deleteItemTypeApi, disableItemTypeApi, formatDate, getItemTypeApi, logoutUser } from "@/utils";
 import AddItemTypeModal from "./add_item_type_modal";
 
 const ItemTypesContainer = () => {
@@ -156,7 +156,7 @@ const ItemTypesContainer = () => {
 				<ImageComponent
 					h={50}
 					w="auto"
-					src={`${imageUrl}/${element.icon}`}
+					src={element.icon}
 				/>
 			</TableTdComponent>
 			<TableTdComponent>{element.name}</TableTdComponent>

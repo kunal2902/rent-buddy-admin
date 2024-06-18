@@ -26,7 +26,7 @@ import {
 	TableTrComponent,
 } from "@/components";
 import { SubCategoryModel } from "@/models";
-import { deleteSubCategoryApi, disableSubCategoryApi, formatDate, getSubCategoryApi, imageUrl } from "@/utils";
+import { deleteSubCategoryApi, disableSubCategoryApi, formatDate, getSubCategoryApi } from "@/utils";
 import AddSubCategoryModal from "./add_sub_category_modal";
 
 const SubCategoriesContainer = () => {
@@ -158,7 +158,7 @@ const SubCategoriesContainer = () => {
 				<ImageComponent
 					h={50}
 					w="auto"
-					src={`${imageUrl}/${element.icon}`}
+					src={element.icon}
 				/>
 			</TableTdComponent>
 			<TableTdComponent>{element.name}</TableTdComponent>

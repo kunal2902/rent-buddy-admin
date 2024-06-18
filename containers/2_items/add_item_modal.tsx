@@ -33,7 +33,6 @@ import {
 	getItemTypeApi,
 	getSubCategoryApi,
 	getTagApi,
-	imageUrl,
 	logoutUser,
 	upsertItemApi,
 } from "@/utils";
@@ -245,8 +244,6 @@ const AddItemModal = (props: Props) => {
 		}
 	}, [categoryId]);
 
-	console.log("images", images);
-
 	const handleSubmitItem = async (event: React.FormEvent) => {
 		event.preventDefault();
 		if (!itemName) {
@@ -291,47 +288,6 @@ const AddItemModal = (props: Props) => {
 			);
 		} catch (error) {
 			console.error("Error:", error);
-		}
-	};
-
-	console.log("itemId", itemId);
-
-	const handleCLick = async () => {
-		const myHeaders = new Headers();
-		myHeaders.append("authorization", `Bearer ${getCrmJWT()}`);
-
-		const formdata = new FormData();
-		formdata.append("id", itemId || "");
-		formdata.append("name", itemName);
-		formdata.append("internal_name", itemInternalName);
-		formdata.append("short_description", shortDesc);
-		formdata.append("description", longDesc);
-		formdata.append("sku", sku);
-		formdata.append("stock_quantity", JSON.stringify(stockQuantity));
-		formdata.append("item_type_id", itemTypeId);
-		formdata.append("category_id", categoryId);
-		formdata.append("sub_category_id", subCategoryId);
-		formdata.append("add_ons", JSON.stringify(addOnsId));
-		formdata.append("price", JSON.stringify(price));
-		images.forEach((image) => {
-			formdata.append("image_files_added[]", image.file);
-		});
-		formdata.append("tags", JSON.stringify(tagsId));
-		formdata.append("attributes", JSON.stringify(checkedAttributes));
-
-		const requestOptions = {
-			method: "POST",
-			headers: myHeaders,
-			body: formdata,
-			redirect: "follow" as RequestRedirect,
-		};
-
-		try {
-			const response = await fetch("http://localhost:8000/api/v1/item", requestOptions);
-			const result = await response.text();
-			console.log(result);
-		} catch (error) {
-			console.error(error);
 		}
 	};
 
@@ -414,7 +370,7 @@ const AddItemModal = (props: Props) => {
 
 	const renderMultiSelectOption: MultiSelectProps["renderOption"] = ({ option }) => (
 		<GroupComponent gap="sm">
-			<AvatarComponent src={`${imageUrl}/${addOnData[option.value]?.icon}`} size={36} radius="xl" />
+			<AvatarComponent src={addOnData[option.value]?.icon} size={36} radius="xl" />
 			<div>
 				<TextComponent text={addOnData[option.value].label} />
 				<TextComponent
@@ -607,19 +563,21 @@ const AddItemModal = (props: Props) => {
 						checkIconPosition="right"
 						placeholder="Select category"
 					/>
-					<SelectComponent
-						clearable={false}
-						isGrouped={false}
-						value={subCategoryId}
-						data={subCategoryList}
-						checkIconPosition="right"
-						label="Select sub-category"
-						setValue={setSubCategoryId}
-						placeholder="Select sub-category"
-						rightSection={
-							searchLoading && <LoaderComponent size={20} />
-						}
-					/>
+					{subCategoryList.length > 0 &&
+						<SelectComponent
+							clearable={false}
+							isGrouped={false}
+							value={subCategoryId}
+							data={subCategoryList}
+							checkIconPosition="right"
+							label="Select sub-category"
+							setValue={setSubCategoryId}
+							placeholder="Select sub-category"
+							rightSection={
+								searchLoading && <LoaderComponent size={20} />
+							}
+						/>
+					}
 					<SelectComponent
 						required
 						label="Item type"
