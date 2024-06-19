@@ -15,7 +15,7 @@ import {
 	roleAPIPath,
 	subCategoryAPIPath,
 	tagAPIPath,
-	usersAPIPath
+	usersAPIPath,
 } from "@/utils";
 
 const makeGetRequest = async (

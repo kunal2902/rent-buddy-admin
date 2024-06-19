@@ -25,7 +25,8 @@ import {
 	TextInputComponent,
 } from "@/components";
 import {
-	callCartApiAtom, cartAtom,
+	callCartApiAtom,
+	cartAtom,
 	cartIdAtom,
 	currencySign,
 	customerAtom,
@@ -54,15 +55,15 @@ export const PosProductSection = () => {
 	const [cart, setCart] = useRecoilState<Array<CartItemModel>>(cartAtom);
 
 	useEffect(() => {
-		getCategoryApi("",
+		getCategoryApi(
+			"",
 			(data: any) => {
 				setCategoriesList(data.categories);
 			},
-			() => {
-			},
+			() => {},
 			() => {
 				logoutUser(router);
-			}
+			},
 		).then();
 
 		getItemApi(
@@ -70,28 +71,30 @@ export const PosProductSection = () => {
 			(data: any) => {
 				setItemList(data.items);
 			},
-			() => {
-			},
+			() => {},
 			() => {
 				logoutUser(router);
-			}
+			},
 		);
 	}, [router]);
 
-	const fetchSubCategories = useCallback((value: string) => {
-		if (value !== "") {
-			getSubCategoryApi(`filter_type=category&filter_query=${value}`,
-				(data: any) => {
-					setSubCategories(data.sub_categories);
-				},
-				() => {
-				},
-				() => {
-					logoutUser(router);
-				}
-			).then();
-		}
-	}, [router]);
+	const fetchSubCategories = useCallback(
+		(value: string) => {
+			if (value !== "") {
+				getSubCategoryApi(
+					`filter_type=category&filter_query=${value}`,
+					(data: any) => {
+						setSubCategories(data.sub_categories);
+					},
+					() => {},
+					() => {
+						logoutUser(router);
+					},
+				).then();
+			}
+		},
+		[router],
+	);
 
 	const handleCategoryChange = (val: string | string[]) => {
 		setCatValue(val as string);
@@ -116,13 +119,16 @@ export const PosProductSection = () => {
 			<BoxComponent h={30} className="px-3 mt-3">
 				<ChipGroupComponent
 					value={catValue}
-					onChange={handleCategoryChange}>
+					onChange={handleCategoryChange}
+				>
 					<GroupComponent justify="start">
 						<ChipComponent value="">All items</ChipComponent>
 						{categoriesList.map((item: any) => (
 							<ChipComponent
 								key={item.category_id}
-								value={item.category_id}>{item.name}
+								value={item.category_id}
+							>
+								{item.name}
 							</ChipComponent>
 						))}
 					</GroupComponent>
@@ -133,13 +139,17 @@ export const PosProductSection = () => {
 				<BoxComponent h={70} className="px-3 mt-1">
 					<TextComponent text="Categories" bold size="xl" />
 					<SpaceComponent showHeight />
-					<ChipGroupComponent value={catSubValue} onChange={(val) => setSubCatValue(val)}>
+					<ChipGroupComponent
+						value={catSubValue}
+						onChange={(val) => setSubCatValue(val)}
+					>
 						<GroupComponent justify="start">
 							<ChipComponent value="">All items</ChipComponent>
 							{subCategories.map((item: any) => (
 								<ChipComponent
 									key={item.sub_category_id}
-									value={item.sub_category_id}>
+									value={item.sub_category_id}
+								>
 									{item.name}
 								</ChipComponent>
 							))}
@@ -150,9 +160,13 @@ export const PosProductSection = () => {
 			<ScrollAreaComponent
 				style={{
 					display: "grid",
-					height: subCategories.length > 0 ? "calc(100vh - 250px)" : "calc(100vh - 173px)",
+					height:
+						subCategories.length > 0
+							? "calc(100vh - 250px)"
+							: "calc(100vh - 173px)",
 				}}
-				className="my-3">
+				className="my-3"
+			>
 				<SimpleGridComponent
 					className="mx-3"
 					cols={{
@@ -164,7 +178,16 @@ export const PosProductSection = () => {
 					}}
 				>
 					{itemList.map((item, index) => (
-						<ProductCard key={item.item_id} index={index + 1} item={item} cartItem={cart.filter((c_item) => c_item.item_id === item.item_id)[0]} />
+						<ProductCard
+							key={item.item_id}
+							index={index + 1}
+							item={item}
+							cartItem={
+								cart.filter(
+									(c_item) => c_item.item_id === item.item_id,
+								)[0]
+							}
+						/>
 					))}
 				</SimpleGridComponent>
 			</ScrollAreaComponent>
@@ -172,191 +195,206 @@ export const PosProductSection = () => {
 	);
 };
 
-const ProductCard = React.memo(({ index, item, cartItem }: { index: number, item: ItemModel, cartItem: CartItemModel | undefined }) => {
-	const router = useRouter();
-	// const [add, setAdd] = useState<boolean>(false);
-	const numberInputRef = useRef<NumberInputHandlers>(null);
-	const [createCart, setCreateCart] = useState<boolean>(true);
-	const [quantity, setQuantity] = useState<string | number>(0);
-	const [itemIdToUpdate, setItemIdToUpdate] = useState<string | null>(null);
-	console.log("createCart", createCart);
-	const custId = useRecoilValue(customerAtom);
-	const setCallCart = useSetRecoilState(callCartApiAtom);
-	const [cartId, setCartId] = useRecoilState(cartIdAtom);
-	// const [cart, setCart] = useRecoilState<Array<CartItemModel>>(cartAtom);
+const ProductCard = React.memo(
+	({
+		index,
+		item,
+		cartItem,
+	}: {
+		index: number;
+		item: ItemModel;
+		cartItem: CartItemModel | undefined;
+	}) => {
+		const router = useRouter();
+		// const [add, setAdd] = useState<boolean>(false);
+		const numberInputRef = useRef<NumberInputHandlers>(null);
+		const [createCart, setCreateCart] = useState<boolean>(true);
+		const [quantity, setQuantity] = useState<string | number>(0);
+		const [itemIdToUpdate, setItemIdToUpdate] = useState<string | null>(
+			null,
+		);
+		console.log("createCart", createCart);
+		const custId = useRecoilValue(customerAtom);
+		const setCallCart = useSetRecoilState(callCartApiAtom);
+		const [cartId, setCartId] = useRecoilState(cartIdAtom);
+		// const [cart, setCart] = useRecoilState<Array<CartItemModel>>(cartAtom);
 
-	// const [cartItem, setCartItem] = useState<CartItemModel | null>(null);
+		// const [cartItem, setCartItem] = useState<CartItemModel | null>(null);
 
-	// useEffect(() => {
-	// 	// cart.forEach((c_item) => {
-	// 	// 	if (c_item.item_id === item.item_id) {
-	// 	// 		setCartItem(c_item);
-	// 	// 	}
-	// 	// });
-	//
-	// 	let found = false;
-	//
-	// 	for (const c_item of cart) {
-	// 		if (c_item.item_id === item.item_id) {
-	// 			found = true;
-	// 			setCartItem(c_item);
-	// 		}
-	// 	}
-	//
-	// 	if (!found)setCartItem(null);
-	// }, [cart]);
+		// useEffect(() => {
+		// 	// cart.forEach((c_item) => {
+		// 	// 	if (c_item.item_id === item.item_id) {
+		// 	// 		setCartItem(c_item);
+		// 	// 	}
+		// 	// });
+		//
+		// 	let found = false;
+		//
+		// 	for (const c_item of cart) {
+		// 		if (c_item.item_id === item.item_id) {
+		// 			found = true;
+		// 			setCartItem(c_item);
+		// 		}
+		// 	}
+		//
+		// 	if (!found)setCartItem(null);
+		// }, [cart]);
 
-	const handleAddItem = () => {
-		if (createCart) {
-			upsertCartApi(
-				{},
-				(response: any) => {
-					setCartId(response.cart.cart_id);
-					handleAddButtonClick(item.item_id);
-				},
-				(message) => {
-					toast.error(message);
-				},
-				() => {
-					logoutUser(router);
-				}
-			);
-		}
-	};
-
-	const handleAddButtonClick = (id: string) => {
-		setQuantity((prevQuantity: any) => {
-			const newQuantity = prevQuantity === 0 ? 1 : prevQuantity + 1;
-			setItemIdToUpdate(id);
-			return newQuantity;
-		});
-	};
-
-	const handleMinusButtonClick = (id: string) => {
-		setQuantity((prevQuantity: any) => {
-			const newQuantity = prevQuantity - 1;
-			if (newQuantity < 1) {
-				setAdd(false);
+		const handleAddItem = () => {
+			if (createCart) {
+				upsertCartApi(
+					{},
+					(response: any) => {
+						setCartId(response.cart.cart_id);
+						handleAddButtonClick(item.item_id);
+					},
+					(message) => {
+						toast.error(message);
+					},
+					() => {
+						logoutUser(router);
+					},
+				);
 			}
-			setItemIdToUpdate(id);
-			return newQuantity;
-		});
-	};
+		};
 
-	return (
-		<CardComponent shadow="sm" padding="sm" radius="md" withBorder>
-			<CardSectionComponent>
-				<ImageComponent
-					h={150}
-					fit="fill"
-					src={item.images[0]}
-				/>
-			</CardSectionComponent>
+		const handleAddButtonClick = (id: string) => {
+			setQuantity((prevQuantity: any) => {
+				const newQuantity = prevQuantity === 0 ? 1 : prevQuantity + 1;
+				setItemIdToUpdate(id);
+				return newQuantity;
+			});
+		};
 
-			<GroupComponent justify="space-between" mt="md" mb="xs">
-				<TextComponent text={`${item.name} ${index}`} bold className="text-justify" />
-			</GroupComponent>
-
-			<SpoilerComponent maxHeight={45} showLabel="more" hideLabel="less">
-				<TextComponent
-					size="sm"
-					c="dimmed"
-					className="text-justify"
-					text={item.short_description} />
-			</SpoilerComponent>
-
-			<GroupComponent justify="space-between" mt="md">
-				<TextComponent
-					bold
-					size="xl"
-					text={`${currencySign} ${item.price}`}
-					c="green"
-					className="text-justify" />
-
-				{!cartItem ?
-					<ButtonComponent
-						w="50%"
-						h={40}
-						onClick={handleAddItem}
-					>
-						Add
-					</ButtonComponent>
-					:
-					<div className="w-[50%] h-[40px] rounded-[20px] flex bg-gray-200 justify-between items-center">
-						<ButtonComponent
-							style={{
-								height: "40px",
-								width: "30%",
-								fontSize: 30,
-								alignContent: "center",
-								backgroundColor: "bg-gr",
-								justifyContent: "center",
-								display: "flex",
-								border: "1px solid gray",
-								borderRadius: "8px 0 0 8px",
-							}}
-							px={5}
-							onClick={() => {
-								handleMinusButtonClick(item.item_id);
-								numberInputRef.current?.decrement();
-							}}
-						>
-							<Minus size={16} />
-						</ButtonComponent>
-
-						<MantineProviderComponent theme={centeredInputTheme}>
-							<NumberInputComponent
-								min={0}
-								step={1}
-								hideControls
-								placeholder="0"
-								setValue={(val: string | number) => {
-									if (parseInt(val.toString(), 10) < 1) {
-										setAdd(false);
-									} else {
-										setQuantity(val);
-									}
-								}}
-								value={cartItem.quantity}
-								variant="unstyled"
-								handlersRef={numberInputRef}
-								style={{
-									width: "40%",
-									height: "38px",
-									border: "none",
-									display: "flex",
-									fontWeight: "bold",
-									backgroundColor: "white",
-								}}
-							/>
-						</MantineProviderComponent>
-
-						<ButtonComponent
-							style={{
-								height: "40px",
-								width: "30%",
-								fontSize: 30,
-								alignContent: "center",
-								backgroundColor: "bg-gr",
-								justifyContent: "center",
-								display: "flex",
-								border: "1px solid gray",
-								borderRadius: "0 8px 8px 0",
-							}}
-							px={5}
-							onClick={() => {
-								handleAddButtonClick(item.item_id);
-								numberInputRef.current?.increment();
-							}}
-						>
-							<Plus size={16} />
-						</ButtonComponent>
-					</div>
+		const handleMinusButtonClick = (id: string) => {
+			setQuantity((prevQuantity: any) => {
+				const newQuantity = prevQuantity - 1;
+				if (newQuantity < 1) {
+					setAdd(false);
 				}
-			</GroupComponent>
+				setItemIdToUpdate(id);
+				return newQuantity;
+			});
+		};
 
-		</CardComponent>
-	);
-});
+		return (
+			<CardComponent shadow="sm" padding="sm" radius="md" withBorder>
+				<CardSectionComponent>
+					<ImageComponent h={150} fit="fill" src={item.images[0]} />
+				</CardSectionComponent>
+
+				<GroupComponent justify="space-between" mt="md" mb="xs">
+					<TextComponent
+						text={`${item.name} ${index}`}
+						bold
+						className="text-justify"
+					/>
+				</GroupComponent>
+
+				<SpoilerComponent
+					maxHeight={45}
+					showLabel="more"
+					hideLabel="less"
+				>
+					<TextComponent
+						size="sm"
+						c="dimmed"
+						className="text-justify"
+						text={item.short_description}
+					/>
+				</SpoilerComponent>
+
+				<GroupComponent justify="space-between" mt="md">
+					<TextComponent
+						bold
+						size="xl"
+						text={`${currencySign} ${item.price}`}
+						c="green"
+						className="text-justify"
+					/>
+
+					{!cartItem ? (
+						<ButtonComponent w="50%" h={40} onClick={handleAddItem}>
+							Add
+						</ButtonComponent>
+					) : (
+						<div className="w-[50%] h-[40px] rounded-[20px] flex bg-gray-200 justify-between items-center">
+							<ButtonComponent
+								style={{
+									height: "40px",
+									width: "30%",
+									fontSize: 30,
+									alignContent: "center",
+									backgroundColor: "bg-gr",
+									justifyContent: "center",
+									display: "flex",
+									border: "1px solid gray",
+									borderRadius: "8px 0 0 8px",
+								}}
+								px={5}
+								onClick={() => {
+									handleMinusButtonClick(item.item_id);
+									numberInputRef.current?.decrement();
+								}}
+							>
+								<Minus size={16} />
+							</ButtonComponent>
+
+							<MantineProviderComponent
+								theme={centeredInputTheme}
+							>
+								<NumberInputComponent
+									min={0}
+									step={1}
+									hideControls
+									placeholder="0"
+									setValue={(val: string | number) => {
+										if (parseInt(val.toString(), 10) < 1) {
+											setAdd(false);
+										} else {
+											setQuantity(val);
+										}
+									}}
+									value={cartItem.quantity}
+									variant="unstyled"
+									handlersRef={numberInputRef}
+									style={{
+										width: "40%",
+										height: "38px",
+										border: "none",
+										display: "flex",
+										fontWeight: "bold",
+										backgroundColor: "white",
+									}}
+								/>
+							</MantineProviderComponent>
+
+							<ButtonComponent
+								style={{
+									height: "40px",
+									width: "30%",
+									fontSize: 30,
+									alignContent: "center",
+									backgroundColor: "bg-gr",
+									justifyContent: "center",
+									display: "flex",
+									border: "1px solid gray",
+									borderRadius: "0 8px 8px 0",
+								}}
+								px={5}
+								onClick={() => {
+									handleAddButtonClick(item.item_id);
+									numberInputRef.current?.increment();
+								}}
+							>
+								<Plus size={16} />
+							</ButtonComponent>
+						</div>
+					)}
+				</GroupComponent>
+			</CardComponent>
+		);
+	},
+);
 
 export default PosProductSection;
