@@ -3,7 +3,7 @@ import {
 	activityLogsAPIPath,
 	addOnAPIPath,
 	attributeAPIPath,
-	cartAPIPath,
+	cartAPIPath, cartItemAPIPath,
 	categoryAPIPath,
 	customerAPIPath,
 	dashboardAPIPath,
@@ -17,7 +17,7 @@ import {
 	roleAPIPath,
 	subCategoryAPIPath,
 	tagAPIPath,
-	usersAPIPath,
+	usersAPIPath
 } from "@/utils";
 import { CartModel } from "@/models";
 
@@ -2034,6 +2034,70 @@ export const getCartByIdApi = async (
 		return;
 	}
 	const response = await makeGetRequest(`${cartAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 403:
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback(response.message);
+			toast.error(response.message);
+	}
+};
+
+// Cart Item api
+export const upsertCartItemApi = async (
+	body: any,
+	successCallback: (arg0: any) => void,
+	errorCallback: (message: string) => void,
+	logoutCallback: () => void,
+): Promise<CartModel | string | undefined> => {
+	const token = getCrmJWT();
+	const response = await makePostRequest(cartItemAPIPath, body, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+		case 403:
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback(response.message);
+			toast.error(response.message);
+	}
+
+	return undefined;
+};
+
+export const deleteCartItemApi = async (
+	id: string | undefined,
+	successCallback: (arg0: any) => void,
+	errorCallback: (arg0: any) => void,
+	logoutCallback: () => void,
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === "" || token === "null") {
+		logoutCallback();
+		return;
+	}
+	const response = await makeDeleteRequest(`${cartItemAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {

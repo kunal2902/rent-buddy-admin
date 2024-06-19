@@ -131,6 +131,8 @@ export const reportsAPIPath: string = `${apiUrl}/reports`;
 
 // Cart path
 export const cartAPIPath: string = `${apiUrl}/cart`;
+
+// Cart path
 export const cartItemAPIPath: string = `${apiUrl}/cart-item`;
 
 /** Constant Functions */
