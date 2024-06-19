@@ -1937,7 +1937,6 @@ export const upsertCartApi = async (
 		console.log(response);
 	}
 
-	
 	switch (response.code) {
 		case 200:
 			successCallback(response.data);

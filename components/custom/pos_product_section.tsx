@@ -1,46 +1,29 @@
 "use client";
 
-import { Minus, Plus, SearchIcon } from "lucide-react";
-import React, { useEffect, useRef, useState, useCallback } from "react";
-import { NumberInputHandlers } from "@mantine/core";
+import { SearchIcon } from "lucide-react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { toast } from "react-toastify";
+import { useRecoilValue } from "recoil";
 import {
 	BoxComponent,
-	ButtonComponent,
-	CardComponent,
-	CardSectionComponent,
 	ChipComponent,
 	ChipGroupComponent,
 	GroupComponent,
-	ImageComponent,
-	MantineProviderComponent,
-	NumberInputComponent,
 	ScrollAreaComponent,
 	SimpleGridComponent,
 	SpaceComponent,
-	SpoilerComponent,
 	TextComponent,
 	TextInputComponent,
 } from "@/components";
 import {
-	callCartApiAtom,
-	cartAtom,
-	cartIdAtom,
 	cartItemsAtom,
-	currencySign,
-	customerAtom,
-	deleteCartApi,
 	getCategoryApi,
 	getItemApi,
 	getSubCategoryApi,
 	logoutUser,
 	toggleBooleanState,
-	upsertCartApi,
 } from "@/utils";
-import { centeredInputTheme } from "@/constants";
-import { CartItemModel, CartModel, CategoryModel, ItemModel } from "@/models";
+import { CartItemModel, CategoryModel, ItemModel } from "@/models";
 import { ProductCard } from "./pos_product_card";
 
 export interface Categories {
@@ -213,10 +196,9 @@ export const PosProductSection = () => {
 							key={item.item_id}
 							item={item}
 							cartItem={
-								cartItemIndexes.get(item.item_id)
+								cartItemIndexes.get(item.item_id) !== undefined
 									? cartItems[
-											cartItemIndexes.get(item.item_id) ??
-												0
+											cartItemIndexes.get(item.item_id) ?? 0
 										]
 									: undefined
 							}

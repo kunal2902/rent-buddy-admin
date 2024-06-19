@@ -1,7 +1,7 @@
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { Minus, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { NumberInputHandlers } from "@mantine/core";
 import { CartItemModel, CartModel, ItemModel } from "@/models";
 import {
@@ -47,10 +47,6 @@ export const ProductCard = (props: Props) => {
 	const setCallCart = useSetRecoilState(callCartApiAtom);
 	const [cart, setCart] = useRecoilState<CartModel | null>(cartAtom);
 	const setCartItems = useSetRecoilState<Array<CartItemModel>>(cartItemsAtom);
-
-	useEffect(() => {
-		console.log(cart);
-	}, [cart]);
 
 	const onAddClick = async () => {
 		if (isAddToCartApiBusy) return;
