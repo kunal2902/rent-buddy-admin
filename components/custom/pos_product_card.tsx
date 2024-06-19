@@ -1,6 +1,19 @@
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { Minus, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { NumberInputHandlers } from "@mantine/core";
 import { CartItemModel, CartModel, ItemModel } from "@/models";
-import { cartAtom, currencySign, logoutUser, upsertCartApi } from "@/utils";
-import { useRecoilState } from "recoil";
+import {
+	callCartApiAtom,
+	cartAtom,
+	cartItemsAtom,
+	currencySign,
+	customerAtom,
+	logoutUser,
+	upsertCartApi,
+	upsertCartItemApi,
+} from "@/utils";
 import {
 	ButtonComponent,
 	CardComponent,
@@ -12,9 +25,7 @@ import {
 	SpoilerComponent,
 	TextComponent,
 } from "../mantine";
-import { Minus, Plus } from "lucide-react";
 import { centeredInputTheme } from "@/constants";
-import { useRouter } from "next/navigation";
 
 interface Props {
 	cartItem: CartItemModel | undefined;
@@ -23,19 +34,23 @@ interface Props {
 	toggleIsAddToCartApiBusy: (newState?: boolean) => void;
 }
 
-const ProductCard = (props: Props) => {
+export const ProductCard = (props: Props) => {
 	const { cartItem, item, isAddToCartApiBusy, toggleIsAddToCartApiBusy } =
 		props;
 
 	const router = useRouter();
 	const numberInputRef = useRef<NumberInputHandlers>(null);
-	const [createCart, setCreateCart] = useState<boolean>(true);
+	// const [createCart, setCreateCart] = useState<boolean>(true);
 	const [quantity, setQuantity] = useState<string | number>(0);
 	const [itemIdToUpdate, setItemIdToUpdate] = useState<string | null>(null);
-	console.log("createCart", createCart);
 	const custId = useRecoilValue(customerAtom);
 	const setCallCart = useSetRecoilState(callCartApiAtom);
 	const [cart, setCart] = useRecoilState<CartModel | null>(cartAtom);
+	const setCartItems = useSetRecoilState<Array<CartItemModel>>(cartItemsAtom);
+
+	useEffect(() => {
+		console.log(cart);
+	}, [cart]);
 
 	const onAddClick = async () => {
 		if (isAddToCartApiBusy) return;
@@ -43,7 +58,7 @@ const ProductCard = (props: Props) => {
 		toggleIsAddToCartApiBusy(true);
 
 		try {
-			let prevCart: CartModel = cart;
+			let prevCart: CartModel | null = cart;
 
 			if (!prevCart) {
 				const cartCreationResponse = await upsertCartApi(
@@ -59,12 +74,37 @@ const ProductCard = (props: Props) => {
 					cartCreationResponse &&
 					typeof cartCreationResponse !== "string"
 				) {
-					setCart(cartCreationResponse);
-					prevCart = cartCreationResponse;
+					setCart(cartCreationResponse.cart);
+					prevCart = cartCreationResponse.cart;
 				}
+			}
+
+			console.log(prevCart);
+
+			const cartItemCreated = await upsertCartItemApi(
+				{
+					item_id: item.item_id,
+					cart_id: cart ? cart.cart_id : prevCart?.cart_id,
+					quantity: 1,
+				},
+				() => {},
+				() => {},
+				() => {
+					logoutUser(router);
+				},
+			);
+
+			toggleIsAddToCartApiBusy(false);
+
+			if (cartItemCreated && typeof cartItemCreated !== "string") {
+				setCartItems((prev) => [...prev, cartItemCreated.cartItem]);
 			}
 		} catch (error) {
 			toggleIsAddToCartApiBusy(false);
+
+			if (error instanceof Error) {
+				console.log(error.message);
+			}
 		}
 	};
 
@@ -120,7 +160,7 @@ const ProductCard = (props: Props) => {
 				/>
 
 				{!cartItem ? (
-					<ButtonComponent w="50%" h={40} onClick={handleAddItem}>
+					<ButtonComponent w="50%" h={40} onClick={onAddClick}>
 						Add
 					</ButtonComponent>
 				) : (

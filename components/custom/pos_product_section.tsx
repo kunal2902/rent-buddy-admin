@@ -36,10 +36,12 @@ import {
 	getItemApi,
 	getSubCategoryApi,
 	logoutUser,
+	toggleBooleanState,
 	upsertCartApi,
 } from "@/utils";
 import { centeredInputTheme } from "@/constants";
 import { CartItemModel, CartModel, CategoryModel, ItemModel } from "@/models";
+import { ProductCard } from "./pos_product_card";
 
 export interface Categories {
 	categoryName: string;
@@ -53,21 +55,12 @@ export const PosProductSection = () => {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [categoriesList, setCategoriesList] = useState<CategoryModel[]>([]);
 	const [itemList, setItemList] = useState<ItemModel[]>([]);
-	const [cartItems, setCartItems] =
-		useRecoilState<Array<CartItemModel>>(cartItemsAtom);
-	const [isCartCreated, setIsCartCreated] = useState<boolean>(false);
+	const cartItems = useRecoilValue<Array<CartItemModel>>(cartItemsAtom);
 	const [cartItemIndexes, setCartItemIndexes] = useState<Map<string, number>>(
 		new Map(),
 	);
 	const [isAddToCartApiBusy, setIsAddToCartApiBusy] =
 		useState<boolean>(false);
-	const setCart = useSetRecoilState<CartModel | null>(cartAtom);
-	const isAppMounted = useRef<boolean>(false);
-
-	useEffect(() => {
-		setCart(null);
-		setCartItems([]);
-	}, []);
 
 	useEffect(() => {
 		getCategoryApi(
@@ -95,13 +88,11 @@ export const PosProductSection = () => {
 
 	useEffect(() => {
 		const updatedCartItemIndexes = new Map<string, number>();
+		console.log(cartItems);
 
-		for (const cartItem of cartItems) {
-			updatedCartItemIndexes.set(
-				cartItem.cart_item_id,
-				cartItem.quantity,
-			);
-		}
+		cartItems.forEach((cartItem, index) => {
+			updatedCartItemIndexes.set(cartItem.item_id, index);
+		});
 
 		setCartItemIndexes(updatedCartItemIndexes);
 	}, [cartItems]);
@@ -217,6 +208,24 @@ export const PosProductSection = () => {
 						// 	}
 						// />
 					))} */}
+					{itemList.map((item) => (
+						<ProductCard
+							key={item.item_id}
+							item={item}
+							cartItem={
+								cartItemIndexes.get(item.item_id)
+									? cartItems[
+											cartItemIndexes.get(item.item_id) ??
+												0
+										]
+									: undefined
+							}
+							isAddToCartApiBusy={isAddToCartApiBusy}
+							toggleIsAddToCartApiBusy={toggleBooleanState(
+								setIsAddToCartApiBusy,
+							)}
+						/>
+					))}
 				</SimpleGridComponent>
 			</ScrollAreaComponent>
 		</div>
