@@ -102,7 +102,6 @@ export const PosProductSection = () => {
 				cartItem.quantity,
 			);
 		}
-
 		setCartItemIndexes(updatedCartItemIndexes);
 	}, [cartItems]);
 
