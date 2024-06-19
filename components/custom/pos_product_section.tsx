@@ -28,6 +28,7 @@ import {
 	callCartApiAtom,
 	cartAtom,
 	cartIdAtom,
+	cartItemsAtom,
 	currencySign,
 	customerAtom,
 	deleteCartApi,
@@ -38,7 +39,7 @@ import {
 	upsertCartApi,
 } from "@/utils";
 import { centeredInputTheme } from "@/constants";
-import { CartItemModel, CategoryModel, ItemModel } from "@/models";
+import { CartItemModel, CartModel, CategoryModel, ItemModel } from "@/models";
 
 export interface Categories {
 	categoryName: string;
@@ -52,7 +53,21 @@ export const PosProductSection = () => {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [categoriesList, setCategoriesList] = useState<CategoryModel[]>([]);
 	const [itemList, setItemList] = useState<ItemModel[]>([]);
-	const [cart, setCart] = useRecoilState<Array<CartItemModel>>(cartAtom);
+	const [cartItems, setCartItems] =
+		useRecoilState<Array<CartItemModel>>(cartItemsAtom);
+	const [isCartCreated, setIsCartCreated] = useState<boolean>(false);
+	const [cartItemIndexes, setCartItemIndexes] = useState<Map<string, number>>(
+		new Map(),
+	);
+	const [isAddToCartApiBusy, setIsAddToCartApiBusy] =
+		useState<boolean>(false);
+	const setCart = useSetRecoilState<CartModel | null>(cartAtom);
+	const isAppMounted = useRef<boolean>(false);
+
+	useEffect(() => {
+		setCart(null);
+		setCartItems([]);
+	}, []);
 
 	useEffect(() => {
 		getCategoryApi(
@@ -77,6 +92,19 @@ export const PosProductSection = () => {
 			},
 		);
 	}, [router]);
+
+	useEffect(() => {
+		const updatedCartItemIndexes = new Map<string, number>();
+
+		for (const cartItem of cartItems) {
+			updatedCartItemIndexes.set(
+				cartItem.cart_item_id,
+				cartItem.quantity,
+			);
+		}
+
+		setCartItemIndexes(updatedCartItemIndexes);
+	}, [cartItems]);
 
 	const fetchSubCategories = useCallback(
 		(value: string) => {
@@ -177,224 +205,22 @@ export const PosProductSection = () => {
 						xl: 4,
 					}}
 				>
-					{itemList.map((item, index) => (
-						<ProductCard
-							key={item.item_id}
-							index={index + 1}
-							item={item}
-							cartItem={
-								cart.filter(
-									(c_item) => c_item.item_id === item.item_id,
-								)[0]
-							}
-						/>
-					))}
+					{/* {itemList.map((item, index) => (
+						// <ProductCard
+						// 	key={item.item_id}
+						// 	index={index + 1}
+						// 	item={item}
+						// 	cartItem={
+						// 		cart.filter(
+						// 			(c_item) => c_item.item_id === item.item_id,
+						// 		)[0]
+						// 	}
+						// />
+					))} */}
 				</SimpleGridComponent>
 			</ScrollAreaComponent>
 		</div>
 	);
 };
-
-const ProductCard = React.memo(
-	({
-		index,
-		item,
-		cartItem,
-	}: {
-		index: number;
-		item: ItemModel;
-		cartItem: CartItemModel | undefined;
-	}) => {
-		const router = useRouter();
-		// const [add, setAdd] = useState<boolean>(false);
-		const numberInputRef = useRef<NumberInputHandlers>(null);
-		const [createCart, setCreateCart] = useState<boolean>(true);
-		const [quantity, setQuantity] = useState<string | number>(0);
-		const [itemIdToUpdate, setItemIdToUpdate] = useState<string | null>(
-			null,
-		);
-		console.log("createCart", createCart);
-		const custId = useRecoilValue(customerAtom);
-		const setCallCart = useSetRecoilState(callCartApiAtom);
-		const [cartId, setCartId] = useRecoilState(cartIdAtom);
-		// const [cart, setCart] = useRecoilState<Array<CartItemModel>>(cartAtom);
-
-		// const [cartItem, setCartItem] = useState<CartItemModel | null>(null);
-
-		// useEffect(() => {
-		// 	// cart.forEach((c_item) => {
-		// 	// 	if (c_item.item_id === item.item_id) {
-		// 	// 		setCartItem(c_item);
-		// 	// 	}
-		// 	// });
-		//
-		// 	let found = false;
-		//
-		// 	for (const c_item of cart) {
-		// 		if (c_item.item_id === item.item_id) {
-		// 			found = true;
-		// 			setCartItem(c_item);
-		// 		}
-		// 	}
-		//
-		// 	if (!found)setCartItem(null);
-		// }, [cart]);
-
-		const handleAddItem = () => {
-			if (createCart) {
-				upsertCartApi(
-					{},
-					(response: any) => {
-						setCartId(response.cart.cart_id);
-						handleAddButtonClick(item.item_id);
-					},
-					(message) => {
-						toast.error(message);
-					},
-					() => {
-						logoutUser(router);
-					},
-				);
-			}
-		};
-
-		const handleAddButtonClick = (id: string) => {
-			setQuantity((prevQuantity: any) => {
-				const newQuantity = prevQuantity === 0 ? 1 : prevQuantity + 1;
-				setItemIdToUpdate(id);
-				return newQuantity;
-			});
-		};
-
-		const handleMinusButtonClick = (id: string) => {
-			setQuantity((prevQuantity: any) => {
-				const newQuantity = prevQuantity - 1;
-				if (newQuantity < 1) {
-					setAdd(false);
-				}
-				setItemIdToUpdate(id);
-				return newQuantity;
-			});
-		};
-
-		return (
-			<CardComponent shadow="sm" padding="sm" radius="md" withBorder>
-				<CardSectionComponent>
-					<ImageComponent h={150} fit="fill" src={item.images[0]} />
-				</CardSectionComponent>
-
-				<GroupComponent justify="space-between" mt="md" mb="xs">
-					<TextComponent
-						text={`${item.name} ${index}`}
-						bold
-						className="text-justify"
-					/>
-				</GroupComponent>
-
-				<SpoilerComponent
-					maxHeight={45}
-					showLabel="more"
-					hideLabel="less"
-				>
-					<TextComponent
-						size="sm"
-						c="dimmed"
-						className="text-justify"
-						text={item.short_description}
-					/>
-				</SpoilerComponent>
-
-				<GroupComponent justify="space-between" mt="md">
-					<TextComponent
-						bold
-						size="xl"
-						text={`${currencySign} ${item.price}`}
-						c="green"
-						className="text-justify"
-					/>
-
-					{!cartItem ? (
-						<ButtonComponent w="50%" h={40} onClick={handleAddItem}>
-							Add
-						</ButtonComponent>
-					) : (
-						<div className="w-[50%] h-[40px] rounded-[20px] flex bg-gray-200 justify-between items-center">
-							<ButtonComponent
-								style={{
-									height: "40px",
-									width: "30%",
-									fontSize: 30,
-									alignContent: "center",
-									backgroundColor: "bg-gr",
-									justifyContent: "center",
-									display: "flex",
-									border: "1px solid gray",
-									borderRadius: "8px 0 0 8px",
-								}}
-								px={5}
-								onClick={() => {
-									handleMinusButtonClick(item.item_id);
-									numberInputRef.current?.decrement();
-								}}
-							>
-								<Minus size={16} />
-							</ButtonComponent>
-
-							<MantineProviderComponent
-								theme={centeredInputTheme}
-							>
-								<NumberInputComponent
-									min={0}
-									step={1}
-									hideControls
-									placeholder="0"
-									setValue={(val: string | number) => {
-										if (parseInt(val.toString(), 10) < 1) {
-											setAdd(false);
-										} else {
-											setQuantity(val);
-										}
-									}}
-									value={cartItem.quantity}
-									variant="unstyled"
-									handlersRef={numberInputRef}
-									style={{
-										width: "40%",
-										height: "38px",
-										border: "none",
-										display: "flex",
-										fontWeight: "bold",
-										backgroundColor: "white",
-									}}
-								/>
-							</MantineProviderComponent>
-
-							<ButtonComponent
-								style={{
-									height: "40px",
-									width: "30%",
-									fontSize: 30,
-									alignContent: "center",
-									backgroundColor: "bg-gr",
-									justifyContent: "center",
-									display: "flex",
-									border: "1px solid gray",
-									borderRadius: "0 8px 8px 0",
-								}}
-								px={5}
-								onClick={() => {
-									handleAddButtonClick(item.item_id);
-									numberInputRef.current?.increment();
-								}}
-							>
-								<Plus size={16} />
-							</ButtonComponent>
-						</div>
-					)}
-				</GroupComponent>
-			</CardComponent>
-		);
-	},
-);
 
 export default PosProductSection;

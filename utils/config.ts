@@ -69,10 +69,10 @@ export const sidebarStateConstant: string = "sidebar_state";
 export const themeModeConstant: string = "theme_mode";
 
 /** API Constants */
-export const apiUrl: string = process.env.NODE_ENV === "production" ||
-isProduction ?
-	"https://decimal-graphics-performs-anna.trycloudflare.com/api/v1" :
-	"http://localhost:8000/api/v1";
+export const apiUrl: string =
+	process.env.NODE_ENV === "production" || isProduction
+		? "https://decimal-graphics-performs-anna.trycloudflare.com/api/v1"
+		: "http://localhost:8000/api/v1";
 export const loginAPIPath: string = `${apiUrl}/auth/login`;
 
 // Dashboard path
@@ -131,6 +131,7 @@ export const reportsAPIPath: string = `${apiUrl}/reports`;
 
 // Cart path
 export const cartAPIPath: string = `${apiUrl}/cart`;
+export const cartItemAPIPath: string = `${apiUrl}/cart-item`;
 
 /** Constant Functions */
 /** To get the CRM JWT stored in Cookies */
@@ -149,8 +150,7 @@ export const getRoleId = (): string => getCookie(roleIdConstant) ?? "";
 export const getSidebarState = (): string =>
 	getCookie(sidebarStateConstant) ?? "true";
 /** To get the Sidebar state stored in Cookies */
-export const getDarkMode = (): string =>
-	getCookie(themeModeConstant) ?? "none";
+export const getDarkMode = (): string => getCookie(themeModeConstant) ?? "none";
 
 /** Route Constants */
 export const dashboardRoute: string = "/";
@@ -206,21 +206,25 @@ export const emailSettingsName: string = "Email Settings";
 export const taxesName: string = "Taxes";
 
 /** To format date according to the respective output */
-export const formatDate = (inputDate: any) => moment(inputDate).format("DD/MM/YYYY hh:mm a");
+export const formatDate = (inputDate: any) =>
+	moment(inputDate).format("DD/MM/YYYY hh:mm a");
 
 /** Converts passed string to Title case */
-export const toTitleCase = (str: string) => str.replace(
-	/\w\S*/g,
-	(txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
-);
+export const toTitleCase = (str: string) =>
+	str.replace(
+		/\w\S*/g,
+		(txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase(),
+	);
 
 /** Returns Background Color for Surface */
-export const getBackgroundColor = (darkMode: boolean) =>
-	({ backgroundColor: darkMode ? backgroundColorDark : backgroundColorLight });
+export const getBackgroundColor = (darkMode: boolean) => ({
+	backgroundColor: darkMode ? backgroundColorDark : backgroundColorLight,
+});
 
 /** Returns Surface Color for Surface */
-export const getSurfaceColor = (darkMode: boolean) =>
-	({ backgroundColor: darkMode ? surfaceColorDark : surfaceColorLight });
+export const getSurfaceColor = (darkMode: boolean) => ({
+	backgroundColor: darkMode ? surfaceColorDark : surfaceColorLight,
+});
 
 /** Function to log-out user */
 export const logoutUser = (router: AppRouterInstance) => {

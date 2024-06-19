@@ -2,7 +2,7 @@
 
 import { atom } from "recoil";
 import { Theme } from "@/types";
-import { CartItemModel } from "@/models";
+import { CartItemModel, CartModel } from "@/models";
 
 export const sidebarStateAtom = atom<boolean>({
 	key: "sidebarStateAtom",
@@ -39,7 +39,11 @@ export const callCartApiAtom = atom<boolean>({
 	default: false,
 });
 
-export const cartAtom = atom<Array<CartItemModel>>({
+export const cartItemsAtom = atom<Array<CartItemModel>>({
 	default: [],
+	key: "cartAtom",
+});
+export const cartAtom = atom<CartModel | null>({
+	default: null,
 	key: "cartAtom",
 });
