@@ -1,9 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-	Group, GroupProps,
-} from "@mantine/core";
+import { Group, GroupProps } from "@mantine/core";
 
 /** Props list of Mantine's Group component - https://mantine.dev/core/group/?t=props */
 export interface GroupComponentProps extends GroupProps {

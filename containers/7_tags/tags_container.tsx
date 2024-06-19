@@ -1,138 +1,231 @@
 "use client";
 
-import { Plus } from "lucide-react";
-import { FaRegEdit } from "react-icons/fa";
-import { IoTrashOutline } from "react-icons/io5";
-import { Switch, Table } from "@mantine/core";
-import { useEffect, useState } from "react";
-import { useTagsContainer } from "./hook";
-import { DashboardPageHeader } from "@/components";
+import { Table } from "@mantine/core";
+import { MdOutlineEdit } from "react-icons/md";
+import { useDebouncedCallback } from "@mantine/hooks";
+import React, { useEffect, useState } from "react";
+import {
+	ActionIconComponent,
+	BoxComponent,
+	CenterComponent,
+	DashboardPageHeader,
+	GroupComponent,
+	LoadingOverlayComponent,
+	MainComponent,
+	NoDataFound,
+	PaginationComponent,
+	PaperComponent,
+	PopConfirmComponent,
+	PopConfirmType,
+	SortButtonComponentItemProps,
+} from "@/components";
 import AddTagModal from "./add_tag_modal";
 import { TagModel } from "@/models";
-import { deleteTagApi, disableTagApi, getTagApi } from "@/utils";
-import ActionTagModal from "./action_tag_modal";
+import { deleteTagApi, disableTagApi, formatDate, getTagApi } from "@/utils";
 
 const TagsContainer = () => {
-	const { isSidebarOpen,
-			isCreateTagModalOpen,
-			toggleCreateModalTagOpen,
-		} = useTagsContainer();
-	const [tagsList, setTagsList] = useState<TagModel[]>([]);
-	const [callApi, setCallApi] = useState<boolean>(true);
+	const [page, setPage] = useState<number>(1);
+	const [pageSize, setPageSize] = useState<number>(15);
 	const [tagId, setTagId] = useState<string>("");
-	const [tagType, setTagType] = useState<string>("");
-	const [isDisable, setIsDisable] = useState<boolean>(true);
-	const [isActionTagModalOpen, setIsActionTagModalOpen] = useState<boolean>(false);
+	const [tagName, setTagName] = useState<string>("");
+	const [callApi, setCallApi] = useState<boolean>(true);
+	const [total, setTotal] = useState<number>(0);
+	const [loading, setLoading] = useState<boolean>(true);
+	const [searchLoading, setSearchLoading] = useState<boolean>(false);
+	const [searchValue, setSearchValue] = useState<string>("");
+	const [filter, setFilter] = useState<string>("name");
+	const [orderBy, setOrderBy] = useState<string>("tag_id");
+	const [order, setOrder] = useState<string>("asc");
+	const [tagsList, setTagsList] = useState<TagModel[]>([]);
+	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
+	useEffect(() => {
+		initState().then();
+	}, [filter, page, callApi, orderBy, order]);
+
+	const initState = async () => {
+		setLoading(true);
+		await getTagApi(
+			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			(data: any) => {
+				setTagsList(data.tags);
+				setTotal(data.tags_count);
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			}
+		);
+	};
 
 	useEffect(() => {
-		if (callApi) {
-			getTagApi((data: any) => {
-				setTagsList(data.tags);
-				setCallApi(false);
-			}, () => {
-				setCallApi(false);
-			}, () => {
-				setCallApi(false);
-			}).then();
-		}
-	}, [callApi]);
-
-	const handleOpenModal = (id: string, type: string, disableType: boolean) => {
-		setTagId(id);
-		setTagType(type);
-		setIsDisable(disableType);
-		setIsActionTagModalOpen(true);
-	};
-
-	const handleActionTag = () => {
-		if (tagType === "disable") {
-			disableTagApi(tagId, () => {
-			setCallApi(true);
-			setIsActionTagModalOpen(false);
-		}, () => {
-			setCallApi(false);
-		}, () => {
-			setCallApi(false);
-		});
+		if (searchValue) {
+			handleSearch(searchValue);
 		} else {
-			deleteTagApi(tagId, () => {
-			setCallApi(true);
-			setIsActionTagModalOpen(false);
-		}, () => {
-			setCallApi(false);
-		}, () => {
-			setCallApi(false);
-		});
+			setSearchLoading(false);
+			initState().then();
+		}
+	}, [searchValue]);
+
+	const handleSearch = useDebouncedCallback(async (q: string) => {
+		setSearchLoading(true);
+		getTagApi(
+			`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			(data: any) => {
+				setTagsList(data.tags);
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			}
+		).then();
+	}, 500);
+
+	const handleAddOpenModal = (id: string, name: string) => {
+		setTagId(id);
+		setTagName(name);
+		setOpenAddModal(true);
+	};
+
+	const handleAction = async (id: string, actionType: string) => {
+		if (actionType === "disable") {
+			await disableTagApi(
+				id,
+				() => {
+					setCallApi(val => !val);
+				},
+				() => {
+					setCallApi(val => !val);
+				},
+				() => {
+					setCallApi(val => !val);
+				}
+			);
+		} else {
+			await deleteTagApi(
+				id,
+				() => {
+					setCallApi(val => !val);
+				},
+				() => {
+					setCallApi(val => !val);
+				},
+				() => {
+					setCallApi(val => !val);
+				}
+			);
 		}
 	};
 
-	const rows = tagsList.map((element) => (
-		<Table.Tr>
-			{/* <Table.Td>{element.tag_id}</Table.Td> */}
+	const columns = [
+		"Index",
+		"Tag Id",
+		"Name",
+		"Created At",
+		"Created By",
+		"Disable",
+		"Action",
+	];
+
+	const rows = tagsList.map((element, index) => (
+		<Table.Tr key={index}>
+			<Table.Td>{index + 1}</Table.Td>
 			<Table.Td>{element.tag_id}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
-			<Table.Td>
-				<Switch
-					checked={element.is_disabled}
-					onClick={() => handleOpenModal(element.tag_id, "disable", element.is_disabled)}
+			<Table.Td>{formatDate(element.created_at)}</Table.Td>
+			<Table.Td>{element.created_by.name}</Table.Td>
+			<Table.Td w={60}>
+				<PopConfirmComponent
+					entityName="tag"
+					type={PopConfirmType.switch}
+					isDisabled={element.is_disabled}
+					actionName={element.is_disabled ? "enable" : "disable"}
+					onConfirm={async () => handleAction(element.tag_id, "disable")}
 				/>
 			</Table.Td>
-			<Table.Td>
-				<div className="flex">
-					<IoTrashOutline color="red" size={25} style={{ marginRight: "10px" }} onClick={() => handleOpenModal(element.tag_id, "delete", element.is_disabled)} />
-					<FaRegEdit color="rgba(108, 210, 213, 1)" size={25} />
-				</div>
+			<Table.Td w={110}>
+				<GroupComponent>
+					<PopConfirmComponent
+						entityName="tag"
+						actionName="delete"
+						onConfirm={async () => handleAction(element.tag_id, "delete")}
+					/>
+					<ActionIconComponent
+						onClick={() => handleAddOpenModal(element.tag_id, element.name)}
+						size="md">
+						<MdOutlineEdit size={18} />
+					</ActionIconComponent>
+				</GroupComponent>
 			</Table.Td>
 		</Table.Tr>
 	));
 
 	return (
-		<main
-			className={`flex min-h-screen w-full bg-light-background-natural flex-col pt-14 ${
-				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-16"
-			}`}
-		>
+		<MainComponent>
 			<DashboardPageHeader
-				heading="Tags"
-				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
-				button
-				buttonProps={{
-					title: "New Tag",
-					titleClassName: "sm:flex hidden",
-					onClick: toggleCreateModalTagOpen,
-					className: "rounded-md w-fit text-grey-100 text-sm",
-					children: <Plus size={20} className="sm:mr-2 mr-0" />,
+				total={total}
+				title="Tags"
+				filter={filter}
+				idLabel="Tag Id"
+				idVariable="tag_id"
+				setFilter={setFilter}
+				buttonTitle="Add Tag"
+				loading={searchLoading}
+				searchValue={searchValue}
+				setSearchValue={setSearchValue}
+				onClick={() => handleAddOpenModal("", "")}
+				setOption={(option) => setFilter(option.value)}
+				onSortSelected={(selected: SortButtonComponentItemProps) => {
+					setOrderBy(selected.value);
+					setOrder(selected.direction);
 				}}
 			/>
 
-			<Table striped highlightOnHover withTableBorder>
-				<Table.Thead>
-					<Table.Tr>
-						{/* <Table.Th>Sr No.</Table.Th> */}
-						<Table.Th>Tag Id</Table.Th>
-						<Table.Th>Name</Table.Th>
-						<Table.Th>Disable</Table.Th>
-						<Table.Th>Action</Table.Th>
-					</Table.Tr>
-				</Table.Thead>
-				<Table.Tbody>{rows}</Table.Tbody>
-			</Table>
+			{
+				loading ?
+					<LoadingOverlayComponent /> :
+					tagsList.length === 0 ?
+						<NoDataFound /> :
+						<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
+							<BoxComponent mx="auto">
+								<PaperComponent>
+									<Table highlightOnHover>
+										<Table.Thead>
+											<Table.Tr>
+												{columns.map((item) =>
+													(<Table.Th key={item}>{item}</Table.Th>)
+												)}
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>{rows}</Table.Tbody>
+									</Table>
+								</PaperComponent>
+								<CenterComponent>
+									<PaginationComponent
+										value={page}
+										onChange={setPage}
+										total={Math.ceil(total / 15)}
+									/>
+								</CenterComponent>
+							</BoxComponent>
+						</BoxComponent>
+			}
 
-			<AddTagModal
-				isOpen={isCreateTagModalOpen}
-				onClose={toggleCreateModalTagOpen}
-				setCallApi={setCallApi}
-			/>
-
-			<ActionTagModal
-				isOpen={isActionTagModalOpen}
-				onClose={() => setIsActionTagModalOpen(false)}
-				setCallApi={setCallApi}
-				handleActionTag={handleActionTag}
-				tagType={tagType}
-				isDisable={isDisable}
-			/>
-		</main>
+			{openAddModal &&
+				<AddTagModal
+					tagId={tagId}
+					isOpen={openAddModal}
+					setCallApi={setCallApi}
+					initialTagValue={tagName}
+					onClose={() => setOpenAddModal(false)}
+				/>
+			}
+		</MainComponent>
 	);
 };
 

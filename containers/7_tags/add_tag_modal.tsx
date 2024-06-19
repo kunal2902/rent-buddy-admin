@@ -1,58 +1,90 @@
 "use client";
 
 import { toast } from "react-toastify";
-import React, { Dispatch, SetStateAction } from "react";
-import { useCreateTagModal } from "./hook";
-import { ButtonComponent, ModalComponent, TextInputComponent } from "@/components";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import {
+	ButtonComponent, GroupComponent,
+	ModalComponent, SpaceComponent,
+	TextInputComponent, TitleComponent,
+} from "@/components";
 import { upsertTagApi } from "@/utils";
 
 interface Props {
 	isOpen: boolean;
 	onClose: () => void;
 	setCallApi: Dispatch<SetStateAction<boolean>>;
+	initialTagValue: string;
+	tagId: string;
 }
 
 const AddTagModal = (props: Props) => {
-	const { isOpen, onClose, setCallApi } = props;
-	const { tagName, onTagNameChange } = useCreateTagModal();
+	const { isOpen, onClose, setCallApi, initialTagValue, tagId } = props;
+	const [tagName, setTagName] = useState<string>(initialTagValue);
+	const [inputError, setInputError] = useState<string | null>(null);
+	const [loading, setLoading] = useState(false);
+	const isEditModal: boolean = initialTagValue !== "";
+
+	useEffect(() => {
+		if (tagName) {
+			setInputError(null);
+		}
+	}, [tagName]);
 
 	const handleSubmitTag = async (event: React.FormEvent) => {
-        event.preventDefault();
-        const body = {
+		event.preventDefault();
+		if (!tagName) {
+			setInputError("Please enter the name first");
+		}
+		const body = {
 			name: tagName,
-        };
-        try {
-            await upsertTagApi(
-                body,
-                () => {
+			id: tagId,
+		};
+		setLoading(true);
+		try {
+			await upsertTagApi(
+				body,
+				() => {
 					onClose();
-					setCallApi(true);
-                },
-                (message: string) => {
-                    toast.error(message);
-                },
-				() => {}
-            );
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    };
+					setCallApi(val => !val);
+					setLoading(false);
+				},
+				(message: string) => {
+					toast.error(message);
+					setLoading(false);
+				},
+				() => {},
+			);
+		} catch (error) {
+			console.error("Error:", error);
+		}
+	};
 
 	return (
-		<ModalComponent opened={isOpen} onClose={onClose} className="border-grey-800" title="New Tag">
+		<ModalComponent
+			opened={isOpen}
+			onClose={onClose}
+			title={<TitleComponent title={isEditModal ? "Edit Tag" : "New Tag"} />}
+		>
 			<TextInputComponent
-				mt={1}
 				required
 				title="Name"
+				label="Tag Name"
 				value={tagName}
-				placeholder="Awesome Name"
-				onChange={onTagNameChange}
-				className="border-grey-600 font-barlow font-base text-base"
+				error={inputError}
+				setValue={setTagName}
+				placeholder="Enter tag Name"
 			/>
 
-			<div className="mt-1 flex items-center justify-end">
-				<ButtonComponent title="Save" fullWidth px={5} onClick={handleSubmitTag} />
-			</div>
+			<SpaceComponent showHeight />
+
+			<GroupComponent justify="end">
+				<ButtonComponent
+					loading={loading}
+					title="Save"
+					w={100}
+					onClick={handleSubmitTag}
+				/>
+			</GroupComponent>
 		</ModalComponent>
 	);
 };

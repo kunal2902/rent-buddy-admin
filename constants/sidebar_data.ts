@@ -1,21 +1,21 @@
 import {
-	ShieldCheck,
-	Users,
-	Settings,
-	ScanLine,
+	Blocks,
+	Bookmark,
+	LayoutPanelTop,
+	List,
+	LucideIcon,
 	ScanBarcode,
+	ScanLine,
+	Settings,
+	ShieldCheck,
 	Tag,
 	Tags,
-	List,
-	LayoutPanelTop,
-	LucideIcon,
-	Bookmark,
-	Blocks,
+	Users,
 } from "lucide-react";
-import { MdOutlineAdminPanelSettings, MdOutlinePrivacyTip, MdOutlineContactPage } from "react-icons/md";
-import { LuMail, LuBadgeInfo } from "react-icons/lu";
+import { MdOutlineAdminPanelSettings, MdOutlineContactPage, MdOutlinePrivacyTip } from "react-icons/md";
+import { LuBadgeInfo, LuMail } from "react-icons/lu";
 import { HiOutlineDocumentReport } from "react-icons/hi";
-import { RxDashboard } from "react-icons/rx";
+import { RxActivityLog, RxDashboard } from "react-icons/rx";
 import { TbReceiptTax } from "react-icons/tb";
 import { CgFileDocument } from "react-icons/cg";
 import { IconType } from "react-icons";
@@ -25,17 +25,22 @@ import { RiSettingsFill, RiSettingsLine } from "react-icons/ri";
 import {
 	aboutName,
 	aboutRoute,
+	activityLogsName,
+	activityLogsRoute,
 	addOnsName,
 	addOnsRoute,
 	categoriesName,
-	categoriesRoute, contactName, contactRoute,
+	categoriesRoute,
+	contactName,
+	contactRoute,
 	customAttributesName,
 	customAttributesRoute,
 	customersName,
 	customersRoute,
 	dashboardName,
 	dashboardRoute,
-	emailRoute, emailSettingsName,
+	emailRoute,
+	emailSettingsName,
 	generalSettingsName,
 	generalSettingsRoute,
 	inventoryName,
@@ -45,15 +50,22 @@ import {
 	itemTypesRoute,
 	pageLayoutName,
 	pageLayoutRoute,
-	pagesName, privacyPolicyName, privacyPolicyRoute,
+	pagesName,
+	privacyPolicyName,
+	privacyPolicyRoute,
 	reportsName,
-	reportsRoute, rolesName, rolesRoute,
+	reportsRoute,
+	rolesName,
+	rolesRoute,
 	settingsName,
 	subCategoriesName,
 	subCategoriesRoute,
 	tagsName,
-	tagsRoute, taxesName,
-	taxesRoute, tncName, tncRoute,
+	tagsRoute,
+	taxesName,
+	taxesRoute,
+	tncName,
+	tncRoute,
 	usersName,
 	usersRoute,
 } from "@/utils";
@@ -173,6 +185,13 @@ export const SidebarItems: Array<SideBarProps<SideBarType>> = [
 	},
 	{
 		id: 6,
+		title: activityLogsName,
+		other: { link: activityLogsRoute },
+		Icon: RxActivityLog,
+		type: SideBarType.Simple,
+	},
+	{
+		id: 7,
 		title: settingsName,
 		Icon: RiSettingsLine,
 		type: SideBarType.Nested,

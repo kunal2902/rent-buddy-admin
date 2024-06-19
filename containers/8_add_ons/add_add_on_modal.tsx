@@ -8,16 +8,19 @@ import { toast } from "react-toastify";
 import { upsertAddOnApi } from "@/utils";
 import { ButtonComponent, ModalComponent, TextInputComponent } from "@/components";
 import { FileInputComponent } from "@/components/mantine/file_input_component";
-import { useCreateAddOnModal } from "./hook";
 
 interface Props {
 	isOpen: boolean;
 	onClose: () => void;
 	setCallApi: (value: boolean) => void;
+	id: string | undefined;
+	name: string | undefined;
+	price: string | undefined;
 }
 
-const AddAddOnModal: React.FC<Props> = ({ isOpen, onClose, setCallApi }) => {
-	const { addOnName, onAddOnNameChange, addOnPrice, onAddOnPriceChange } = useCreateAddOnModal();
+const AddAddOnModal: React.FC<Props> = ({ isOpen, onClose, setCallApi, id, name, price }) => {
+	const [addOnName, setAddOnName] = useState<string>(name ?? "");
+	const [addOnPrice, setAddOnPrice] = useState<string>(price ?? "");
 	const [selectedFileToUpload, setSelectedFileToUpload] = useState<File | null>(null);
 	const [selectedFile, setSelectedFile] = useState<string | null>(null);
 
@@ -63,6 +66,7 @@ const AddAddOnModal: React.FC<Props> = ({ isOpen, onClose, setCallApi }) => {
 		}
 		addOnData.append("name", addOnName);
 		addOnData.append("price", addOnPrice);
+		addOnData.append("id", id ?? "");
 
 		try {
 			await upsertAddOnApi(
@@ -97,6 +101,7 @@ const AddAddOnModal: React.FC<Props> = ({ isOpen, onClose, setCallApi }) => {
 
 					<p className="text-base font-public-sans">Icon*</p>
 
+					{/* eslint-disable-next-line react/button-has-type */}
 					<button className="mt-1 flex items-center justify-center w-full" onClick={onChooseIconClick}>
 						{selectedFile ? (
 							<div className="w-full flex flex-col items-center justify-center h-40">
@@ -118,12 +123,9 @@ const AddAddOnModal: React.FC<Props> = ({ isOpen, onClose, setCallApi }) => {
 
 					{selectedFile && (
 						<div className="w-full mt-1 flex items-center justify-end">
-							<button
-								className="flex items-center justify-center"
-								onClick={onResetIconClick}
-								aria-label="on reset icon click">
+							<ButtonComponent onClick={onResetIconClick} aria-label="on reset icon click">
 								<Trash size={24} className="text-error-dark" />
-							</button>
+							</ButtonComponent>
 						</div>
 					)}
 				</div>
@@ -136,8 +138,8 @@ const AddAddOnModal: React.FC<Props> = ({ isOpen, onClose, setCallApi }) => {
 							label="Name"
 							title="Name"
 							value={addOnName}
+							setValue={setAddOnName}
 							placeholder="Awesome Name"
-							onChange={onAddOnNameChange}
 							className="border-grey-600 font-barlow font-base text-base"
 						/>
 
@@ -149,7 +151,7 @@ const AddAddOnModal: React.FC<Props> = ({ isOpen, onClose, setCallApi }) => {
 							type="number"
 							value={addOnPrice}
 							placeholder="347.1"
-							onChange={onAddOnPriceChange}
+							setValue={setAddOnPrice}
 							className="border-grey-600 font-barlow font-base text-base"
 						/>
 					</Group>

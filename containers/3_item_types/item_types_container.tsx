@@ -1,132 +1,264 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
-import { Switch, Table } from "@mantine/core";
-import { FaRegEdit } from "react-icons/fa";
-import { IoTrashOutline } from "react-icons/io5";
-import { useItemTypesContainer } from "./hook";
-import { DashboardPageHeader } from "@/components";
+import React, { useEffect, useState } from "react";
+import { MdOutlineEdit } from "react-icons/md";
+import { useDebouncedCallback } from "@mantine/hooks";
+import { useRouter } from "next/navigation";
+import {
+	ActionIconComponent,
+	BoxComponent,
+	CenterComponent,
+	DashboardPageHeader,
+	GroupComponent,
+	ImageComponent,
+	LoadingOverlayComponent,
+	MainComponent,
+	NoDataFound,
+	PaginationComponent,
+	PaperComponent,
+	PopConfirmComponent,
+	PopConfirmType,
+	SortButtonComponentItemProps,
+	TableComponent,
+	TableTbodyComponent,
+	TableTdComponent,
+	TableThComponent,
+	TableTheadComponent,
+	TableTrComponent,
+} from "@/components";
 import { ItemTypeModel } from "@/models";
-import { deleteItemApi, disableItemTypeApi, formatDate, getItemTypeApi } from "@/utils";
-import ActionItemTypeModal from "./action_item_type_modal";
+import { deleteItemTypeApi, disableItemTypeApi, formatDate, getItemTypeApi, logoutUser } from "@/utils";
+import AddItemTypeModal from "./add_item_type_modal";
 
 const ItemTypesContainer = () => {
-	const { isSidebarOpen } = useItemTypesContainer();
-	const [itemTypeList, setItemTypeList] = useState<ItemTypeModel[]>([]);
-	const [callApi, setCallApi] = useState(true);
+	const router = useRouter();
+	const [page, setPage] = useState<number>(1);
+	const [total, setTotal] = useState<number>(0);
+	const [order, setOrder] = useState<string>("asc");
+	const [filter, setFilter] = useState<string>("name");
+	const [pageSize, setPageSize] = useState<number>(15);
+	const [callApi, setCallApi] = useState<boolean>(true);
+	const [loading, setLoading] = useState<boolean>(true);
 	const [itemTypeId, setItemTypeId] = useState<string>("");
-	const [itemType, setItemType] = useState<string>("");
-	const [isDisable, setIsDisable] = useState<boolean>(true);
-	const [isActionItemTypeModalOpen, setIsActionItemTypeModalOpen] = useState<boolean>(false);
+	const [searchValue, setSearchValue] = useState<string>("");
+	const [itemTypeName, setItemTypeName] = useState<string>("");
+	const [orderBy, setOrderBy] = useState<string>("item_type_id");
+	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
+	const [searchLoading, setSearchLoading] = useState<boolean>(false);
+	const [itemTypesList, setItemTypesList] = useState<ItemTypeModel[]>([]);
+	const [itemTypeIcon, setItemTypeIcon] = useState<string | undefined>("");
 
 	useEffect(() => {
-		if (callApi) {
-			getItemTypeApi((data: any) => {
-				setItemTypeList(data.itemTypes);
-				setCallApi(false);
-			}, () => {
-				setCallApi(false);
-			}, () => {
-				setCallApi(false);
-			}).then();
-		}
-	}, [callApi]);
+		initState().then();
+	}, [filter, page, callApi, orderBy, order]);
 
-	const handleOpenModal = (id: string, type: string, disableType: boolean) => {
-		setItemTypeId(id);
-		setItemType(type);
-		setIsDisable(disableType);
-		setIsActionItemTypeModalOpen(true);
+	const initState = async () => {
+		setLoading(true);
+		await getItemTypeApi(
+			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			(data: any) => {
+				setItemTypesList(data.item_types);
+				setTotal(data.item_types_count);
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+				logoutUser(router);
+			}
+		);
 	};
 
-	const handleActionItemType = () => {
-		if (itemType === "disable") {
-			disableItemTypeApi(itemTypeId, () => {
-			setCallApi(true);
-			setIsActionItemTypeModalOpen(false);
-		}, () => {
-			setCallApi(false);
-		}, () => {
-			setCallApi(false);
-		});
+	useEffect(() => {
+		if (searchValue) {
+			handleSearch(searchValue);
 		} else {
-			deleteItemApi(itemTypeId, () => {
-			setCallApi(true);
-			setIsActionItemTypeModalOpen(false);
-		}, () => {
-			setCallApi(false);
-		}, () => {
-			setCallApi(false);
-		});
+			setSearchLoading(false);
+			initState().then();
+		}
+	}, [searchValue]);
+
+	const handleSearch = useDebouncedCallback(async (q: string) => {
+		setSearchLoading(true);
+		await getItemTypeApi(
+			`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			(data: any) => {
+				setItemTypesList(data.item_types);
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+			},
+			() => {
+				setSearchLoading(false);
+				logoutUser(router);
+			}
+		).then();
+	}, 500);
+
+	const handleAddOpenModal = (id: string, name: string, icon: string | undefined) => {
+		setItemTypeId(id);
+		setItemTypeName(name);
+		setItemTypeIcon(icon);
+		setOpenAddModal(true);
+	};
+
+	const handleAction = async (id: string, type: string) => {
+		if (type === "disable") {
+			await disableItemTypeApi(
+				id,
+				() => {
+					setCallApi(val => !val);
+				},
+				() => {
+					setCallApi(val => !val);
+				},
+				() => {
+					setCallApi(val => !val);
+					logoutUser(router);
+				}
+			);
+		} else {
+			await deleteItemTypeApi(
+				id,
+				() => {
+					setCallApi(val => !val);
+				},
+				() => {
+					setCallApi(val => !val);
+				},
+				() => {
+					setCallApi(val => !val);
+					logoutUser(router);
+				}
+			);
 		}
 	};
 
-	const rows = itemTypeList.map((element, index) => (
-		<Table.Tr key={index}>
-			<Table.Td>{element.item_type_id}</Table.Td>
-			<Table.Td>{element.item_type_id}</Table.Td>
-			<Table.Td>{element.icon}</Table.Td>
-			<Table.Td>{element.name}</Table.Td>
-			<Table.Td>{formatDate(element.created_at)}</Table.Td>
-			<Table.Td>
-				<Switch
-					checked={element.is_disabled === true}
-					onClick={() => handleOpenModal(element.item_type_id, "disable", element.is_disabled)}
+	const columns = [
+		"Index",
+		"Item Type Id",
+		"Icon",
+		"Name",
+		"Created At",
+		"Created By",
+		"Disable",
+		"Action",
+	];
+
+	const rows = itemTypesList.map((element, index) => (
+		<TableTrComponent key={index}>
+			<TableTdComponent>{index + 1}</TableTdComponent>
+			<TableTdComponent>{element.item_type_id}</TableTdComponent>
+			<TableTdComponent>
+				<ImageComponent
+					h={50}
+					w="auto"
+					src={element.icon}
 				/>
-			</Table.Td>
-			<Table.Td>
-				<div className="flex">
-					<IoTrashOutline color="red" size={25} style={{ marginRight: "10px" }} onClick={() => handleOpenModal(element.item_type_id, "delete", element.is_disabled)} />
-					<FaRegEdit color="rgba(108, 210, 213, 1)" size={25} />
-				</div>
-			</Table.Td>
-		</Table.Tr>
+			</TableTdComponent>
+			<TableTdComponent>{element.name}</TableTdComponent>
+			<TableTdComponent>{formatDate(element.created_at)}</TableTdComponent>
+			<TableTdComponent>{element.created_by.name}</TableTdComponent>
+			<TableTdComponent w={60}>
+				<PopConfirmComponent
+					entityName="item type"
+					type={PopConfirmType.switch}
+					isDisabled={element.is_disabled}
+					actionName={element.is_disabled ? "enable" : "disable"}
+					onConfirm={async () => handleAction(element.item_type_id, "disable")}
+				/>
+			</TableTdComponent>
+			<TableTdComponent w={110}>
+				<GroupComponent>
+					<PopConfirmComponent
+						entityName="item type"
+						actionName="delete"
+						onConfirm={async () => handleAction(element.item_type_id, "delete")}
+					/>
+					<ActionIconComponent
+						onClick={() => handleAddOpenModal(
+							element.item_type_id,
+							element.name,
+							element.icon)}
+						size="md">
+						<MdOutlineEdit size={18} />
+					</ActionIconComponent>
+				</GroupComponent>
+			</TableTdComponent>
+		</TableTrComponent>
 	));
 
 	return (
-		<main
-			className={`flex min-h-screen w-full bg-light-background-natural flex-col pt-14 ${
-				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-16"
-			}`}
-		>
+		<MainComponent>
 			<DashboardPageHeader
-				heading="Item Types"
-				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
-				button
-				buttonProps={{
-					title: "New Item Type",
-					titleClassName: "sm:flex hidden",
-					className: "rounded-md w-fit text-grey-100 text-sm",
-					children: <Plus className="sm:mr-2 mr-0" size={20} />,
+				total={total}
+				filter={filter}
+				title="Item Types"
+				setFilter={setFilter}
+				idLabel="Item Type Id"
+				loading={searchLoading}
+				idVariable="item_type_id"
+				searchValue={searchValue}
+				buttonTitle="Add Item Type"
+				setSearchValue={setSearchValue}
+				onClick={() => handleAddOpenModal("", "", "")}
+				setOption={(option) => setFilter(option.value)}
+				onSortSelected={(selected: SortButtonComponentItemProps) => {
+					setOrderBy(selected.value);
+					setOrder(selected.direction);
 				}}
 			/>
 
-			<Table striped highlightOnHover withTableBorder>
-				<Table.Thead>
-					<Table.Tr>
-						<Table.Th>Index</Table.Th>
-						<Table.Th>Item type Id</Table.Th>
-						<Table.Th>Icon</Table.Th>
-						<Table.Th>Name</Table.Th>
-						<Table.Th>Created at</Table.Th>
-						<Table.Th>Disable</Table.Th>
-						<Table.Th>Action</Table.Th>
-					</Table.Tr>
-				</Table.Thead>
-				<Table.Tbody>{rows}</Table.Tbody>
-			</Table>
+			{
+				loading ?
+					<LoadingOverlayComponent /> :
+					itemTypesList.length === 0 ?
+						<NoDataFound /> :
+						<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
+							<BoxComponent mx="auto">
+								<PaperComponent>
+									<TableComponent highlightOnHover>
+										<TableTheadComponent>
+											<TableTrComponent>
+												{columns.map((item) =>
+													(
+														<TableThComponent
+															key={item}
+														>
+															{item}
+														</TableThComponent>
+													)
+												)}
+											</TableTrComponent>
+										</TableTheadComponent>
+										<TableTbodyComponent>{rows}</TableTbodyComponent>
+									</TableComponent>
+								</PaperComponent>
+								<CenterComponent>
+									<PaginationComponent
+										value={page}
+										onChange={setPage}
+										total={Math.ceil(total / 15)}
+									/>
+								</CenterComponent>
+							</BoxComponent>
+						</BoxComponent>
+			}
 
-			<ActionItemTypeModal
-				isOpen={isActionItemTypeModalOpen}
-				onClose={() => setIsActionItemTypeModalOpen(false)}
-				setCallApi={setCallApi}
-				handleActionItemType={handleActionItemType}
-				itemType={itemType}
-				isDisable={isDisable}
-			/>
-
-		</main>
+			{openAddModal &&
+				<AddItemTypeModal
+					icon={itemTypeIcon}
+					isOpen={openAddModal}
+					itemTypeId={itemTypeId}
+					setCallApi={setCallApi}
+					initialItemTypeValue={itemTypeName}
+					onClose={() => setOpenAddModal(false)}
+				/>
+			}
+		</MainComponent>
 	);
 };
 

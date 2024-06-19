@@ -16,6 +16,19 @@ export const FileInputComponent = forwardRef<
 		console.log(ref);
 	}, [ref]);
 
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { files } = e.target;
+		if (files && files.length > 0) {
+			if (props.multiple) {
+				props.onChange?.(Array.from(files) as any); // Cast to any to handle multiple files
+			} else {
+				props.onChange?.(files[0] as any); // Cast to any to handle a single file
+			}
+		} else {
+			props.onChange?.(null);
+		}
+	};
+
 	return (
 		<FileInput
 			clearable

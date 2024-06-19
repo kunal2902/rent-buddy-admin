@@ -1,6 +1,6 @@
 "use client";
 
-import { ButtonComponent, ModalComponent } from "@/components";
+import { ButtonComponent, GroupComponent, ModalComponent } from "@/components";
 
 export interface DraftModalProps {
 	isOpen: boolean;
@@ -8,14 +8,16 @@ export interface DraftModalProps {
 }
 
 export const DraftModal = (props: DraftModalProps) => {
-	const { isOpen, onClose } = props;
+	const {
+		isOpen,
+		onClose,
+	} = props;
 
 	return (
 		<ModalComponent opened={isOpen} onClose={onClose} className="border-grey-800" title="Draft Orders">
-
-			<div className="mt-1 flex items-center justify-end">
+			<GroupComponent justify="end">
 				<ButtonComponent title="Save" fullWidth px={5} />
-			</div>
+			</GroupComponent>
 		</ModalComponent>
 	);
 };

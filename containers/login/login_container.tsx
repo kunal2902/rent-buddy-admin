@@ -1,36 +1,47 @@
 "use client";
 
-import Link from "next/link";
-import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { setCookie } from "cookies-next";
+import { useState } from "react";
+import { Fieldset } from "@mantine/core";
 import {
-	loginApi,
+	appLogoHeight,
+	appLogoWidth,
+	appName,
+	cookieOptions,
 	crmJwtConstant,
 	emailConstant,
+	getSurfaceColor,
+	loginApi,
+	mantineRadius,
 	nameConstant,
 	roleIdConstant,
 	userIdConstant,
-	userNameConstant, cookieOptions,
+	userNameConstant,
+	useThemeProvider,
 } from "@/utils";
-import { useLoginContainer } from "./hook";
 import {
+	ButtonComponent,
+	GroupComponent,
+	ImageComponent,
+	PasswordInputComponent,
+	SpaceComponent,
 	TextInputComponent,
-	PasswordInputComponent, ButtonComponent,
+	TitleComponent,
 } from "@/components";
+import Logo from "@/public/images/logo.png";
+import { StackComponent } from "@/components/mantine/stack_component";
 
 const LoginContainer = () => {
-	const {
-		email,
-		password,
-		onEmailChange,
-		onPasswordChange,
-		isPasswordVisible,
-		togglePasswordVisibility,
-	} = useLoginContainer();
 	const router = useRouter();
+	const { darkMode } = useThemeProvider();
+	const [loading, setLoading] = useState<boolean>(false);
+	const [password, setPassword] = useState<string>("bulai002");
+	const [email, setEmail] = useState<string>("simon@admin.com");
+	const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
 	const handleLogin = async (event: { preventDefault: () => void }) => {
+		setLoading(true);
 		event.preventDefault();
 		const body = {
 			email,
@@ -41,24 +52,25 @@ const LoginContainer = () => {
 				body.email,
 				body.password,
 				(result: any) => {
-					if (result.code === 200) {
-						setCookie(crmJwtConstant, result.data.authToken, cookieOptions);
-						setCookie(userIdConstant, result.data.user.user_id, cookieOptions);
-						setCookie(nameConstant, result.data.user.name, cookieOptions);
-						setCookie(emailConstant, result.data.user.email, cookieOptions);
-						setCookie(userNameConstant, result.data.user.username, cookieOptions);
-						setCookie(roleIdConstant, result.data.user.role_id, cookieOptions);
-						router.replace("/");
-					} else {
-						console.log({ result });
-						console.log("Error");
-					}
+					setCookie(crmJwtConstant, result.data.authToken, cookieOptions);
+					setCookie(userIdConstant, result.data.user.user_id, cookieOptions);
+					setCookie(nameConstant, result.data.user.name, cookieOptions);
+					setCookie(emailConstant, result.data.user.email, cookieOptions);
+					setCookie(userNameConstant, result.data.user.username, cookieOptions);
+					setCookie(roleIdConstant, result.data.user.role_id, cookieOptions);
+					router.replace("/");
+					setTimeout(() => {
+						setLoading(false);
+					}, 1500);
 				},
 				(err: any) => {
-					toast.error(err);
+					setLoading(false);
+					console.log(err.message);
+					// toast.error(err);
 				}
 			);
 		} catch (error) {
+			setLoading(false);
 			console.error("Login failed:", error);
 		}
 	};
@@ -66,55 +78,62 @@ const LoginContainer = () => {
 	return (
 		<form onSubmit={handleLogin}>
 			<div
-				className="w-full sm:max-w-[420px] flex flex-col bg-light-background-paper rounded-xl px-12 py-10 shadow-md shadow-grey-500/40">
-				<h1 className="text-2xl font-semibold text-light-primary-text">
-					Sign in to NCA
-				</h1>
+				className="w-96 sm:max-w-[420px] flex flex-col rounded-xl p-8 shadow-md shadow-grey-500/40"
+				style={getSurfaceColor(darkMode)}
+			>
+				<StackComponent align="center">
+					<ImageComponent
+						src={Logo.src}
+						w={appLogoWidth}
+						h={appLogoHeight}
+					/>
+					<TitleComponent title={appName} order={3} />
+				</StackComponent>
 
-				<div className="w-full flex text-sm mt-4">
-					<p className="text-grey-800">Don&apos;t have an account?</p>
-					<Link href="#" className="ml-1">
-						<p className="underline text-primary-main">
-							Get Started
-						</p>
-					</Link>
-				</div>
+				<SpaceComponent showHeight />
 
-				<hr className="mt-5 border-t border-t-grey-400" />
+				<Fieldset legend="Sign in to Continue" radius={mantineRadius}>
 
-				<TextInputComponent
-					mt={6}
-					label="Email"
-					value={email}
-					variant="filled"
-					onChange={onEmailChange}
-					placeholder="abc@gmail.com"
-				/>
+					<TextInputComponent
+						mt={6}
+						label="Email"
+						value={email}
+						setValue={setEmail}
+						placeholder="abc@gmail.com"
+					/>
 
-				<PasswordInputComponent
-					mt={6}
-					label="Password"
-					value={password}
-					placeholder="******"
-					onChange={onPasswordChange}
-					visible={isPasswordVisible}
-					onVisibilityChange={togglePasswordVisibility}
-				/>
+					<SpaceComponent showHeight />
 
-				<div className="w-full flex justify-end">
-					<Link href="#">
-						<p className="text-sm mt-6 hover:underline text-primary-main font-public-sans fade-transition">
-							Forgot Password?
-						</p>
-					</Link>
-				</div>
+					<PasswordInputComponent
+						mt={6}
+						label="Password"
+						value={password}
+						placeholder="******"
+						setValue={setPassword}
+						visible={isPasswordVisible}
+						onVisibilityChange={setIsPasswordVisible}
+					/>
+
+					<SpaceComponent showHeight />
+
+				</Fieldset>
+
+				<SpaceComponent showHeight />
+
+				<GroupComponent justify="end">
+					<ButtonComponent
+						m={0}
+						px={0}
+						py={0}
+						variant="subtle"
+						onClick={() => {}}
+						title="Forgot Password?" />
+				</GroupComponent>
 
 				<ButtonComponent
-					mt={6}
-					py={3}
 					title="Login"
+					loading={loading}
 					onClick={handleLogin}
-					titleClassName="font-medium"
 				/>
 			</div>
 		</form>

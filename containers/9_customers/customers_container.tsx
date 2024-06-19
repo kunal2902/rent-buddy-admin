@@ -1,73 +1,266 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Table } from "@mantine/core";
-import { FaEye } from "react-icons/fa";
-import { DashboardPageHeader } from "@/components";
-import { useCustomersContainer } from "./hook";
+import { useDebouncedCallback } from "@mantine/hooks";
+import { MdOutlineEdit } from "react-icons/md";
+import { useRouter } from "next/navigation";
+import {
+	ActionIconComponent,
+	BoxComponent,
+	CenterComponent,
+	DashboardPageHeader, GroupComponent,
+	LoadingOverlayComponent,
+	MainComponent,
+	NoDataFound,
+	PaginationComponent,
+	PaperComponent, PopConfirmComponent, PopConfirmType,
+	SortButtonComponentItemProps,
+} from "@/components";
 import { CustomerModel } from "@/models";
-import { formatDate, getCustomerApi } from "@/utils";
+import {
+	deleteCustomerApi,
+	disableCustomerApi,
+	formatDate, getCustomerApi, getItemTypeApi,
+	getUserId, logoutUser,
+} from "@/utils";
+import AddCustomerModal from "@/containers/9_customers/add_customer_modal";
 
 const CustomersContainer = () => {
-	const { isSidebarOpen } = useCustomersContainer();
-	const [usersList, setUsersList] = useState<CustomerModel[]>([]);
+	const router = useRouter();
+	const [page, setPage] = useState<number>(1);
+	const [total, setTotal] = useState<number>(0);
+	const [customerId, setCustomerId] = useState("");
+	const [order, setOrder] = useState<string>("asc");
+	const [filter, setFilter] = useState<string>("name");
+	const [pageSize, setPageSize] = useState<number>(15);
 	const [callApi, setCallApi] = useState<boolean>(true);
+	const [loading, setLoading] = useState<boolean>(true);
+	const [orderBy, setOrderBy] = useState<string>("user_id");
+	const [searchValue, setSearchValue] = useState<string>("");
+	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
+	const [customerInitialName, setCustomerInitialName] = useState("");
+	const [searchLoading, setSearchLoading] = useState<boolean>(false);
+	const [customersList, setCustomersList] = useState<CustomerModel[]>([]);
+	const [customerInitialPhoneNumber, setCustomerInitialPhoneNumber] = useState("");
+	const [customerInitialEmail, setCustomerInitialEmail] = useState<string | undefined>();
 
 	useEffect(() => {
-		if (callApi) {
-			getCustomerApi((data: any) => {
-				setUsersList(data.users);
-				setCallApi(false);
-			}, () => {
-				setCallApi(false);
-			}, () => {
-				setCallApi(false);
-			}).then();
-		}
-	}, [callApi]);
+		initState().then();
+	}, [filter, page, callApi, orderBy, order]);
 
-	const rows = usersList.map((element) => (
-		<Table.Tr>
-			{/*<Table.Td>{element.user_id}</Table.Td>*/}
-			{/*<Table.Td>{element.user_id}</Table.Td>*/}
+	const initState = async () => {
+		setLoading(true);
+		await getCustomerApi(
+			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			(data: any) => {
+				setCustomersList(data.customers);
+				setTotal(data.customers_count);
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+			},
+			() => {
+				setLoading(false);
+				logoutUser(router);
+			}
+		);
+	};
+
+	useEffect(() => {
+		if (searchValue) {
+			handleSearch(searchValue);
+		} else {
+			setSearchLoading(false);
+			initState().then();
+		}
+	}, [searchValue]);
+
+	const handleSearch = useDebouncedCallback(async (query: string) => {
+		setSearchLoading(true);
+		await getCustomerApi(
+			`filter_type=${filter}&filter_query=${query}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+			(data: any) => {
+					setCustomersList(data.customers);
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+					logoutUser(router);
+				}
+			).then();
+	}, 500);
+
+	const handleAddOpenModal = (
+		id: string,
+		name: string,
+		phone: string,
+		email?: string,
+	) => {
+		setCustomerId(id);
+		setCustomerInitialName(name);
+		setCustomerInitialEmail(email);
+		setCustomerInitialPhoneNumber(phone);
+		setOpenAddModal(true);
+	};
+
+	const handleAction = async (id: string, actionType: string) => {
+		if (actionType === "disable") {
+			await disableCustomerApi(
+				id,
+				() => {
+					setCallApi(val => !val);
+				},
+				() => {
+					setCallApi(val => !val);
+				},
+				() => {
+					setCallApi(val => !val);
+					logoutUser(router);
+				}
+			);
+		} else {
+			await deleteCustomerApi(
+				id,
+				() => {
+					setCallApi(val => !val);
+				},
+				() => {
+					setCallApi(val => !val);
+				},
+				() => {
+					setCallApi(val => !val);
+					logoutUser(router);
+				}
+			);
+		}
+	};
+
+	const columns = [
+		"Index",
+		"Customer Id",
+		"Name",
+		"Email",
+		"Phone",
+		"Created By",
+		"Created At",
+		"Disable",
+		"Action",
+	];
+
+	const rows = customersList.map((element, index) => (
+		<Table.Tr key={index}>
+			<Table.Td>{index + 1}</Table.Td>
+			<Table.Td>{element.customer_id}</Table.Td>
 			<Table.Td>{element.name}</Table.Td>
-			{/*<Table.Td>{element.username}</Table.Td>*/}
 			<Table.Td>{element.email}</Table.Td>
 			<Table.Td>{element.phone}</Table.Td>
+			<Table.Td>{element.created_by_id}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
-			<Table.Td>
-				<FaEye color="rgba(108, 210, 213, 1)" size={25} />
+			<Table.Td w={60}>
+				{
+					getUserId() !== element.customer_id &&
+					<PopConfirmComponent
+						entityName="user"
+						type={PopConfirmType.switch}
+						isDisabled={element.is_disabled}
+						actionName={element.is_disabled ? "enable" : "disable"}
+						onConfirm={async () => handleAction(element.customer_id, "disable")}
+					/>
+				}
+			</Table.Td>
+			<Table.Td w={110}>
+				<GroupComponent>
+					{
+						getUserId() !== element.customer_id &&
+						<PopConfirmComponent
+							entityName="user"
+							actionName="delete"
+							onConfirm={async () => handleAction(element.customer_id, "delete")}
+						/>
+					}
+					<ActionIconComponent
+						onClick={() => handleAddOpenModal(
+							element.customer_id,
+							element.name,
+							element.phone,
+							element.email,
+						)}
+						size="md">
+						<MdOutlineEdit size={18} />
+					</ActionIconComponent>
+				</GroupComponent>
 			</Table.Td>
 		</Table.Tr>
 	));
+
 	return (
-		<main
-			className={`flex min-h-screen w-full bg-light-background-natural flex-col pt-14 ${
-				isSidebarOpen ? "lg:pl-64 pl-0" : "pl-16"
-			}`}
-		>
+		<MainComponent>
 			<DashboardPageHeader
-				heading="Customers"
-				className="sm:pl-5 pl-3 pr-3 my-4 sm:text-2xl text-xl"
+				total={total}
+				title="Customers"
+				filter={filter}
+				idLabel="Customer Id"
+				setFilter={setFilter}
+				loading={searchLoading}
+				idVariable="customer_id"
+				buttonTitle="Add Customer"
+				searchValue={searchValue}
+				setSearchValue={setSearchValue}
+				setOption={(option) => setFilter(option.value)}
+				onClick={() => handleAddOpenModal("", "", "", "")}
+				onSortSelected={(selected: SortButtonComponentItemProps) => {
+					setOrderBy(selected.value);
+					setOrder(selected.direction);
+				}}
 			/>
 
-			<Table striped highlightOnHover withTableBorder>
-				<Table.Thead>
-					<Table.Tr>
-						<Table.Th>Index</Table.Th>
-						<Table.Th>User Id</Table.Th>
-						<Table.Th>Name</Table.Th>
-						<Table.Th>User name</Table.Th>
-						<Table.Th>Email</Table.Th>
-						<Table.Th>Phone</Table.Th>
-						<Table.Th>Created at</Table.Th>
-						<Table.Th>Action</Table.Th>
-					</Table.Tr>
-				</Table.Thead>
-				<Table.Tbody>{rows}</Table.Tbody>
-			</Table>
+			{
+				loading ?
+					<LoadingOverlayComponent /> :
+					customersList.length === 0 ?
+						<NoDataFound /> :
+						<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
+							<BoxComponent mx="auto">
+								<PaperComponent>
+									<Table highlightOnHover>
+										<Table.Thead>
+											<Table.Tr>
+												{columns.map((item) =>
+													(<Table.Th key={item}>{item}</Table.Th>)
+												)}
+											</Table.Tr>
+										</Table.Thead>
+										<Table.Tbody>{rows}</Table.Tbody>
+									</Table>
+								</PaperComponent>
+								<CenterComponent>
+									<PaginationComponent
+										value={page}
+										onChange={setPage}
+										total={Math.ceil(total / 15)}
+									/>
+								</CenterComponent>
+							</BoxComponent>
+						</BoxComponent>
+			}
 
-		</main>
+			{openAddModal &&
+				<AddCustomerModal
+					customerId={customerId}
+					isOpen={openAddModal}
+					onClose={() => setOpenAddModal(false)}
+					setCallApi={setCallApi}
+					initialValueName={customerInitialName}
+					initialValuePhoneNumber={customerInitialPhoneNumber}
+					initialValueEmail={customerInitialEmail}
+				/>
+			}
+		</MainComponent>
 	);
 };
 

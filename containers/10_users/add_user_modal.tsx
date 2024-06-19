@@ -1,21 +1,173 @@
 "use client";
 
-import { ButtonComponent, ModalComponent } from "@/components";
+import { toast } from "react-toastify";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Stack } from "@mantine/core";
+import {
+	ButtonComponent, GroupComponent,
+	ModalComponent, PasswordInputComponent, SelectComponent, SpaceComponent,
+	TextInputComponent, TitleComponent,
+} from "@/components";
+import { getRoleApi, upsertUserApi } from "@/utils";
 
-export interface AddUserModalProps {
+interface Props {
 	isOpen: boolean;
 	onClose: () => void;
+	setCallApi: Dispatch<SetStateAction<boolean>>;
+	initialValueName: string;
+	initialValueUserName: string;
+	initialValueEmail: string;
+	initialValuePassword: string;
+	initialRoleId?: string;
+	userId?: string;
 }
 
-export const AddUserModal = (props: AddUserModalProps) => {
-	const { isOpen, onClose } = props;
+const AddUserModal = (props: Props) => {
+	const {
+		isOpen,
+		onClose,
+		setCallApi,
+		initialValueName,
+		initialValueUserName,
+		initialRoleId,
+		initialValueEmail,
+		initialValuePassword,
+		userId,
+	} = props;
+	const [name, setName] = useState<string>(initialValueName);
+	const [userName, setUserName] = useState<string>(initialValueUserName);
+	const [password, setPassword] = useState<string>(initialValuePassword);
+	const [email, setEmail] = useState<string>(initialValueEmail);
+	const [inputError, setInputError] = useState<string | null>(null);
+	const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+	const [rolesList, setRolesList] = useState([]);
+	const [roleId, setRoleId] = useState<string>(initialRoleId ?? "");
+	const isEditModal: boolean = initialValueName !== "";
+
+	useEffect(() => {
+		if (userName) {
+			setInputError(null);
+		}
+		getRoleApi("",
+			(data: any) => {
+				const formattedCategories = data.roles.map(
+					(role: {
+						role_id: string;
+						name: string;
+					}) => ({
+						value: role.role_id,
+						label: role.name,
+					}));
+				setRolesList(formattedCategories);
+			},
+			() => {},
+			() => {});
+	}, [userName]);
+
+	const handleSubmitUser = async (event: React.FormEvent) => {
+		event.preventDefault();
+		if (!userName) {
+			setInputError("Please enter the name first");
+		}
+		const body = {
+			email,
+			password,
+			name,
+			id: userId,
+			username: userName,
+			role_id: roleId,
+		};
+		try {
+			await upsertUserApi(
+				body,
+				() => {
+					onClose();
+					setCallApi(val => !val);
+				},
+				(message: string) => {
+					toast.error(message);
+				},
+				() => {},
+			);
+		} catch (error) {
+			console.error("Error:", error);
+		}
+	};
 
 	return (
-		<ModalComponent opened={isOpen} onClose={onClose} className="border-grey-800" title="New User">
+		<ModalComponent
+			opened={isOpen}
+			onClose={onClose}
+			className="border-grey-800"
+			title={<TitleComponent title={isEditModal ? "Edit User" : "New User"} />}
+		>
+			<GroupComponent grow align="start">
+				<Stack>
+					<TextInputComponent
+						required
+						title="Name"
+						label="Name"
+						value={name}
+						error={inputError}
+						setValue={setName}
+						placeholder="Enter Name"
+					/>
 
-			<div className="mt-1 flex items-center justify-end">
-				<ButtonComponent title="Save" fullWidth px={5} />
-			</div>
+					<TextInputComponent
+						required
+						title="User Name"
+						label="User Name"
+						value={userName}
+						error={inputError}
+						setValue={setUserName}
+						placeholder="Enter user Name"
+					/>
+
+					<TextInputComponent
+						required
+						title="Email"
+						label="Email"
+						value={email}
+						error={inputError}
+						setValue={setEmail}
+						placeholder="abc@gmail.com"
+					/>
+
+					<PasswordInputComponent
+						mt={6}
+						label="Password"
+						value={password}
+						placeholder="******"
+						setValue={setPassword}
+						visible={isPasswordVisible}
+						onVisibilityChange={setIsPasswordVisible}
+					/>
+
+					<SelectComponent
+						required
+						label="Select role"
+						placeholder="Select role"
+						data={rolesList}
+						clearable={false}
+						value={roleId}
+						setValue={setRoleId}
+						checkIconPosition="right"
+						isGrouped={false}
+					/>
+				</Stack>
+			</GroupComponent>
+
+			<SpaceComponent showHeight />
+
+			<GroupComponent justify="end">
+				<ButtonComponent
+					title="Save"
+					w={100}
+					onClick={handleSubmitUser}
+				/>
+			</GroupComponent>
 		</ModalComponent>
 	);
 };
+
+export default AddUserModal;

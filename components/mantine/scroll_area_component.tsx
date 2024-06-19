@@ -1,9 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-	ScrollArea, ScrollAreaProps,
-} from "@mantine/core";
+import { ScrollArea, ScrollAreaProps } from "@mantine/core";
 
 /** Props list of Mantine's ScrollArea component - https://mantine.dev/core/scroll-area/?t=props */
 export interface ScrollAreaComponentProps extends ScrollAreaProps {

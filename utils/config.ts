@@ -1,4 +1,4 @@
-import { getCookie } from "cookies-next";
+import { deleteCookie, getCookie } from "cookies-next";
 import {
 	ActionIconVariant,
 	AvatarVariant,
@@ -7,43 +7,58 @@ import {
 	MantineRadius,
 	MantineSize,
 } from "@mantine/core";
+import moment from "moment";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 /** Global variables */
 export const isDebug: boolean = false;
+export const isProduction: boolean = false;
 export const appName: string = "NCA CRM";
 export const appTitle: string = "NCA CRM";
 export const appDescription: string = "NCM ";
 export const appLogoWidth: number = 40;
 export const appLogoHeight: number = 40;
-export const currenySign: string = "₹";
+export const currencySign: string = "₹";
 
 /** App colors */
 export const appColor: string = "#7469B6";
 export const appAccentColor: string = "#EE4266";
 export const whiteColor: string = "#ffffff";
 export const blackColor: string = "#000000";
+export const backgroundColorLight: string = "#efefef";
+export const backgroundColorDark: string = "#333";
+export const surfaceColorLight: string = "#fff";
+export const surfaceColorDark: string = "#222";
+export const backgroundColorTailwind: string = "bg-[#e0e0e0] dark:bg-[#333333]";
+export const surfaceColorTailwind: string = "bg-[#ff0000] dark:bg-[#000000]";
+export const textColorPrimaryLight: string = "#000";
+export const textColorPrimaryDark: string = "#fff";
+export const textColorSecondaryLight: string = "#e0e0e0";
+export const textColorSecondaryDark: string = "#222";
+export const commonColor: string = "#777";
 
 /** Mantine Variables */
+export const mantineH2Size: number = 18;
 export const appColorRGBA: MantineColor = "rgba(116, 105, 182, 1)";
 export const appAccentColorRGBA: MantineColor = "rgba(238,66,102,1)";
 export const mantineSize: MantineSize = "md";
+export const mantineButtonHeight: number = 36;
 export const mantineChipSize: MantineSize = "sm";
-export const mantineButtonSize: MantineSize = "sm";
-export const mantineActionIconSize: MantineSize = "lg";
-export const mantineActionIconVariant: ActionIconVariant = "light";
 export const mantineRadius: MantineRadius = "md";
-export const mantineInputVariant: InputVariant = "filled";
-export const mantineAvatarVariant: AvatarVariant = "filled";
-export const mantineSpaceHeight: MantineSize = "sm";
+export const mantineButtonSize: MantineSize = "sm";
+export const mantineButtonLoaderSize: MantineSize = "xs";
 export const mantineSpaceWidth: MantineSize = "sm";
-export const mantineNavLinkChildOffset: MantineSize = "md";
+export const mantineSpaceHeight: MantineSize = "sm";
+export const mantineActionIconSize: MantineSize = "lg";
 export const mantineLargeModalWidth: MantineSize = "lg";
 export const mantineMediumModalWidth: MantineSize = "md";
+export const mantineNavLinkChildOffset: MantineSize = "md";
+export const mantineInputVariant: InputVariant = "filled";
+export const mantineAvatarVariant: AvatarVariant = "filled";
+export const mantineActionIconVariant: ActionIconVariant = "light";
 
 /** Cookie constants */
-export const cookieOptions = {
-	secure: true,
-};
+export const cookieOptions = { secure: true };
 export const crmJwtConstant: string = "crm_jwt";
 export const userIdConstant: string = "user_id";
 export const nameConstant: string = "name";
@@ -51,10 +66,17 @@ export const emailConstant: string = "email";
 export const userNameConstant: string = "username";
 export const roleIdConstant: string = "role_id";
 export const sidebarStateConstant: string = "sidebar_state";
+export const themeModeConstant: string = "theme_mode";
 
 /** API Constants */
-export const apiUrl: string = "http://localhost:8000/api/v1";
+export const apiUrl: string = process.env.NODE_ENV === "production" ||
+isProduction ?
+	"https://decimal-graphics-performs-anna.trycloudflare.com/api/v1" :
+	"http://localhost:8000/api/v1";
 export const loginAPIPath: string = `${apiUrl}/auth/login`;
+
+// Dashboard path
+export const dashboardAPIPath: string = `${apiUrl}/dashboard/summary-count`;
 
 // Permission path
 export const permissionAPIPath: string = `${apiUrl}/permission`;
@@ -80,28 +102,35 @@ export const categoryAPIPath: string = `${apiUrl}/category`;
 export const subCategoryAPIPath: string = `${apiUrl}/sub-category`;
 
 // Item type path
-/** get all Item Type based on filter, sorting and search, add or insert */
+/** get all Item Types based on filter, sorting and search, add or insert */
 export const itemTypeAPIPath: string = `${apiUrl}/item-type`;
 
 // Item path
-/** get all Item Type based on filter, sorting and search, add or insert */
+/** get all Items based on filter, sorting and search, add or insert */
 export const itemAPIPath: string = `${apiUrl}/item`;
 
 // Add-on path
-/** get all add on based on filter, sorting and search, add or insert */
+/** get all add-ons based on filter, sorting and search, add or insert */
 export const addOnAPIPath: string = `${apiUrl}/add-on`;
 
 // Activity logs path
-/** get all add on based on filter, sorting and search, add or insert */
+/** get all activity logs based on filter, sorting and search, add or insert */
 export const activityLogsAPIPath: string = `${apiUrl}/activity-logs`;
 
 // Users path
-/** get all add on based on filter, sorting and search, add or insert */
-export const usersAPIPath: string = `${apiUrl}/users`;
+/** get all users based on filter, sorting and search, add or insert */
+export const usersAPIPath: string = `${apiUrl}/user`;
 
-// Users path
-/** get all add on based on filter, sorting and search, add or insert */
-export const customerAPIPath: string = `${apiUrl}/customer`;
+// Customers path
+/** get all customers based on filter, sorting and search, add or insert */
+export const customerAPIPath: string = `${apiUrl}/customers`;
+
+// Reports path
+/** get all reports based on filter, sorting and search */
+export const reportsAPIPath: string = `${apiUrl}/reports`;
+
+// Cart path
+export const cartAPIPath: string = `${apiUrl}/cart`;
 
 /** Constant Functions */
 /** To get the CRM JWT stored in Cookies */
@@ -119,6 +148,9 @@ export const getRoleId = (): string => getCookie(roleIdConstant) ?? "";
 /** To get the Sidebar state stored in Cookies */
 export const getSidebarState = (): string =>
 	getCookie(sidebarStateConstant) ?? "true";
+/** To get the Sidebar state stored in Cookies */
+export const getDarkMode = (): string =>
+	getCookie(themeModeConstant) ?? "none";
 
 /** Route Constants */
 export const dashboardRoute: string = "/";
@@ -127,6 +159,7 @@ export const customersRoute: string = "/customers";
 export const posRoute: string = "/pos";
 export const usersRoute: string = "/users";
 export const reportsRoute: string = "/reports";
+export const activityLogsRoute: string = "/logs";
 const inventoryRoute: string = "/inventory";
 export const addOnsRoute: string = `${inventoryRoute}/add-ons`;
 export const categoriesRoute: string = `${inventoryRoute}/categories`;
@@ -159,6 +192,7 @@ export const addOnsName: string = "Add-ons";
 export const customersName: string = "Customers";
 export const usersName: string = "Users";
 export const reportsName: string = "Reports";
+export const activityLogsName: string = "Activity Logs";
 export const settingsName: string = "Settings";
 export const generalSettingsName: string = "General Settings";
 export const rolesName: string = "Roles";
@@ -171,14 +205,32 @@ export const tncName: string = "Terms & Conditions";
 export const emailSettingsName: string = "Email Settings";
 export const taxesName: string = "Taxes";
 
-// Date format function
-export const formatDate = (inputDate: any) => {
-	const date = new Date(inputDate);
-	const day = String(date.getDate()).padStart(2, "0");
-	const month = String(date.getMonth() + 1).padStart(2, "0");
-	const year = date.getFullYear();
-	const hours = String(date.getHours()).padStart(2, "0");
-	const minutes = String(date.getMinutes()).padStart(2, "0");
+/** To format date according to the respective output */
+export const formatDate = (inputDate: any) => moment(inputDate).format("DD/MM/YYYY hh:mm a");
 
-	return `${day}/${month}/${year} ${hours}:${minutes}`;
+/** Converts passed string to Title case */
+export const toTitleCase = (str: string) => str.replace(
+	/\w\S*/g,
+	(txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
+);
+
+/** Returns Background Color for Surface */
+export const getBackgroundColor = (darkMode: boolean) =>
+	({ backgroundColor: darkMode ? backgroundColorDark : backgroundColorLight });
+
+/** Returns Surface Color for Surface */
+export const getSurfaceColor = (darkMode: boolean) =>
+	({ backgroundColor: darkMode ? surfaceColorDark : surfaceColorLight });
+
+/** Function to log-out user */
+export const logoutUser = (router: AppRouterInstance) => {
+	deleteCookie(crmJwtConstant, cookieOptions);
+	deleteCookie(userIdConstant, cookieOptions);
+	deleteCookie(nameConstant, cookieOptions);
+	deleteCookie(emailConstant, cookieOptions);
+	deleteCookie(userNameConstant, cookieOptions);
+	deleteCookie(roleIdConstant, cookieOptions);
+	deleteCookie(sidebarStateConstant, cookieOptions);
+	deleteCookie(themeModeConstant, cookieOptions);
+	router.replace("/");
 };

@@ -1,33 +1,37 @@
 "use client";
 
 import { Menu } from "lucide-react";
-import Image from "next/image";
 import Logo from "@/public/images/logo.png";
 import {
-	useMainNavbar,
-	ButtonComponent,
 	ActionIconComponent,
-	AvatarComponent,
-	UnstyledButtonComponent,
-	SpaceComponent,
+	AvatarPopupComponent,
+	ButtonComponent,
 	CenterComponent,
+	ImageComponent,
+	SpaceComponent,
+	TextComponent,
+	UnstyledButtonComponent,
+	useMainNavbar,
 } from "@/components";
 import {
-	appAccentColor,
 	appLogoHeight,
 	appLogoWidth,
 	appName,
 	dashboardRoute,
+	getSurfaceColor,
 	posRoute,
+	useThemeProvider,
 } from "@/utils";
-import { TextComponent } from "@/components/mantine/text_component";
 
 export const MainNavbar = () => {
-	const { toggleSidebar, userName } = useMainNavbar();
+	const { toggleSidebar } = useMainNavbar();
+	const { darkMode } = useThemeProvider();
 
 	return (
 		<div
-			className="w-full h-[56px] pt-3 pb-3 flex fixed top-0 left-0 bg-light-background-natural items-center justify-between z-30 shadow">
+			className="w-full h-[56px] pt-3 pb-3 flex fixed top-0 left-0 items-center justify-between z-30 shadow"
+			style={getSurfaceColor(darkMode)}
+		>
 			<div className="flex items-center">
 				<SpaceComponent showWidth />
 
@@ -42,17 +46,16 @@ export const MainNavbar = () => {
 				<SpaceComponent showWidth />
 
 				<UnstyledButtonComponent display="flex" href={dashboardRoute}>
-					<Image
+					<ImageComponent
 						src={Logo.src}
-						alt="main logo"
-						width={appLogoWidth}
-						height={appLogoHeight}
+						w={appLogoWidth}
+						h={appLogoHeight}
 					/>
 
 					<SpaceComponent showWidth />
 
 					<CenterComponent>
-						<TextComponent bold text={appName} c={appAccentColor} />
+						<TextComponent bold text={appName} />
 					</CenterComponent>
 				</UnstyledButtonComponent>
 			</div>
@@ -69,11 +72,20 @@ export const MainNavbar = () => {
 
 				<SpaceComponent showWidth />
 
-				{userName && (
-					<AvatarComponent src={null} alt={userName}>
-						{userName}
-					</AvatarComponent>
-				)}
+				{/*<TooltipComponent
+					label={darkMode ? "Change to Light mode" : "Change to Dark mode"}>
+					<ActionIconComponent
+						variant="filled"
+						onClick={toggleDarkMode}
+					>
+						{darkMode ?
+							<MdOutlineDarkMode size={18} /> :
+							<MdOutlineLightMode size={18} />
+						}
+					</ActionIconComponent>
+				</TooltipComponent>*/}
+
+				<AvatarPopupComponent />
 
 				<SpaceComponent showWidth />
 			</div>

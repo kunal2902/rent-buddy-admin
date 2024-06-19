@@ -1,23 +1,27 @@
 "use client";
 
 import Image from "next/image";
-import { Expand, Shrink, ShoppingBag } from "lucide-react";
+import { Expand, ShoppingBag, Shrink } from "lucide-react";
 import { useState } from "react";
 import { useFullscreen } from "@mantine/hooks";
 import Logo from "@/public/images/logo.png";
 import {
 	ActionIconComponent,
-	ButtonComponent, CenterComponent,
+	ButtonComponent,
+	CenterComponent,
 	DraftModal,
 	SpaceComponent,
+	TextComponent,
 	TooltipComponent,
 	UnstyledButtonComponent,
 } from "@/components";
 import { appLogoHeight, appLogoWidth, dashboardRoute, posRoute } from "@/utils";
-import { TextComponent } from "@/components/mantine/text_component";
 
 export const PosNavbar = () => {
-	const { toggle, fullscreen } = useFullscreen();
+	const {
+		toggle,
+		fullscreen,
+	} = useFullscreen();
 
 	const [isDraftModalOpen, setDraftModalOpen] = useState(false);
 
@@ -80,7 +84,7 @@ export const PosNavbar = () => {
 					<ButtonComponent
 						title="LogOut"
 						href={
-						posRoute} />
+							posRoute} />
 					<SpaceComponent showWidth />
 				</div>
 			</div>

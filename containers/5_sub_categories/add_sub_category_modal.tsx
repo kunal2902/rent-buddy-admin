@@ -1,123 +1,202 @@
 "use client";
 
-import { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { Image as ImageIcon, Trash } from "lucide-react";
+import { Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
+import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
 import {
+	ActionIconComponent,
 	ButtonComponent,
+	FileInputComponent,
+	GroupComponent,
 	ModalComponent,
+	SelectComponent,
+	StackComponent,
 	TextInputComponent,
+	TitleComponent,
 } from "@/components";
-import { FileInputComponent } from "@/components/mantine/file_input_component";
-import { mantineLargeModalWidth, upsertSubCategoryApi } from "@/utils";
-import { useCreateSubCategoryModal } from "./hook";
+import { getCategoryApi, upsertSubCategoryApi } from "@/utils";
 
 interface Props {
 	isOpen: boolean;
 	onClose: () => void;
 	setCallApi: Dispatch<SetStateAction<boolean>>;
+	initialSubCategoryValue: string;
+	subCategoryId: string;
+	initialCategoryIdValue: string;
+	icon: string | undefined;
 }
 
-const CreateSubCategoryModal = (props: Props) => {
-	const { isOpen, onClose, setCallApi } = props;
+const AddSubCategoryModal = (props: Props) => {
 	const {
-		subCategoryName,
-		onSubCategoryNameChange,
-		onChooseIconClick,
-		fileInputTriggerRef,
-		onFilePick,
-		selectedFile,
-		onResetIconClick,
-		selectedFileToUpload,
-	} = useCreateSubCategoryModal();
+		isOpen,
+		onClose,
+		setCallApi,
+		initialSubCategoryValue,
+		subCategoryId,
+		initialCategoryIdValue,
+		icon,
+	} = props;
+	const [subCategoryName, setSubCategoryName] = useState<string>(initialSubCategoryValue);
+	const [selectedFileToUpload, setSelectedFileToUpload] = useState<File | null>(null);
+	const [selectedFile, setSelectedFile] = useState<string | null>(null);
+	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
+	const [categories, setCategories] = useState<any>([]);
+	const [inputError, setInputError] = useState<string | null>(null);
+	const [categoryId, setCategoryId] = useState<string>(initialCategoryIdValue);
+	const [loading, setLoading] = useState(false);
+	const isEditModal: boolean = initialSubCategoryValue !== "";
 
-const handleSubmitSubCat = async (event: React.FormEvent) => {
-	event.preventDefault();
-	const subCatData = new FormData();
-	if (selectedFileToUpload) {
-		subCatData.append("icon_file", selectedFileToUpload);
-	}
-	subCatData.append("name", subCategoryName);
-	console.log("first", subCatData);
-	try {
-		await upsertSubCategoryApi(
-			subCatData,
+	useEffect(() => {
+		if (subCategoryName && icon) {
+			setSelectedFile(icon);
+			setInputError(null);
+		}
+	}, [subCategoryName, icon]);
+
+	useEffect(() => {
+		getCategoryApi("",
+			(data: any) => {
+				const formattedCategories = data.categories.map(
+					(category: {
+						category_id: string;
+						name: string;
+					}) => ({
+						value: category.category_id,
+						label: category.name,
+					}));
+				setCategories(formattedCategories);
+				setCallApi(val => !val);
+			},
 			() => {
-				onClose();
-				setCallApi(true);
+				setCallApi(val => !val);
 			},
-			(message: string) => {
-				toast.error(message);
-			},
-			() => {},
-		);
-	} catch (error) {
-		console.error("Error:", error);
-	}
-};
+			() => {
+				setCallApi(val => !val);
+			});
+	}, []);
+
+	const onChooseIconClick = () => {
+		if (fileInputTriggerRef) {
+			fileInputTriggerRef.current?.click();
+		}
+	};
+
+	const onResetIconClick = () => {
+		setSelectedFile(null);
+		setSelectedFileToUpload(null);
+	};
+
+	const onFilePick = (file: File | null) => {
+		if (file) {
+			const fileReader = new FileReader();
+
+			fileReader.readAsDataURL(file);
+			setSelectedFileToUpload(file);
+
+			fileReader.onload = (readerEvent) => {
+				if (readerEvent.target && typeof readerEvent.target.result === "string") {
+					console.log("File read result:", readerEvent.target.result); // Debugging line
+					setSelectedFile(readerEvent.target.result);
+				}
+			};
+		}
+	};
+
+	const handleSubmitSubCat = async (event: React.FormEvent) => {
+		event.preventDefault();
+
+		if (!subCategoryName) {
+			setInputError("Please enter the name first");
+		}
+
+		const subCatData = new FormData();
+		if (selectedFileToUpload) {
+			subCatData.append("icon_file", selectedFileToUpload);
+		}
+		subCatData.append("name", subCategoryName);
+		subCatData.append("category_id", categoryId);
+		subCatData.append("id", subCategoryId);
+		setLoading(true);
+
+		try {
+			await upsertSubCategoryApi(
+				subCatData,
+				() => {
+					onClose();
+					setCallApi(val => !val);
+					setLoading(false);
+				},
+				(message: string) => {
+					toast.error(message);
+					setLoading(false);
+				},
+				() => {
+				}
+			);
+		} catch (error) {
+			console.error("Error:", error);
+		}
+	};
 
 	return (
 		<ModalComponent
 			opened={isOpen}
 			onClose={onClose}
 			className="border-grey-800"
-			title="New sub category"
-			closeOnEscape
-			size={mantineLargeModalWidth}
+			title={<TitleComponent title={isEditModal ? "Edit Item Type" : "New Item Type"} />}
 		>
-			<div className="w-full flex sm:flex-row flex-col font-public-sans">
-				<div className="sm:w-1/2 w-full flex flex-col sm:mr-1">
+			<GroupComponent grow align="start">
+				<StackComponent>
 					<FileInputComponent
-						label="Please select sub category icon"
-						placeholder="Sub category icon"
+						required
+						label="Please select category icon"
+						placeholder="C 111ategory icon"
 						className="hidden"
 						onChange={onFilePick}
 						ref={fileInputTriggerRef}
 					/>
-
-					<p className="text-base font-public-sans">Icon*</p>
-
-					<button
-						className="mt-1 flex items-center justify-center w-full"
-						onClick={onChooseIconClick}
-					>
-						{selectedFile ? (
-							<div className="w-full flex flex-col items-center justify-center h-40">
-								<Image
-									src={selectedFile}
-									width={500}
-									height={500}
-									alt=""
-									className="w-full h-full object-contain"
-								/>
-							</div>
-						) : (
-							<div className="w-full border border-dashed flex flex-col items-center justify-center h-40 rounded-md border-primary-darker text-primary-darker">
-								<ImageIcon size={50} />
-
-								<p className="text-center mt-0.5">
-									Choose an image
-								</p>
-							</div>
-						)}
-					</button>
-
-					{selectedFile && (
-						<div className="w-full mt-1 flex items-center justify-end">
-							<button
-								className="flex items-center justify-center"
-								onClick={onResetIconClick}
-								aria-label="on reset icon click"
-							>
-								<Trash size={24} className="text-error-dark" />
-							</button>
+					{selectedFile ? (
+						<div className="w-full flex flex-col items-center justify-center h-40">
+							<Image
+								src={selectedFile}
+								width={500}
+								height={500}
+								alt="Selected Icon"
+								className="w-full h-full object-contain" />
+						</div>
+					) : (
+						<div
+							onClick={onChooseIconClick}
+							className="w-full cursor-pointer border border-dashed flex flex-col items-center justify-center h-40 rounded-md border-primary-darker text-primary-darker">
+							<ImageIcon size={50} />
+							<p className="text-center mt-0.5">Choose an Icon</p>
 						</div>
 					)}
-				</div>
 
-				<div className="sm:ml-1 sm:mt-0 mt-2 flex-1 flex flex-col">
+					{selectedFile && (
+						<GroupComponent grow>
+							<ActionIconComponent
+								onClick={onResetIconClick}
+								size="md"
+								color="red"
+							>
+								<MdOutlineDeleteForever size={18} />
+							</ActionIconComponent>
 
+							<ActionIconComponent
+								onClick={onChooseIconClick}
+								size="md"
+							>
+								<MdOutlineEdit size={18} />
+							</ActionIconComponent>
+
+						</GroupComponent>
+					)}
+				</StackComponent>
+
+				<GroupComponent>
 					<TextInputComponent
 						mt={1}
 						required
@@ -125,22 +204,35 @@ const handleSubmitSubCat = async (event: React.FormEvent) => {
 						title="Name"
 						value={subCategoryName}
 						placeholder="Awesome Name"
-						onChange={onSubCategoryNameChange}
+						setValue={setSubCategoryName}
 						className="border-grey-600 font-barlow font-base text-base"
 					/>
-				</div>
-			</div>
-			<div className="mt-3 flex items-center justify-end">
+
+					<SelectComponent
+						required
+						label="Select category"
+						placeholder="Select category"
+						data={categories}
+						clearable={false}
+						value={categoryId}
+						setValue={setCategoryId}
+						checkIconPosition="right"
+						isGrouped={false}
+					/>
+				</GroupComponent>
+
+			</GroupComponent>
+
+			<GroupComponent justify="end">
 				<ButtonComponent
+					loading={loading}
+					w={100}
 					title="Save"
-					size="md"
-					px="lg"
-					ml={5}
 					onClick={handleSubmitSubCat}
 				/>
-			</div>
+			</GroupComponent>
 		</ModalComponent>
 	);
 };
 
-export default CreateSubCategoryModal;
+export default AddSubCategoryModal;
