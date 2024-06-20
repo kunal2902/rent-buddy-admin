@@ -1,7 +1,7 @@
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { Minus, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NumberInputHandlers } from "@mantine/core";
 import { CartItemModel, CartModel, ItemModel } from "@/models";
 import {
@@ -10,6 +10,7 @@ import {
 	cartItemsAtom,
 	currencySign,
 	customerAtom,
+	deleteCartItemApi,
 	logoutUser,
 	upsertCartApi,
 	upsertCartItemApi,
@@ -47,6 +48,12 @@ export const ProductCard = (props: Props) => {
 	const setCallCart = useSetRecoilState(callCartApiAtom);
 	const [cart, setCart] = useRecoilState<CartModel | null>(cartAtom);
 	const setCartItems = useSetRecoilState<Array<CartItemModel>>(cartItemsAtom);
+
+	useEffect(() => {
+		if (cartItem) {
+			setQuantity(cartItem.quantity);
+		}
+	}, [cartItem]);
 
 	const onAddClick = async () => {
 		if (isAddToCartApiBusy) return;
@@ -110,6 +117,78 @@ export const ProductCard = (props: Props) => {
 			setItemIdToUpdate(id);
 			return newQuantity;
 		});
+	};
+
+	const onQuantityTypingEnd = async () => {
+		if (cartItem?.quantity === quantity) return;
+
+		if (isAddToCartApiBusy) return;
+
+		toggleIsAddToCartApiBusy(true);
+
+		try {
+			if (Number(quantity) < 1) {
+				await deleteCartItemApi(
+					cartItem?.cart_item_id ?? "",
+					() => {},
+					() => {},
+					() => {
+						logoutUser(router);
+					},
+				);
+
+				setCartItems((prev) =>
+					prev.filter(
+						(prevItem) =>
+							prevItem.cart_item_id !== cartItem?.cart_item_id,
+					),
+				);
+			} else {
+				const updatedCartItem = await upsertCartItemApi(
+					{
+						id: cartItem ? cartItem.cart_item_id : undefined,
+						item_id: item.item_id,
+						cart_id: cart ? cart.cart_id : undefined,
+						quantity,
+					},
+					() => {},
+					() => {},
+					() => {
+						logoutUser(router);
+					},
+				);
+
+				console.log(updatedCartItem);
+
+				if (updatedCartItem && typeof updatedCartItem !== "string") {
+					setCartItems((prev) => {
+						const newItems = prev.map((prevItem) => {
+							if (
+								prevItem.cart_item_id ===
+								updatedCartItem.cartItem.cart_item_id
+							) {
+								return updatedCartItem.cartItem;
+							}
+
+							return prevItem;
+						});
+
+						return newItems;
+					});
+				}
+			}
+
+			toggleIsAddToCartApiBusy(false);
+		} catch (error) {
+			toggleIsAddToCartApiBusy(false);
+
+			if (error instanceof Error) {
+				console.log(error.message);
+				return;
+			}
+
+			console.log(error);
+		}
 	};
 
 	const handleMinusButtonClick = (id: string) => {
@@ -189,11 +268,7 @@ export const ProductCard = (props: Props) => {
 								hideControls
 								placeholder="0"
 								setValue={(val: string | number) => {
-									if (parseInt(val.toString(), 10) < 1) {
-										// setAdd(false);
-									} else {
-										setQuantity(val);
-									}
+									setQuantity(val);
 								}}
 								value={cartItem.quantity}
 								variant="unstyled"
@@ -206,6 +281,8 @@ export const ProductCard = (props: Props) => {
 									fontWeight: "bold",
 									backgroundColor: "white",
 								}}
+								contentEditable={!isAddToCartApiBusy}
+								onBlur={onQuantityTypingEnd}
 							/>
 						</MantineProviderComponent>
 
