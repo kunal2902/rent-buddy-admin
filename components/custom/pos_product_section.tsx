@@ -44,6 +44,7 @@ export const PosProductSection = () => {
 	);
 	const [isAddToCartApiBusy, setIsAddToCartApiBusy] =
 		useState<boolean>(false);
+	const [addSubCartItem, setAddSubCartItem] = useState<string | null>(null);
 
 	useEffect(() => {
 		getCategoryApi(
@@ -198,11 +199,7 @@ export const PosProductSection = () => {
 							cartItem={
 								cartItemIndexes.get(item.item_id) !== undefined
 									? cartItems[
-<<<<<<< HEAD
 											cartItemIndexes.get(item.item_id) ?? 0
-=======
-									cartItemIndexes.get(item.item_id) ?? 0
->>>>>>> sanjay-dev
 										]
 									: undefined
 							}
@@ -210,6 +207,8 @@ export const PosProductSection = () => {
 							toggleIsAddToCartApiBusy={toggleBooleanState(
 								setIsAddToCartApiBusy,
 							)}
+							addSubCartItem={addSubCartItem}
+							setAddSubCartItem={setAddSubCartItem}
 						/>
 					))}
 				</SimpleGridComponent>

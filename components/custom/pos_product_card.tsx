@@ -1,17 +1,15 @@
 "use client";
 
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { Minus, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { NumberInputHandlers } from "@mantine/core";
 import { CartItemModel, CartModel, ItemModel } from "@/models";
 import {
-	callCartApiAtom,
 	cartAtom,
 	cartItemsAtom,
 	currencySign,
-	customerAtom,
 	deleteCartItemApi,
 	logoutUser,
 	upsertCartApi,
@@ -35,19 +33,39 @@ interface Props {
 	item: ItemModel;
 	isAddToCartApiBusy: boolean;
 	toggleIsAddToCartApiBusy: (newState?: boolean) => void;
+	addSubCartItem: string | null;
+	setAddSubCartItem: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 export const ProductCard = (props: Props) => {
-	const { cartItem, item, isAddToCartApiBusy, toggleIsAddToCartApiBusy } =
-		props;
+	const {
+		cartItem,
+		item,
+		isAddToCartApiBusy,
+		toggleIsAddToCartApiBusy,
+		addSubCartItem,
+		setAddSubCartItem,
+	} = props;
 
 	const router = useRouter();
 	const numberInputRef = useRef<NumberInputHandlers>(null);
-	const [quantity, setQuantity] = useState<number>(cartItem ? cartItem.quantity : 0);
-	const custId = useRecoilValue(customerAtom);
-	const setCallCart = useSetRecoilState(callCartApiAtom);
+	const [quantity, setQuantity] = useState<number>(
+		cartItem ? cartItem.quantity : 0,
+	);
+	// const custId = useRecoilValue(customerAtom);
+	// const setCallCart = useSetRecoilState(callCartApiAtom);
 	const [cart, setCart] = useRecoilState<CartModel | null>(cartAtom);
 	const setCartItems = useSetRecoilState<Array<CartItemModel>>(cartItemsAtom);
+	const [sendDebouncedCall, setSendDebouncedCall] = useState<boolean>(false);
+
+	useEffect(() => {
+		if (sendDebouncedCall) {
+			(async () => {
+				await updateCartItemQuantity();
+				setSendDebouncedCall(false);
+			})();
+		}
+	}, [sendDebouncedCall]);
 
 	useEffect(() => {
 		if (cartItem) {
@@ -112,12 +130,52 @@ export const ProductCard = (props: Props) => {
 		}
 	};
 
-	const handleAddButtonClick = (id: string) => {
-		setQuantity((prevQuantity: any) => {
-			const newQuantity = prevQuantity === 0 ? 1 : prevQuantity + 1;
-			setItemIdToUpdate(id);
-			return newQuantity;
-		});
+	const handleSubtractButtonClick = () => {
+		if (
+			isAddToCartApiBusy &&
+			addSubCartItem !== null &&
+			addSubCartItem !== cartItem?.cart_item_id
+		) {
+			return;
+		}
+
+		if (!isAddToCartApiBusy && addSubCartItem === null) {
+			toggleIsAddToCartApiBusy(true);
+			setAddSubCartItem(cartItem?.cart_item_id ?? null);
+			setQuantity((prev) => prev - 1);
+			setTimeout(async () => {
+				setSendDebouncedCall(true);
+				setAddSubCartItem(null);
+			}, 500);
+
+			return;
+		}
+
+		setQuantity((prev) => prev - 1);
+	};
+
+	const handleAddButtonClick = () => {
+		if (
+			isAddToCartApiBusy &&
+			addSubCartItem !== null &&
+			addSubCartItem !== cartItem?.cart_item_id
+		) {
+			return;
+		}
+
+		if (!isAddToCartApiBusy && addSubCartItem === null) {
+			toggleIsAddToCartApiBusy(true);
+			setAddSubCartItem(cartItem?.cart_item_id ?? null);
+			setQuantity((prev) => prev + 1);
+			setTimeout(async () => {
+				setSendDebouncedCall(true);
+				setAddSubCartItem(null);
+			}, 500);
+
+			return;
+		}
+
+		setQuantity((prev) => prev + 1);
 	};
 
 	const onQuantityTypingEnd = async () => {
@@ -127,7 +185,13 @@ export const ProductCard = (props: Props) => {
 
 		toggleIsAddToCartApiBusy(true);
 
+		await updateCartItemQuantity();
+	};
+
+	const updateCartItemQuantity = async () => {
 		try {
+			console.log(quantity);
+
 			if (Number(quantity) < 1) {
 				await deleteCartItemApi(
 					cartItem?.cart_item_id ?? "",
@@ -180,9 +244,11 @@ export const ProductCard = (props: Props) => {
 			}
 
 			toggleIsAddToCartApiBusy(false);
+			setAddSubCartItem(null);
 		} catch (error) {
 			toggleIsAddToCartApiBusy(false);
-			setQuantity(cartItem?.quantity ?? 1);
+			setAddSubCartItem(null);
+			setQuantity(cartItem?.quantity ?? 0);
 
 			if (error instanceof Error) {
 				console.log(error.message);
@@ -190,45 +256,6 @@ export const ProductCard = (props: Props) => {
 			}
 
 			console.log(error);
-		}
-	};
-
-	const updateCartItemQuantity = async (id: string, newQuantity: number) => {
-		if (isAddToCartApiBusy) return;
-
-		toggleIsAddToCartApiBusy(true);
-
-		try {
-			const cartItemUpdated = await upsertCartItemApi(
-				{
-					item_id: id,
-					cart_id: cart?.cart_id,
-					quantity: newQuantity,
-				},
-				() => {},
-				() => {},
-				() => {
-					logoutUser(router);
-				},
-			);
-
-			toggleIsAddToCartApiBusy(false);
-
-			if (cartItemUpdated && typeof cartItemUpdated !== "string") {
-				setCartItems((prev) =>
-					prev.map((items) =>
-						items.item_id === id
-							? { ...items, quantity: newQuantity }
-							: items,
-					),
-				);
-			}
-		} catch (error) {
-			toggleIsAddToCartApiBusy(false);
-
-			if (error instanceof Error) {
-				console.log(error.message);
-			}
 		}
 	};
 
@@ -283,10 +310,7 @@ export const ProductCard = (props: Props) => {
 								borderRadius: "8px 0 0 8px",
 							}}
 							px={5}
-							onClick={() => {
-								handleMinusButtonClick(item.item_id);
-								numberInputRef.current?.decrement();
-							}}
+							onClick={handleSubtractButtonClick}
 						>
 							<Minus size={16} />
 						</ButtonComponent>
@@ -298,11 +322,7 @@ export const ProductCard = (props: Props) => {
 								hideControls
 								placeholder="0"
 								setValue={(val: string | number) => {
-									if (parseInt(val.toString(), 10) < 1) {
-										// setAdd(false);
-									} else {
-										setQuantity(val);
-									}
+									setQuantity(Number(val));
 								}}
 								value={quantity}
 								variant="unstyled"
@@ -333,10 +353,7 @@ export const ProductCard = (props: Props) => {
 								borderRadius: "0 8px 8px 0",
 							}}
 							px={5}
-							onClick={() => {
-								handleAddButtonClick(item.item_id);
-								numberInputRef.current?.increment();
-							}}
+							onClick={handleAddButtonClick}
 						>
 							<Plus size={16} />
 						</ButtonComponent>
