@@ -1,4 +1,4 @@
-import { UserModel } from "@/models";
+import { UserModel } from "@/models/user_model";
 
 export interface CustomAttributeModel {
     custom_attribute_id: string;
@@ -9,7 +9,7 @@ export interface CustomAttributeModel {
     created_at: Date;
     is_disabled: boolean;
     is_deleted: boolean;
-    default_value: string,
+    default_value: string;
     is_tax: boolean;
-    tax_type: string,
+    tax_type: string;
 }

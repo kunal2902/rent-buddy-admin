@@ -7,13 +7,13 @@ import { useEffect, useRef, useState } from "react";
 import { NumberInputHandlers } from "@mantine/core";
 import { CartItemModel, CartModel, ItemModel } from "@/models";
 import {
-	cartAtom,
+	cartAtom, cartIdAtom,
 	cartItemsAtom,
 	currencySign,
 	deleteCartItemApi,
 	logoutUser,
 	upsertCartApi,
-	upsertCartItemApi,
+	upsertCartItemApi
 } from "@/utils";
 import {
 	ButtonComponent,
@@ -55,6 +55,7 @@ export const ProductCard = (props: Props) => {
 	// const custId = useRecoilValue(customerAtom);
 	// const setCallCart = useSetRecoilState(callCartApiAtom);
 	const [cart, setCart] = useRecoilState<CartModel | null>(cartAtom);
+	const [cartId, setCartId] = useRecoilState<string>(cartIdAtom);
 	const setCartItems = useSetRecoilState<Array<CartItemModel>>(cartItemsAtom);
 	const [sendDebouncedCall, setSendDebouncedCall] = useState<boolean>(false);
 
@@ -84,7 +85,9 @@ export const ProductCard = (props: Props) => {
 			if (!prevCart) {
 				const cartCreationResponse = await upsertCartApi(
 					{},
-					() => {},
+					(response: any) => {
+						setCartId(response.cart.cart_id);
+					},
 					() => {},
 					() => {
 						logoutUser(router);

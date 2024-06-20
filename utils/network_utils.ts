@@ -5,7 +5,7 @@ import {
 	attributeAPIPath,
 	cartAPIPath,
 	cartItemAPIPath,
-	categoryAPIPath,
+	categoryAPIPath, checkoutAPIPath,
 	customerAPIPath,
 	dashboardAPIPath,
 	getCrmJWT,
@@ -18,7 +18,7 @@ import {
 	roleAPIPath,
 	subCategoryAPIPath,
 	tagAPIPath,
-	usersAPIPath,
+	usersAPIPath
 } from "@/utils";
 import { CartItemModel, CartModel } from "@/models";
 
@@ -2151,6 +2151,36 @@ export const getReportsAPI = async (
 	}
 	const path = query === "" ? reportsAPIPath : `${reportsAPIPath}?${query}`;
 	const response = await makeGetRequest(path, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 403:
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback(response.message);
+			toast.error(response.message);
+	}
+};
+
+// Checkout Api
+export const checkoutApi = async (
+	body: any,
+	successCallback: (arg0: any) => void,
+	errorCallback: (message: string) => void,
+	logoutCallback: () => void,
+) => {
+	const token = getCrmJWT();
+	const response = await makePostRequest(checkoutAPIPath, body, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
