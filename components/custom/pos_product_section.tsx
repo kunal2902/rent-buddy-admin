@@ -1,7 +1,7 @@
 "use client";
 
 import { SearchIcon } from "lucide-react";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useRecoilValue } from "recoil";
 import {
@@ -15,14 +15,7 @@ import {
 	TextComponent,
 	TextInputComponent,
 } from "@/components";
-import {
-	cartItemsAtom,
-	getCategoryApi,
-	getItemApi,
-	getSubCategoryApi,
-	logoutUser,
-	toggleBooleanState,
-} from "@/utils";
+import { cartItemsAtom, getCategoryApi, getItemApi, getSubCategoryApi, logoutUser, toggleBooleanState } from "@/utils";
 import { CartItemModel, CategoryModel, ItemModel } from "@/models";
 import { ProductCard } from "./pos_product_card";
 
@@ -40,7 +33,7 @@ export const PosProductSection = () => {
 	const [itemList, setItemList] = useState<ItemModel[]>([]);
 	const cartItems = useRecoilValue<Array<CartItemModel>>(cartItemsAtom);
 	const [cartItemIndexes, setCartItemIndexes] = useState<Map<string, number>>(
-		new Map(),
+		new Map()
 	);
 	const [isAddToCartApiBusy, setIsAddToCartApiBusy] =
 		useState<boolean>(false);
@@ -52,10 +45,11 @@ export const PosProductSection = () => {
 			(data: any) => {
 				setCategoriesList(data.categories);
 			},
-			() => {},
+			() => {
+			},
 			() => {
 				logoutUser(router);
-			},
+			}
 		).then();
 
 		getItemApi(
@@ -63,10 +57,11 @@ export const PosProductSection = () => {
 			(data: any) => {
 				setItemList(data.items);
 			},
-			() => {},
+			() => {
+			},
 			() => {
 				logoutUser(router);
-			},
+			}
 		);
 	}, [router]);
 
@@ -89,14 +84,15 @@ export const PosProductSection = () => {
 					(data: any) => {
 						setSubCategories(data.sub_categories);
 					},
-					() => {},
+					() => {
+					},
 					() => {
 						logoutUser(router);
-					},
+					}
 				).then();
 			}
 		},
-		[router],
+		[router]
 	);
 
 	const handleCategoryChange = (val: string | string[]) => {
@@ -106,7 +102,13 @@ export const PosProductSection = () => {
 	};
 
 	return (
-		<div className="w-[70%] max-h-screen overflow-hidden">
+		<div
+			className="w-[70%] max-h-screen overflow-hidden"
+			style={{
+				display: "flex",
+				flexDirection: "column",
+			}}
+		>
 			<BoxComponent h={40} className="px-3 mt-1">
 				<GroupComponent justify="space-between">
 					<TextComponent text="Categories" bold size="xl" />
@@ -140,7 +142,7 @@ export const PosProductSection = () => {
 
 			{subCategories.length > 0 && (
 				<BoxComponent h={70} className="px-3 mt-1">
-					<TextComponent text="Categories" bold size="xl" />
+					<TextComponent text="Sub-categories" bold size="xl" />
 					<SpaceComponent showHeight />
 					<ChipGroupComponent
 						value={catSubValue}
@@ -163,10 +165,11 @@ export const PosProductSection = () => {
 			<ScrollAreaComponent
 				style={{
 					display: "grid",
-					height:
-						subCategories.length > 0
-							? "calc(100vh - 250px)"
-							: "calc(100vh - 173px)",
+					flexGrow: 1,
+					// height:
+					// 	subCategories.length > 0
+					// 		? "calc(100vh - 250px)"
+					// 		: "calc(100vh - 173px)",
 				}}
 				className="my-3"
 			>
@@ -199,13 +202,13 @@ export const PosProductSection = () => {
 							cartItem={
 								cartItemIndexes.get(item.item_id) !== undefined
 									? cartItems[
-											cartItemIndexes.get(item.item_id) ?? 0
+									cartItemIndexes.get(item.item_id) ?? 0
 										]
 									: undefined
 							}
 							isAddToCartApiBusy={isAddToCartApiBusy}
 							toggleIsAddToCartApiBusy={toggleBooleanState(
-								setIsAddToCartApiBusy,
+								setIsAddToCartApiBusy
 							)}
 							addSubCartItem={addSubCartItem}
 							setAddSubCartItem={setAddSubCartItem}

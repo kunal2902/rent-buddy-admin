@@ -18,7 +18,7 @@ import {
 	roleAPIPath,
 	subCategoryAPIPath,
 	tagAPIPath,
-	usersAPIPath
+	usersAPIPath,
 } from "@/utils";
 import { CartItemModel, CartModel } from "@/models";
 

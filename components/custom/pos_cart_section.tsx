@@ -1,34 +1,45 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { RiDeleteBin6Line } from "react-icons/ri";
-import { Box, Divider, Stack } from "@mantine/core";
 import { AddIcon } from "@storybook/icons";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { useRouter } from "next/navigation";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { FiShoppingCart } from "react-icons/fi";
 import {
 	ActionIconComponent,
+	BoxComponent,
 	ButtonComponent,
 	CardComponent,
+	CenterComponent,
+	DividerComponent,
 	GroupComponent,
+	ImageComponent,
 	ScrollAreaComponent,
 	SelectComponent,
+	StackComponent,
 	TextComponent,
+	TitleComponent,
 	TooltipComponent,
 } from "@/components";
 import {
 	appAccentColorRGBA,
 	callCartApiAtom,
-	cartDraftApi, cartIdAtom, cartItemsAtom, checkoutApi,
+	cartDraftApi,
+	cartIdAtom,
+	cartItemsAtom,
+	checkoutApi,
 	currencySign,
 	customerAtom,
 	deleteCartApi,
 	formatDate,
-	getCustomerApi, logoutUser, upsertCartApi
+	getCustomerApi,
+	logoutUser,
+	toTitleCase,
+	upsertCartApi,
 } from "@/utils";
 import { ComboBoxProps } from "@/types";
 import { CartItemModel } from "@/models";
-import { ItemCustomAttribute } from "@/models/item_custom_attribute";
-import { useRouter } from "next/navigation";
 
 export const PosCartSection = () => {
 	const router = useRouter();
@@ -55,8 +66,10 @@ export const PosCartSection = () => {
 				);
 				setCustomersList(formattedCustomers);
 			},
-			() => {},
-			() => {}
+			() => {
+			},
+			() => {
+			}
 		).then();
 	}, []);
 
@@ -68,7 +81,10 @@ export const PosCartSection = () => {
 	}, [cartItems]);
 
 	const handleCustomerChange = (option: { value: string; label: string }) => {
-		setSelectedCustomer({ id: option.value, name: option.label });
+		setSelectedCustomer({
+			id: option.value,
+			name: option.label,
+		});
 	};
 
 	const calculateSubtotal = () => {
@@ -79,10 +95,7 @@ export const PosCartSection = () => {
 		return subtotal;
 	};
 
-	const calculateTax = () => {
-		const subtotal = subTotal;
-		return subtotal * 0.15;
-	};
+	const calculateTax = () => subTotal * 0.15;
 
 	const calculateTotal = () => {
 		const subtotal = subTotal;
@@ -91,18 +104,32 @@ export const PosCartSection = () => {
 	};
 
 	const clearCart = () => {
-		deleteCartApi(cartId, () => {
-		}, () => {}, () => {});
+		deleteCartApi(
+			cartId,
+			() => {
+			},
+			() => {
+			},
+			() => {
+			}
+		).then();
 	};
 
 	const handleSaveDraft = () => {
-		cartDraftApi(cartId, (response: any) => {
-			console.log("Draft saved successfully:", response);
-		}, () => {}, () => {});
+		cartDraftApi(
+			cartId,
+			(response: any) => {
+				console.log("Draft saved successfully:", response);
+			},
+			() => {
+			},
+			() => {
+			}
+		).then();
 	};
 
-	const calculateTaxOnProduct = (item: any) => {
-		let taxOnProductTotal = 0;
+	const calculateTaxOnProduct = (attr: any, price: any, quantity: any) => {
+		/*let taxOnProductTotal = 0;
 
 		if (item?.item.custom_attributes) {
 			item?.item.custom_attributes.forEach((attr: any) => {
@@ -117,14 +144,29 @@ export const PosCartSection = () => {
 					}
 				}
 			});
+		}*/
+
+		if (attr) {
+			if (attr.custom_attribute.is_tax && attr.custom_attribute.tax_type === "on_product") {
+				if (attr.custom_attribute.type === "number") {
+					const attributeVal = Number(attr.attribute_value);
+					return attributeVal * quantity;
+				}
+				if (attr.custom_attribute.type === "percentage") {
+					const itemPrice = Number(price);
+					return ((itemPrice / 100) * Number(attr.attribute_value)) * Number(quantity);
+				}
+				return null;
+			}
+			return null;
 		}
-		return taxOnProductTotal;
+		return null;
 	};
 
 	const calculateTotalTaxOnProducts = () => {
-		let totalTax = 0;
+		const totalTax = 0;
 		cartItems.forEach((item) => {
-			totalTax += calculateTaxOnProduct(item);
+			// totalTax += calculateTaxOnProduct(item);
 		});
 		return totalTax;
 	};
@@ -136,7 +178,8 @@ export const PosCartSection = () => {
 			if (item.item.custom_attributes) {
 				item.item.custom_attributes.forEach((attr: {
 					custom_attribute: { is_tax: any; tax_type: string; type: string; };
-					attribute_value: string; }) => {
+					attribute_value: string;
+				}) => {
 					if (attr.custom_attribute.is_tax && attr.custom_attribute.tax_type === "on_bill") {
 						if (attr.custom_attribute.type === "number") {
 							taxOnBill += parseFloat(attr.attribute_value);
@@ -166,19 +209,30 @@ export const PosCartSection = () => {
 				const checkoutBody = {
 					cartId,
 				};
-				checkoutApi(checkoutBody, () => {}, () => {}, () => {});
+				checkoutApi(checkoutBody, () => {
+				}, () => {
+				}, () => {
+				});
 			},
-			() => {},
+			() => {
+			},
 			() => {
 				logoutUser(router);
-			},
+			}
 		);
 	};
 
 	return (
 		<>
-			<div className="w-[30%] pr-3 mt-1" style={{ height: "calc(100vh - 56px)" }}>
-				<Box h={40}>
+			<div
+				className="w-[30%] pr-3 mt-1"
+				style={{
+					display: "flex",
+					flexDirection: "column",
+					height: "calc(100vh - 56px)",
+				}}
+			>
+				<BoxComponent h={40}>
 					<GroupComponent>
 						<SelectComponent
 							required
@@ -207,14 +261,14 @@ export const PosCartSection = () => {
 							</ActionIconComponent>
 						</TooltipComponent>
 					</GroupComponent>
-				</Box>
+				</BoxComponent>
 
-				<Box className="mt-3" h={30}>
+				<BoxComponent className="mt-3" h={30}>
 					<TextComponent bold size="xl" text="Order Details" />
-				</Box>
+				</BoxComponent>
 
 				<CardComponent className="mt-3" mih={90} shadow="sm" radius="md" padding="sm" withBorder>
-					<Stack gap="sm">
+					<StackComponent gap="sm">
 						<GroupComponent justify="space-between">
 							<TextComponent text="Customer Name:" bold />
 							<TextComponent text={selectedCustomer.name} />
@@ -223,34 +277,80 @@ export const PosCartSection = () => {
 							<TextComponent text="Order Date:" bold />
 							<TextComponent text={formatDate(new Date())} />
 						</GroupComponent>
-					</Stack>
+					</StackComponent>
 				</CardComponent>
 
-				<CardComponent p={0} shadow="sm" radius="md" withBorder className="my-3" style={{ height: "calc(100vh - 554px)" }}>
-					<ScrollAreaComponent>
-						{cartItems.map((item, index) => (
-							<Box
-								key={index}
-								px={12}
-								pt={12}
-								pb={index === cartItems.length - 1 ? 0 : 6}
-							>
-								<Stack gap={0}>
-									<GroupComponent justify="space-between" gap={0}>
-										<TextComponent text={item.item.name} />
-										<TextComponent text={`${currencySign} ${parseInt(item.item.price.toString(), 10) * item.quantity}`} c="green" />
-									</GroupComponent>
-									<TextComponent text={`x ${item.quantity}`} c="dimmed" />
-									<TextComponent text={`${currencySign} ${calculateTaxOnProduct(item)}`} />
-									{index !== cartItems.length - 1 && <Divider my={0} variant="dashed" p={0} py={0} />}
-								</Stack>
-							</Box>
-						))}
-					</ScrollAreaComponent>
+				<CardComponent
+					p={0}
+					shadow="sm"
+					radius="md"
+					withBorder
+					className="my-3"
+					style={{ flexGrow: 1 }}
+				>
+					{
+						cartItems.length === 0 ?
+							<CenterComponent h="100%">
+								<FiShoppingCart />
+								<TextComponent text="Cart is Empty!" ml={5} />
+							</CenterComponent>
+							:
+							<ScrollAreaComponent>
+								{
+									cartItems.map((item, index) => (
+										<BoxComponent
+											key={index}
+											px={12}
+											pt={6}
+											pb={index === cartItems.length - 1 ? 0 : 6}
+										>
+											<StackComponent gap={0}>
+												<GroupComponent justify="space-between" align="start" gap={0}>
+													<ImageComponent
+														src={item.item.images[0]}
+														w={50}
+														h={50}
+													/>
+													<StackComponent style={{ flexGrow: 1 }} ml={10} gap={5}>
+														<GroupComponent justify="space-between">
+															<TitleComponent title={item.item.name} />
+
+															<TitleComponent
+																c="green"
+																title={`${currencySign} ${parseInt(item.item.price.toString(), 10) * item.quantity}`}
+															/>
+														</GroupComponent>
+														<TextComponent
+															c="gray"
+															size={14}
+															lh={1.1}
+															text={`${currencySign} ${parseInt(item.item.price.toString(), 10)} x ${item.quantity}`}
+														/>
+													</StackComponent>
+												</GroupComponent>
+												{
+													item.item.custom_attributes.map(ca => (
+														<GroupComponent justify="space-between" my={2}>
+															<TextComponent
+																text={toTitleCase(ca.custom_attribute.name)}
+															/>
+															<TextComponent
+																text={`${currencySign} ${calculateTaxOnProduct(ca, item.item.price, item.quantity)}`}
+															/>
+														</GroupComponent>
+													))
+												}
+												{index !== cartItems.length - 1 &&
+													<DividerComponent my={0} variant="dashed" p={0} py={0} />}
+											</StackComponent>
+										</BoxComponent>
+									))}
+							</ScrollAreaComponent>
+					}
 				</CardComponent>
 
 				<CardComponent padding="sm" shadow="sm" radius="md" withBorder style={{ height: 150 }}>
-					<Stack gap="sm">
+					<StackComponent gap="sm">
 						<GroupComponent justify="space-between">
 							<TextComponent text="Sub Total:" size="sm" />
 							<TextComponent text={`${currencySign} ${subTotal}`} bold size="sm" />
@@ -263,27 +363,27 @@ export const PosCartSection = () => {
 							<TextComponent text="On Bill:" size="sm" />
 							<TextComponent text={`${currencySign} ${calculateTaxOnBill()}`} bold size="sm" />
 						</GroupComponent>
-						<Divider my={0} variant="dashed" p={0} py={0} />
+						<DividerComponent my={0} variant="dashed" p={0} py={0} />
 						<GroupComponent justify="space-between">
 							<TextComponent text="Total:" bold />
 							<TextComponent text={`${currencySign} ${calculateTotal()}`} bold />
 						</GroupComponent>
-					</Stack>
+					</StackComponent>
 				</CardComponent>
 
-				<Box h={40} className="mt-3">
+				<BoxComponent h={60} className="mt-3">
 					<GroupComponent>
-						{/*<TooltipComponent label="Clear cart">*/}
-						{/*	<ActionIconComponent c="red" maw={36} h={36} onClick={clearCart}>*/}
-						{/*		<RiDeleteBin6Line />*/}
-						{/*	</ActionIconComponent>*/}
-						{/*</TooltipComponent>*/}
-						<GroupComponent grow justify="space-evenly" w="calc(100% - 50px)">
+						<TooltipComponent label="Clear cart">
+							<ActionIconComponent c="red" maw={36} h={36} onClick={clearCart}>
+								<RiDeleteBin6Line />
+							</ActionIconComponent>
+						</TooltipComponent>
+						<GroupComponent grow justify="space-evenly" style={{ flexGrow: 1 }}>
 							<ButtonComponent color={appAccentColorRGBA} title="Save Draft" onClick={handleSaveDraft} />
 							<ButtonComponent title="Checkout" onClick={handleCheckout} />
 						</GroupComponent>
 					</GroupComponent>
-				</Box>
+				</BoxComponent>
 			</div>
 		</>
 	);

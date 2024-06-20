@@ -13,7 +13,7 @@ import {
 	deleteCartItemApi,
 	logoutUser,
 	upsertCartApi,
-	upsertCartItemApi
+	upsertCartItemApi,
 } from "@/utils";
 import {
 	ButtonComponent,
