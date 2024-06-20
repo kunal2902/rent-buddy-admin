@@ -43,6 +43,7 @@ export const cartItemsAtom = atom<Array<CartItemModel>>({
 	default: [],
 	key: "cartItemsAtom",
 });
+
 export const cartAtom = atom<CartModel | null>({
 	default: null,
 	key: "cartAtom",

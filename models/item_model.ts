@@ -1,6 +1,8 @@
 import { ItemTypeModel, CategoryModel, SubCategoryModel, UserModel, CartItemModel, InvoiceItemModel } from "@/models";
+import { ItemCustomAttribute } from "@/models/item_custom_attribute";
 
 export interface ItemModel {
+	custom_attributes: ItemCustomAttribute[];
     item_id: string;
     item_type_id: string;
     type: ItemTypeModel;

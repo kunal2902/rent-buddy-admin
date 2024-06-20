@@ -132,8 +132,11 @@ export const reportsAPIPath: string = `${apiUrl}/reports`;
 // Cart path
 export const cartAPIPath: string = `${apiUrl}/cart`;
 
-// Cart path
+// Cart item path
 export const cartItemAPIPath: string = `${apiUrl}/cart-item`;
+
+// Checkout path
+export const checkoutAPIPath: string = `${apiUrl}/checkout`;
 
 /** Constant Functions */
 /** To get the CRM JWT stored in Cookies */

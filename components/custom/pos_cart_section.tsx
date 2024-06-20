@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { Box, Divider, Stack } from "@mantine/core";
 import { AddIcon } from "@storybook/icons";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
 	ActionIconComponent,
 	ButtonComponent,
@@ -18,25 +18,30 @@ import {
 import {
 	appAccentColorRGBA,
 	callCartApiAtom,
-	cartDraftApi,
+	cartDraftApi, cartIdAtom, cartItemsAtom, checkoutApi,
 	currencySign,
 	customerAtom,
 	deleteCartApi,
 	formatDate,
-	getCartApi,
-	getCustomerApi,
+	getCustomerApi, logoutUser, upsertCartApi
 } from "@/utils";
 import { ComboBoxProps } from "@/types";
+import { CartItemModel } from "@/models";
+import { ItemCustomAttribute } from "@/models/item_custom_attribute";
+import { useRouter } from "next/navigation";
 
 export const PosCartSection = () => {
+	const router = useRouter();
 	const [customersList, setCustomersList] = useState<ComboBoxProps[]>([]);
 	const [customerModalOpen, setCustomerModalOpen] = useState(false);
-	const [cartItem, setCartItem] = useState<any[]>([]);
 	const [subTotal, setSubTotal] = useState(0);
+	const [total, setTotal] = useState(0);
 	const [taxOnProduct, setTaxOnProduct] = useState(0);
-
+	const [onProductTotal, setOnProductTotal] = useState(0);
 	const [selectedCustomer, setSelectedCustomer] = useRecoilState(customerAtom);
 	const [callCart, setCallCart] = useRecoilState(callCartApiAtom);
+	const cartItems = useRecoilValue<Array<CartItemModel>>(cartItemsAtom);
+	const cartId = useRecoilValue(cartIdAtom);
 
 	useEffect(() => {
 		getCustomerApi(
@@ -56,27 +61,11 @@ export const PosCartSection = () => {
 	}, []);
 
 	useEffect(() => {
-		if (selectedCustomer.id) {
-			getCartApi(
-				`?filter_type=customer&filter_query=${selectedCustomer.id}`,
-				(response: any) => {
-					setCartItem(response.cartItems);
-					setCallCart(false);
-				},
-				() => {},
-				() => {}
-			).then();
-		}
-	}, [selectedCustomer, callCart]);
-
-	useEffect(() => {
 		const subtotal = calculateSubtotal();
-		const taxProduct = calculateTaxOnProduct();
-		console.log("taxProduct", taxProduct);
-		console.log("subtotal", subtotal);
-		setSubTotal(subtotal + (taxProduct > 0 ? taxProduct : 0)); // Add tax on product only if greater than 0
-		setTaxOnProduct(taxProduct);
-	}, [cartItem]);
+		const taxProduct = calculateTotalTaxOnProducts();
+		setSubTotal(subtotal + (taxProduct > 0 ? taxProduct : 0));
+		setOnProductTotal(taxProduct);
+	}, [cartItems]);
 
 	const handleCustomerChange = (option: { value: string; label: string }) => {
 		setSelectedCustomer({ id: option.value, name: option.label });
@@ -84,7 +73,7 @@ export const PosCartSection = () => {
 
 	const calculateSubtotal = () => {
 		let subtotal = 0;
-		cartItem.forEach((item) => {
+		cartItems.forEach((item) => {
 			subtotal += parseInt(item.item.price, 10) * item.quantity;
 		});
 		return subtotal;
@@ -92,7 +81,7 @@ export const PosCartSection = () => {
 
 	const calculateTax = () => {
 		const subtotal = subTotal;
-		return subtotal * 0.15; // Assuming 15% tax
+		return subtotal * 0.15;
 	};
 
 	const calculateTotal = () => {
@@ -102,46 +91,48 @@ export const PosCartSection = () => {
 	};
 
 	const clearCart = () => {
-		deleteCartApi(selectedCustomer.id, () => {
-			setSelectedCustomer({ id: "", name: "" });
-			setCallCart(true);
+		deleteCartApi(cartId, () => {
 		}, () => {}, () => {});
 	};
 
 	const handleSaveDraft = () => {
-		cartDraftApi(selectedCustomer.id, (response: any) => {
+		cartDraftApi(cartId, (response: any) => {
 			console.log("Draft saved successfully:", response);
 		}, () => {}, () => {});
 	};
 
-	const calculateTaxOnProduct = () => {
+	const calculateTaxOnProduct = (item: any) => {
 		let taxOnProductTotal = 0;
 
-		cartItem.forEach((item) => {
-			if (item.item.custom_attributes) {
-				item.item.custom_attributes.forEach((attr: {
-					custom_attribute: { is_tax: any; tax_type: string; type: string;
-					}; attribute_value: string; }) => {
-					if (attr.custom_attribute.is_tax && attr.custom_attribute.tax_type === "on_product") {
-						if (attr.custom_attribute.type === "number") {
-							taxOnProductTotal += parseFloat(attr.attribute_value);
-						} else if (attr.custom_attribute.type === "percentage") {
-							const itemPrice = parseFloat(item.item.price);
-							const percentageValue = parseFloat(attr.attribute_value) / 100;
-							taxOnProductTotal += itemPrice * percentageValue;
-						}
+		if (item?.item.custom_attributes) {
+			item?.item.custom_attributes.forEach((attr: any) => {
+				if (attr.custom_attribute.is_tax && attr.custom_attribute.tax_type === "on_product") {
+					if (attr.custom_attribute.type === "number") {
+						const attributeVal = Number(attr.attribute_value);
+						taxOnProductTotal += attributeVal * item.quantity;
+					} else if (attr.custom_attribute.type === "percentage") {
+						const itemPrice = Number(item.item.price);
+						const percentageValue = Number(attr.attribute_value) / 100;
+						taxOnProductTotal += itemPrice * percentageValue * item.quantity;
 					}
-				});
-			}
-		});
-
+				}
+			});
+		}
 		return taxOnProductTotal;
+	};
+
+	const calculateTotalTaxOnProducts = () => {
+		let totalTax = 0;
+		cartItems.forEach((item) => {
+			totalTax += calculateTaxOnProduct(item);
+		});
+		return totalTax;
 	};
 
 	const calculateTaxOnBill = () => {
 		let taxOnBill = 0;
 
-		cartItem.forEach((item) => {
+		cartItems.forEach((item) => {
 			if (item.item.custom_attributes) {
 				item.item.custom_attributes.forEach((attr: {
 					custom_attribute: { is_tax: any; tax_type: string; type: string; };
@@ -161,6 +152,27 @@ export const PosCartSection = () => {
 		});
 
 		return taxOnBill;
+	};
+
+	const handleCheckout = async () => {
+		const body = {
+			id: cartId,
+			customer_Id: selectedCustomer.id,
+			label: "Purchased!",
+		};
+		await upsertCartApi(
+			body,
+			() => {
+				const checkoutBody = {
+					cartId,
+				};
+				checkoutApi(checkoutBody, () => {}, () => {}, () => {});
+			},
+			() => {},
+			() => {
+				logoutUser(router);
+			},
+		);
 	};
 
 	return (
@@ -216,12 +228,12 @@ export const PosCartSection = () => {
 
 				<CardComponent p={0} shadow="sm" radius="md" withBorder className="my-3" style={{ height: "calc(100vh - 554px)" }}>
 					<ScrollAreaComponent>
-						{cartItem.map((item, index) => (
+						{cartItems.map((item, index) => (
 							<Box
 								key={index}
 								px={12}
 								pt={12}
-								pb={index === cartItem.length - 1 ? 0 : 6}
+								pb={index === cartItems.length - 1 ? 0 : 6}
 							>
 								<Stack gap={0}>
 									<GroupComponent justify="space-between" gap={0}>
@@ -229,8 +241,8 @@ export const PosCartSection = () => {
 										<TextComponent text={`${currencySign} ${parseInt(item.item.price.toString(), 10) * item.quantity}`} c="green" />
 									</GroupComponent>
 									<TextComponent text={`x ${item.quantity}`} c="dimmed" />
-									<TextComponent text={`${currencySign} ${calculateTaxOnProduct()}`} />
-									{index !== cartItem.length - 1 && <Divider my={0} variant="dashed" p={0} py={0} />}
+									<TextComponent text={`${currencySign} ${calculateTaxOnProduct(item)}`} />
+									{index !== cartItems.length - 1 && <Divider my={0} variant="dashed" p={0} py={0} />}
 								</Stack>
 							</Box>
 						))}
@@ -261,14 +273,14 @@ export const PosCartSection = () => {
 
 				<Box h={40} className="mt-3">
 					<GroupComponent>
-						<TooltipComponent label="Clear cart">
-							<ActionIconComponent c="red" maw={36} h={36} onClick={clearCart}>
-								<RiDeleteBin6Line />
-							</ActionIconComponent>
-						</TooltipComponent>
+						{/*<TooltipComponent label="Clear cart">*/}
+						{/*	<ActionIconComponent c="red" maw={36} h={36} onClick={clearCart}>*/}
+						{/*		<RiDeleteBin6Line />*/}
+						{/*	</ActionIconComponent>*/}
+						{/*</TooltipComponent>*/}
 						<GroupComponent grow justify="space-evenly" w="calc(100% - 50px)">
 							<ButtonComponent color={appAccentColorRGBA} title="Save Draft" onClick={handleSaveDraft} />
-							<ButtonComponent title="Checkout" />
+							<ButtonComponent title="Checkout" onClick={handleCheckout} />
 						</GroupComponent>
 					</GroupComponent>
 				</Box>
