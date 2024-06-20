@@ -71,7 +71,7 @@ export const PosProductSection = () => {
 
 	useEffect(() => {
 		const updatedCartItemIndexes = new Map<string, number>();
-		console.log(cartItems);
+		console.log("cartItems", cartItems);
 
 		cartItems.forEach((cartItem, index) => {
 			updatedCartItemIndexes.set(cartItem.item_id, index);
@@ -198,7 +198,11 @@ export const PosProductSection = () => {
 							cartItem={
 								cartItemIndexes.get(item.item_id) !== undefined
 									? cartItems[
+<<<<<<< HEAD
 											cartItemIndexes.get(item.item_id) ?? 0
+=======
+									cartItemIndexes.get(item.item_id) ?? 0
+>>>>>>> sanjay-dev
 										]
 									: undefined
 							}

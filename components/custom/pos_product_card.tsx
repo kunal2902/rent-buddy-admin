@@ -1,3 +1,5 @@
+"use client";
+
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { Minus, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -41,9 +43,7 @@ export const ProductCard = (props: Props) => {
 
 	const router = useRouter();
 	const numberInputRef = useRef<NumberInputHandlers>(null);
-	// const [createCart, setCreateCart] = useState<boolean>(true);
-	const [quantity, setQuantity] = useState<string | number>(0);
-	const [itemIdToUpdate, setItemIdToUpdate] = useState<string | null>(null);
+	const [quantity, setQuantity] = useState<number>(cartItem ? cartItem.quantity : 0);
 	const custId = useRecoilValue(customerAtom);
 	const setCallCart = useSetRecoilState(callCartApiAtom);
 	const [cart, setCart] = useRecoilState<CartModel | null>(cartAtom);
@@ -82,7 +82,7 @@ export const ProductCard = (props: Props) => {
 				}
 			}
 
-			console.log(prevCart);
+			console.log("prevCart", prevCart);
 
 			const cartItemCreated = await upsertCartItemApi(
 				{
@@ -101,6 +101,7 @@ export const ProductCard = (props: Props) => {
 
 			if (cartItemCreated && typeof cartItemCreated !== "string") {
 				setCartItems((prev) => [...prev, cartItemCreated.cartItem]);
+				setQuantity(cartItemCreated.cartItem.quantity);
 			}
 		} catch (error) {
 			toggleIsAddToCartApiBusy(false);
@@ -192,15 +193,43 @@ export const ProductCard = (props: Props) => {
 		}
 	};
 
-	const handleMinusButtonClick = (id: string) => {
-		setQuantity((prevQuantity: any) => {
-			const newQuantity = prevQuantity - 1;
-			if (newQuantity < 1) {
-				// setAdd(false);
+	const updateCartItemQuantity = async (id: string, newQuantity: number) => {
+		if (isAddToCartApiBusy) return;
+
+		toggleIsAddToCartApiBusy(true);
+
+		try {
+			const cartItemUpdated = await upsertCartItemApi(
+				{
+					item_id: id,
+					cart_id: cart?.cart_id,
+					quantity: newQuantity,
+				},
+				() => {},
+				() => {},
+				() => {
+					logoutUser(router);
+				},
+			);
+
+			toggleIsAddToCartApiBusy(false);
+
+			if (cartItemUpdated && typeof cartItemUpdated !== "string") {
+				setCartItems((prev) =>
+					prev.map((items) =>
+						items.item_id === id
+							? { ...items, quantity: newQuantity }
+							: items,
+					),
+				);
 			}
-			setItemIdToUpdate(id);
-			return newQuantity;
-		});
+		} catch (error) {
+			toggleIsAddToCartApiBusy(false);
+
+			if (error instanceof Error) {
+				console.log(error.message);
+			}
+		}
 	};
 
 	return (
@@ -269,9 +298,13 @@ export const ProductCard = (props: Props) => {
 								hideControls
 								placeholder="0"
 								setValue={(val: string | number) => {
-									setQuantity(val);
+									if (parseInt(val.toString(), 10) < 1) {
+										// setAdd(false);
+									} else {
+										setQuantity(val);
+									}
 								}}
-								value={cartItem.quantity}
+								value={quantity}
 								variant="unstyled"
 								handlersRef={numberInputRef}
 								style={{
