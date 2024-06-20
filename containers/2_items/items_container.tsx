@@ -65,7 +65,7 @@ const ItemsContainer = () => {
 				setLoading(false);
 				logoutUser(router);
 			}
-		);
+		).then();
 	};
 
 	useEffect(() => {

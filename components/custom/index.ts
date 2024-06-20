@@ -17,3 +17,4 @@ export * from "@/components/custom/pos_cart_section";
 export * from "@/components/custom/pos_navbar";
 export * from "@/components/custom/pos_product_section";
 export * from "@/components/custom/sort_button";
+export * from "./pos_cart_loader";

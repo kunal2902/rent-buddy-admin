@@ -20,7 +20,7 @@ import {
 } from "@/components";
 import AddAddOnModal from "./add_add_on_modal";
 import { AddOnModel } from "@/models";
-import { deleteAddOnApi, disableAddOnApi, formatDate, getAddOnApi, imageUrl } from "@/utils";
+import { deleteAddOnApi, disableAddOnApi, formatDate, getAddOnApi } from "@/utils";
 
 const AddOnsContainer = () => {
 	const [page, setPage] = useState<number>(1);
@@ -143,7 +143,7 @@ const AddOnsContainer = () => {
 				<ImageComponent
 					h={50}
 					w="auto"
-					src={`${imageUrl}/${element.icon}`}
+					src={element.icon}
 				/>
 			</Table.Td>
 			<Table.Td>{element.name}</Table.Td>

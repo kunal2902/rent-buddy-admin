@@ -47,7 +47,7 @@ export const PermissionModal = (props: PermissionModalProps) => {
 		if (selectedItem) {
 			return item.permissions.length === selectedItem?.permissions.length;
 		}
-			return false;
+		return false;
 	};
 
 	const isPermissionChecked = (entityName: string, permission: string) => {
@@ -55,7 +55,7 @@ export const PermissionModal = (props: PermissionModalProps) => {
 		if (selectedItem && selectedItem.permissions.length !== 0) {
 			return selectedItem.permissions.includes(permission);
 		}
-			return false;
+		return false;
 	};
 
 	useEffect(() => {

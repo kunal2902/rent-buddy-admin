@@ -1,30 +1,30 @@
 "use client";
 
-import { Minus, Plus, SearchIcon } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
-import { NumberInputHandlers } from "@mantine/core";
+import { SearchIcon } from "lucide-react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useRecoilValue } from "recoil";
 import {
 	BoxComponent,
-	ButtonComponent,
-	CardComponent,
-	CardSectionComponent,
 	ChipComponent,
 	ChipGroupComponent,
 	GroupComponent,
-	ImageComponent,
-	MantineProviderComponent,
-	NumberInputComponent,
 	ScrollAreaComponent,
 	SimpleGridComponent,
 	SpaceComponent,
-	SpoilerComponent,
 	TextComponent,
 	TextInputComponent,
 } from "@/components";
-import { currencySign, getCategoryApi, getSubCategoryApi, logoutUser } from "@/utils";
-import { centeredInputTheme } from "@/constants";
-import { CategoryModel } from "@/models";
+import {
+	cartItemsAtom,
+	getCategoryApi,
+	getItemApi,
+	getSubCategoryApi,
+	logoutUser,
+	toggleBooleanState,
+} from "@/utils";
+import { CartItemModel, CategoryModel, ItemModel } from "@/models";
+import { ProductCard } from "./pos_product_card";
 
 export interface Categories {
 	categoryName: string;
@@ -37,40 +37,73 @@ export const PosProductSection = () => {
 	const [subCategories, setSubCategories] = useState([]);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [categoriesList, setCategoriesList] = useState<CategoryModel[]>([]);
-	console.log(catValue);
+	const [itemList, setItemList] = useState<ItemModel[]>([]);
+	const cartItems = useRecoilValue<Array<CartItemModel>>(cartItemsAtom);
+	const [cartItemIndexes, setCartItemIndexes] = useState<Map<string, number>>(
+		new Map(),
+	);
+	const [isAddToCartApiBusy, setIsAddToCartApiBusy] =
+		useState<boolean>(false);
+	const [addSubCartItem, setAddSubCartItem] = useState<string | null>(null);
+
 	useEffect(() => {
-		getCategoryApi("",
+		getCategoryApi(
+			"",
 			(data: any) => {
 				setCategoriesList(data.categories);
 			},
-			() => {
-			},
+			() => {},
 			() => {
 				logoutUser(router);
-			}
+			},
 		).then();
-	}, []);
 
-	const fetchSubCategories = (value: string) => {
-		if (value !== "") {
-			getSubCategoryApi(`filter_type=category&filter_query=${value}`,
-				(data: any) => {
-					setSubCategories(data.sub_categories);
-				},
-				() => {
-				},
-				() => {
-					logoutUser(router);
-				}
-			).then();
-		}
-	};
+		getItemApi(
+			"page_size=100",
+			(data: any) => {
+				setItemList(data.items);
+			},
+			() => {},
+			() => {
+				logoutUser(router);
+			},
+		);
+	}, [router]);
 
-	function handleCategoryChange(val: string | string[]) {
+	useEffect(() => {
+		const updatedCartItemIndexes = new Map<string, number>();
+		console.log("cartItems", cartItems);
+
+		cartItems.forEach((cartItem, index) => {
+			updatedCartItemIndexes.set(cartItem.item_id, index);
+		});
+
+		setCartItemIndexes(updatedCartItemIndexes);
+	}, [cartItems]);
+
+	const fetchSubCategories = useCallback(
+		(value: string) => {
+			if (value !== "") {
+				getSubCategoryApi(
+					`filter_type=category&filter_query=${value}`,
+					(data: any) => {
+						setSubCategories(data.sub_categories);
+					},
+					() => {},
+					() => {
+						logoutUser(router);
+					},
+				).then();
+			}
+		},
+		[router],
+	);
+
+	const handleCategoryChange = (val: string | string[]) => {
 		setCatValue(val as string);
 		setSubCategories([]);
 		fetchSubCategories(val as string);
-	}
+	};
 
 	return (
 		<div className="w-[70%] max-h-screen overflow-hidden">
@@ -89,11 +122,17 @@ export const PosProductSection = () => {
 			<BoxComponent h={30} className="px-3 mt-3">
 				<ChipGroupComponent
 					value={catValue}
-					onChange={handleCategoryChange}>
+					onChange={handleCategoryChange}
+				>
 					<GroupComponent justify="start">
 						<ChipComponent value="">All items</ChipComponent>
 						{categoriesList.map((item: any) => (
-							<ChipComponent value={item.category_id}>{item.name}</ChipComponent>
+							<ChipComponent
+								key={item.category_id}
+								value={item.category_id}
+							>
+								{item.name}
+							</ChipComponent>
 						))}
 					</GroupComponent>
 				</ChipGroupComponent>
@@ -103,11 +142,15 @@ export const PosProductSection = () => {
 				<BoxComponent h={70} className="px-3 mt-1">
 					<TextComponent text="Categories" bold size="xl" />
 					<SpaceComponent showHeight />
-					<ChipGroupComponent value={catSubValue} onChange={(val) => setSubCatValue(val)}>
+					<ChipGroupComponent
+						value={catSubValue}
+						onChange={(val) => setSubCatValue(val)}
+					>
 						<GroupComponent justify="start">
 							<ChipComponent value="">All items</ChipComponent>
 							{subCategories.map((item: any) => (
 								<ChipComponent
+									key={item.sub_category_id}
 									value={item.sub_category_id}
 								>
 									{item.name}
@@ -120,9 +163,13 @@ export const PosProductSection = () => {
 			<ScrollAreaComponent
 				style={{
 					display: "grid",
-					height: subCategories.length > 0 ? "calc(100vh - 250px)" : "calc(100vh - 173px)",
+					height:
+						subCategories.length > 0
+							? "calc(100vh - 250px)"
+							: "calc(100vh - 173px)",
 				}}
-				className="my-3">
+				className="my-3"
+			>
 				<SimpleGridComponent
 					className="mx-3"
 					cols={{
@@ -133,147 +180,41 @@ export const PosProductSection = () => {
 						xl: 4,
 					}}
 				>
-					<ProductCard index={1} />
-					<ProductCard index={2} />
-					<ProductCard index={3} />
-					<ProductCard index={4} />
-					<ProductCard index={5} />
-					<ProductCard index={6} />
-					<ProductCard index={7} />
-					<ProductCard index={8} />
-					<ProductCard index={9} />
-					<ProductCard index={10} />
-					<ProductCard index={11} />
-					<ProductCard index={12} />
-					<ProductCard index={13} />
-					<ProductCard index={14} />
-					<ProductCard index={15} />
-					<ProductCard index={16} />
-					<ProductCard index={17} />
-					<ProductCard index={18} />
-					<ProductCard index={19} />
-					<ProductCard index={21} />
-					<ProductCard index={22} />
-					<ProductCard index={23} />
+					{/* {itemList.map((item, index) => (
+						// <ProductCard
+						// 	key={item.item_id}
+						// 	index={index + 1}
+						// 	item={item}
+						// 	cartItem={
+						// 		cart.filter(
+						// 			(c_item) => c_item.item_id === item.item_id,
+						// 		)[0]
+						// 	}
+						// />
+					))} */}
+					{itemList.map((item) => (
+						<ProductCard
+							key={item.item_id}
+							item={item}
+							cartItem={
+								cartItemIndexes.get(item.item_id) !== undefined
+									? cartItems[
+											cartItemIndexes.get(item.item_id) ?? 0
+										]
+									: undefined
+							}
+							isAddToCartApiBusy={isAddToCartApiBusy}
+							toggleIsAddToCartApiBusy={toggleBooleanState(
+								setIsAddToCartApiBusy,
+							)}
+							addSubCartItem={addSubCartItem}
+							setAddSubCartItem={setAddSubCartItem}
+						/>
+					))}
 				</SimpleGridComponent>
 			</ScrollAreaComponent>
 		</div>
 	);
 };
 
-// @ts-ignore
-const ProductCard = ({ index }) => {
-	const [add, setAdd] = useState(false);
-	const [quantity, setQuantity] = useState<string | number>(1);
-	const numberInputRef = useRef<NumberInputHandlers>(null);
-	return (
-		<CardComponent shadow="sm" padding="sm" radius="md" withBorder>
-			<CardSectionComponent>
-				<ImageComponent
-					h={150}
-					fit="fill"
-					src={`https://source.unsplash.com/random/150x100?food,eat,dinner&sig=${index}`}
-				/>
-			</CardSectionComponent>
-
-			<GroupComponent justify="space-between" mt="md" mb="xs">
-				<TextComponent text={`Product Name ${index}`} bold className="text-justify" />
-			</GroupComponent>
-
-			<SpoilerComponent maxHeight={45} showLabel="more" hideLabel="less">
-				<TextComponent
-					size="sm"
-					c="dimmed"
-					className="text-justify"
-					text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
-			</SpoilerComponent>
-
-			<GroupComponent justify="space-between" mt="md">
-				<TextComponent
-					bold
-					size="xl"
-					text={`${currencySign} ${110 * parseInt(quantity.toString(), 10)}`}
-					c="green"
-					className="text-justify" />
-
-				{!add ?
-					<ButtonComponent
-						w="50%"
-						h={40}
-						onClick={() => {
-							setAdd(true);
-						}}
-					>
-						Add
-					</ButtonComponent>
-					:
-					<div className="w-[50%] h-[40px] rounded-[20px] flex bg-gray-200 justify-between items-center">
-						<ButtonComponent
-							style={{
-								height: "40px",
-								width: "30%",
-								fontSize: 30,
-								alignContent: "center",
-								backgroundColor: "bg-gr",
-								justifyContent: "center",
-								display: "flex",
-								border: "1px solid gray",
-								borderRadius: "8px 0 0 8px",
-							}}
-							px={5}
-							onClick={() => numberInputRef.current?.decrement()}
-						>
-							<Minus size={16} />
-						</ButtonComponent>
-
-						<MantineProviderComponent theme={centeredInputTheme}>
-							<NumberInputComponent
-								min={0}
-								step={1}
-								hideControls
-								placeholder="0"
-								setValue={(val: string | number) => {
-									if (parseInt(val.toString(), 10) < 1) {
-										setAdd(false);
-									} else {
-										setQuantity(val);
-									}
-								}}
-								value={quantity}
-								variant="unstyled"
-								handlersRef={numberInputRef}
-								style={{
-									width: "40%",
-									height: "38px",
-									border: "none",
-									display: "flex",
-									fontWeight: "bold",
-									backgroundColor: "white",
-								}}
-							/>
-						</MantineProviderComponent>
-
-						<ButtonComponent
-							style={{
-								height: "40px",
-								width: "30%",
-								fontSize: 30,
-								alignContent: "center",
-								backgroundColor: "bg-gr",
-								justifyContent: "center",
-								display: "flex",
-								border: "1px solid gray",
-								borderRadius: "0 8px 8px 0",
-							}}
-							px={5}
-							onClick={() => numberInputRef.current?.increment()}
-						>
-							<Plus size={16} />
-						</ButtonComponent>
-					</div>
-				}
-			</GroupComponent>
-
-		</CardComponent>
-	);
-};
+export default PosProductSection;

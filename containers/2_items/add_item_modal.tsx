@@ -4,8 +4,9 @@ import React, { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState }
 import { useRouter } from "next/navigation";
 import { Image as ImageIcon } from "lucide-react";
 import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
+import { MultiSelectProps } from "@mantine/core";
 import {
-	ActionIconComponent,
+	ActionIconComponent, AvatarComponent,
 	ButtonComponent,
 	CheckboxComponent,
 	FieldsetComponent,
@@ -21,14 +22,14 @@ import {
 	SimpleGridComponent,
 	SpaceComponent,
 	StackComponent,
-	TextAreaInputComponent,
+	TextAreaInputComponent, TextComponent,
 	TextInputComponent,
 	TitleComponent,
 } from "@/components";
 import {
 	getAddOnApi,
 	getAttributeApi,
-	getCategoryApi,
+	getCategoryApi, getCrmJWT,
 	getItemTypeApi,
 	getSubCategoryApi,
 	getTagApi,
@@ -38,7 +39,7 @@ import {
 import { CustomAttributeModel } from "@/models";
 
 interface Props {
-	itemId: string;
+	itemId: string | undefined;
 	isOpen: boolean;
 	onClose: () => void;
 	initialItemName: string;
@@ -48,6 +49,16 @@ interface Props {
 interface AttributeState {
 	value: string;
 	checked: boolean;
+}
+
+interface AddOn {
+	icon: string;
+	price: string;
+	label: string;
+}
+
+interface AddOnData {
+	[key: string]: AddOn;
 }
 
 const AddItemModal = (props: Props) => {
@@ -60,23 +71,30 @@ const AddItemModal = (props: Props) => {
 	} = props;
 	const router = useRouter();
 	const isEditModal: boolean = initialItemName !== "";
+	const [sku, setSku] = useState<string>("");
 	const [tagsList, setTagsList] = useState([]);
-	const [tagsId, setTagsId] = useState<string[]>();
 	const [categories, setCategories] = useState([]);
 	const [addOnsList, setAddOnsList] = useState([]);
-	const [images, setImages] = useState<string[]>([]);
-	const [addOnsId, setAddOnsId] = useState<string[]>();
+	const [tagsId, setTagsId] = useState<string[]>([]);
+	const [longDesc, setLongDesc] = useState<string>("");
+	const [addOnsId, setAddOnsId] = useState<string[]>([]);
 	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
+	const [shortDesc, setShortDesc] = useState<string>("");
 	const [itemName, setItemName] = useState<string>(initialItemName);
 	const [itemTypesList, setItemTypesList] = useState([]);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [categoryId, setCategoryId] = useState<string>("");
 	const [itemTypeId, setItemTypeId] = useState<string>("");
 	const [subCategoryList, setSubCategoryList] = useState([]);
+	const [addOnData, setAddOnData] = useState<AddOnData>({});
 	const [subCategoryId, setSubCategoryId] = useState<string>("");
+	const [price, setPrice] = useState<string | number>("");
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
+	const [itemInternalName, setItemInternalName] = useState<string>("");
 	const [inputError, setInputError] = useState<string | null>(null);
 	const [replaceIndex, setReplaceIndex] = useState<number | null>(null);
+	const [stockQuantity, setStockQuantity] = useState<string | number>("");
+	const [images, setImages] = useState<{ file: File, previewURL: string }[]>([]);
 	const [customAttributesList, setCustomAttributesList] = useState<CustomAttributeModel[]>([]);
 	const [attributesState, setAttributesState] = useState<Record<string, AttributeState>>({});
 
@@ -156,13 +174,29 @@ const AddItemModal = (props: Props) => {
 			(data: any) => {
 				const formattedAddOns = data.add_ons.map(
 					(addOn: {
+						icon: string;
+						price: string;
 						add_on_id: string;
 						name: string;
 					}) => ({
-						value: addOn.add_on_id,
-						label: addOn.name,
+						value: addOn.add_on_id.toString(),
+						label: addOn.name.toString(),
+						icon: addOn.icon,
+						price: addOn.price,
 					}));
 				setAddOnsList(formattedAddOns);
+
+				const tempAddOnData: AddOnData = {};
+				data.add_ons.forEach(
+					(addOn: { add_on_id: string; name: string; icon: string; price: string }) => {
+						tempAddOnData[addOn.add_on_id] = {
+							icon: addOn.icon,
+							price: addOn.price,
+							label: addOn.name,
+						};
+					}
+				);
+				setAddOnData(tempAddOnData);
 			},
 			() => {
 			},
@@ -216,13 +250,28 @@ const AddItemModal = (props: Props) => {
 			setInputError("Please enter the name first");
 		}
 		setLoading(true);
-		const body = {
-			name: itemName,
-			id: itemId,
-		};
+		const itemBody = new FormData();
+		itemBody.append("sku", sku);
+		itemBody.append("id", itemId || "");
+		itemBody.append("name", itemName);
+		itemBody.append("price", String(price));
+		itemBody.append("description", longDesc);
+		itemBody.append("short_description", shortDesc);
+		itemBody.append("sub_category_id", subCategoryId);
+		itemBody.append("category_id", categoryId);
+		itemBody.append("item_type_id", itemTypeId);
+		itemBody.append("tags", JSON.stringify(tagsId));
+		itemBody.append("internal_name", itemInternalName);
+		itemBody.append("add_ons", JSON.stringify(addOnsId));
+		itemBody.append("stock_quantity", String(stockQuantity));
+		itemBody.append("attributes", JSON.stringify(checkedAttributes));
+		images.forEach((image) => {
+			itemBody.append("image_files_added", image.file);
+		});
+
 		try {
 			await upsertItemApi(
-				body,
+				itemBody,
 				() => {
 					onClose();
 					setLoading(false);
@@ -248,9 +297,17 @@ const AddItemModal = (props: Props) => {
 		}
 	};
 
+	const createPreviewURL = (file: File): string => URL.createObjectURL(file);
+
 	const onFilePick = (files: File[] | File | null) => {
-		if (Array.isArray(files)) {
-			const newImages = files.map(file => URL.createObjectURL(file));
+		if (files) {
+			const fileArray = Array.isArray(files) ? files : [files];
+
+			const newImages = fileArray.map(file => {
+				const previewURL = createPreviewURL(file);
+				return { file, previewURL };
+			});
+
 			if (replaceIndex !== null) {
 				setImages(prevImages => {
 					const updatedImages = [...prevImages];
@@ -262,20 +319,15 @@ const AddItemModal = (props: Props) => {
 			} else {
 				setImages(prevImages => [...prevImages, ...newImages]);
 			}
-		} else if (files) {
-			const newImage = URL.createObjectURL(files);
-			if (replaceIndex !== null) {
-				setImages(prevImages => {
-					const updatedImages = [...prevImages];
-					updatedImages[replaceIndex] = newImage;
-					return updatedImages;
-				});
-				setReplaceIndex(null);
-			} else {
-				setImages(prevImages => [...prevImages, newImage]);
-			}
 		}
 	};
+
+	const convertToBase64 = (file: File): Promise<string> => new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = () => resolve(reader.result as string);
+			reader.onerror = (error) => reject(error);
+		});
 
 	const handleRemoveImage = (index: number) => {
 		setImages(prevImages => prevImages.filter((_, i) => i !== index));
@@ -312,13 +364,22 @@ const AddItemModal = (props: Props) => {
 		.filter(([, value]) => value.checked)
 		.map(([key, value]) =>
 			({
-				custom_attribute_id: key,
+				attribute_id: key,
 				value: value.value,
 			})), [attributesState]);
 
-	useEffect(() => {
-		console.log("Checked Attributes:", checkedAttributes);
-	}, [checkedAttributes]);
+	const renderMultiSelectOption: MultiSelectProps["renderOption"] = ({ option }) => (
+		<GroupComponent gap="sm">
+			<AvatarComponent src={addOnData[option.value]?.icon} size={36} radius="xl" />
+			<div>
+				<TextComponent text={addOnData[option.value].label} />
+				<TextComponent
+					opacity={0.5}
+					text={addOnData[option.value]?.price}
+					/>
+			</div>
+		</GroupComponent>
+	);
 
 	return (
 		<ModalComponent
@@ -348,59 +409,57 @@ const AddItemModal = (props: Props) => {
 							placeholder="Enter Item Name"
 						/>
 						<TextInputComponent
-							value={itemName}
+							value={itemInternalName}
 							title="Internal Name"
 							label="Internal Name"
-							setValue={setItemName}
+							setValue={setItemInternalName}
 							placeholder="Enter Item Name"
 						/>
 						<TextInputComponent
 							required
 							title="SKU"
 							label="SKU"
-							value={itemName}
+							value={sku}
 							error={inputError}
-							setValue={setItemName}
+							setValue={setSku}
 							placeholder="Enter Item Name"
 						/>
 						<NumberInputComponent
 							required
-							value={itemName}
 							error={inputError}
+							value={stockQuantity}
 							title="Stock Quantity"
 							label="Stock Quantity"
-							setValue={() => {
-							}}
+							setValue={setStockQuantity}
 							placeholder="Enter Item Name"
 						/>
 						<NumberInputComponent
 							required
 							title="Price"
 							label="Price"
-							value={itemName}
+							value={price}
 							error={inputError}
-							setValue={() => {
-							}}
+							setValue={setPrice}
 							placeholder="Enter Item Name"
 						/>
 					</SimpleGridComponent>
 					<GroupComponent grow>
 						<TextAreaInputComponent
 							required
-							value={itemName}
+							value={shortDesc}
 							resize="vertical"
 							error={inputError}
-							setValue={setItemName}
+							setValue={setShortDesc}
 							title="Short Dscription"
 							label="Short Dscription"
 							placeholder="Enter Item Name"
 						/>
 						<TextAreaInputComponent
-							value={itemName}
+							value={longDesc}
 							resize="vertical"
 							title="Dscription"
 							label="Dscription"
-							setValue={setItemName}
+							setValue={setLongDesc}
 							placeholder="Enter Item Name"
 						/>
 					</GroupComponent>
@@ -433,7 +492,7 @@ const AddItemModal = (props: Props) => {
 								<ImageComponent
 									w={160}
 									h={140}
-									src={img}
+									src={img.previewURL}
 									mih={140}
 									fit="cover"
 								/>
@@ -504,19 +563,21 @@ const AddItemModal = (props: Props) => {
 						checkIconPosition="right"
 						placeholder="Select category"
 					/>
-					<SelectComponent
-						clearable={false}
-						isGrouped={false}
-						value={subCategoryId}
-						data={subCategoryList}
-						checkIconPosition="right"
-						label="Select sub-category"
-						setValue={setSubCategoryId}
-						placeholder="Select sub-category"
-						rightSection={
-							searchLoading && <LoaderComponent size={20} />
-						}
-					/>
+					{subCategoryList.length > 0 &&
+						<SelectComponent
+							clearable={false}
+							isGrouped={false}
+							value={subCategoryId}
+							data={subCategoryList}
+							checkIconPosition="right"
+							label="Select sub-category"
+							setValue={setSubCategoryId}
+							placeholder="Select sub-category"
+							rightSection={
+								searchLoading && <LoaderComponent size={20} />
+							}
+						/>
+					}
 					<SelectComponent
 						required
 						label="Item type"
@@ -545,6 +606,7 @@ const AddItemModal = (props: Props) => {
 						placeholder="Add-ons"
 						setValue={setAddOnsId}
 						checkIconPosition="right"
+						renderOption={renderMultiSelectOption}
 					/>
 				</SimpleGridComponent>
 			</FieldsetComponent>
@@ -589,7 +651,7 @@ const AddItemModal = (props: Props) => {
 				<ButtonComponent
 					w={100}
 					title="Save"
-					loading={loading}
+					// loading={loading}
 					onClick={handleSubmitItem}
 				/>
 			</GroupComponent>

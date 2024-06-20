@@ -12,7 +12,7 @@ import {
 	PageHeader,
 	SimpleGridComponent,
 	StackComponent,
-	TitleComponent
+	TitleComponent,
 } from "@/components";
 import { getDashboardApi, logoutUser } from "@/utils";
 import { dashboardConstants } from "@/constants";
@@ -31,7 +31,7 @@ const DashboardContainer = () => {
 				Object.keys(result).forEach((key) => {
 					tempList.push({
 						key,
-						value: result[key]
+						value: result[key],
 					});
 				});
 				setData(tempList);
@@ -62,14 +62,14 @@ const DashboardContainer = () => {
 								sm: 2,
 								md: 3,
 								lg: 5,
-								xl: 5
+								xl: 5,
 							}}
 							className="mx-3">
 							{
 								data.map((key): ReactNode => {
 									const {
 										Icon,
-										title
+										title,
 									} = dashboardConstants[key.key];
 									return (
 										<CardComponent shadow="sm" key={key.key}>

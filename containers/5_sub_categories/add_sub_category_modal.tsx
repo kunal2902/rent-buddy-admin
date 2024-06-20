@@ -16,7 +16,7 @@ import {
 	TextInputComponent,
 	TitleComponent,
 } from "@/components";
-import { getCategoryApi, imageUrl, upsertSubCategoryApi } from "@/utils";
+import { getCategoryApi, upsertSubCategoryApi } from "@/utils";
 
 interface Props {
 	isOpen: boolean;
@@ -49,12 +49,11 @@ const AddSubCategoryModal = (props: Props) => {
 	const isEditModal: boolean = initialSubCategoryValue !== "";
 
 	useEffect(() => {
-		if (subCategoryName && icon && subCategoryId) {
-			const imgUrl = `${imageUrl}/${icon}`;
-			setSelectedFile(imgUrl);
+		if (subCategoryName && icon) {
+			setSelectedFile(icon);
 			setInputError(null);
 		}
-	}, [subCategoryName, icon, subCategoryId]);
+	}, [subCategoryName, icon]);
 
 	useEffect(() => {
 		getCategoryApi("",

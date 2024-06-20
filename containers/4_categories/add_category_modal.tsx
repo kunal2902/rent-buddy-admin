@@ -16,7 +16,7 @@ import {
 	TextInputComponent,
 	TitleComponent,
 } from "@/components";
-import { imageUrl, logoutUser, upsertCategoryApi } from "@/utils";
+import { logoutUser, upsertCategoryApi } from "@/utils";
 
 interface Props {
 	isOpen: boolean;
@@ -47,8 +47,7 @@ const AddCategoryModal = (props: Props) => {
 
 	useEffect(() => {
 		if (categoryName && icon) {
-			const imgUrl = `${imageUrl}/${icon}`;
-			setSelectedFile(imgUrl);
+			setSelectedFile(icon);
 			setInputError(null);
 		}
 	}, [categoryName, icon]);
