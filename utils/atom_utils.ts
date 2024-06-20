@@ -41,7 +41,7 @@ export const callCartApiAtom = atom<boolean>({
 
 export const cartItemsAtom = atom<Array<CartItemModel>>({
 	default: [],
-	key: "cartAtom",
+	key: "cartItemsAtom",
 });
 export const cartAtom = atom<CartModel | null>({
 	default: null,

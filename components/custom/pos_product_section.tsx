@@ -1,45 +1,30 @@
 "use client";
 
-import { Minus, Plus, SearchIcon } from "lucide-react";
-import React, { useEffect, useRef, useState, useCallback } from "react";
-import { NumberInputHandlers } from "@mantine/core";
+import { SearchIcon } from "lucide-react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { toast } from "react-toastify";
+import { useRecoilValue } from "recoil";
 import {
 	BoxComponent,
-	ButtonComponent,
-	CardComponent,
-	CardSectionComponent,
 	ChipComponent,
 	ChipGroupComponent,
 	GroupComponent,
-	ImageComponent,
-	MantineProviderComponent,
-	NumberInputComponent,
 	ScrollAreaComponent,
 	SimpleGridComponent,
 	SpaceComponent,
-	SpoilerComponent,
 	TextComponent,
 	TextInputComponent,
 } from "@/components";
 import {
-	callCartApiAtom,
-	cartAtom,
-	cartIdAtom,
 	cartItemsAtom,
-	currencySign,
-	customerAtom,
-	deleteCartApi,
 	getCategoryApi,
 	getItemApi,
 	getSubCategoryApi,
 	logoutUser,
-	upsertCartApi,
+	toggleBooleanState,
 } from "@/utils";
-import { centeredInputTheme } from "@/constants";
-import { CartItemModel, CartModel, CategoryModel, ItemModel } from "@/models";
+import { CartItemModel, CategoryModel, ItemModel } from "@/models";
+import { ProductCard } from "./pos_product_card";
 
 export interface Categories {
 	categoryName: string;
@@ -53,21 +38,12 @@ export const PosProductSection = () => {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [categoriesList, setCategoriesList] = useState<CategoryModel[]>([]);
 	const [itemList, setItemList] = useState<ItemModel[]>([]);
-	const [cartItems, setCartItems] =
-		useRecoilState<Array<CartItemModel>>(cartItemsAtom);
-	const [isCartCreated, setIsCartCreated] = useState<boolean>(false);
+	const cartItems = useRecoilValue<Array<CartItemModel>>(cartItemsAtom);
 	const [cartItemIndexes, setCartItemIndexes] = useState<Map<string, number>>(
 		new Map(),
 	);
 	const [isAddToCartApiBusy, setIsAddToCartApiBusy] =
 		useState<boolean>(false);
-	const setCart = useSetRecoilState<CartModel | null>(cartAtom);
-	const isAppMounted = useRef<boolean>(false);
-
-	useEffect(() => {
-		setCart(null);
-		setCartItems([]);
-	}, []);
 
 	useEffect(() => {
 		getCategoryApi(
@@ -95,13 +71,12 @@ export const PosProductSection = () => {
 
 	useEffect(() => {
 		const updatedCartItemIndexes = new Map<string, number>();
+		console.log("cartItems", cartItems);
 
-		for (const cartItem of cartItems) {
-			updatedCartItemIndexes.set(
-				cartItem.cart_item_id,
-				cartItem.quantity,
-			);
-		}
+		cartItems.forEach((cartItem, index) => {
+			updatedCartItemIndexes.set(cartItem.item_id, index);
+		});
+
 		setCartItemIndexes(updatedCartItemIndexes);
 	}, [cartItems]);
 
@@ -216,6 +191,23 @@ export const PosProductSection = () => {
 						// 	}
 						// />
 					))} */}
+					{itemList.map((item) => (
+						<ProductCard
+							key={item.item_id}
+							item={item}
+							cartItem={
+								cartItemIndexes.get(item.item_id) !== undefined
+									? cartItems[
+									cartItemIndexes.get(item.item_id) ?? 0
+										]
+									: undefined
+							}
+							isAddToCartApiBusy={isAddToCartApiBusy}
+							toggleIsAddToCartApiBusy={toggleBooleanState(
+								setIsAddToCartApiBusy,
+							)}
+						/>
+					))}
 				</SimpleGridComponent>
 			</ScrollAreaComponent>
 		</div>

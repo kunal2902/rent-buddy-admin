@@ -1,6 +1,21 @@
+"use client";
+
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { Minus, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { NumberInputHandlers } from "@mantine/core";
 import { CartItemModel, CartModel, ItemModel } from "@/models";
-import { cartAtom, currencySign, logoutUser, upsertCartApi } from "@/utils";
-import { useRecoilState } from "recoil";
+import {
+	callCartApiAtom,
+	cartAtom,
+	cartItemsAtom,
+	currencySign,
+	customerAtom,
+	logoutUser,
+	upsertCartApi,
+	upsertCartItemApi,
+} from "@/utils";
 import {
 	ButtonComponent,
 	CardComponent,
@@ -12,9 +27,7 @@ import {
 	SpoilerComponent,
 	TextComponent,
 } from "../mantine";
-import { Minus, Plus } from "lucide-react";
 import { centeredInputTheme } from "@/constants";
-import { useRouter } from "next/navigation";
 
 interface Props {
 	cartItem: CartItemModel | undefined;
@@ -23,19 +36,21 @@ interface Props {
 	toggleIsAddToCartApiBusy: (newState?: boolean) => void;
 }
 
-const ProductCard = (props: Props) => {
+export const ProductCard = (props: Props) => {
 	const { cartItem, item, isAddToCartApiBusy, toggleIsAddToCartApiBusy } =
 		props;
 
 	const router = useRouter();
 	const numberInputRef = useRef<NumberInputHandlers>(null);
-	const [createCart, setCreateCart] = useState<boolean>(true);
-	const [quantity, setQuantity] = useState<string | number>(0);
-	const [itemIdToUpdate, setItemIdToUpdate] = useState<string | null>(null);
-	console.log("createCart", createCart);
+	const [quantity, setQuantity] = useState<number>(cartItem ? cartItem.quantity : 0);
 	const custId = useRecoilValue(customerAtom);
 	const setCallCart = useSetRecoilState(callCartApiAtom);
 	const [cart, setCart] = useRecoilState<CartModel | null>(cartAtom);
+	const setCartItems = useSetRecoilState<Array<CartItemModel>>(cartItemsAtom);
+
+	useEffect(() => {
+		console.log("cart", cart);
+	}, [cart]);
 
 	const onAddClick = async () => {
 		if (isAddToCartApiBusy) return;
@@ -43,7 +58,7 @@ const ProductCard = (props: Props) => {
 		toggleIsAddToCartApiBusy(true);
 
 		try {
-			let prevCart: CartModel = cart;
+			let prevCart: CartModel | null = cart;
 
 			if (!prevCart) {
 				const cartCreationResponse = await upsertCartApi(
@@ -59,32 +74,91 @@ const ProductCard = (props: Props) => {
 					cartCreationResponse &&
 					typeof cartCreationResponse !== "string"
 				) {
-					setCart(cartCreationResponse);
-					prevCart = cartCreationResponse;
+					setCart(cartCreationResponse.cart);
+					prevCart = cartCreationResponse.cart;
 				}
+			}
+
+			console.log("prevCart", prevCart);
+
+			const cartItemCreated = await upsertCartItemApi(
+				{
+					item_id: item.item_id,
+					cart_id: cart ? cart.cart_id : prevCart?.cart_id,
+					quantity: 1,
+				},
+				() => {},
+				() => {},
+				() => {
+					logoutUser(router);
+				},
+			);
+
+			toggleIsAddToCartApiBusy(false);
+
+			if (cartItemCreated && typeof cartItemCreated !== "string") {
+				setCartItems((prev) => [...prev, cartItemCreated.cartItem]);
+				setQuantity(cartItemCreated.cartItem.quantity);
 			}
 		} catch (error) {
 			toggleIsAddToCartApiBusy(false);
+
+			if (error instanceof Error) {
+				console.log(error.message);
+			}
 		}
 	};
 
-	const handleAddButtonClick = (id: string) => {
-		setQuantity((prevQuantity: any) => {
-			const newQuantity = prevQuantity === 0 ? 1 : prevQuantity + 1;
-			setItemIdToUpdate(id);
-			return newQuantity;
-		});
+	const handleAddButtonClick = async (id: string) => {
+		const newQuantity = quantity + 1;
+		await updateCartItemQuantity(id, newQuantity);
+		setQuantity(newQuantity);
 	};
 
-	const handleMinusButtonClick = (id: string) => {
-		setQuantity((prevQuantity: any) => {
-			const newQuantity = prevQuantity - 1;
-			if (newQuantity < 1) {
-				// setAdd(false);
+	const handleMinusButtonClick = async (id: string) => {
+		const newQuantity = quantity - 1;
+		if (newQuantity < 1) return;
+		await updateCartItemQuantity(id, newQuantity);
+		setQuantity(newQuantity);
+	};
+
+	const updateCartItemQuantity = async (id: string, newQuantity: number) => {
+		if (isAddToCartApiBusy) return;
+
+		toggleIsAddToCartApiBusy(true);
+
+		try {
+			const cartItemUpdated = await upsertCartItemApi(
+				{
+					item_id: id,
+					cart_id: cart?.cart_id,
+					quantity: newQuantity,
+				},
+				() => {},
+				() => {},
+				() => {
+					logoutUser(router);
+				},
+			);
+
+			toggleIsAddToCartApiBusy(false);
+
+			if (cartItemUpdated && typeof cartItemUpdated !== "string") {
+				setCartItems((prev) =>
+					prev.map((items) =>
+						items.item_id === id
+							? { ...items, quantity: newQuantity }
+							: items,
+					),
+				);
 			}
-			setItemIdToUpdate(id);
-			return newQuantity;
-		});
+		} catch (error) {
+			toggleIsAddToCartApiBusy(false);
+
+			if (error instanceof Error) {
+				console.log(error.message);
+			}
+		}
 	};
 
 	return (
@@ -120,7 +194,7 @@ const ProductCard = (props: Props) => {
 				/>
 
 				{!cartItem ? (
-					<ButtonComponent w="50%" h={40} onClick={handleAddItem}>
+					<ButtonComponent w="50%" h={40} onClick={onAddClick}>
 						Add
 					</ButtonComponent>
 				) : (
@@ -154,12 +228,12 @@ const ProductCard = (props: Props) => {
 								placeholder="0"
 								setValue={(val: string | number) => {
 									if (parseInt(val.toString(), 10) < 1) {
-										// setAdd(false);
+										setQuantity(0);
 									} else {
-										setQuantity(val);
+										setQuantity(val as number);
 									}
 								}}
-								value={cartItem.quantity}
+								value={quantity}
 								variant="unstyled"
 								handlersRef={numberInputRef}
 								style={{
