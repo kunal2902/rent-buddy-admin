@@ -181,6 +181,7 @@ export const ProductCard = (props: Props) => {
 			toggleIsAddToCartApiBusy(false);
 		} catch (error) {
 			toggleIsAddToCartApiBusy(false);
+			setQuantity(cartItem?.quantity ?? 1);
 
 			if (error instanceof Error) {
 				console.log(error.message);
