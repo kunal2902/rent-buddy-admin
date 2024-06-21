@@ -367,7 +367,7 @@ export const PosCartSection = () => {
 					}
 				</CardComponent>
 
-				<CardComponent padding="sm" shadow="sm" radius="md" withBorder style={{ height: 150 }}>
+				<CardComponent padding="sm" shadow="sm" radius="md" withBorder style={{ height: "auto" }}>
 					<StackComponent gap="sm">
 						<GroupComponent justify="space-between">
 							<TextComponent text="Sub Total:" size="sm" />
