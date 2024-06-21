@@ -95,12 +95,8 @@ export const PosCartSection = () => {
 		return subtotal;
 	};
 
-	const calculateTax = () => subTotal * 0.15;
-
 	const calculateTotal = () => {
-		const subtotal = subTotal;
-		const tax = calculateTax();
-		return subtotal + tax;
+		return subTotal;
 	};
 
 	const clearCart = () => {
@@ -308,22 +304,29 @@ export const PosCartSection = () => {
 												<GroupComponent justify="space-between" align="start" gap={0}>
 													<ImageComponent
 														src={item.item.images[0]}
-														w={50}
-														h={50}
+														w={30}
+														h={30}
 													/>
-													<StackComponent style={{ flexGrow: 1 }} ml={10} gap={5}>
+													<StackComponent
+														ml={10}
+														gap={0}
+														style={{ flexGrow: 1 }}
+													>
 														<GroupComponent justify="space-between">
-															<TitleComponent title={item.item.name} />
+															<TitleComponent
+																fz={14}
+																title={item.item.name}
+															/>
 
 															<TitleComponent
+																fz={14}
 																c="green"
 																title={`${currencySign} ${parseInt(item.item.price.toString(), 10) * item.quantity}`}
 															/>
 														</GroupComponent>
 														<TextComponent
 															c="gray"
-															size={14}
-															lh={1.1}
+															fz={12}
 															text={`${currencySign} ${parseInt(item.item.price.toString(), 10)} x ${item.quantity}`}
 														/>
 													</StackComponent>
@@ -332,10 +335,25 @@ export const PosCartSection = () => {
 													item.item.custom_attributes.map(ca => (
 														<GroupComponent justify="space-between" my={2}>
 															<TextComponent
-																text={toTitleCase(ca.custom_attribute.name)}
+																lh={1}
+																fz={12}
+																text={
+																	toTitleCase(
+																		ca.custom_attribute.name
+																	)
+																}
 															/>
 															<TextComponent
-																text={`${currencySign} ${calculateTaxOnProduct(ca, item.item.price, item.quantity)}`}
+																lh={1}
+																fz={12}
+																text={
+																	`${currencySign} 
+																${calculateTaxOnProduct(
+																		ca,
+																		item.item.price,
+																		item.quantity
+																	)}`
+																}
 															/>
 														</GroupComponent>
 													))
@@ -354,10 +372,6 @@ export const PosCartSection = () => {
 						<GroupComponent justify="space-between">
 							<TextComponent text="Sub Total:" size="sm" />
 							<TextComponent text={`${currencySign} ${subTotal}`} bold size="sm" />
-						</GroupComponent>
-						<GroupComponent justify="space-between">
-							<TextComponent text="Tax (15%):" size="sm" />
-							<TextComponent text={`${currencySign} ${calculateTax()}`} bold size="sm" />
 						</GroupComponent>
 						<GroupComponent justify="space-between">
 							<TextComponent text="On Bill:" size="sm" />
