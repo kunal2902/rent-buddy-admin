@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AddIcon } from "@storybook/icons";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { useRouter } from "next/navigation";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { FiShoppingCart } from "react-icons/fi";
@@ -24,7 +24,7 @@ import {
 } from "@/components";
 import {
 	appAccentColorRGBA,
-	callCartApiAtom,
+	cartAtom,
 	cartDraftApi,
 	cartIdAtom,
 	cartItemsAtom,
@@ -39,20 +39,21 @@ import {
 	upsertCartApi,
 } from "@/utils";
 import { ComboBoxProps } from "@/types";
-import { CartItemModel } from "@/models";
+import { CartItemModel, CartModel } from "@/models";
+import InvoiceDetailModal from "@/components/custom/invoice_detail_modal";
 
 export const PosCartSection = () => {
 	const router = useRouter();
-	const [customersList, setCustomersList] = useState<ComboBoxProps[]>([]);
-	const [customerModalOpen, setCustomerModalOpen] = useState(false);
+
 	const [subTotal, setSubTotal] = useState(0);
-	const [total, setTotal] = useState(0);
-	const [taxOnProduct, setTaxOnProduct] = useState(0);
-	const [onProductTotal, setOnProductTotal] = useState(0);
+	const [customerModalOpen, setCustomerModalOpen] = useState(false);
+	const [invoiceDialogOpen, setInvoiceDialogOpen] = useState<boolean>(false);
+	const [customersList, setCustomersList] = useState<ComboBoxProps[]>([]);
+
+	const [cartId, setCartId] = useRecoilState(cartIdAtom);
+	const setCart = useSetRecoilState<CartModel | null>(cartAtom);
 	const [selectedCustomer, setSelectedCustomer] = useRecoilState(customerAtom);
-	const [callCart, setCallCart] = useRecoilState(callCartApiAtom);
-	const cartItems = useRecoilValue<Array<CartItemModel>>(cartItemsAtom);
-	const cartId = useRecoilValue(cartIdAtom);
+	const [cartItems, setCartItems] = useRecoilState<Array<CartItemModel>>(cartItemsAtom);
 
 	useEffect(() => {
 		getCustomerApi(
@@ -77,7 +78,6 @@ export const PosCartSection = () => {
 		const subtotal = calculateSubtotal();
 		const taxProduct = calculateTotalTaxOnProducts();
 		setSubTotal(subtotal + (taxProduct > 0 ? taxProduct : 0));
-		setOnProductTotal(taxProduct);
 	}, [cartItems]);
 
 	const handleCustomerChange = (option: { value: string; label: string }) => {
@@ -89,20 +89,32 @@ export const PosCartSection = () => {
 
 	const calculateSubtotal = () => {
 		let subtotal = 0;
-		cartItems.forEach((item) => {
-			subtotal += parseInt(item.item.price, 10) * item.quantity;
+		cartItems.forEach((cartItem) => {
+			const { item: { price, custom_attributes }, quantity } = cartItem;
+			const itemPrice = parseInt(price, 10);
+			let itemTotal = itemPrice * quantity;
+
+			custom_attributes.forEach((attr) => {
+				const tax = calculateTaxOnProduct(attr, itemPrice, quantity);
+				if (tax !== null) {
+					itemTotal += tax;
+				}
+			});
+
+			subtotal += itemTotal;
 		});
 		return subtotal;
 	};
 
-	const calculateTotal = () => {
-		return subTotal;
-	};
+	const calculateTotal = () => subTotal;
 
 	const clearCart = () => {
 		deleteCartApi(
 			cartId,
 			() => {
+				setCartItems([]);
+				setCartId("");
+				setCart(null);
 			},
 			() => {
 			},
@@ -114,8 +126,10 @@ export const PosCartSection = () => {
 	const handleSaveDraft = () => {
 		cartDraftApi(
 			cartId,
-			(response: any) => {
-				console.log("Draft saved successfully:", response);
+			() => {
+				setCartItems([]);
+				setCartId("");
+				setCart(null);
 			},
 			() => {
 			},
@@ -125,23 +139,6 @@ export const PosCartSection = () => {
 	};
 
 	const calculateTaxOnProduct = (attr: any, price: any, quantity: any) => {
-		/*let taxOnProductTotal = 0;
-
-		if (item?.item.custom_attributes) {
-			item?.item.custom_attributes.forEach((attr: any) => {
-				if (attr.custom_attribute.is_tax && attr.custom_attribute.tax_type === "on_product") {
-					if (attr.custom_attribute.type === "number") {
-						const attributeVal = Number(attr.attribute_value);
-						taxOnProductTotal += attributeVal * item.quantity;
-					} else if (attr.custom_attribute.type === "percentage") {
-						const itemPrice = Number(item.item.price);
-						const percentageValue = Number(attr.attribute_value) / 100;
-						taxOnProductTotal += itemPrice * percentageValue * item.quantity;
-					}
-				}
-			});
-		}*/
-
 		if (attr) {
 			if (attr.custom_attribute.is_tax && attr.custom_attribute.tax_type === "on_product") {
 				if (attr.custom_attribute.type === "number") {
@@ -161,7 +158,7 @@ export const PosCartSection = () => {
 
 	const calculateTotalTaxOnProducts = () => {
 		const totalTax = 0;
-		cartItems.forEach((item) => {
+		cartItems.forEach(() => {
 			// totalTax += calculateTaxOnProduct(item);
 		});
 		return totalTax;
@@ -206,6 +203,7 @@ export const PosCartSection = () => {
 					cartId,
 				};
 				checkoutApi(checkoutBody, () => {
+					setInvoiceDialogOpen(true);
 				}, () => {
 				}, () => {
 				});
@@ -267,7 +265,7 @@ export const PosCartSection = () => {
 					<StackComponent gap="sm">
 						<GroupComponent justify="space-between">
 							<TextComponent text="Customer Name:" bold />
-							<TextComponent text={selectedCustomer.name} />
+							<TextComponent text={selectedCustomer.name ? selectedCustomer.name : "N/A"} />
 						</GroupComponent>
 						<GroupComponent justify="space-between">
 							<TextComponent text="Order Date:" bold />
@@ -394,11 +392,21 @@ export const PosCartSection = () => {
 						</TooltipComponent>
 						<GroupComponent grow justify="space-evenly" style={{ flexGrow: 1 }}>
 							<ButtonComponent color={appAccentColorRGBA} title="Save Draft" onClick={handleSaveDraft} />
-							<ButtonComponent title="Checkout" onClick={handleCheckout} />
+							<TooltipComponent label="Please select customer">
+								<ButtonComponent title="Checkout" onClick={handleCheckout} disabled={selectedCustomer.id === ""} fullWidth />
+							</TooltipComponent>
 						</GroupComponent>
 					</GroupComponent>
 				</BoxComponent>
 			</div>
+
+			{invoiceDialogOpen &&
+				<InvoiceDetailModal
+					isOpen={invoiceDialogOpen}
+					onClose={() => setInvoiceDialogOpen(false)}
+					subTotal={subTotal}
+				/>
+			}
 		</>
 	);
 };
