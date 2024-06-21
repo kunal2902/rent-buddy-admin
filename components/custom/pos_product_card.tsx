@@ -190,7 +190,6 @@ export const ProductCard = (props: Props) => {
 
 	const updateCartItemQuantity = async () => {
 		try {
-
 			if (Number(quantity) < 1) {
 				await deleteCartItemApi(
 					cartItem?.cart_item_id ?? "",

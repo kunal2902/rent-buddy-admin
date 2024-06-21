@@ -2,6 +2,7 @@
 
 import { FiShoppingCart } from "react-icons/fi";
 import React from "react";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import {
 	BoxComponent, ButtonComponent,
 	CardComponent,
@@ -18,9 +19,8 @@ import {
 	currencySign,
 	customerAtom,
 	formatDate,
-	toTitleCase
+	toTitleCase,
 } from "@/utils";
-import { useRecoilState, useSetRecoilState } from "recoil";
 import { CartItemModel, CartModel } from "@/models";
 
 interface Props {
