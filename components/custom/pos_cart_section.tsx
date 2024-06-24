@@ -118,6 +118,10 @@ export const PosCartSection = () => {
 				setCartItems([]);
 				setCartId("");
 				setCart(null);
+				setSelectedCustomer({
+					id: "",
+					name: "",
+				});
 			},
 			() => {},
 			() => {},
@@ -131,6 +135,10 @@ export const PosCartSection = () => {
 				setCartItems([]);
 				setCartId("");
 				setCart(null);
+				setSelectedCustomer({
+					id: "",
+					name: "",
+				});
 			},
 			() => {},
 			() => {},

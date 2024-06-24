@@ -127,7 +127,7 @@ export const customerAPIPath: string = `${apiUrl}/customers`;
 
 // Reports path
 /** get all reports based on filter, sorting and search */
-export const reportsAPIPath: string = `${apiUrl}/reports`;
+export const reportsAPIPath: string = `${apiUrl}/report`;
 
 // Cart path
 export const cartAPIPath: string = `${apiUrl}/cart`;
