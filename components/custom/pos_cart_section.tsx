@@ -306,7 +306,7 @@ export const PosCartSection = () => {
 								text={
 									selectedCustomer.name
 										? selectedCustomer.name
-										: "N/A"
+										: ""
 								}
 							/>
 						</GroupComponent>
@@ -364,7 +364,7 @@ export const PosCartSection = () => {
 													<TitleComponent
 														fz={14}
 														c="green"
-														title={`${currencySign} ${parseInt(item.item.price.toString(), 10) * item.quantity}`}
+														title={`${currencySign} ${Number(Number(item.item.price).toFixed(2)) * item.quantity}`}
 													/>
 												</GroupComponent>
 												<TextComponent
@@ -392,7 +392,7 @@ export const PosCartSection = () => {
 														lh={1}
 														fz={12}
 														text={`${currencySign} 
-																${calculateTaxOnProduct(ca, item.item.price, item.quantity)}`}
+																${calculateTaxOnProduct(ca, item.item.price, item.quantity)?.toFixed(2)}`}
 													/>
 												</GroupComponent>
 											),
@@ -423,7 +423,7 @@ export const PosCartSection = () => {
 						<GroupComponent justify="space-between">
 							<TextComponent text="Sub Total:" size="sm" />
 							<TextComponent
-								text={`${currencySign} ${subTotal}`}
+								text={`${currencySign} ${subTotal.toFixed(2)}`}
 								bold
 								size="sm"
 							/>
@@ -431,7 +431,7 @@ export const PosCartSection = () => {
 						<GroupComponent justify="space-between">
 							<TextComponent text="On Bill:" size="sm" />
 							<TextComponent
-								text={`${currencySign} ${calculateTaxOnBill()}`}
+								text={`${currencySign} ${calculateTaxOnBill().toFixed(2)}`}
 								bold
 								size="sm"
 							/>
@@ -445,7 +445,7 @@ export const PosCartSection = () => {
 						<GroupComponent justify="space-between">
 							<TextComponent text="Total:" bold />
 							<TextComponent
-								text={`${currencySign} ${calculateTotal()}`}
+								text={`${currencySign} ${calculateTotal().toFixed(2)}`}
 								bold
 							/>
 						</GroupComponent>
@@ -474,7 +474,10 @@ export const PosCartSection = () => {
 								title="Save Draft"
 								onClick={handleSaveDraft}
 							/>
-							<TooltipComponent label="Please select customer" disabled={selectedCustomer.id}>
+							<TooltipComponent
+								label="Please select customer"
+								disabled={selectedCustomer.id}
+							>
 								<ButtonComponent
 									title="Checkout"
 									onClick={handleCheckout}
