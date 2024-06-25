@@ -26,7 +26,13 @@ import {
 	TableTrComponent,
 } from "@/components";
 import { ItemModel } from "@/models";
-import { deleteItemApi, disableItemApi, formatDate, getItemApi, logoutUser } from "@/utils";
+import {
+	deleteItemApi,
+	disableItemApi,
+	formatDate,
+	getItemApi,
+	logoutUser,
+} from "@/utils";
 import AddItemModal from "./add_item_modal";
 
 const ItemsContainer = () => {
@@ -64,7 +70,7 @@ const ItemsContainer = () => {
 			() => {
 				setLoading(false);
 				logoutUser(router);
-			}
+			},
 		).then();
 	};
 
@@ -91,7 +97,7 @@ const ItemsContainer = () => {
 			() => {
 				setSearchLoading(false);
 				logoutUser(router);
-			}
+			},
 		).then();
 	}, 500);
 
@@ -103,29 +109,33 @@ const ItemsContainer = () => {
 
 	const handleActionItem = async (id: string, itemType: string) => {
 		if (itemType === "disable") {
-			await disableItemApi(id,
+			await disableItemApi(
+				id,
 				() => {
-					setCallApi(val => !val);
+					setCallApi((val) => !val);
 				},
 				() => {
-					setCallApi(val => !val);
+					setCallApi((val) => !val);
 				},
 				() => {
-					setCallApi(val => !val);
+					setCallApi((val) => !val);
 					logoutUser(router);
-				});
+				},
+			);
 		} else {
-			await deleteItemApi(id,
+			await deleteItemApi(
+				id,
 				() => {
-					setCallApi(val => !val);
+					setCallApi((val) => !val);
 				},
 				() => {
-					setCallApi(val => !val);
+					setCallApi((val) => !val);
 				},
 				() => {
-					setCallApi(val => !val);
+					setCallApi((val) => !val);
 					logoutUser(router);
-				});
+				},
+			);
 		}
 	};
 
@@ -134,7 +144,7 @@ const ItemsContainer = () => {
 		"Item Id",
 		"Name",
 		"Category",
-		// "Sub category",
+		"Sub category",
 		"Item type",
 		"Quantity",
 		"Created By",
@@ -149,18 +159,24 @@ const ItemsContainer = () => {
 			<TableTdComponent>{element.item_id}</TableTdComponent>
 			<TableTdComponent>{element.name}</TableTdComponent>
 			<TableTdComponent>{element.category.name}</TableTdComponent>
-			{/* <TableTdComponent>{element.sub_category.name}</TableTdComponent> */}
+			<TableTdComponent>
+				{element.sub_category?.name ?? null}
+			</TableTdComponent>
 			<TableTdComponent>{element.type.name}</TableTdComponent>
 			<TableTdComponent>{element.stock_quantity}</TableTdComponent>
 			<TableTdComponent>{element.created_by.name}</TableTdComponent>
-			<TableTdComponent>{formatDate(element.created_at)}</TableTdComponent>
+			<TableTdComponent>
+				{formatDate(element.created_at)}
+			</TableTdComponent>
 			<TableTdComponent w={60}>
 				<PopConfirmComponent
 					entityName="item"
 					type={PopConfirmType.switch}
 					isDisabled={element.is_disabled}
 					actionName={element.is_disabled ? "enable" : "disable"}
-					onConfirm={async () => handleActionItem(element.item_id, "disable")}
+					onConfirm={async () =>
+						handleActionItem(element.item_id, "disable")
+					}
 				/>
 			</TableTdComponent>
 			<TableTdComponent w={110}>
@@ -168,11 +184,16 @@ const ItemsContainer = () => {
 					<PopConfirmComponent
 						entityName="item"
 						actionName="delete"
-						onConfirm={async () => handleActionItem(element.item_id, "delete")}
+						onConfirm={async () =>
+							handleActionItem(element.item_id, "delete")
+						}
 					/>
 					<ActionIconComponent
-						onClick={() => handleAddOpenModal(element.item_id, element.name)}
-						size="md">
+						onClick={() =>
+							handleAddOpenModal(element.item_id, element.name)
+						}
+						size="md"
+					>
 						<MdOutlineEdit size={18} />
 					</ActionIconComponent>
 				</GroupComponent>
@@ -201,47 +222,43 @@ const ItemsContainer = () => {
 				}}
 			/>
 
-			{
-				loading ?
-					<LoadingOverlayComponent /> :
-					itemList.length === 0 ?
-						<NoDataFound /> :
-						<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
-							<BoxComponent mx="auto">
-								<PaperComponent>
-									<TableComponent>
-										<TableTheadComponent>
-											<TableTrComponent>
-												{columns.map((item) =>
-													(
-														<TableThComponent
-															key={item}
-														>
-															{item}
-														</TableThComponent>
-													)
-												)}
-											</TableTrComponent>
-										</TableTheadComponent>
+			{loading ? (
+				<LoadingOverlayComponent />
+			) : itemList.length === 0 ? (
+				<NoDataFound />
+			) : (
+				<BoxComponent style={{ overflow: "hidden" }} className="mx-3">
+					<BoxComponent mx="auto">
+						<PaperComponent>
+							<TableComponent>
+								<TableTheadComponent>
+									<TableTrComponent>
+										{columns.map((item) => (
+											<TableThComponent key={item}>
+												{item}
+											</TableThComponent>
+										))}
+									</TableTrComponent>
+								</TableTheadComponent>
 
-										<TableTbodyComponent>
-											{rows}
-										</TableTbodyComponent>
-									</TableComponent>
-								</PaperComponent>
+								<TableTbodyComponent>
+									{rows}
+								</TableTbodyComponent>
+							</TableComponent>
+						</PaperComponent>
 
-								<CenterComponent>
-									<PaginationComponent
-										value={page}
-										onChange={setPage}
-										total={Math.ceil(total / 15)}
-									/>
-								</CenterComponent>
-							</BoxComponent>
-						</BoxComponent>
-			}
+						<CenterComponent>
+							<PaginationComponent
+								value={page}
+								onChange={setPage}
+								total={Math.ceil(total / 15)}
+							/>
+						</CenterComponent>
+					</BoxComponent>
+				</BoxComponent>
+			)}
 
-			{openAddModal &&
+			{openAddModal && (
 				<AddItemModal
 					itemId={itemId}
 					isOpen={openAddModal}
@@ -249,7 +266,7 @@ const ItemsContainer = () => {
 					initialItemName={itemName}
 					onClose={() => setOpenAddModal(false)}
 				/>
-			}
+			)}
 		</MainComponent>
 	);
 };
