@@ -272,7 +272,7 @@ const AddItemModal = (props: Props) => {
 		itemBody.append("price", String(price));
 		if (longDesc.trim()) itemBody.append("description", longDesc);
 		itemBody.append("short_description", shortDesc);
-		itemBody.append("sub_category_id", subCategoryId);
+		if (subCategoryId.trim()) itemBody.append("sub_category_id", subCategoryId);
 		itemBody.append("category_id", categoryId);
 		itemBody.append("item_type_id", itemTypeId);
 		itemBody.append("tags", JSON.stringify(tagsId));
