@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AddIcon } from "@storybook/icons";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { useRouter } from "next/navigation";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { FiShoppingCart } from "react-icons/fi";
@@ -24,7 +24,7 @@ import {
 } from "@/components";
 import {
 	appAccentColorRGBA,
-	callCartApiAtom,
+	cartAtom,
 	cartDraftApi,
 	cartIdAtom,
 	cartItemsAtom,
@@ -39,20 +39,23 @@ import {
 	upsertCartApi,
 } from "@/utils";
 import { ComboBoxProps } from "@/types";
-import { CartItemModel } from "@/models";
+import { CartItemModel, CartModel } from "@/models";
+import InvoiceDetailModal from "@/components/custom/invoice_detail_modal";
 
 export const PosCartSection = () => {
 	const router = useRouter();
-	const [customersList, setCustomersList] = useState<ComboBoxProps[]>([]);
-	const [customerModalOpen, setCustomerModalOpen] = useState(false);
+
 	const [subTotal, setSubTotal] = useState(0);
-	const [total, setTotal] = useState(0);
-	const [taxOnProduct, setTaxOnProduct] = useState(0);
-	const [onProductTotal, setOnProductTotal] = useState(0);
-	const [selectedCustomer, setSelectedCustomer] = useRecoilState(customerAtom);
-	const [callCart, setCallCart] = useRecoilState(callCartApiAtom);
-	const cartItems = useRecoilValue<Array<CartItemModel>>(cartItemsAtom);
-	const cartId = useRecoilValue(cartIdAtom);
+	const [customerModalOpen, setCustomerModalOpen] = useState(false);
+	const [invoiceDialogOpen, setInvoiceDialogOpen] = useState<boolean>(false);
+	const [customersList, setCustomersList] = useState<ComboBoxProps[]>([]);
+
+	const [cartId, setCartId] = useRecoilState(cartIdAtom);
+	const setCart = useSetRecoilState<CartModel | null>(cartAtom);
+	const [selectedCustomer, setSelectedCustomer] =
+		useRecoilState(customerAtom);
+	const [cartItems, setCartItems] =
+		useRecoilState<Array<CartItemModel>>(cartItemsAtom);
 
 	useEffect(() => {
 		getCustomerApi(
@@ -62,14 +65,12 @@ export const PosCartSection = () => {
 					(customer: { customer_id: string; name: string }) => ({
 						value: customer.customer_id,
 						label: customer.name,
-					})
+					}),
 				);
 				setCustomersList(formattedCustomers);
 			},
-			() => {
-			},
-			() => {
-			}
+			() => {},
+			() => {},
 		).then();
 	}, []);
 
@@ -77,7 +78,6 @@ export const PosCartSection = () => {
 		const subtotal = calculateSubtotal();
 		const taxProduct = calculateTotalTaxOnProducts();
 		setSubTotal(subtotal + (taxProduct > 0 ? taxProduct : 0));
-		setOnProductTotal(taxProduct);
 	}, [cartItems]);
 
 	const handleCustomerChange = (option: { value: string; label: string }) => {
@@ -89,68 +89,79 @@ export const PosCartSection = () => {
 
 	const calculateSubtotal = () => {
 		let subtotal = 0;
-		cartItems.forEach((item) => {
-			subtotal += parseInt(item.item.price, 10) * item.quantity;
+		cartItems.forEach((cartItem) => {
+			const {
+				item: { price, custom_attributes },
+				quantity,
+			} = cartItem;
+			const itemPrice = parseInt(price, 10);
+			let itemTotal = itemPrice * quantity;
+
+			custom_attributes.forEach((attr) => {
+				const tax = calculateTaxOnProduct(attr, itemPrice, quantity);
+				if (tax !== null) {
+					itemTotal += tax;
+				}
+			});
+
+			subtotal += itemTotal;
 		});
 		return subtotal;
 	};
 
-	const calculateTotal = () => {
-		return subTotal;
-	};
+	const calculateTotal = () => subTotal;
 
 	const clearCart = () => {
 		deleteCartApi(
 			cartId,
 			() => {
+				setCartItems([]);
+				setCartId("");
+				setCart(null);
+				setSelectedCustomer({
+					id: "",
+					name: "",
+				});
 			},
-			() => {
-			},
-			() => {
-			}
+			() => {},
+			() => {},
 		).then();
 	};
 
 	const handleSaveDraft = () => {
 		cartDraftApi(
 			cartId,
-			(response: any) => {
-				console.log("Draft saved successfully:", response);
-			},
 			() => {
+				setCartItems([]);
+				setCartId("");
+				setCart(null);
+				setSelectedCustomer({
+					id: "",
+					name: "",
+				});
 			},
-			() => {
-			}
+			() => {},
+			() => {},
 		).then();
 	};
 
 	const calculateTaxOnProduct = (attr: any, price: any, quantity: any) => {
-		/*let taxOnProductTotal = 0;
-
-		if (item?.item.custom_attributes) {
-			item?.item.custom_attributes.forEach((attr: any) => {
-				if (attr.custom_attribute.is_tax && attr.custom_attribute.tax_type === "on_product") {
-					if (attr.custom_attribute.type === "number") {
-						const attributeVal = Number(attr.attribute_value);
-						taxOnProductTotal += attributeVal * item.quantity;
-					} else if (attr.custom_attribute.type === "percentage") {
-						const itemPrice = Number(item.item.price);
-						const percentageValue = Number(attr.attribute_value) / 100;
-						taxOnProductTotal += itemPrice * percentageValue * item.quantity;
-					}
-				}
-			});
-		}*/
-
 		if (attr) {
-			if (attr.custom_attribute.is_tax && attr.custom_attribute.tax_type === "on_product") {
+			if (
+				attr.custom_attribute.is_tax &&
+				attr.custom_attribute.tax_type === "on_product"
+			) {
 				if (attr.custom_attribute.type === "number") {
 					const attributeVal = Number(attr.attribute_value);
 					return attributeVal * quantity;
 				}
 				if (attr.custom_attribute.type === "percentage") {
 					const itemPrice = Number(price);
-					return ((itemPrice / 100) * Number(attr.attribute_value)) * Number(quantity);
+					return (
+						(itemPrice / 100) *
+						Number(attr.attribute_value) *
+						Number(quantity)
+					);
 				}
 				return null;
 			}
@@ -161,7 +172,7 @@ export const PosCartSection = () => {
 
 	const calculateTotalTaxOnProducts = () => {
 		const totalTax = 0;
-		cartItems.forEach((item) => {
+		cartItems.forEach(() => {
 			// totalTax += calculateTaxOnProduct(item);
 		});
 		return totalTax;
@@ -172,21 +183,33 @@ export const PosCartSection = () => {
 
 		cartItems.forEach((item) => {
 			if (item.item.custom_attributes) {
-				item.item.custom_attributes.forEach((attr: {
-					custom_attribute: { is_tax: any; tax_type: string; type: string; };
-					attribute_value: string;
-				}) => {
-					if (attr.custom_attribute.is_tax && attr.custom_attribute.tax_type === "on_bill") {
-						if (attr.custom_attribute.type === "number") {
-							taxOnBill += parseFloat(attr.attribute_value);
-						} else if (attr.custom_attribute.type === "percentage") {
-							const itemPrice = parseFloat(item.item.price);
-							const percentageValue = parseFloat(attr.attribute_value) / 100;
-							const taxForItem = itemPrice * percentageValue;
-							taxOnBill += taxForItem;
+				item.item.custom_attributes.forEach(
+					(attr: {
+						custom_attribute: {
+							is_tax: any;
+							tax_type: string;
+							type: string;
+						};
+						attribute_value: string;
+					}) => {
+						if (
+							attr.custom_attribute.is_tax &&
+							attr.custom_attribute.tax_type === "on_bill"
+						) {
+							if (attr.custom_attribute.type === "number") {
+								taxOnBill += parseFloat(attr.attribute_value);
+							} else if (
+								attr.custom_attribute.type === "percentage"
+							) {
+								const itemPrice = parseFloat(item.item.price);
+								const percentageValue =
+									parseFloat(attr.attribute_value) / 100;
+								const taxForItem = itemPrice * percentageValue;
+								taxOnBill += taxForItem;
+							}
 						}
-					}
-				});
+					},
+				);
 			}
 		});
 
@@ -196,7 +219,7 @@ export const PosCartSection = () => {
 	const handleCheckout = async () => {
 		const body = {
 			id: cartId,
-			customer_Id: selectedCustomer.id,
+			customer_id: selectedCustomer.id,
 			label: "Purchased!",
 		};
 		await upsertCartApi(
@@ -205,16 +228,19 @@ export const PosCartSection = () => {
 				const checkoutBody = {
 					cartId,
 				};
-				checkoutApi(checkoutBody, () => {
-				}, () => {
-				}, () => {
-				});
+				checkoutApi(
+					checkoutBody,
+					() => {
+						setInvoiceDialogOpen(true);
+					},
+					() => {},
+					() => {},
+				);
 			},
-			() => {
-			},
+			() => {},
 			() => {
 				logoutUser(router);
-			}
+			},
 		);
 	};
 
@@ -236,7 +262,9 @@ export const PosCartSection = () => {
 							value={selectedCustomer.id ?? ""}
 							placeholder="Select Customer"
 							setValue={(val) => {
-								const option = customersList.find((c) => c.value === val);
+								const option = customersList.find(
+									(c) => c.value === val,
+								);
 								if (option) {
 									handleCustomerChange(option);
 								}
@@ -263,11 +291,24 @@ export const PosCartSection = () => {
 					<TextComponent bold size="xl" text="Order Details" />
 				</BoxComponent>
 
-				<CardComponent className="mt-3" mih={90} shadow="sm" radius="md" padding="sm" withBorder>
+				<CardComponent
+					className="mt-3"
+					mih={90}
+					shadow="sm"
+					radius="md"
+					padding="sm"
+					withBorder
+				>
 					<StackComponent gap="sm">
 						<GroupComponent justify="space-between">
 							<TextComponent text="Customer Name:" bold />
-							<TextComponent text={selectedCustomer.name} />
+							<TextComponent
+								text={
+									selectedCustomer.name
+										? selectedCustomer.name
+										: "N/A"
+								}
+							/>
 						</GroupComponent>
 						<GroupComponent justify="space-between">
 							<TextComponent text="Order Date:" bold />
@@ -284,103 +325,129 @@ export const PosCartSection = () => {
 					className="my-3"
 					style={{ flexGrow: 1 }}
 				>
-					{
-						cartItems.length === 0 ?
-							<CenterComponent h="100%">
-								<FiShoppingCart />
-								<TextComponent text="Cart is Empty!" ml={5} />
-							</CenterComponent>
-							:
-							<ScrollAreaComponent>
-								{
-									cartItems.map((item, index) => (
-										<BoxComponent
-											key={index}
-											px={12}
-											pt={6}
-											pb={index === cartItems.length - 1 ? 0 : 6}
+					{cartItems.length === 0 ? (
+						<CenterComponent h="100%">
+							<FiShoppingCart />
+							<TextComponent text="Cart is Empty!" ml={5} />
+						</CenterComponent>
+					) : (
+						<ScrollAreaComponent>
+							{cartItems.map((item, index) => (
+								<BoxComponent
+									key={index}
+									px={12}
+									pt={6}
+									pb={index === cartItems.length - 1 ? 0 : 6}
+								>
+									<StackComponent gap={0}>
+										<GroupComponent
+											justify="space-between"
+											align="start"
+											gap={0}
 										>
-											<StackComponent gap={0}>
-												<GroupComponent justify="space-between" align="start" gap={0}>
-													<ImageComponent
-														src={item.item.images[0]}
-														w={30}
-														h={30}
+											<ImageComponent
+												src={item.item.images[0]}
+												w={30}
+												h={30}
+											/>
+											<StackComponent
+												ml={10}
+												gap={0}
+												style={{ flexGrow: 1 }}
+											>
+												<GroupComponent justify="space-between">
+													<TitleComponent
+														fz={14}
+														title={item.item.name}
 													/>
-													<StackComponent
-														ml={10}
-														gap={0}
-														style={{ flexGrow: 1 }}
-													>
-														<GroupComponent justify="space-between">
-															<TitleComponent
-																fz={14}
-																title={item.item.name}
-															/>
 
-															<TitleComponent
-																fz={14}
-																c="green"
-																title={`${currencySign} ${parseInt(item.item.price.toString(), 10) * item.quantity}`}
-															/>
-														</GroupComponent>
-														<TextComponent
-															c="gray"
-															fz={12}
-															text={`${currencySign} ${parseInt(item.item.price.toString(), 10)} x ${item.quantity}`}
-														/>
-													</StackComponent>
+													<TitleComponent
+														fz={14}
+														c="green"
+														title={`${currencySign} ${parseInt(item.item.price.toString(), 10) * item.quantity}`}
+													/>
 												</GroupComponent>
-												{
-													item.item.custom_attributes.map(ca => (
-														<GroupComponent justify="space-between" my={2}>
-															<TextComponent
-																lh={1}
-																fz={12}
-																text={
-																	toTitleCase(
-																		ca.custom_attribute.name
-																	)
-																}
-															/>
-															<TextComponent
-																lh={1}
-																fz={12}
-																text={
-																	`${currencySign} 
-																${calculateTaxOnProduct(
-																		ca,
-																		item.item.price,
-																		item.quantity
-																	)}`
-																}
-															/>
-														</GroupComponent>
-													))
-												}
-												{index !== cartItems.length - 1 &&
-													<DividerComponent my={0} variant="dashed" p={0} py={0} />}
+												<TextComponent
+													c="gray"
+													fz={12}
+													text={`${currencySign} ${parseInt(item.item.price.toString(), 10)} x ${item.quantity}`}
+												/>
 											</StackComponent>
-										</BoxComponent>
-									))}
-							</ScrollAreaComponent>
-					}
+										</GroupComponent>
+										{item.item.custom_attributes.map(
+											(ca) => (
+												<GroupComponent
+													justify="space-between"
+													my={2}
+												>
+													<TextComponent
+														lh={1}
+														fz={12}
+														text={toTitleCase(
+															ca.custom_attribute
+																.name,
+														)}
+													/>
+													<TextComponent
+														lh={1}
+														fz={12}
+														text={`${currencySign} 
+																${calculateTaxOnProduct(ca, item.item.price, item.quantity)}`}
+													/>
+												</GroupComponent>
+											),
+										)}
+										{index !== cartItems.length - 1 && (
+											<DividerComponent
+												my={0}
+												variant="dashed"
+												p={0}
+												py={0}
+											/>
+										)}
+									</StackComponent>
+								</BoxComponent>
+							))}
+						</ScrollAreaComponent>
+					)}
 				</CardComponent>
 
-				<CardComponent padding="sm" shadow="sm" radius="md" withBorder style={{ height: "auto" }}>
+				<CardComponent
+					padding="sm"
+					shadow="sm"
+					radius="md"
+					withBorder
+					style={{ height: "auto" }}
+				>
 					<StackComponent gap="sm">
 						<GroupComponent justify="space-between">
 							<TextComponent text="Sub Total:" size="sm" />
-							<TextComponent text={`${currencySign} ${subTotal}`} bold size="sm" />
+							<TextComponent
+								text={`${currencySign} ${subTotal}`}
+								bold
+								size="sm"
+							/>
 						</GroupComponent>
 						<GroupComponent justify="space-between">
 							<TextComponent text="On Bill:" size="sm" />
-							<TextComponent text={`${currencySign} ${calculateTaxOnBill()}`} bold size="sm" />
+							<TextComponent
+								text={`${currencySign} ${calculateTaxOnBill()}`}
+								bold
+								size="sm"
+							/>
 						</GroupComponent>
-						<DividerComponent my={0} variant="dashed" p={0} py={0} />
+						<DividerComponent
+							my={0}
+							variant="dashed"
+							p={0}
+							py={0}
+						/>
 						<GroupComponent justify="space-between">
 							<TextComponent text="Total:" bold />
-							<TextComponent text={`${currencySign} ${calculateTotal()}`} bold />
+							<TextComponent
+								text={`${currencySign} ${calculateTotal()}`}
+								bold
+							/>
 						</GroupComponent>
 					</StackComponent>
 				</CardComponent>
@@ -388,17 +455,45 @@ export const PosCartSection = () => {
 				<BoxComponent h={60} className="mt-3">
 					<GroupComponent>
 						<TooltipComponent label="Clear cart">
-							<ActionIconComponent c="red" maw={36} h={36} onClick={clearCart}>
+							<ActionIconComponent
+								c="red"
+								maw={36}
+								h={36}
+								onClick={clearCart}
+							>
 								<RiDeleteBin6Line />
 							</ActionIconComponent>
 						</TooltipComponent>
-						<GroupComponent grow justify="space-evenly" style={{ flexGrow: 1 }}>
-							<ButtonComponent color={appAccentColorRGBA} title="Save Draft" onClick={handleSaveDraft} />
-							<ButtonComponent title="Checkout" onClick={handleCheckout} />
+						<GroupComponent
+							grow
+							justify="space-evenly"
+							style={{ flexGrow: 1 }}
+						>
+							<ButtonComponent
+								color={appAccentColorRGBA}
+								title="Save Draft"
+								onClick={handleSaveDraft}
+							/>
+							<TooltipComponent label="Please select customer">
+								<ButtonComponent
+									title="Checkout"
+									onClick={handleCheckout}
+									disabled={selectedCustomer.id === ""}
+									fullWidth
+								/>
+							</TooltipComponent>
 						</GroupComponent>
 					</GroupComponent>
 				</BoxComponent>
 			</div>
+
+			{invoiceDialogOpen && (
+				<InvoiceDetailModal
+					isOpen={invoiceDialogOpen}
+					onClose={() => setInvoiceDialogOpen(false)}
+					subTotal={subTotal}
+				/>
+			)}
 		</>
 	);
 };

@@ -25,19 +25,20 @@ export interface Categories {
 
 export const PosProductSection = () => {
 	const router = useRouter();
+	const [searchQuery, setSearchQuery] = useState("");
+	const [subCategories, setSubCategories] = useState([]);
+	const [itemList, setItemList] = useState<ItemModel[]>([]);
 	const [catValue, setCatValue] = useState<string | string[]>("");
 	const [catSubValue, setSubCatValue] = useState<string | string[]>("");
-	const [subCategories, setSubCategories] = useState([]);
-	const [searchQuery, setSearchQuery] = useState("");
+	const [addSubCartItem, setAddSubCartItem] = useState<string | null>(null);
 	const [categoriesList, setCategoriesList] = useState<CategoryModel[]>([]);
-	const [itemList, setItemList] = useState<ItemModel[]>([]);
-	const cartItems = useRecoilValue<Array<CartItemModel>>(cartItemsAtom);
 	const [cartItemIndexes, setCartItemIndexes] = useState<Map<string, number>>(
 		new Map()
 	);
 	const [isAddToCartApiBusy, setIsAddToCartApiBusy] =
 		useState<boolean>(false);
-	const [addSubCartItem, setAddSubCartItem] = useState<string | null>(null);
+
+	const cartItems = useRecoilValue<Array<CartItemModel>>(cartItemsAtom);
 
 	useEffect(() => {
 		getCategoryApi(
@@ -67,7 +68,6 @@ export const PosProductSection = () => {
 
 	useEffect(() => {
 		const updatedCartItemIndexes = new Map<string, number>();
-		console.log("cartItems", cartItems);
 
 		cartItems.forEach((cartItem, index) => {
 			updatedCartItemIndexes.set(cartItem.item_id, index);

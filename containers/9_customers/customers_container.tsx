@@ -36,8 +36,8 @@ const CustomersContainer = () => {
 	const [pageSize, setPageSize] = useState<number>(15);
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [loading, setLoading] = useState<boolean>(true);
-	const [orderBy, setOrderBy] = useState<string>("user_id");
 	const [searchValue, setSearchValue] = useState<string>("");
+	const [orderBy, setOrderBy] = useState<string>("customer_id");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [customerInitialName, setCustomerInitialName] = useState("");
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);

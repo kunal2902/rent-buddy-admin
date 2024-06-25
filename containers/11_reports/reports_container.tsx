@@ -79,16 +79,18 @@ const ReportsContainer = () => {
 
 	const columns = [
 		"Index",
-		"Report Id",
-		"Name",
+		"Invoice ID",
+		"Total Selling Amount",
+		"Customer Name",
 		"Created At",
 	];
 
 	const rows = reportsList.map((element, index) => (
 		<Table.Tr key={index}>
 			<Table.Td>{index + 1}</Table.Td>
-			<Table.Td>{element.report_id}</Table.Td>
-			<Table.Td>{element.name}</Table.Td>
+			<Table.Td>{element.invoice_id}</Table.Td>
+			<Table.Td>{element.total_selling_amount}</Table.Td>
+			<Table.Td>{element?.customer?.name}</Table.Td>
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 		</Table.Tr>
 	));
@@ -137,9 +139,9 @@ const ReportsContainer = () => {
 								</PaperComponent>
 								<CenterComponent>
 									<PaginationComponent
-										total={10}
 										value={page}
 										onChange={setPage}
+										total={Math.ceil(total / 15)}
 									/>
 								</CenterComponent>
 							</BoxComponent>

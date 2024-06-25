@@ -49,15 +49,14 @@ export const ProductCard = (props: Props) => {
 
 	const router = useRouter();
 	const numberInputRef = useRef<NumberInputHandlers>(null);
+	const [sendDebouncedCall, setSendDebouncedCall] = useState<boolean>(false);
 	const [quantity, setQuantity] = useState<number>(
 		cartItem ? cartItem.quantity : 0,
 	);
-	// const custId = useRecoilValue(customerAtom);
-	// const setCallCart = useSetRecoilState(callCartApiAtom);
-	const [cart, setCart] = useRecoilState<CartModel | null>(cartAtom);
-	const [cartId, setCartId] = useRecoilState<string>(cartIdAtom);
+
+	const setCartId = useSetRecoilState(cartIdAtom);
 	const setCartItems = useSetRecoilState<Array<CartItemModel>>(cartItemsAtom);
-	const [sendDebouncedCall, setSendDebouncedCall] = useState<boolean>(false);
+	const [cart, setCart] = useRecoilState<CartModel | null>(cartAtom);
 
 	useEffect(() => {
 		if (sendDebouncedCall) {
@@ -102,8 +101,6 @@ export const ProductCard = (props: Props) => {
 					prevCart = cartCreationResponse.cart;
 				}
 			}
-
-			console.log("prevCart", prevCart);
 
 			const cartItemCreated = await upsertCartItemApi(
 				{
@@ -193,8 +190,6 @@ export const ProductCard = (props: Props) => {
 
 	const updateCartItemQuantity = async () => {
 		try {
-			console.log(quantity);
-
 			if (Number(quantity) < 1) {
 				await deleteCartItemApi(
 					cartItem?.cart_item_id ?? "",
@@ -225,8 +220,6 @@ export const ProductCard = (props: Props) => {
 						logoutUser(router);
 					},
 				);
-
-				console.log(updatedCartItem);
 
 				if (updatedCartItem && typeof updatedCartItem !== "string") {
 					setCartItems((prev) => {
