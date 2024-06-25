@@ -474,7 +474,7 @@ export const PosCartSection = () => {
 								title="Save Draft"
 								onClick={handleSaveDraft}
 							/>
-							<TooltipComponent label="Please select customer">
+							<TooltipComponent label="Please select customer" disabled={selectedCustomer.id}>
 								<ButtonComponent
 									title="Checkout"
 									onClick={handleCheckout}
