@@ -446,7 +446,7 @@ const AddItemModal = (props: Props) => {
 							title="Internal Name"
 							label="Internal Name"
 							setValue={setItemInternalName}
-							placeholder="Enter Item Name"
+							placeholder="Enter Internal Name"
 						/>
 						<TextInputComponent
 							required
@@ -455,7 +455,7 @@ const AddItemModal = (props: Props) => {
 							value={sku}
 							error={inputError}
 							setValue={setSku}
-							placeholder="Enter Item Name"
+							placeholder="Enter SKU"
 						/>
 						<NumberInputComponent
 							required
@@ -464,7 +464,7 @@ const AddItemModal = (props: Props) => {
 							title="Stock Quantity"
 							label="Stock Quantity"
 							setValue={setStockQuantity}
-							placeholder="Enter Item Name"
+							placeholder="Enter Stock Quantity"
 						/>
 						<NumberInputComponent
 							required
@@ -473,7 +473,7 @@ const AddItemModal = (props: Props) => {
 							value={price}
 							error={inputError}
 							setValue={setPrice}
-							placeholder="Enter Item Name"
+							placeholder="Enter Price"
 						/>
 					</SimpleGridComponent>
 					<GroupComponent grow>
@@ -485,15 +485,15 @@ const AddItemModal = (props: Props) => {
 							setValue={setShortDesc}
 							title="Short Description"
 							label="Short Description"
-							placeholder="Enter Item Name"
+							placeholder="Enter Short Description"
 						/>
 						<TextAreaInputComponent
 							value={longDesc}
 							resize="vertical"
 							title="Description"
-							label="Dscription"
+							label="Description"
 							setValue={setLongDesc}
-							placeholder="Enter Item Name"
+							placeholder="Enter Description"
 						/>
 					</GroupComponent>
 				</StackComponent>
