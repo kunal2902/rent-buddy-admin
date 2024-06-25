@@ -134,7 +134,7 @@ const ItemsContainer = () => {
 		"Item Id",
 		"Name",
 		"Category",
-		"Sub category",
+		// "Sub category",
 		"Item type",
 		"Quantity",
 		"Created By",
@@ -149,7 +149,7 @@ const ItemsContainer = () => {
 			<TableTdComponent>{element.item_id}</TableTdComponent>
 			<TableTdComponent>{element.name}</TableTdComponent>
 			<TableTdComponent>{element.category.name}</TableTdComponent>
-			<TableTdComponent>{element.sub_category.name}</TableTdComponent>
+			{/* <TableTdComponent>{element.sub_category.name}</TableTdComponent> */}
 			<TableTdComponent>{element.type.name}</TableTdComponent>
 			<TableTdComponent>{element.stock_quantity}</TableTdComponent>
 			<TableTdComponent>{element.created_by.name}</TableTdComponent>
