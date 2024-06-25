@@ -134,7 +134,7 @@ const ItemsContainer = () => {
 		"Item Id",
 		"Name",
 		"Category",
-		"Sub category",
+		// "Sub category",
 		"Item type",
 		"Quantity",
 		"Created By",
