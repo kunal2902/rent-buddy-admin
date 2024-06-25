@@ -450,14 +450,14 @@ const AddItemModal = (props: Props) => {
 							resize="vertical"
 							error={inputError}
 							setValue={setShortDesc}
-							title="Short Dscription"
-							label="Short Dscription"
+							title="Short Description"
+							label="Short Description"
 							placeholder="Enter Item Name"
 						/>
 						<TextAreaInputComponent
 							value={longDesc}
 							resize="vertical"
-							title="Dscription"
+							title="Description"
 							label="Dscription"
 							setValue={setLongDesc}
 							placeholder="Enter Item Name"
