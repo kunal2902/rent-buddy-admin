@@ -137,17 +137,17 @@ const AddCustomAttributeModal = (props: Props) => {
 				/>
 
 				<CheckboxComponent
-					label="Is this a tax?"
+					label="Calculate this on bill?"
 					size={mantineSize}
 					onChecked={(checked) => setIsTax(checked)}
 				/>
 				{isTax &&
 					<SelectComponent
 						required
-						label="Tax Type"
+						label="Calculation type"
 						value={taxType}
 						setValue={setTaxType}
-						placeholder="Select a Tax Type"
+						placeholder="Select a Calculation type"
 						data={CustomAttributeTaxTypeOptions}
 					/>
 				}

@@ -1,12 +1,20 @@
 "use client";
 
-import React, { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+	Dispatch,
+	SetStateAction,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import { useRouter } from "next/navigation";
 import { Image as ImageIcon } from "lucide-react";
 import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
 import { MultiSelectProps } from "@mantine/core";
 import {
-	ActionIconComponent, AvatarComponent,
+	ActionIconComponent,
+	AvatarComponent,
 	ButtonComponent,
 	CheckboxComponent,
 	FieldsetComponent,
@@ -22,14 +30,16 @@ import {
 	SimpleGridComponent,
 	SpaceComponent,
 	StackComponent,
-	TextAreaInputComponent, TextComponent,
+	TextAreaInputComponent,
+	TextComponent,
 	TextInputComponent,
 	TitleComponent,
 } from "@/components";
 import {
 	getAddOnApi,
 	getAttributeApi,
-	getCategoryApi, getCrmJWT,
+	getCategoryApi,
+	getCrmJWT,
 	getItemTypeApi,
 	getSubCategoryApi,
 	getTagApi,
@@ -62,13 +72,7 @@ interface AddOnData {
 }
 
 const AddItemModal = (props: Props) => {
-	const {
-		isOpen,
-		itemId,
-		onClose,
-		setCallApi,
-		initialItemName,
-	} = props;
+	const { isOpen, itemId, onClose, setCallApi, initialItemName } = props;
 	const router = useRouter();
 	const isEditModal: boolean = initialItemName !== "";
 	const [sku, setSku] = useState<string>("");
@@ -94,18 +98,27 @@ const AddItemModal = (props: Props) => {
 	const [inputError, setInputError] = useState<string | null>(null);
 	const [replaceIndex, setReplaceIndex] = useState<number | null>(null);
 	const [stockQuantity, setStockQuantity] = useState<string | number>("");
-	const [images, setImages] = useState<{ file: File, previewURL: string }[]>([]);
-	const [customAttributesList, setCustomAttributesList] = useState<CustomAttributeModel[]>([]);
-	const [attributesState, setAttributesState] = useState<Record<string, AttributeState>>({});
+	const [images, setImages] = useState<{ file: File; previewURL: string }[]>(
+		[],
+	);
+	const [customAttributesList, setCustomAttributesList] = useState<
+		CustomAttributeModel[]
+	>([]);
+	const [attributesState, setAttributesState] = useState<
+		Record<string, AttributeState>
+	>({});
 
 	useEffect(() => {
-		const initialState = customAttributesList.reduce((acc, attr) => {
-			acc[attr.custom_attribute_id] = {
-				checked: false,
-				value: attr.default_value,
-			};
-			return acc;
-		}, {} as Record<string, AttributeState>);
+		const initialState = customAttributesList.reduce(
+			(acc, attr) => {
+				acc[attr.custom_attribute_id] = {
+					checked: false,
+					value: attr.default_value,
+				};
+				return acc;
+			},
+			{} as Record<string, AttributeState>,
+		);
 		setAttributesState(initialState);
 	}, [customAttributesList]);
 
@@ -113,64 +126,59 @@ const AddItemModal = (props: Props) => {
 		if (itemName) {
 			setInputError(null);
 		}
-		getCategoryApi("",
+		getCategoryApi(
+			"",
 			(data: any) => {
 				const formattedCategories = data.categories.map(
-					(category: {
-						category_id: string;
-						name: string;
-					}) => ({
+					(category: { category_id: string; name: string }) => ({
 						value: category.category_id,
 						label: category.name,
-					}));
+					}),
+				);
 				setCategories(formattedCategories);
 			},
-			() => {
-			},
+			() => {},
 			() => {
 				logoutUser(router);
-			}
+			},
 		).then();
 
-		getItemTypeApi("",
+		getItemTypeApi(
+			"",
 			(data: any) => {
 				const formattedItemType = data.item_types.map(
-					(itemType: {
-						item_type_id: string;
-						name: string;
-					}) => ({
+					(itemType: { item_type_id: string; name: string }) => ({
 						value: itemType.item_type_id,
 						label: itemType.name,
-					}));
+					}),
+				);
 				setItemTypesList(formattedItemType);
 			},
-			() => {
-			},
+			() => {},
 			() => {
 				logoutUser(router);
-			}
+			},
 		).then();
 
-		getTagApi("",
+		getTagApi(
+			"",
 			(data: any) => {
 				const formattedTags = data.tags.map(
-					(tag: {
-						tag_id: string;
-						name: string;
-					}) => ({
+					(tag: { tag_id: string; name: string }) => ({
 						value: tag.tag_id,
 						label: tag.name,
-					}));
+					}),
+				);
 				setTagsList(formattedTags);
 			},
-			() => {
-			},
+			() => {},
 			() => {
 				logoutUser(router);
-			}
+			},
 		).then();
 
-		getAddOnApi("",
+		getAddOnApi(
+			"",
 			(data: any) => {
 				const formattedAddOns = data.add_ons.map(
 					(addOn: {
@@ -183,44 +191,50 @@ const AddItemModal = (props: Props) => {
 						label: addOn.name.toString(),
 						icon: addOn.icon,
 						price: addOn.price,
-					}));
+					}),
+				);
 				setAddOnsList(formattedAddOns);
 
 				const tempAddOnData: AddOnData = {};
 				data.add_ons.forEach(
-					(addOn: { add_on_id: string; name: string; icon: string; price: string }) => {
+					(addOn: {
+						add_on_id: string;
+						name: string;
+						icon: string;
+						price: string;
+					}) => {
 						tempAddOnData[addOn.add_on_id] = {
 							icon: addOn.icon,
 							price: addOn.price,
 							label: addOn.name,
 						};
-					}
+					},
 				);
 				setAddOnData(tempAddOnData);
 			},
-			() => {
-			},
+			() => {},
 			() => {
 				logoutUser(router);
-			}
+			},
 		).then();
 
-		getAttributeApi("",
+		getAttributeApi(
+			"",
 			(data: any) => {
 				setCustomAttributesList(data.custom_attributes);
 			},
-			() => {
-			},
+			() => {},
 			() => {
 				logoutUser(router);
-			}
+			},
 		).then();
 	}, [itemName]);
 
 	useEffect(() => {
 		if (categoryId) {
 			setSearchLoading(true);
-			getSubCategoryApi(`filter_type=category&filter_query=${categoryId}`,
+			getSubCategoryApi(
+				`filter_type=category&filter_query=${categoryId}`,
 				(data: any) => {
 					const formattedCategories = data.sub_categories.map(
 						(subCategory: {
@@ -229,7 +243,8 @@ const AddItemModal = (props: Props) => {
 						}) => ({
 							value: subCategory.sub_category_id,
 							label: subCategory.name,
-						}));
+						}),
+					);
 					setSubCategoryList(formattedCategories);
 					setSearchLoading(false);
 				},
@@ -239,7 +254,7 @@ const AddItemModal = (props: Props) => {
 				() => {
 					logoutUser(router);
 					setSearchLoading(false);
-				}
+				},
 			).then();
 		}
 	}, [categoryId]);
@@ -255,13 +270,13 @@ const AddItemModal = (props: Props) => {
 		itemBody.append("id", itemId || "");
 		itemBody.append("name", itemName);
 		itemBody.append("price", String(price));
-		itemBody.append("description", longDesc);
+		if (longDesc.trim()) itemBody.append("description", longDesc);
 		itemBody.append("short_description", shortDesc);
 		itemBody.append("sub_category_id", subCategoryId);
 		itemBody.append("category_id", categoryId);
 		itemBody.append("item_type_id", itemTypeId);
 		itemBody.append("tags", JSON.stringify(tagsId));
-		itemBody.append("internal_name", itemInternalName);
+		if (itemInternalName.trim()) itemBody.append("internal_name", itemInternalName);
 		itemBody.append("add_ons", JSON.stringify(addOnsId));
 		itemBody.append("stock_quantity", String(stockQuantity));
 		itemBody.append("attributes", JSON.stringify(checkedAttributes));
@@ -284,7 +299,7 @@ const AddItemModal = (props: Props) => {
 				() => {
 					logoutUser(router);
 					setLoading(false);
-				}
+				},
 			);
 		} catch (error) {
 			console.error("Error:", error);
@@ -303,13 +318,13 @@ const AddItemModal = (props: Props) => {
 		if (files) {
 			const fileArray = Array.isArray(files) ? files : [files];
 
-			const newImages = fileArray.map(file => {
+			const newImages = fileArray.map((file) => {
 				const previewURL = createPreviewURL(file);
 				return { file, previewURL };
 			});
 
 			if (replaceIndex !== null) {
-				setImages(prevImages => {
+				setImages((prevImages) => {
 					const updatedImages = [...prevImages];
 					const [firstNewImage, ...restNewImages] = newImages;
 					updatedImages[replaceIndex] = firstNewImage;
@@ -317,12 +332,13 @@ const AddItemModal = (props: Props) => {
 				});
 				setReplaceIndex(null);
 			} else {
-				setImages(prevImages => [...prevImages, ...newImages]);
+				setImages((prevImages) => [...prevImages, ...newImages]);
 			}
 		}
 	};
 
-	const convertToBase64 = (file: File): Promise<string> => new Promise((resolve, reject) => {
+	const convertToBase64 = (file: File): Promise<string> =>
+		new Promise((resolve, reject) => {
 			const reader = new FileReader();
 			reader.readAsDataURL(file);
 			reader.onload = () => resolve(reader.result as string);
@@ -330,7 +346,7 @@ const AddItemModal = (props: Props) => {
 		});
 
 	const handleRemoveImage = (index: number) => {
-		setImages(prevImages => prevImages.filter((_, i) => i !== index));
+		setImages((prevImages) => prevImages.filter((_, i) => i !== index));
 	};
 
 	const handleReplaceImage = (index: number) => {
@@ -341,7 +357,7 @@ const AddItemModal = (props: Props) => {
 	};
 
 	const handleCheckboxChange = (custom_attribute_id: string) => {
-		setAttributesState(prevState => ({
+		setAttributesState((prevState) => ({
 			...prevState,
 			[custom_attribute_id]: {
 				...prevState[custom_attribute_id],
@@ -351,7 +367,7 @@ const AddItemModal = (props: Props) => {
 	};
 
 	const handleInputChange = (custom_attribute_id: string, value: string) => {
-		setAttributesState(prevState => ({
+		setAttributesState((prevState) => ({
 			...prevState,
 			[custom_attribute_id]: {
 				...prevState[custom_attribute_id],
@@ -360,23 +376,32 @@ const AddItemModal = (props: Props) => {
 		}));
 	};
 
-	const checkedAttributes = useMemo(() => Object.entries(attributesState)
-		.filter(([, value]) => value.checked)
-		.map(([key, value]) =>
-			({
-				attribute_id: key,
-				value: value.value,
-			})), [attributesState]);
+	const checkedAttributes = useMemo(
+		() =>
+			Object.entries(attributesState)
+				.filter(([, value]) => value.checked)
+				.map(([key, value]) => ({
+					attribute_id: key,
+					value: value.value,
+				})),
+		[attributesState],
+	);
 
-	const renderMultiSelectOption: MultiSelectProps["renderOption"] = ({ option }) => (
+	const renderMultiSelectOption: MultiSelectProps["renderOption"] = ({
+		option,
+	}) => (
 		<GroupComponent gap="sm">
-			<AvatarComponent src={addOnData[option.value]?.icon} size={36} radius="xl" />
+			<AvatarComponent
+				src={addOnData[option.value]?.icon}
+				size={36}
+				radius="xl"
+			/>
 			<div>
 				<TextComponent text={addOnData[option.value].label} />
 				<TextComponent
 					opacity={0.5}
 					text={addOnData[option.value]?.price}
-					/>
+				/>
 			</div>
 		</GroupComponent>
 	);
@@ -386,9 +411,17 @@ const AddItemModal = (props: Props) => {
 			fullScreen
 			opened={isOpen}
 			onClose={onClose}
-			title={<TitleComponent title={isEditModal ? "Edit Item" : "Add New Item"} />}
+			title={
+				<TitleComponent
+					title={isEditModal ? "Edit Item" : "Add New Item"}
+				/>
+			}
 		>
-			<FieldsetComponent legend={<TitleComponent title="Product Information" order={5} />}>
+			<FieldsetComponent
+				legend={
+					<TitleComponent title="Product Information" order={5} />
+				}
+			>
 				<StackComponent>
 					<SimpleGridComponent
 						cols={{
@@ -450,14 +483,14 @@ const AddItemModal = (props: Props) => {
 							resize="vertical"
 							error={inputError}
 							setValue={setShortDesc}
-							title="Short Dscription"
-							label="Short Dscription"
+							title="Short Description"
+							label="Short Description"
 							placeholder="Enter Item Name"
 						/>
 						<TextAreaInputComponent
 							value={longDesc}
 							resize="vertical"
-							title="Dscription"
+							title="Description"
 							label="Dscription"
 							setValue={setLongDesc}
 							placeholder="Enter Item Name"
@@ -468,12 +501,10 @@ const AddItemModal = (props: Props) => {
 
 			<SpaceComponent showHeight />
 
-			<FieldsetComponent legend={<TitleComponent title="Images" order={5} />}>
-				<ScrollAreaComponent
-					h={200}
-					w="100%"
-					scrollbars="x"
-				>
+			<FieldsetComponent
+				legend={<TitleComponent title="Images" order={5} />}
+			>
+				<ScrollAreaComponent h={200} w="100%" scrollbars="x">
 					<GroupComponent
 						gap={10}
 						w={(images.length + 1) * 170}
@@ -488,7 +519,13 @@ const AddItemModal = (props: Props) => {
 							label="Please select category icon"
 						/>
 						{images.map((img, index) => (
-							<StackComponent gap={10} h={180} mah={180} maw={160} w={160}>
+							<StackComponent
+								gap={10}
+								h={180}
+								mah={180}
+								maw={160}
+								w={160}
+							>
 								<ImageComponent
 									w={160}
 									h={140}
@@ -500,8 +537,8 @@ const AddItemModal = (props: Props) => {
 									h={30}
 									gap={0}
 									mah={30}
-									justify="center">
-
+									justify="center"
+								>
 									<ActionIconComponent
 										h={30}
 										w={30}
@@ -518,7 +555,9 @@ const AddItemModal = (props: Props) => {
 										w={30}
 										ml={5}
 										size="xs"
-										onClick={() => handleReplaceImage(index)}
+										onClick={() =>
+											handleReplaceImage(index)
+										}
 									>
 										<MdOutlineEdit size={18} />
 									</ActionIconComponent>
@@ -542,7 +581,9 @@ const AddItemModal = (props: Props) => {
 
 			<SpaceComponent showHeight />
 
-			<FieldsetComponent legend={<TitleComponent title="Other Arrtributes" order={5} />}>
+			<FieldsetComponent
+				legend={<TitleComponent title="Other Arrtributes" order={5} />}
+			>
 				<SimpleGridComponent
 					cols={{
 						sm: 2,
@@ -562,7 +603,7 @@ const AddItemModal = (props: Props) => {
 						checkIconPosition="right"
 						placeholder="Select category"
 					/>
-					{subCategoryList.length > 0 &&
+					{subCategoryList.length > 0 && (
 						<SelectComponent
 							clearable={false}
 							value={subCategoryId}
@@ -575,7 +616,7 @@ const AddItemModal = (props: Props) => {
 								searchLoading && <LoaderComponent size={20} />
 							}
 						/>
-					}
+					)}
 					<SelectComponent
 						required
 						label="Item type"
@@ -610,7 +651,9 @@ const AddItemModal = (props: Props) => {
 
 			<SpaceComponent showHeight />
 
-			<FieldsetComponent legend={<TitleComponent title="Custom Arrtribute" order={5} />}>
+			<FieldsetComponent
+				legend={<TitleComponent title="Custom Arrtribute" order={5} />}
+			>
 				<SimpleGridComponent
 					cols={{
 						sm: 2,
@@ -625,8 +668,14 @@ const AddItemModal = (props: Props) => {
 							<CheckboxComponent
 								mt={7}
 								checked={
-									attributesState[element.custom_attribute_id]?.checked || false}
-								onChecked={() => handleCheckboxChange(element.custom_attribute_id)}
+									attributesState[element.custom_attribute_id]
+										?.checked || false
+								}
+								onChecked={() =>
+									handleCheckboxChange(
+										element.custom_attribute_id,
+									)
+								}
 							/>
 							<TextInputComponent
 								title={element.name}
@@ -634,8 +683,15 @@ const AddItemModal = (props: Props) => {
 								className="flex-grow"
 								placeholder="Enter Item Name"
 								setValue={(value) =>
-									handleInputChange(element.custom_attribute_id, value)}
-								value={attributesState[element.custom_attribute_id]?.value || ""}
+									handleInputChange(
+										element.custom_attribute_id,
+										value,
+									)
+								}
+								value={
+									attributesState[element.custom_attribute_id]
+										?.value || ""
+								}
 							/>
 						</GroupComponent>
 					))}
