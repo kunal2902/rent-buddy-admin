@@ -1,6 +1,12 @@
 "use client";
 
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import React, {
+	Dispatch,
+	SetStateAction,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { toast } from "react-toastify";
 import { Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
@@ -38,13 +44,18 @@ const AddSubCategoryModal = (props: Props) => {
 		initialCategoryIdValue,
 		icon,
 	} = props;
-	const [subCategoryName, setSubCategoryName] = useState<string>(initialSubCategoryValue);
-	const [selectedFileToUpload, setSelectedFileToUpload] = useState<File | null>(null);
+	const [subCategoryName, setSubCategoryName] = useState<string>(
+		initialSubCategoryValue,
+	);
+	const [selectedFileToUpload, setSelectedFileToUpload] =
+		useState<File | null>(null);
 	const [selectedFile, setSelectedFile] = useState<string | null>(null);
 	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
 	const [categories, setCategories] = useState<any>([]);
 	const [inputError, setInputError] = useState<string | null>(null);
-	const [categoryId, setCategoryId] = useState<string>(initialCategoryIdValue);
+	const [categoryId, setCategoryId] = useState<string>(
+		initialCategoryIdValue,
+	);
 	const [loading, setLoading] = useState(false);
 	const isEditModal: boolean = initialSubCategoryValue !== "";
 
@@ -56,25 +67,25 @@ const AddSubCategoryModal = (props: Props) => {
 	}, [subCategoryName, icon]);
 
 	useEffect(() => {
-		getCategoryApi("",
+		getCategoryApi(
+			"",
 			(data: any) => {
 				const formattedCategories = data.categories.map(
-					(category: {
-						category_id: string;
-						name: string;
-					}) => ({
+					(category: { category_id: string; name: string }) => ({
 						value: category.category_id,
 						label: category.name,
-					}));
+					}),
+				);
 				setCategories(formattedCategories);
-				setCallApi(val => !val);
+				setCallApi((val) => !val);
 			},
 			() => {
-				setCallApi(val => !val);
+				setCallApi((val) => !val);
 			},
 			() => {
-				setCallApi(val => !val);
-			});
+				setCallApi((val) => !val);
+			},
+		);
 	}, []);
 
 	const onChooseIconClick = () => {
@@ -96,7 +107,10 @@ const AddSubCategoryModal = (props: Props) => {
 			setSelectedFileToUpload(file);
 
 			fileReader.onload = (readerEvent) => {
-				if (readerEvent.target && typeof readerEvent.target.result === "string") {
+				if (
+					readerEvent.target &&
+					typeof readerEvent.target.result === "string"
+				) {
 					console.log("File read result:", readerEvent.target.result); // Debugging line
 					setSelectedFile(readerEvent.target.result);
 				}
@@ -125,15 +139,14 @@ const AddSubCategoryModal = (props: Props) => {
 				subCatData,
 				() => {
 					onClose();
-					setCallApi(val => !val);
+					setCallApi((val) => !val);
 					setLoading(false);
 				},
 				(message: string) => {
 					toast.error(message);
 					setLoading(false);
 				},
-				() => {
-				}
+				() => {},
 			);
 		} catch (error) {
 			console.error("Error:", error);
@@ -145,7 +158,11 @@ const AddSubCategoryModal = (props: Props) => {
 			opened={isOpen}
 			onClose={onClose}
 			className="border-grey-800"
-			title={<TitleComponent title={isEditModal ? "Edit Item Type" : "New Item Type"} />}
+			title={
+				<TitleComponent
+					title={isEditModal ? "Edit Item Type" : "New Item Type"}
+				/>
+			}
 		>
 			<GroupComponent grow align="start">
 				<StackComponent>
@@ -164,12 +181,15 @@ const AddSubCategoryModal = (props: Props) => {
 								width={500}
 								height={500}
 								alt="Selected Icon"
-								className="w-full h-full object-contain" />
+								className="w-full h-full object-contain"
+							/>
 						</div>
 					) : (
+						// eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
 						<div
 							onClick={onChooseIconClick}
-							className="w-full cursor-pointer border border-dashed flex flex-col items-center justify-center h-40 rounded-md border-primary-darker text-primary-darker">
+							className="w-full cursor-pointer border border-dashed flex flex-col items-center justify-center h-40 rounded-md border-primary-darker text-primary-darker"
+						>
 							<ImageIcon size={50} />
 							<p className="text-center mt-0.5">Choose an Icon</p>
 						</div>
@@ -191,7 +211,6 @@ const AddSubCategoryModal = (props: Props) => {
 							>
 								<MdOutlineEdit size={18} />
 							</ActionIconComponent>
-
 						</GroupComponent>
 					)}
 				</StackComponent>
@@ -217,10 +236,8 @@ const AddSubCategoryModal = (props: Props) => {
 						value={categoryId}
 						setValue={setCategoryId}
 						checkIconPosition="right"
-						isGrouped={false}
 					/>
 				</GroupComponent>
-
 			</GroupComponent>
 
 			<GroupComponent justify="end">

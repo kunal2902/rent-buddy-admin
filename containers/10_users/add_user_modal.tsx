@@ -152,7 +152,6 @@ const AddUserModal = (props: Props) => {
 						value={roleId}
 						setValue={setRoleId}
 						checkIconPosition="right"
-						isGrouped={false}
 					/>
 				</Stack>
 			</GroupComponent>
