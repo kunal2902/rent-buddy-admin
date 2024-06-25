@@ -124,7 +124,6 @@ const AddCustomAttributeModal = (props: Props) => {
 					setValue={setType}
 					placeholder="Select a Type"
 					data={CustomAttributeTypeOptions}
-					isGrouped={false}
 				/>
 
 				<TextInputComponent
@@ -150,7 +149,6 @@ const AddCustomAttributeModal = (props: Props) => {
 						setValue={setTaxType}
 						placeholder="Select a Calculation type"
 						data={CustomAttributeTaxTypeOptions}
-						isGrouped={false}
 					/>
 				}
 

@@ -556,7 +556,6 @@ const AddItemModal = (props: Props) => {
 						required
 						data={categories}
 						clearable={false}
-						isGrouped={false}
 						value={categoryId}
 						label="Select category"
 						setValue={setCategoryId}
@@ -566,7 +565,6 @@ const AddItemModal = (props: Props) => {
 					{subCategoryList.length > 0 &&
 						<SelectComponent
 							clearable={false}
-							isGrouped={false}
 							value={subCategoryId}
 							data={subCategoryList}
 							checkIconPosition="right"
@@ -582,7 +580,6 @@ const AddItemModal = (props: Props) => {
 						required
 						label="Item type"
 						clearable={false}
-						isGrouped={false}
 						value={itemTypeId}
 						data={itemTypesList}
 						placeholder="Item type"
