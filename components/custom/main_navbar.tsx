@@ -36,7 +36,7 @@ export const MainNavbar = () => {
 				<SpaceComponent showWidth />
 
 				<ActionIconComponent
-					onClick={toggleSidebar}
+					onClick={() => toggleSidebar()}
 					aria-label="Drawer button"
 					className="accent-primary-lighter"
 				>

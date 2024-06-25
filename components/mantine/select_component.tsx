@@ -1,6 +1,6 @@
 "use client";
 
-import { ComboboxItem, Select, SelectProps } from "@mantine/core";
+import { Select, SelectProps } from "@mantine/core";
 import React from "react";
 import { mantineInputVariant, mantineRadius, mantineSize } from "@/utils";
 import { ComboBoxProps, GroupedComboBoxProps } from "@/types";
@@ -9,16 +9,17 @@ import { ComboBoxProps, GroupedComboBoxProps } from "@/types";
 export interface SelectComponentProps extends SelectProps {
 	setOption?: (option: ComboBoxProps) => void;
 	setValue: (val: string) => void;
-	data: ComboBoxProps[]; // or GroupedComboBoxProps[] if your data is grouped
-	isGrouped?: boolean;
+	data: ComboBoxProps[] | GroupedComboBoxProps[]; // or GroupedComboBoxProps[] if your data is grouped
 }
 
 /** This is the Mantine Select component - https://mantine.dev/core/select/ */
 export const SelectComponent = (props: SelectComponentProps) => {
-	const { setOption, setValue, isGrouped = false, ...rest } = props;
+	const { setOption, setValue, ...rest } = props;
 
 	const handleChange = (value: string | null) => {
-		const option = (props.data as Array<ComboBoxProps>).find(entry => entry.value === value);
+		const option = (props.data as Array<ComboBoxProps>).find(
+			(entry) => entry.value === value,
+		);
 
 		if (option) {
 			setValue(option.value);
