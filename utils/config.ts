@@ -70,9 +70,10 @@ export const themeModeConstant: string = "theme_mode";
 
 /** API Constants */
 export const apiUrl: string =
-	process.env.NODE_ENV === "production" || isProduction
-		? "https://decimal-graphics-performs-anna.trycloudflare.com/api/v1"
-		: "http://localhost:8000/api/v1";
+	process.env.NEXT_PUBLIC_API_URL ??
+	(process.env.NODE_ENV === "production" || isProduction
+		? "https://nca-api.unlockvelocity.in/api/v1"
+		: "http://localhost:8000/api/v1");
 export const loginAPIPath: string = `${apiUrl}/auth/login`;
 
 // Dashboard path
