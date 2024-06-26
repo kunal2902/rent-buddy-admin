@@ -32,6 +32,7 @@ import AddItemModal from "./add_item_modal";
 const ItemsContainer = () => {
 	const router = useRouter();
 	const [page, setPage] = useState<number>(1);
+	const [items, setItems] = useState({});
 	const [itemId, setItemId] = useState<string>("");
 	const [itemName, setItemName] = useState<string>("");
 	const [callApi, setCallApi] = useState<boolean>(true);
@@ -95,9 +96,8 @@ const ItemsContainer = () => {
 		).then();
 	}, 500);
 
-	const handleAddOpenModal = (id: string, name: string) => {
-		setItemId(id);
-		setItemName(name);
+	const handleAddOpenModal = (element: {}) => {
+		setItems(element);
 		setOpenAddModal(true);
 	};
 
@@ -171,7 +171,7 @@ const ItemsContainer = () => {
 						onConfirm={async () => handleActionItem(element.item_id, "delete")}
 					/>
 					<ActionIconComponent
-						onClick={() => handleAddOpenModal(element.item_id, element.name)}
+						onClick={() => handleAddOpenModal(element)}
 						size="md">
 						<MdOutlineEdit size={18} />
 					</ActionIconComponent>
@@ -193,7 +193,7 @@ const ItemsContainer = () => {
 				loading={searchLoading}
 				searchValue={searchValue}
 				setSearchValue={setSearchValue}
-				onClick={() => handleAddOpenModal("", "")}
+				onClick={() => handleAddOpenModal("")}
 				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
 					setOrderBy(selected.value);
@@ -243,10 +243,9 @@ const ItemsContainer = () => {
 
 			{openAddModal &&
 				<AddItemModal
-					itemId={itemId}
 					isOpen={openAddModal}
 					setCallApi={setCallApi}
-					initialItemName={itemName}
+					initialItemValue={items}
 					onClose={() => setOpenAddModal(false)}
 				/>
 			}

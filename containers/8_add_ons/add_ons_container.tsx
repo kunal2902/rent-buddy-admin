@@ -38,6 +38,7 @@ const AddOnsContainer = () => {
 	const [orderBy, setOrderBy] = useState<string>("add_on_id");
 	const [order, setOrder] = useState<string>("asc");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
+	const [addOnIcon, setAddOnIcon] = useState<string | undefined>("");
 	useEffect(() => {
 		initState().then();
 	}, [filter, page, callApi, orderBy, order]);
@@ -86,9 +87,11 @@ const AddOnsContainer = () => {
 		).then();
 	}, 500);
 
-	const handleAddOpenModal = (id: string, name: string, price: string) => {
+	const handleAddOpenModal = (
+		id: string, name: string, price: string, icon: string | undefined,) => {
 		setAddOnId(id);
 		setAddOnName(name);
+		setAddOnIcon(icon);
 		setAddOnPrice(price);
 		setOpenAddModal(true);
 	};
@@ -170,7 +173,8 @@ const AddOnsContainer = () => {
 						onClick={() => handleAddOpenModal(
 							element.add_on_id,
 							element.name,
-							element.price
+							element.price,
+							element.icon
 						)}
 						size="md">
 						<MdOutlineEdit size={18} />
@@ -193,7 +197,7 @@ const AddOnsContainer = () => {
 				loading={searchLoading}
 				searchValue={searchValue}
 				setSearchValue={setSearchValue}
-				onClick={() => handleAddOpenModal("", "", "")}
+				onClick={() => handleAddOpenModal("", "", "", "")}
 				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
 					setOrderBy(selected.value);
@@ -234,9 +238,10 @@ const AddOnsContainer = () => {
 			{openAddModal &&
 				<AddAddOnModal
 					id={addOnId}
-					name={addOnName}
+					initialNameValue={addOnName}
 					price={addOnPrice}
 					isOpen={openAddModal}
+					icon={addOnIcon}
 					setCallApi={setCallApi}
 					onClose={() => setOpenAddModal(false)}
 				/>
