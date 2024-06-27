@@ -46,7 +46,6 @@ import {
 	logoutUser,
 	upsertItemApi,
 } from "@/utils";
-import { CustomAttributeModel } from "@/models";
 
 interface Props {
 	isOpen: boolean;
@@ -70,7 +69,7 @@ interface AddOnData {
 	[key: string]: AddOn;
 }
 
-interface InitialItemValue {
+export interface InitialItemValue {
 	item_id: string;
 	category_id: string;
 	sub_category_id: string;
@@ -84,8 +83,8 @@ interface InitialItemValue {
 	item_tags: ItemTag[];
 	custom_attributes: ItemCustomAttribute[];
 	icon: string | null;
-	price: string;
-	stock_quantity: number;
+	price: string | number;
+	stock_quantity: string | number;
 	created_by_id: string;
 	created_at: string;
 	is_deleted: boolean;
@@ -191,7 +190,7 @@ const AddItemModal = (props: Props) => {
 
 	const initializeCustomAttributes = (list: any, initialValue: any) =>
 		list.map((att2: { custom_attribute_id: any; default_value: any; }) => {
-		const match = initialValue.custom_attributes?.find((att: { custom_attribute_id: any; }) =>
+		const match = initialValue?.custom_attributes?.find((att: { custom_attribute_id: any; }) =>
 			att.custom_attribute_id === att2.custom_attribute_id
 		);
 		if (match && att2.default_value !== match.attribute_value) {
@@ -214,7 +213,7 @@ const AddItemModal = (props: Props) => {
 
 	useEffect(() => {
 		const initialState = customAttributesList.reduce((acc, attr2) => {
-			const match = initialItemValue.custom_attributes.find(attr =>
+			const match = initialItemValue.custom_attributes?.find(attr =>
 				attr.custom_attribute_id === attr2.custom_attribute_id);
 			acc[attr2.custom_attribute_id] = {
 				checked: !!match,

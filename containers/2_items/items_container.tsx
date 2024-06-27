@@ -27,14 +27,47 @@ import {
 } from "@/components";
 import { ItemModel } from "@/models";
 import { deleteItemApi, disableItemApi, formatDate, getItemApi, logoutUser } from "@/utils";
-import AddItemModal from "./add_item_modal";
+import AddItemModal, { InitialItemValue } from "./add_item_modal";
+
+const initialItemValue: InitialItemValue = {
+	item_id: "",
+	category_id: "",
+	sub_category_id: "",
+	add_ons: [],
+	name: "",
+	internal_name: "",
+	description: "",
+	short_description: "",
+	sku: "",
+	images: [],
+	icon: "",
+	price: "",
+	stock_quantity: "",
+	created_by_id: "",
+	created_at: "",
+	is_deleted: false,
+	is_disabled: false,
+	item_type_id: "",
+	created_by: {
+		name: "",
+	},
+	category: {
+		name: "",
+	},
+	sub_category: {
+		name: "",
+	},
+	type: {
+		name: "",
+	},
+	item_tags: [],
+	custom_attributes: [],
+};
 
 const ItemsContainer = () => {
 	const router = useRouter();
 	const [page, setPage] = useState<number>(1);
-	const [items, setItems] = useState({});
-	const [itemId, setItemId] = useState<string>("");
-	const [itemName, setItemName] = useState<string>("");
+	const [items, setItems] = useState<InitialItemValue>(initialItemValue);
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [searchValue, setSearchValue] = useState<string>("");
@@ -96,7 +129,7 @@ const ItemsContainer = () => {
 		).then();
 	}, 500);
 
-	const handleAddOpenModal = (element: {}) => {
+	const handleAddOpenModal = (element: any) => {
 		setItems(element);
 		setOpenAddModal(true);
 	};
