@@ -212,9 +212,7 @@ const ItemsContainer = () => {
 						}
 					/>
 					<ActionIconComponent
-						onClick={() =>
-							handleAddOpenModal(element.item_id, element.name)
-						}
+						onClick={() => handleAddOpenModal(element)}
 						size="md"
 					>
 						<MdOutlineEdit size={18} />
