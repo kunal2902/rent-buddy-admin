@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { MdOutlineEdit } from "react-icons/md";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { useRouter } from "next/navigation";
@@ -47,10 +47,15 @@ const ItemTypesContainer = () => {
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const [itemTypesList, setItemTypesList] = useState<ItemTypeModel[]>([]);
 	const [itemTypeIcon, setItemTypeIcon] = useState<string | undefined>("");
+	const currentQueryRef = useRef(searchValue);
 
 	useEffect(() => {
 		initState().then();
 	}, [filter, page, callApi, orderBy, order]);
+
+	useEffect(() => {
+		currentQueryRef.current = searchValue;
+	}, [searchValue]);
 
 	const initState = async () => {
 		setLoading(true);
@@ -81,21 +86,23 @@ const ItemTypesContainer = () => {
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (q: string) => {
-		setSearchLoading(true);
-		await getItemTypeApi(
-			`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
-			(data: any) => {
-				setItemTypesList(data.item_types);
-				setSearchLoading(false);
-			},
-			() => {
-				setSearchLoading(false);
-			},
-			() => {
-				setSearchLoading(false);
-				logoutUser(router);
-			}
-		).then();
+		if (q === currentQueryRef.current) {
+			setSearchLoading(true);
+			await getItemTypeApi(
+				`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+				(data: any) => {
+					setItemTypesList(data.item_types);
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+					logoutUser(router);
+				}
+			).then();
+		}
 	}, 500);
 
 	const handleAddOpenModal = (id: string, name: string, icon: string | undefined) => {

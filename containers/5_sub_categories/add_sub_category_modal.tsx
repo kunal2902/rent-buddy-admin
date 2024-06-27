@@ -22,7 +22,8 @@ import {
 	TextInputComponent,
 	TitleComponent,
 } from "@/components";
-import { getCategoryApi, upsertSubCategoryApi } from "@/utils";
+import { getCategoryApi, logoutUser, upsertSubCategoryApi } from "@/utils";
+import { useRouter } from "next/navigation";
 
 interface Props {
 	isOpen: boolean;
@@ -44,6 +45,7 @@ const AddSubCategoryModal = (props: Props) => {
 		initialCategoryIdValue,
 		icon,
 	} = props;
+	const router = useRouter();
 	const [subCategoryName, setSubCategoryName] = useState<string>(
 		initialSubCategoryValue,
 	);
@@ -84,6 +86,7 @@ const AddSubCategoryModal = (props: Props) => {
 			},
 			() => {
 				setCallApi((val) => !val);
+				logoutUser(router);
 			},
 		);
 	}, []);
@@ -146,7 +149,9 @@ const AddSubCategoryModal = (props: Props) => {
 					toast.error(message);
 					setLoading(false);
 				},
-				() => {},
+				() => {
+					logoutUser(router);
+				},
 			);
 		} catch (error) {
 			console.error("Error:", error);

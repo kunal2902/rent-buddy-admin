@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { Table } from "@mantine/core";
+import { useRouter } from "next/navigation";
 import {
 	BoxComponent,
 	CenterComponent,
@@ -15,10 +16,11 @@ import {
 	SortButtonComponentItemProps,
 } from "@/components";
 import { ActivityLogModel } from "@/models";
-import { formatDate, getActivityLogsApi, toTitleCase } from "@/utils";
+import { formatDate, getActivityLogsApi, logoutUser, toTitleCase } from "@/utils";
 import { actionItemsLogs, entityItemsLogs, searchItemsLogs } from "@/constants";
 
 const ActivityLogsContainer = () => {
+	const router = useRouter();
 	const [page, setPage] = useState<number>(1);
 	const [total, setTotal] = useState<number>(0);
 	const [order, setOrder] = useState<string>("desc");
@@ -29,10 +31,15 @@ const ActivityLogsContainer = () => {
 	const [filter, setFilter] = useState<string>("activity_log_id");
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const [activityLogsList, setActivityLogsList] = useState<ActivityLogModel[]>([]);
+	const currentQueryRef = useRef(searchValue);
 
 	useEffect(() => {
 		initState().then();
 	}, [filter, page, orderBy, order]);
+
+	useEffect(() => {
+		currentQueryRef.current = searchValue;
+	}, [searchValue]);
 
 	const initState = async () => {
 		getActivityLogsApi(
@@ -47,6 +54,7 @@ const ActivityLogsContainer = () => {
 			},
 			() => {
 				setLoading(false);
+				logoutUser(router);
 			}
 		).then();
 	};
@@ -61,21 +69,24 @@ const ActivityLogsContainer = () => {
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (query: string) => {
-		setSearchLoading(true);
-		getActivityLogsApi(
-			`filter_type=${filter}&filter_query=${query}`,
-			(data: any) => {
-				setActivityLogsList(data.activity_logs);
-				setTotal(data.activity_logs_count ?? 0);
-				setSearchLoading(false);
-			},
-			() => {
-				setSearchLoading(false);
-			},
-			() => {
-				setSearchLoading(false);
-			}
-		).then();
+		if (query === currentQueryRef.current) {
+			setSearchLoading(true);
+			getActivityLogsApi(
+				`filter_type=${filter}&filter_query=${query}`,
+				(data: any) => {
+					setActivityLogsList(data.activity_logs);
+					setTotal(data.activity_logs_count ?? 0);
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+					logoutUser(router);
+				}
+			).then();
+		}
 	}, 500);
 
 	const columns = [

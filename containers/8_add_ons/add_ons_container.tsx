@@ -3,7 +3,8 @@
 import { Table } from "@mantine/core";
 import { MdOutlineEdit } from "react-icons/md";
 import { useDebouncedCallback } from "@mantine/hooks";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
 	ActionIconComponent,
 	BoxComponent,
@@ -20,9 +21,10 @@ import {
 } from "@/components";
 import AddAddOnModal from "./add_add_on_modal";
 import { AddOnModel } from "@/models";
-import { deleteAddOnApi, disableAddOnApi, formatDate, getAddOnApi } from "@/utils";
+import { deleteAddOnApi, disableAddOnApi, formatDate, getAddOnApi, logoutUser } from "@/utils";
 
 const AddOnsContainer = () => {
+	const router = useRouter();
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(15);
 	const [addOnId, setAddOnId] = useState<string>("");
@@ -39,9 +41,15 @@ const AddOnsContainer = () => {
 	const [order, setOrder] = useState<string>("asc");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [addOnIcon, setAddOnIcon] = useState<string | undefined>("");
+	const currentQueryRef = useRef(searchValue);
+
 	useEffect(() => {
 		initState().then();
 	}, [filter, page, callApi, orderBy, order]);
+
+	useEffect(() => {
+		currentQueryRef.current = searchValue;
+	}, [searchValue]);
 
 	const initState = async () => {
 		setLoading(true);
@@ -57,6 +65,7 @@ const AddOnsContainer = () => {
 			},
 			() => {
 				setLoading(false);
+				logoutUser(router);
 			}
 		);
 	};
@@ -71,20 +80,23 @@ const AddOnsContainer = () => {
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (q: string) => {
-		setSearchLoading(true);
-		getAddOnApi(
-			`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
-			(data: any) => {
-				setAddOnsList(data.add_ons);
-				setSearchLoading(false);
-			},
-			() => {
-				setSearchLoading(false);
-			},
-			() => {
-				setSearchLoading(false);
-			}
-		).then();
+		if (q === currentQueryRef.current) {
+			setSearchLoading(true);
+			getAddOnApi(
+				`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+				(data: any) => {
+					setAddOnsList(data.add_ons);
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+					logoutUser(router);
+				}
+			).then();
+		}
 	}, 500);
 
 	const handleAddOpenModal = (
@@ -108,6 +120,7 @@ const AddOnsContainer = () => {
 				},
 				() => {
 					setCallApi(val => !val);
+					logoutUser(router);
 				}
 			);
 		} else {
@@ -121,6 +134,7 @@ const AddOnsContainer = () => {
 				},
 				() => {
 					setCallApi(val => !val);
+					logoutUser(router);
 				}
 			);
 		}

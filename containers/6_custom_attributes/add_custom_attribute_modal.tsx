@@ -12,7 +12,8 @@ import {
 	TitleComponent,
 } from "@/components";
 import { CustomAttributeTaxTypeOptions, CustomAttributeTypeOptions } from "@/constants";
-import { mantineSize, upsertAttributeApi } from "@/utils";
+import { logoutUser, mantineSize, upsertAttributeApi } from "@/utils";
+import { useRouter } from "next/navigation";
 
 interface Props {
 	isOpen: boolean;
@@ -39,6 +40,7 @@ const AddCustomAttributeModal = (props: Props) => {
 		initialValueDefaultValue,
 	} = props;
 	const isEditModal: boolean = true;
+	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 	const [isTax, setIsTax] = useState<boolean>(initialValueIsTax);
 	const [type, setType] = useState<string | null>(initialValueType);
@@ -92,7 +94,9 @@ const AddCustomAttributeModal = (props: Props) => {
 					toast.error(message);
 					setLoading(false);
 				},
-				() => {},
+				() => {
+					logoutUser(router);
+				},
 			);
 		} catch (error) {
 			console.error("Error:", error);
@@ -139,6 +143,7 @@ const AddCustomAttributeModal = (props: Props) => {
 				<CheckboxComponent
 					label="Calculate this on bill?"
 					size={mantineSize}
+					checked={initialValueIsTax}
 					onChecked={(checked) => setIsTax(checked)}
 				/>
 				{isTax &&

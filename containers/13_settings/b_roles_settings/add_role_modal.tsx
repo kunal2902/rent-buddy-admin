@@ -80,7 +80,7 @@ const AddRoleModal = (props: Props) => {
 				permission_entities: tempPerm,
 			};
 		}
-		console.log("Submitting role:", roleBody);
+
 		setLoading(true);
 		try {
 			await upsertRoleApi(

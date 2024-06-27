@@ -3,7 +3,8 @@
 import { Table } from "@mantine/core";
 import { MdOutlineEdit } from "react-icons/md";
 import { useDebouncedCallback } from "@mantine/hooks";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
 	ActionIconComponent,
 	BoxComponent,
@@ -20,10 +21,11 @@ import {
 	SortButtonComponentItemProps,
 } from "@/components";
 import { UserModel } from "@/models";
-import { deleteUserApi, disableUserApi, formatDate, getUserId, getUsersApi } from "@/utils";
+import { deleteUserApi, disableUserApi, formatDate, getUserId, getUsersApi, logoutUser } from "@/utils";
 import AddUserModal from "./add_user_modal";
 
 const UsersContainer = () => {
+	const router = useRouter();
 	const [total, setTotal] = useState<number>(0);
 	const [pageSize, setPageSize] = useState<number>(15);
 	const [userId, setUserId] = useState("");
@@ -42,10 +44,15 @@ const UsersContainer = () => {
 	const [order, setOrder] = useState<string>("asc");
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
+	const currentQueryRef = useRef(searchValue);
 
 	useEffect(() => {
 		initState().then();
 	}, [filter, page, callApi, orderBy, order]);
+
+	useEffect(() => {
+		currentQueryRef.current = searchValue;
+	}, [searchValue]);
 
 	const initState = async () => {
 		await getUsersApi(
@@ -60,6 +67,7 @@ const UsersContainer = () => {
 			},
 			() => {
 				setLoading(false);
+				logoutUser(router);
 			}
 		);
 	};
@@ -74,21 +82,23 @@ const UsersContainer = () => {
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (q: string) => {
-		setLoading(true);
-		getUsersApi(
-			`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
-			(data: any) => {
-				setUsersList(data.users);
-				setCallApi(false);
-			},
-			() => {
-				setCallApi(false);
-			},
-			() => {
-				setCallApi(false);
-			}
-		).then();
-		setLoading(false);
+		if (q === currentQueryRef.current) {
+			setLoading(true);
+			getUsersApi(
+				`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+				(data: any) => {
+					setUsersList(data.users);
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+				},
+				() => {
+					setCallApi(false);
+					logoutUser(router);
+				}
+			).then();
+		}
 	}, 500);
 
 	const handleAddOpenModal = (
@@ -120,6 +130,7 @@ const UsersContainer = () => {
 				},
 				() => {
 					setCallApi(val => !val);
+					logoutUser(router);
 				}
 			);
 		} else {
@@ -133,6 +144,7 @@ const UsersContainer = () => {
 				},
 				() => {
 					setCallApi(val => !val);
+					logoutUser(router);
 				}
 			);
 		}

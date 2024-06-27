@@ -1,5 +1,6 @@
 import { Stack } from "@mantine/core";
 import React, { Dispatch, SetStateAction, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
 	ButtonComponent,
 	GroupComponent,
@@ -9,7 +10,7 @@ import {
 	TitleComponent,
 } from "@/components";
 import { NumberInputComponent } from "@/components/mantine/number_input_component";
-import { upsertCustomerApi } from "@/utils";
+import { logoutUser, upsertCustomerApi } from "@/utils";
 
 interface Props {
 	isOpen: boolean;
@@ -31,6 +32,7 @@ const AddCustomerModal = (props: Props) => {
 		initialValueEmail,
 		customerId,
 	} = props;
+	const router = useRouter();
 	const [name, setName] = useState<string>(initialValueName);
 	const [email, setEmail] = useState<string | undefined>(initialValueEmail);
 	const [phoneNumber, setPhoneNumber] = useState<string | number>(initialValuePhoneNumber);
@@ -59,6 +61,7 @@ const AddCustomerModal = (props: Props) => {
 				() => {
 				},
 				() => {
+					logoutUser(router);
 				}
 			);
 		} catch (error) {

@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { Table } from "@mantine/core";
+import { useRouter } from "next/navigation";
 import {
 	BoxComponent,
 	CenterComponent,
@@ -14,10 +15,11 @@ import {
 	PaperComponent,
 	SortButtonComponentItemProps,
 } from "@/components";
-import { formatDate, getReportsAPI } from "@/utils";
+import { formatDate, getReportsAPI, logoutUser } from "@/utils";
 import { ReportModel } from "@/models";
 
 const ReportsContainer = () => {
+	const router = useRouter();
 	const [page, setPage] = useState<number>(1);
 	const [total, setTotal] = useState<number>(0);
 	const [order, setOrder] = useState<string>("desc");
@@ -28,10 +30,15 @@ const ReportsContainer = () => {
 	const [orderBy, setOrderBy] = useState<string>("created_at");
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const [reportsList, setReportsList] = useState<ReportModel[]>([]);
+	const currentQueryRef = useRef(searchValue);
 
 	useEffect(() => {
 		initState().then();
 	}, [filter, page, orderBy, order]);
+
+	useEffect(() => {
+		currentQueryRef.current = searchValue;
+	}, [searchValue]);
 
 	const initState = async () => {
 		getReportsAPI(
@@ -46,6 +53,7 @@ const ReportsContainer = () => {
 			},
 			() => {
 				setLoading(false);
+				logoutUser(router);
 			}
 		).then();
 	};
@@ -60,21 +68,24 @@ const ReportsContainer = () => {
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (query: string) => {
-		setSearchLoading(true);
-		getReportsAPI(
-			`filter_type=${filter}&filter_query=${query}`,
-			(data: any) => {
-				setReportsList(data.reports);
-				setTotal(data.reports_count ?? 0);
-				setSearchLoading(false);
-			},
-			() => {
-				setSearchLoading(false);
-			},
-			() => {
-				setSearchLoading(false);
-			}
-		).then();
+		if (query === currentQueryRef.current) {
+			setSearchLoading(true);
+			getReportsAPI(
+				`filter_type=${filter}&filter_query=${query}`,
+				(data: any) => {
+					setReportsList(data.reports);
+					setTotal(data.reports_count ?? 0);
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+					logoutUser(router);
+				}
+			).then();
+		}
 	}, 500);
 
 	const columns = [

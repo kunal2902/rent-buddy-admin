@@ -2,12 +2,13 @@
 
 import { toast } from "react-toastify";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
 	ButtonComponent, GroupComponent,
 	ModalComponent, SpaceComponent,
 	TextInputComponent, TitleComponent,
 } from "@/components";
-import { upsertTagApi } from "@/utils";
+import { logoutUser, upsertTagApi } from "@/utils";
 
 interface Props {
 	isOpen: boolean;
@@ -18,6 +19,7 @@ interface Props {
 }
 
 const AddTagModal = (props: Props) => {
+	const router = useRouter();
 	const { isOpen, onClose, setCallApi, initialTagValue, tagId } = props;
 	const [tagName, setTagName] = useState<string>(initialTagValue);
 	const [inputError, setInputError] = useState<string | null>(null);
@@ -52,7 +54,9 @@ const AddTagModal = (props: Props) => {
 					toast.error(message);
 					setLoading(false);
 				},
-				() => {},
+				() => {
+					logoutUser(router);
+				},
 			);
 		} catch (error) {
 			console.error("Error:", error);

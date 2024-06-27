@@ -36,6 +36,7 @@ const AddItemTypeModal: React.FC<Props> = (props: Props) => {
 		itemTypeId,
 		icon,
 	} = props;
+	const router = useRouter();
 	const isEditModal: boolean = initialItemTypeValue !== "";
 	const [loading, setLoading] = useState(false);
 	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
@@ -106,7 +107,7 @@ const AddItemTypeModal: React.FC<Props> = (props: Props) => {
 				},
 				() => {
 					setLoading(false);
-					logoutUser(useRouter());
+					logoutUser(router);
 				}
 			);
 		} catch (error) {
