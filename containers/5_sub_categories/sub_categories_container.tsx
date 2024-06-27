@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { MdOutlineEdit } from "react-icons/md";
+import { useRouter } from "next/navigation";
 import {
 	ActionIconComponent,
 	BoxComponent,
@@ -26,10 +27,11 @@ import {
 	TableTrComponent,
 } from "@/components";
 import { SubCategoryModel } from "@/models";
-import { deleteSubCategoryApi, disableSubCategoryApi, formatDate, getSubCategoryApi } from "@/utils";
+import { deleteSubCategoryApi, disableSubCategoryApi, formatDate, getSubCategoryApi, logoutUser } from "@/utils";
 import AddSubCategoryModal from "./add_sub_category_modal";
 
 const SubCategoriesContainer = () => {
+	const router = useRouter();
 	const [pageSize, setPageSize] = useState<number>(15);
 	const [page, setPage] = useState<number>(1);
 	const [callApi, setCallApi] = useState<boolean>(true);
@@ -65,6 +67,7 @@ const SubCategoriesContainer = () => {
 			},
 			() => {
 				setLoading(false);
+				logoutUser(router);
 			}
 		);
 	};
@@ -120,6 +123,7 @@ const SubCategoriesContainer = () => {
 				},
 				() => {
 					setCallApi(val => !val);
+					logoutUser(router);
 				}
 			);
 		} else {
@@ -133,6 +137,7 @@ const SubCategoriesContainer = () => {
 				},
 				() => {
 					setCallApi(val => !val);
+					logoutUser(router);
 				}
 			);
 		}

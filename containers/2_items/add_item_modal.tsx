@@ -14,7 +14,7 @@ import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
 import { MultiSelectProps } from "@mantine/core";
 import {
 	ActionIconComponent,
-	AvatarComponent,
+	AvatarComponent, BoxComponent,
 	ButtonComponent,
 	CheckboxComponent,
 	FieldsetComponent,
@@ -36,23 +36,21 @@ import {
 	TitleComponent,
 } from "@/components";
 import {
+	appAccentColorRGBA,
 	getAddOnApi,
 	getAttributeApi,
 	getCategoryApi,
-	getCrmJWT,
 	getItemTypeApi,
 	getSubCategoryApi,
 	getTagApi,
 	logoutUser,
 	upsertItemApi,
 } from "@/utils";
-import { CustomAttributeModel } from "@/models";
 
 interface Props {
-	itemId: string | undefined;
 	isOpen: boolean;
 	onClose: () => void;
-	initialItemName: string;
+	initialItemValue: InitialItemValue;
 	setCallApi: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -71,54 +69,158 @@ interface AddOnData {
 	[key: string]: AddOn;
 }
 
+export interface InitialItemValue {
+	item_id: string;
+	category_id: string;
+	sub_category_id: string;
+	add_ons: string[];
+	name: string;
+	internal_name: string;
+	description: string;
+	short_description: string;
+	sku: string;
+	images: string[];
+	item_tags: ItemTag[];
+	custom_attributes: ItemCustomAttribute[];
+	icon: string | null;
+	price: string | number;
+	stock_quantity: string | number;
+	created_by_id: string;
+	created_at: string;
+	is_deleted: boolean;
+	is_disabled: boolean;
+	item_type_id: string;
+	created_by: {
+		name: string;
+	};
+	category: {
+		name: string;
+	};
+	sub_category: {
+		name: string;
+	};
+	type: {
+		name: string;
+	};
+}
+
+interface Tag {
+	tag_id: string;
+	name: string;
+}
+
+interface ItemTag {
+	item_tag_id: string;
+	item_id: string;
+	tag_id: string;
+	created_by_id: string;
+	created_at: string;
+	is_deleted: boolean;
+	is_disabled: boolean;
+	tag: Tag;
+}
+
+interface CustomAttribute {
+	custom_attribute_id: string;
+	name: string;
+	type: string;
+	created_by_id: string;
+	created_at: string;
+	is_deleted: boolean;
+	is_disabled: boolean;
+	default_value: string;
+	is_tax: boolean;
+	tax_type: string;
+}
+
+interface ItemCustomAttribute {
+	item_custom_attribute_id: string;
+	item_id: string;
+	custom_attribute_id: string;
+	attribute_value: string;
+	created_by_id: string;
+	created_at: string;
+	is_deleted: boolean;
+	is_disabled: boolean;
+	custom_attribute: CustomAttribute;
+}
+
 const AddItemModal = (props: Props) => {
-	const { isOpen, itemId, onClose, setCallApi, initialItemName } = props;
+	const { isOpen, onClose, setCallApi, initialItemValue } = props;
 	const router = useRouter();
-	const isEditModal: boolean = initialItemName !== "";
-	const [sku, setSku] = useState<string>("");
+	const isEditModal: boolean = initialItemValue.name !== "";
+	const [sku, setSku] = useState<string>(initialItemValue.sku);
 	const [tagsList, setTagsList] = useState([]);
 	const [categories, setCategories] = useState([]);
 	const [addOnsList, setAddOnsList] = useState([]);
-	const [tagsId, setTagsId] = useState<string[]>([]);
-	const [longDesc, setLongDesc] = useState<string>("");
-	const [addOnsId, setAddOnsId] = useState<string[]>([]);
+	const [tagsId, setTagsId] = useState<string[]>(
+		initialItemValue?.item_tags?.map(tagItem => tagItem?.tag?.tag_id)
+	);
+	const [longDesc, setLongDesc] = useState<string>(initialItemValue.description);
+	const [addOnsId, setAddOnsId] = useState<string[]>(initialItemValue.add_ons);
 	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
-	const [shortDesc, setShortDesc] = useState<string>("");
-	const [itemName, setItemName] = useState<string>(initialItemName);
+	const [shortDesc, setShortDesc] = useState<string>(initialItemValue.short_description);
+	const [itemName, setItemName] = useState<string>(initialItemValue.name);
 	const [itemTypesList, setItemTypesList] = useState([]);
 	const [loading, setLoading] = useState<boolean>(false);
-	const [categoryId, setCategoryId] = useState<string>("");
-	const [itemTypeId, setItemTypeId] = useState<string>("");
+	const [categoryId, setCategoryId] = useState<string>(initialItemValue.category_id);
+	const [itemTypeId, setItemTypeId] = useState<string>(initialItemValue.item_type_id);
 	const [subCategoryList, setSubCategoryList] = useState([]);
 	const [addOnData, setAddOnData] = useState<AddOnData>({});
-	const [subCategoryId, setSubCategoryId] = useState<string>("");
-	const [price, setPrice] = useState<string | number>("");
+	const [subCategoryId, setSubCategoryId] = useState<string>(initialItemValue.sub_category_id);
+	const [price, setPrice] = useState<string | number>(initialItemValue.price);
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
-	const [itemInternalName, setItemInternalName] = useState<string>("");
+	const [itemInternalName, setItemInternalName] =
+		useState<string>(initialItemValue.internal_name);
 	const [inputError, setInputError] = useState<string | null>(null);
 	const [replaceIndex, setReplaceIndex] = useState<number | null>(null);
-	const [stockQuantity, setStockQuantity] = useState<string | number>("");
-	const [images, setImages] = useState<{ file: File; previewURL: string }[]>(
-		[],
+	const [stockQuantity, setStockQuantity]
+		= useState<string | number>(initialItemValue.stock_quantity);
+	const [images, setImages] = useState<{ file: File | null; previewURL: string }[]>(
+		initialItemValue.images ? initialItemValue.images.map(imageURL =>
+			({ file: null, previewURL: imageURL })) : []
 	);
-	const [customAttributesList, setCustomAttributesList] = useState<
-		CustomAttributeModel[]
-	>([]);
+	const [customAttributesList, setCustomAttributesList] =
+		useState<CustomAttribute[]>([]);
 	const [attributesState, setAttributesState] = useState<
 		Record<string, AttributeState>
 	>({});
+	const hasInitializedCustomAttributes = useRef(false);
+	const [removedImages, setRemovedImages] = useState<string[]>([]);
+
+	const initializeCustomAttributes = (list: any, initialValue: any) =>
+		list.map((att2: { custom_attribute_id: any; default_value: any; }) => {
+		const match = initialValue?.custom_attributes?.find((att: { custom_attribute_id: any; }) =>
+			att.custom_attribute_id === att2.custom_attribute_id
+		);
+		if (match && att2.default_value !== match.attribute_value) {
+			return {
+				...att2,
+				default_value: match.attribute_value,
+			};
+		}
+		return att2;
+	});
 
 	useEffect(() => {
-		const initialState = customAttributesList.reduce(
-			(acc, attr) => {
-				acc[attr.custom_attribute_id] = {
-					checked: false,
-					value: attr.default_value,
-				};
-				return acc;
-			},
-			{} as Record<string, AttributeState>,
-		);
+		if (isEditModal && customAttributesList.length > 0 &&
+			!hasInitializedCustomAttributes.current) {
+			const new_arr = initializeCustomAttributes(customAttributesList, initialItemValue);
+			setCustomAttributesList(new_arr);
+			hasInitializedCustomAttributes.current = true;
+		}
+	}, [isEditModal, initialItemValue.custom_attributes, customAttributesList]);
+
+	useEffect(() => {
+		const initialState = customAttributesList.reduce((acc, attr2) => {
+			const match = initialItemValue.custom_attributes?.find(attr =>
+				attr.custom_attribute_id === attr2.custom_attribute_id);
+			acc[attr2.custom_attribute_id] = {
+				checked: !!match,
+				value: attr2.default_value,
+			};
+			return acc;
+		}, {} as Record<string, { checked: boolean; value: string }>);
 		setAttributesState(initialState);
 	}, [customAttributesList]);
 
@@ -267,7 +369,7 @@ const AddItemModal = (props: Props) => {
 		setLoading(true);
 		const itemBody = new FormData();
 		itemBody.append("sku", sku);
-		itemBody.append("id", itemId || "");
+		itemBody.append("id", initialItemValue.item_id || "");
 		itemBody.append("name", itemName);
 		itemBody.append("price", String(price));
 		if (longDesc.trim()) itemBody.append("description", longDesc);
@@ -281,16 +383,25 @@ const AddItemModal = (props: Props) => {
 		itemBody.append("stock_quantity", String(stockQuantity));
 		itemBody.append("attributes", JSON.stringify(checkedAttributes));
 		images.forEach((image) => {
-			itemBody.append("image_files_added", image.file);
+			if (image.file instanceof File) {
+				itemBody.append("image_files_added", image.file);
+			} else if (image.file === null && image.previewURL) {
+				itemBody.append("image_files_added", image.previewURL);
+			}
 		});
+		if (isEditModal) {
+			if (removedImages.length > 0) {
+				itemBody.append("images_deleted", JSON.stringify(removedImages));
+			}
+		}
 
 		try {
 			await upsertItemApi(
 				itemBody,
 				() => {
 					onClose();
+					setCallApi((val) => !val);
 					setLoading(false);
-					setCallApi(true);
 				},
 				(message: string) => {
 					console.log(message);
@@ -298,7 +409,6 @@ const AddItemModal = (props: Props) => {
 				},
 				() => {
 					logoutUser(router);
-					setLoading(false);
 				},
 			);
 		} catch (error) {
@@ -337,16 +447,11 @@ const AddItemModal = (props: Props) => {
 		}
 	};
 
-	const convertToBase64 = (file: File): Promise<string> =>
-		new Promise((resolve, reject) => {
-			const reader = new FileReader();
-			reader.readAsDataURL(file);
-			reader.onload = () => resolve(reader.result as string);
-			reader.onerror = (error) => reject(error);
-		});
-
-	const handleRemoveImage = (index: number) => {
+	const handleRemoveImage = (index: number, url: string) => {
 		setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+		if (url && !url.startsWith("blob:")) {
+			setRemovedImages((prevRemovedImages) => [...prevRemovedImages, url]);
+		}
 	};
 
 	const handleReplaceImage = (index: number) => {
@@ -414,6 +519,7 @@ const AddItemModal = (props: Props) => {
 			title={
 				<TitleComponent
 					title={isEditModal ? "Edit Item" : "Add New Item"}
+					// title="add"
 				/>
 			}
 		>
@@ -529,7 +635,7 @@ const AddItemModal = (props: Props) => {
 								<ImageComponent
 									w={160}
 									h={140}
-									src={img.previewURL}
+									src={img.previewURL ? img.previewURL : img}
 									mih={140}
 									fit="cover"
 								/>
@@ -545,7 +651,7 @@ const AddItemModal = (props: Props) => {
 										mr={5}
 										size="xs"
 										color="red"
-										onClick={() => handleRemoveImage(index)}
+										onClick={() => handleRemoveImage(index, img.previewURL ? img.previewURL : "")}
 									>
 										<MdOutlineDeleteForever size={18} />
 									</ActionIconComponent>
@@ -668,8 +774,7 @@ const AddItemModal = (props: Props) => {
 							<CheckboxComponent
 								mt={7}
 								checked={
-									attributesState[element.custom_attribute_id]
-										?.checked || false
+									attributesState[element.custom_attribute_id]?.checked || false
 								}
 								onChecked={() =>
 									handleCheckboxChange(
@@ -700,14 +805,22 @@ const AddItemModal = (props: Props) => {
 
 			<SpaceComponent showHeight />
 
-			<GroupComponent justify="end">
-				<ButtonComponent
-					w={100}
-					title="Save"
-					// loading={loading}
-					onClick={handleSubmitItem}
-				/>
-			</GroupComponent>
+			<BoxComponent h={60} className="mt-3">
+				<GroupComponent justify="end">
+					<ButtonComponent
+						title="Close"
+						variant="subtle"
+						color={appAccentColorRGBA}
+						onClick={onClose}
+						/>
+					<ButtonComponent
+						w={100}
+						title="Save"
+						loading={loading}
+						onClick={handleSubmitItem}
+						/>
+				</GroupComponent>
+			</BoxComponent>
 		</ModalComponent>
 	);
 };

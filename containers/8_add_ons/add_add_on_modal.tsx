@@ -1,30 +1,54 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { Group } from "@mantine/core";
 import { Image as ImageIcon, Trash } from "lucide-react";
 import Image from "next/image";
 import { toast } from "react-toastify";
+import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
 import { upsertAddOnApi } from "@/utils";
-import { ButtonComponent, ModalComponent, TextInputComponent } from "@/components";
+import {
+	ActionIconComponent,
+	ButtonComponent,
+	GroupComponent,
+	ModalComponent, StackComponent,
+	TextInputComponent,
+	TitleComponent,
+} from "@/components";
 import { FileInputComponent } from "@/components/mantine/file_input_component";
 
 interface Props {
 	isOpen: boolean;
 	onClose: () => void;
-	setCallApi: (value: boolean) => void;
+	setCallApi: Dispatch<SetStateAction<boolean>>;
 	id: string | undefined;
-	name: string | undefined;
+	initialNameValue: string;
 	price: string | undefined;
+	icon: string | undefined;
 }
 
-const AddAddOnModal: React.FC<Props> = ({ isOpen, onClose, setCallApi, id, name, price }) => {
-	const [addOnName, setAddOnName] = useState<string>(name ?? "");
+const AddAddOnModal: React.FC<Props> = ({
+	isOpen,
+	onClose,
+	setCallApi,
+	id,
+	initialNameValue,
+	price,
+	icon }) => {
+	const [addOnName, setAddOnName] = useState<string>(initialNameValue);
 	const [addOnPrice, setAddOnPrice] = useState<string>(price ?? "");
 	const [selectedFileToUpload, setSelectedFileToUpload] = useState<File | null>(null);
 	const [selectedFile, setSelectedFile] = useState<string | null>(null);
+	const [loading, setLoading] = useState(false);
+	const isEditModal: boolean = initialNameValue !== "";
 
 	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
+
+	useEffect(() => {
+		if (addOnName && icon) {
+			setSelectedFile(icon);
+		}
+	}, [addOnName, icon]);
 
 	const onChooseIconClick = () => {
 		if (fileInputTriggerRef) {
@@ -67,16 +91,18 @@ const AddAddOnModal: React.FC<Props> = ({ isOpen, onClose, setCallApi, id, name,
 		addOnData.append("name", addOnName);
 		addOnData.append("price", addOnPrice);
 		addOnData.append("id", id ?? "");
-
+		setLoading(true);
 		try {
 			await upsertAddOnApi(
 				addOnData,
 				() => {
 					onClose();
-					setCallApi(true);
+					setCallApi((val) => !val);
+					setLoading(false);
 				},
 				(message: string) => {
 					toast.error(message);
+					setLoading(false);
 				},
 				() => {
 				}
@@ -88,79 +114,100 @@ const AddAddOnModal: React.FC<Props> = ({ isOpen, onClose, setCallApi, id, name,
 	};
 
 	return (
-		<ModalComponent opened={isOpen} onClose={onClose} className="border-grey-800" title="New Add on">
-			<div className="w-full flex sm:flex-row flex-col font-public-sans">
-				<div className="sm:w-1/2 w-full flex flex-col sm:mr-1">
+		<ModalComponent
+			opened={isOpen}
+			onClose={onClose}
+			className="border-grey-800"
+			title={
+				<TitleComponent
+					title={isEditModal ? "Edit Add on" : "New Add on"}
+				/>
+			}>
+			<GroupComponent grow align="start">
+				<StackComponent>
 					<FileInputComponent
-						label="Please select sub category icon"
-						placeholder="Sub category icon"
+						required
+						label="Please select category icon"
+						placeholder="C 111ategory icon"
 						className="hidden"
 						onChange={onFilePick}
 						ref={fileInputTriggerRef}
 					/>
-
-					<p className="text-base font-public-sans">Icon*</p>
-
-					{/* eslint-disable-next-line react/button-has-type */}
-					<button className="mt-1 flex items-center justify-center w-full" onClick={onChooseIconClick}>
-						{selectedFile ? (
-							<div className="w-full flex flex-col items-center justify-center h-40">
-								<Image
-									src={selectedFile}
-									width={500}
-									height={500}
-									alt=""
-									className="w-full h-full object-contain" />
-							</div>
-						) : (
-							<div
-								className="w-full border border-dashed flex flex-col items-center justify-center h-40 rounded-md border-primary-darker text-primary-darker">
-								<ImageIcon size={50} />
-								<p className="text-center mt-0.5">Choose an image</p>
-							</div>
-						)}
-					</button>
-
-					{selectedFile && (
-						<div className="w-full mt-1 flex items-center justify-end">
-							<ButtonComponent onClick={onResetIconClick} aria-label="on reset icon click">
-								<Trash size={24} className="text-error-dark" />
-							</ButtonComponent>
+					{selectedFile ? (
+						<div className="w-full flex flex-col items-center justify-center h-40">
+							<Image
+								src={selectedFile}
+								width={500}
+								height={500}
+								alt="Selected Icon"
+								className="w-full h-full object-contain"
+							/>
+						</div>
+					) : (
+						// eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+						<div
+							onClick={onChooseIconClick}
+							className="w-full cursor-pointer border border-dashed flex flex-col items-center justify-center h-40 rounded-md border-primary-darker text-primary-darker"
+						>
+							<ImageIcon size={50} />
+							<p className="text-center mt-0.5">Choose an Icon</p>
 						</div>
 					)}
-				</div>
 
-				<div className="sm:ml-1 sm:mt-0 mt-2 flex-1 flex flex-col">
-					<Group>
-						<TextInputComponent
-							mt={1}
-							required
-							label="Name"
-							title="Name"
-							value={addOnName}
-							setValue={setAddOnName}
-							placeholder="Awesome Name"
-							className="border-grey-600 font-barlow font-base text-base"
+					{selectedFile && (
+						<GroupComponent grow>
+							<ActionIconComponent
+								onClick={onResetIconClick}
+								size="md"
+								color="red"
+							>
+								<MdOutlineDeleteForever size={18} />
+							</ActionIconComponent>
+
+							<ActionIconComponent
+								onClick={onChooseIconClick}
+								size="md"
+							>
+								<MdOutlineEdit size={18} />
+							</ActionIconComponent>
+						</GroupComponent>
+					)}
+				</StackComponent>
+
+				<GroupComponent>
+					<TextInputComponent
+						mt={1}
+						required
+						label="Name"
+						title="Name"
+						value={addOnName}
+						setValue={setAddOnName}
+						placeholder="Awesome Name"
+						className="border-grey-600 font-barlow font-base text-base"
 						/>
 
-						<TextInputComponent
-							mt={1}
-							required
-							label="Price"
-							title="Price"
-							type="number"
-							value={addOnPrice}
-							placeholder="347.1"
-							setValue={setAddOnPrice}
-							className="border-grey-600 font-barlow font-base text-base"
+					<TextInputComponent
+						mt={1}
+						required
+						label="Price"
+						title="Price"
+						type="number"
+						value={addOnPrice}
+						placeholder="347.1"
+						setValue={setAddOnPrice}
+						className="border-grey-600 font-barlow font-base text-base"
 						/>
-					</Group>
-				</div>
-			</div>
+				</GroupComponent>
+			</GroupComponent>
 
-			<div className="mt-3 flex items-center justify-end">
-				<ButtonComponent title="Save" size="md" px="lg" ml={5} onClick={handleSubmitAddOn} />
-			</div>
+			<GroupComponent justify="end">
+				<ButtonComponent
+					loading={loading}
+					w={100}
+					title="Save"
+					onClick={handleSubmitAddOn}
+				/>
+			</GroupComponent>
 		</ModalComponent>
 	);
 };
