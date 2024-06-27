@@ -154,7 +154,9 @@ const AddItemModal = (props: Props) => {
 	const [tagsList, setTagsList] = useState([]);
 	const [categories, setCategories] = useState([]);
 	const [addOnsList, setAddOnsList] = useState([]);
-	const [tagsId, setTagsId] = useState<string[]>(initialItemValue.item_tags.map(tagItem => tagItem.tag.tag_id));
+	const [tagsId, setTagsId] = useState<string[]>(
+		initialItemValue?.item_tags?.map(tagItem => tagItem?.tag?.tag_id)
+	);
 	const [longDesc, setLongDesc] = useState<string>(initialItemValue.description);
 	const [addOnsId, setAddOnsId] = useState<string[]>(initialItemValue.add_ons);
 	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
@@ -184,27 +186,42 @@ const AddItemModal = (props: Props) => {
 	const [attributesState, setAttributesState] = useState<
 		Record<string, AttributeState>
 	>({});
+	const hasInitializedCustomAttributes = useRef(false);
+	const [removedImages, setRemovedImages] = useState<string[]>([]);
 
-	useEffect(() => {
-		if (isEditModal) {
-			const updatedCustomAttributes =
-				initialItemValue.custom_attributes.map(attr => attr.custom_attribute);
-			console.log(updatedCustomAttributes);
-			// setCustomAttributesList(updatedCustomAttributes);
-		}
-	}, [isEditModal, initialItemValue.custom_attributes]);
-
-	useEffect(() => {
-		const initialState = customAttributesList.reduce(
-			(acc, attr) => {
-				acc[attr.custom_attribute_id] = {
-					checked: false,
-					value: attr.default_value,
-				};
-				return acc;
-			},
-			{} as Record<string, AttributeState>,
+	const initializeCustomAttributes = (list: any, initialValue: any) =>
+		list.map((att2: { custom_attribute_id: any; default_value: any; }) => {
+		const match = initialValue.custom_attributes?.find((att: { custom_attribute_id: any; }) =>
+			att.custom_attribute_id === att2.custom_attribute_id
 		);
+		if (match && att2.default_value !== match.attribute_value) {
+			return {
+				...att2,
+				default_value: match.attribute_value,
+			};
+		}
+		return att2;
+	});
+
+	useEffect(() => {
+		if (isEditModal && customAttributesList.length > 0 &&
+			!hasInitializedCustomAttributes.current) {
+			const new_arr = initializeCustomAttributes(customAttributesList, initialItemValue);
+			setCustomAttributesList(new_arr);
+			hasInitializedCustomAttributes.current = true;
+		}
+	}, [isEditModal, initialItemValue.custom_attributes, customAttributesList]);
+
+	useEffect(() => {
+		const initialState = customAttributesList.reduce((acc, attr2) => {
+			const match = initialItemValue.custom_attributes.find(attr =>
+				attr.custom_attribute_id === attr2.custom_attribute_id);
+			acc[attr2.custom_attribute_id] = {
+				checked: !!match,
+				value: attr2.default_value,
+			};
+			return acc;
+		}, {} as Record<string, { checked: boolean; value: string }>);
 		setAttributesState(initialState);
 	}, [customAttributesList]);
 
@@ -345,8 +362,6 @@ const AddItemModal = (props: Props) => {
 		}
 	}, [categoryId]);
 
-	console.log("customAttributesList", customAttributesList);
-
 	const handleSubmitItem = async (event: React.FormEvent) => {
 		event.preventDefault();
 		if (!itemName) {
@@ -375,6 +390,11 @@ const AddItemModal = (props: Props) => {
 				itemBody.append("image_files_added", image.previewURL);
 			}
 		});
+		if (isEditModal) {
+			if (removedImages.length > 0) {
+				itemBody.append("images_deleted", JSON.stringify(removedImages));
+			}
+		}
 
 		try {
 			await upsertItemApi(
@@ -428,16 +448,11 @@ const AddItemModal = (props: Props) => {
 		}
 	};
 
-	const convertToBase64 = (file: File): Promise<string> =>
-		new Promise((resolve, reject) => {
-			const reader = new FileReader();
-			reader.readAsDataURL(file);
-			reader.onload = () => resolve(reader.result as string);
-			reader.onerror = (error) => reject(error);
-		});
-
-	const handleRemoveImage = (index: number) => {
+	const handleRemoveImage = (index: number, url: string) => {
 		setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+		if (url && !url.startsWith("blob:")) {
+			setRemovedImages((prevRemovedImages) => [...prevRemovedImages, url]);
+		}
 	};
 
 	const handleReplaceImage = (index: number) => {
@@ -637,7 +652,7 @@ const AddItemModal = (props: Props) => {
 										mr={5}
 										size="xs"
 										color="red"
-										onClick={() => handleRemoveImage(index)}
+										onClick={() => handleRemoveImage(index, img.previewURL ? img.previewURL : "")}
 									>
 										<MdOutlineDeleteForever size={18} />
 									</ActionIconComponent>
@@ -760,8 +775,7 @@ const AddItemModal = (props: Props) => {
 							<CheckboxComponent
 								mt={7}
 								checked={
-									attributesState[element.custom_attribute_id]
-										?.checked || false
+									attributesState[element.custom_attribute_id]?.checked || false
 								}
 								onChecked={() =>
 									handleCheckboxChange(
