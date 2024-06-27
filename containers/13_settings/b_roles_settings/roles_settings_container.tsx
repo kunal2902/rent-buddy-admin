@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Table } from "@mantine/core";
 import { MdOutlineEdit } from "react-icons/md";
 import { useDebouncedCallback } from "@mantine/hooks";
@@ -41,10 +41,15 @@ const RolesSettingsContainer = () => {
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const [rolePermissions, setRolePermissions] = useState<PermissionModel[]>([]);
+	const currentQueryRef = useRef(searchValue);
 
 	useEffect(() => {
 		initState().then();
 	}, [filter, page, callApi, orderBy, order]);
+
+	useEffect(() => {
+		currentQueryRef.current = searchValue;
+	}, [searchValue]);
 
 	const initState = async () => {
 		setLoading(true);
@@ -78,22 +83,23 @@ const RolesSettingsContainer = () => {
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (q: string) => {
-		setSearchLoading(true);
-		getRoleApi(
-			`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
-			(data: any) => {
-				setRolesList(data.roles);
-				setSearchLoading(false);
-			},
-			() => {
-				setSearchLoading(false);
-			},
-			() => {
-				setSearchLoading(false);
-				logoutUser(router);
-			}
-		).then();
-		setLoading(false);
+		if (q === currentQueryRef.current) {
+			setSearchLoading(true);
+			getRoleApi(
+				`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+				(data: any) => {
+					setRolesList(data.roles);
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+					logoutUser(router);
+				}
+			).then();
+		}
 	}, 500);
 
 	const handleAddOpenModal = (id: string, name: string, permissions: PermissionModel[]) => {

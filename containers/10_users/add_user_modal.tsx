@@ -3,12 +3,13 @@
 import { toast } from "react-toastify";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Stack } from "@mantine/core";
+import { useRouter } from "next/navigation";
 import {
 	ButtonComponent, GroupComponent,
 	ModalComponent, PasswordInputComponent, SelectComponent, SpaceComponent,
 	TextInputComponent, TitleComponent,
 } from "@/components";
-import { getRoleApi, upsertUserApi } from "@/utils";
+import { getRoleApi, logoutUser, upsertUserApi } from "@/utils";
 
 interface Props {
 	isOpen: boolean;
@@ -34,6 +35,7 @@ const AddUserModal = (props: Props) => {
 		initialValuePassword,
 		userId,
 	} = props;
+	const router = useRouter();
 	const [name, setName] = useState<string>(initialValueName);
 	const [userName, setUserName] = useState<string>(initialValueUserName);
 	const [password, setPassword] = useState<string>(initialValuePassword);
@@ -61,7 +63,9 @@ const AddUserModal = (props: Props) => {
 				setRolesList(formattedCategories);
 			},
 			() => {},
-			() => {});
+			() => {
+			logoutUser(router);
+			});
 	}, [userName]);
 
 	const handleSubmitUser = async (event: React.FormEvent) => {
@@ -87,7 +91,9 @@ const AddUserModal = (props: Props) => {
 				(message: string) => {
 					toast.error(message);
 				},
-				() => {},
+				() => {
+					logoutUser(router);
+				},
 			);
 		} catch (error) {
 			console.error("Error:", error);

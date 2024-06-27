@@ -3,7 +3,7 @@
 import { Table } from "@mantine/core";
 import { MdOutlineEdit } from "react-icons/md";
 import { useDebouncedCallback } from "@mantine/hooks";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
 	ActionIconComponent,
 	BoxComponent,
@@ -21,9 +21,11 @@ import {
 } from "@/components";
 import AddCustomAttributeModal from "./add_custom_attribute_modal";
 import { CustomAttributeModel } from "@/models";
-import { deleteAttributeApi, disableAttributeApi, formatDate, getAttributeApi } from "@/utils";
+import { deleteAttributeApi, disableAttributeApi, formatDate, getAttributeApi, logoutUser } from "@/utils";
+import { useRouter } from "next/navigation";
 
 const CustomAttributesContainer = () => {
+	const router = useRouter();
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(15);
 	const [callApi, setCallApi] = useState<boolean>(true);
@@ -41,11 +43,16 @@ const CustomAttributesContainer = () => {
 	const [filter, setFilter] = useState<string>("name");
 	const [orderBy, setOrderBy] = useState<string>("custom_attribute_id");
 	const [order, setOrder] = useState<string>("asc");
-	console.log("order", order);
 	const [customAttributesList, setCustomAttributesList] = useState<CustomAttributeModel[]>([]);
+	const currentQueryRef = useRef(searchValue);
+
 	useEffect(() => {
 		initState().then();
 	}, [filter, page, callApi, orderBy, order]);
+
+	useEffect(() => {
+		currentQueryRef.current = searchValue;
+	}, [searchValue]);
 
 	const initState = async () => {
 		setLoading(true);
@@ -61,6 +68,7 @@ const CustomAttributesContainer = () => {
 			},
 			() => {
 				setLoading(false);
+				logoutUser(router);
 			}
 		).then();
 	};
@@ -75,20 +83,23 @@ const CustomAttributesContainer = () => {
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (q: string) => {
-		setSearchLoading(true);
-		getAttributeApi(
-			`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
-			(data: any) => {
-				setCustomAttributesList(data.custom_attributes);
-				setSearchLoading(false);
-			},
-			() => {
-				setSearchLoading(false);
-			},
-			() => {
-				setSearchLoading(false);
-			}
-		).then();
+		if (q === currentQueryRef.current) {
+			setSearchLoading(true);
+			getAttributeApi(
+				`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+				(data: any) => {
+					setCustomAttributesList(data.custom_attributes);
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+					logoutUser(router);
+				}
+			).then();
+		}
 	}, 500);
 
 	const handleAddOpenModal = (
@@ -120,6 +131,7 @@ const CustomAttributesContainer = () => {
 				},
 				() => {
 					setCallApi(val => !val);
+					logoutUser(router);
 				}
 			);
 		} else {
@@ -133,6 +145,7 @@ const CustomAttributesContainer = () => {
 				},
 				() => {
 					setCallApi(val => !val);
+					logoutUser(router);
 				}
 			);
 		}

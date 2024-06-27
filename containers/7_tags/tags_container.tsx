@@ -3,7 +3,7 @@
 import { Table } from "@mantine/core";
 import { MdOutlineEdit } from "react-icons/md";
 import { useDebouncedCallback } from "@mantine/hooks";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
 	ActionIconComponent,
 	BoxComponent,
@@ -21,9 +21,11 @@ import {
 } from "@/components";
 import AddTagModal from "./add_tag_modal";
 import { TagModel } from "@/models";
-import { deleteTagApi, disableTagApi, formatDate, getTagApi } from "@/utils";
+import { deleteTagApi, disableTagApi, formatDate, getTagApi, logoutUser } from "@/utils";
+import { useRouter } from "next/navigation";
 
 const TagsContainer = () => {
+	const router = useRouter();
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(15);
 	const [tagId, setTagId] = useState<string>("");
@@ -38,9 +40,15 @@ const TagsContainer = () => {
 	const [order, setOrder] = useState<string>("asc");
 	const [tagsList, setTagsList] = useState<TagModel[]>([]);
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
+	const currentQueryRef = useRef(searchValue);
+
 	useEffect(() => {
 		initState().then();
 	}, [filter, page, callApi, orderBy, order]);
+
+	useEffect(() => {
+		currentQueryRef.current = searchValue;
+	}, [searchValue]);
 
 	const initState = async () => {
 		setLoading(true);
@@ -56,6 +64,7 @@ const TagsContainer = () => {
 			},
 			() => {
 				setLoading(false);
+				logoutUser(router);
 			}
 		);
 	};
@@ -70,20 +79,23 @@ const TagsContainer = () => {
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (q: string) => {
-		setSearchLoading(true);
-		getTagApi(
-			`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
-			(data: any) => {
-				setTagsList(data.tags);
-				setSearchLoading(false);
-			},
-			() => {
-				setSearchLoading(false);
-			},
-			() => {
-				setSearchLoading(false);
-			}
-		).then();
+		if (q === currentQueryRef.current) {
+			setSearchLoading(true);
+			getTagApi(
+				`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+				(data: any) => {
+					setTagsList(data.tags);
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+					logoutUser(router);
+				}
+			).then();
+		}
 	}, 500);
 
 	const handleAddOpenModal = (id: string, name: string) => {
@@ -104,6 +116,7 @@ const TagsContainer = () => {
 				},
 				() => {
 					setCallApi(val => !val);
+					logoutUser(router);
 				}
 			);
 		} else {
@@ -117,6 +130,7 @@ const TagsContainer = () => {
 				},
 				() => {
 					setCallApi(val => !val);
+					logoutUser(router);
 				}
 			);
 		}

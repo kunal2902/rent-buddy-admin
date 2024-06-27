@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { MdOutlineEdit } from "react-icons/md";
 import { useRouter } from "next/navigation";
@@ -48,10 +48,15 @@ const SubCategoriesContainer = () => {
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const [subCatgoryIcon, setSubCategoryIcon] = useState<string | undefined>("");
 	const [subCategoryList, setSubCategoryList] = useState<SubCategoryModel[]>([]);
+	const currentQueryRef = useRef(searchValue);
 
 	useEffect(() => {
 		initState().then();
 	}, [filter, page, callApi, orderBy, order]);
+
+	useEffect(() => {
+		currentQueryRef.current = searchValue;
+	}, [searchValue]);
 
 	const initState = async () => {
 		setLoading(true);
@@ -82,20 +87,23 @@ const SubCategoriesContainer = () => {
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (q: string) => {
-		setSearchLoading(true);
-		getSubCategoryApi(
-			`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
-			(data: any) => {
-				setSubCategoryList(data.sub_categories);
-				setSearchLoading(false);
-			},
-			() => {
-				setSearchLoading(false);
-			},
-			() => {
-				setSearchLoading(false);
-			}
-		).then();
+		if (q === currentQueryRef.current) {
+			setSearchLoading(true);
+			getSubCategoryApi(
+				`filter_type=${filter}&filter_query=${q}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+				(data: any) => {
+					setSubCategoryList(data.sub_categories);
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+				},
+				() => {
+					setSearchLoading(false);
+					logoutUser(router);
+				}
+			).then();
+		}
 	}, 500);
 
 	const handleAddOpenModal = (

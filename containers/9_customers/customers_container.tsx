@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Table } from "@mantine/core";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { MdOutlineEdit } from "react-icons/md";
@@ -44,10 +44,15 @@ const CustomersContainer = () => {
 	const [customersList, setCustomersList] = useState<CustomerModel[]>([]);
 	const [customerInitialPhoneNumber, setCustomerInitialPhoneNumber] = useState("");
 	const [customerInitialEmail, setCustomerInitialEmail] = useState<string | undefined>();
+	const currentQueryRef = useRef(searchValue);
 
 	useEffect(() => {
 		initState().then();
 	}, [filter, page, callApi, orderBy, order]);
+
+	useEffect(() => {
+		currentQueryRef.current = searchValue;
+	}, [searchValue]);
 
 	const initState = async () => {
 		setLoading(true);
@@ -78,10 +83,11 @@ const CustomersContainer = () => {
 	}, [searchValue]);
 
 	const handleSearch = useDebouncedCallback(async (query: string) => {
-		setSearchLoading(true);
-		await getCustomerApi(
-			`filter_type=${filter}&filter_query=${query}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
-			(data: any) => {
+		if (query === currentQueryRef.current) {
+			setSearchLoading(true);
+			await getCustomerApi(
+				`filter_type=${filter}&filter_query=${query}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
+				(data: any) => {
 					setCustomersList(data.customers);
 					setSearchLoading(false);
 				},
@@ -93,6 +99,7 @@ const CustomersContainer = () => {
 					logoutUser(router);
 				}
 			).then();
+		}
 	}, 500);
 
 	const handleAddOpenModal = (

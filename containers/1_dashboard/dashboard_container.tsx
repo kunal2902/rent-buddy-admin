@@ -41,9 +41,7 @@ const DashboardContainer = () => {
 			() => {
 				logoutUser(router);
 			}
-		).then(() => {
-			setLoading(false);
-		});
+		).then();
 	}, []);
 
 	return (
