@@ -182,18 +182,24 @@ const ItemsContainer = () => {
 			<TableTdComponent>{element.item_id}</TableTdComponent>
 			<TableTdComponent>{element.name}</TableTdComponent>
 			<TableTdComponent>{element.category.name}</TableTdComponent>
-			<TableTdComponent>{element.sub_category.name}</TableTdComponent>
+			<TableTdComponent>
+				{element.sub_category?.name ?? null}
+			</TableTdComponent>
 			<TableTdComponent>{element.type.name}</TableTdComponent>
 			<TableTdComponent>{element.stock_quantity}</TableTdComponent>
 			<TableTdComponent>{element.created_by.name}</TableTdComponent>
-			<TableTdComponent>{formatDate(element.created_at)}</TableTdComponent>
+			<TableTdComponent>
+				{formatDate(element.created_at)}
+			</TableTdComponent>
 			<TableTdComponent w={60}>
 				<PopConfirmComponent
 					entityName="item"
 					type={PopConfirmType.switch}
 					isDisabled={element.is_disabled}
 					actionName={element.is_disabled ? "enable" : "disable"}
-					onConfirm={async () => handleActionItem(element.item_id, "disable")}
+					onConfirm={async () =>
+						handleActionItem(element.item_id, "disable")
+					}
 				/>
 			</TableTdComponent>
 			<TableTdComponent w={110}>
@@ -201,11 +207,16 @@ const ItemsContainer = () => {
 					<PopConfirmComponent
 						entityName="item"
 						actionName="delete"
-						onConfirm={async () => handleActionItem(element.item_id, "delete")}
+						onConfirm={async () =>
+							handleActionItem(element.item_id, "delete")
+						}
 					/>
 					<ActionIconComponent
-						onClick={() => handleAddOpenModal(element)}
-						size="md">
+						onClick={() =>
+							handleAddOpenModal(element.item_id, element.name)
+						}
+						size="md"
+					>
 						<MdOutlineEdit size={18} />
 					</ActionIconComponent>
 				</GroupComponent>
