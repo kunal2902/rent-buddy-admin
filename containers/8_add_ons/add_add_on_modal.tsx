@@ -1,8 +1,7 @@
 "use client";
 
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
-import { Group } from "@mantine/core";
-import { Image as ImageIcon, Trash } from "lucide-react";
+import { Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { toast } from "react-toastify";
 import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
@@ -16,6 +15,7 @@ import {
 	TitleComponent,
 } from "@/components";
 import { FileInputComponent } from "@/components/mantine/file_input_component";
+import ShowNotification from "@/components/mantine/show_notification";
 
 interface Props {
 	isOpen: boolean;
@@ -95,13 +95,14 @@ const AddAddOnModal: React.FC<Props> = ({
 		try {
 			await upsertAddOnApi(
 				addOnData,
-				() => {
+				(response) => {
 					onClose();
 					setCallApi((val) => !val);
 					setLoading(false);
+					ShowNotification(response.message, "success");
 				},
 				(message: string) => {
-					toast.error(message);
+					ShowNotification(message, "error");
 					setLoading(false);
 				},
 				() => {

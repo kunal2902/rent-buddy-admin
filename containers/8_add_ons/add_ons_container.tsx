@@ -22,6 +22,7 @@ import {
 import AddAddOnModal from "./add_add_on_modal";
 import { AddOnModel } from "@/models";
 import { deleteAddOnApi, disableAddOnApi, formatDate, getAddOnApi, logoutUser } from "@/utils";
+import ShowNotification from "@/components/mantine/show_notification";
 
 const AddOnsContainer = () => {
 	const router = useRouter();
@@ -112,10 +113,12 @@ const AddOnsContainer = () => {
 		if (actionType === "disable") {
 			await disableAddOnApi(
 				id,
-				() => {
+				(response) => {
 					setCallApi(val => !val);
+					ShowNotification(response.message, "success");
 				},
-				() => {
+				(err) => {
+					ShowNotification(err, "error");
 					setCallApi(val => !val);
 				},
 				() => {
@@ -126,10 +129,12 @@ const AddOnsContainer = () => {
 		} else {
 			await deleteAddOnApi(
 				id,
-				() => {
+				(response) => {
 					setCallApi(val => !val);
+					ShowNotification(response.message, "success");
 				},
-				() => {
+				(err) => {
+					ShowNotification(err, "error");
 					setCallApi(val => !val);
 				},
 				() => {

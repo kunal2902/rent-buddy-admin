@@ -4,7 +4,6 @@ import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "re
 import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
 import { Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
-import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import {
 	ActionIconComponent,
@@ -17,6 +16,7 @@ import {
 	TitleComponent,
 } from "@/components";
 import { logoutUser, upsertItemTypeApi } from "@/utils";
+import ShowNotification from "@/components/mantine/show_notification";
 
 interface Props {
 	isOpen: boolean;
@@ -96,13 +96,14 @@ const AddItemTypeModal: React.FC<Props> = (props: Props) => {
 		try {
 			await upsertItemTypeApi(
 				itemTypeData,
-				() => {
+				(response) => {
 					onClose();
 					setCallApi(val => !val);
 					setLoading(false);
+					ShowNotification(response.message, "success");
 				},
 				(message: string) => {
-					toast.error(message);
+					ShowNotification(message, "error");
 					setLoading(false);
 				},
 				() => {

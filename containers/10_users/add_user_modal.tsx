@@ -1,6 +1,5 @@
 "use client";
 
-import { toast } from "react-toastify";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Stack } from "@mantine/core";
 import { useRouter } from "next/navigation";
@@ -10,6 +9,7 @@ import {
 	TextInputComponent, TitleComponent,
 } from "@/components";
 import { getRoleApi, logoutUser, upsertUserApi } from "@/utils";
+import ShowNotification from "@/components/mantine/show_notification";
 
 interface Props {
 	isOpen: boolean;
@@ -84,12 +84,13 @@ const AddUserModal = (props: Props) => {
 		try {
 			await upsertUserApi(
 				body,
-				() => {
+				(response) => {
 					onClose();
 					setCallApi(val => !val);
+					ShowNotification(response.message, "success");
 				},
 				(message: string) => {
-					toast.error(message);
+					ShowNotification(message, "error");
 				},
 				() => {
 					logoutUser(router);

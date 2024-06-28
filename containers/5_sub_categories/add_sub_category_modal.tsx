@@ -7,7 +7,6 @@ import React, {
 	useRef,
 	useState,
 } from "react";
-import { toast } from "react-toastify";
 import { Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
@@ -24,6 +23,7 @@ import {
 } from "@/components";
 import { getCategoryApi, logoutUser, upsertSubCategoryApi } from "@/utils";
 import { useRouter } from "next/navigation";
+import ShowNotification from "@/components/mantine/show_notification";
 
 interface Props {
 	isOpen: boolean;
@@ -140,13 +140,14 @@ const AddSubCategoryModal = (props: Props) => {
 		try {
 			await upsertSubCategoryApi(
 				subCatData,
-				() => {
+				(response) => {
 					onClose();
 					setCallApi((val) => !val);
 					setLoading(false);
+					ShowNotification(response.message, "success");
 				},
 				(message: string) => {
-					toast.error(message);
+					ShowNotification(message, "error");
 					setLoading(false);
 				},
 				() => {

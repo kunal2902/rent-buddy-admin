@@ -5,9 +5,11 @@ import "./globals.css";
 import React from "react";
 import { ColorSchemeScript } from "@mantine/core";
 import { Metadata } from "next";
+import { Notifications } from "@mantine/notifications";
 import { mainTheme } from "@/constants";
 import { appDescription, appTitle, ReactQueryProvider, RecoilProvider, ThemeProvider } from "@/utils";
 import { MantineProviderComponent } from "@/components";
+import "@mantine/notifications/styles.css";
 
 export const metadata: Metadata = {
 	title: appTitle,
@@ -30,6 +32,7 @@ export default function RootLayout({ children }: { children: any }) {
 				<ReactQueryProvider>
 					<RecoilProvider>
 						<MantineProviderComponent theme={mainTheme}>
+							{/*<Notifications />*/}
 							<ThemeProvider>
 								{children}
 							</ThemeProvider>

@@ -1,6 +1,5 @@
 "use client";
 
-import { toast } from "react-toastify";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -9,6 +8,7 @@ import {
 	TextInputComponent, TitleComponent,
 } from "@/components";
 import { logoutUser, upsertTagApi } from "@/utils";
+import ShowNotification from "@/components/mantine/show_notification";
 
 interface Props {
 	isOpen: boolean;
@@ -45,13 +45,14 @@ const AddTagModal = (props: Props) => {
 		try {
 			await upsertTagApi(
 				body,
-				() => {
+				(response) => {
 					onClose();
 					setCallApi(val => !val);
 					setLoading(false);
+					ShowNotification(response.message, "success");
 				},
 				(message: string) => {
-					toast.error(message);
+					ShowNotification(message, "error");
 					setLoading(false);
 				},
 				() => {

@@ -46,6 +46,7 @@ import {
 	logoutUser,
 	upsertItemApi,
 } from "@/utils";
+import ShowNotification from "@/components/mantine/show_notification";
 
 interface Props {
 	isOpen: boolean;
@@ -398,13 +399,14 @@ const AddItemModal = (props: Props) => {
 		try {
 			await upsertItemApi(
 				itemBody,
-				() => {
+				(response) => {
 					onClose();
 					setCallApi((val) => !val);
 					setLoading(false);
+					ShowNotification(response.message, "success");
 				},
 				(message: string) => {
-					console.log(message);
+					ShowNotification(message, "error");
 					setLoading(false);
 				},
 				() => {

@@ -31,6 +31,7 @@ import {
 } from "@/components";
 import Logo from "@/public/images/logo.png";
 import { StackComponent } from "@/components/mantine/stack_component";
+import ShowNotification from "@/components/mantine/show_notification";
 
 const LoginContainer = () => {
 	const router = useRouter();
@@ -52,6 +53,7 @@ const LoginContainer = () => {
 				body.email,
 				body.password,
 				(result: any) => {
+					ShowNotification(result.message, "success");
 					setCookie(crmJwtConstant, result.data.authToken, cookieOptions);
 					setCookie(userIdConstant, result.data.user.user_id, cookieOptions);
 					setCookie(nameConstant, result.data.user.name, cookieOptions);
@@ -65,6 +67,7 @@ const LoginContainer = () => {
 				},
 				(err: any) => {
 					setLoading(false);
+					ShowNotification(err, "error");
 					console.log(err.message);
 					// toast.error(err);
 				}
