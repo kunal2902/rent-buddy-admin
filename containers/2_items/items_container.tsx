@@ -28,6 +28,7 @@ import {
 import { ItemModel } from "@/models";
 import { deleteItemApi, disableItemApi, formatDate, getItemApi, logoutUser } from "@/utils";
 import AddItemModal, { InitialItemValue } from "./add_item_modal";
+import ShowNotification from "@/components/mantine/show_notification";
 
 const initialItemValue: InitialItemValue = {
 	item_id: "",
@@ -145,11 +146,13 @@ const ItemsContainer = () => {
 	const handleActionItem = async (id: string, itemType: string) => {
 		if (itemType === "disable") {
 			await disableItemApi(id,
-				() => {
+				(response) => {
 					setCallApi(val => !val);
+					ShowNotification(response.message, "success");
 				},
-				() => {
+				(err) => {
 					setCallApi(val => !val);
+					ShowNotification(err, "error");
 				},
 				() => {
 					setCallApi(val => !val);
@@ -157,11 +160,13 @@ const ItemsContainer = () => {
 				});
 		} else {
 			await deleteItemApi(id,
-				() => {
+				(response) => {
 					setCallApi(val => !val);
+					ShowNotification(response.message, "success");
 				},
-				() => {
+				(err) => {
 					setCallApi(val => !val);
+					ShowNotification(err, "error");
 				},
 				() => {
 					setCallApi(val => !val);

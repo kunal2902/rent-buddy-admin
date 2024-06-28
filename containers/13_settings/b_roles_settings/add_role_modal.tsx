@@ -8,12 +8,12 @@ import {
 	ModalComponent,
 	SpaceComponent,
 	TextInputComponent,
-	TitleComponent,
 } from "@/components";
 import { logoutUser, upsertRoleApi } from "@/utils";
 import { StackComponent } from "@/components/mantine/stack_component";
 import { PermissionModal } from "@/components/custom/permission_modal";
 import { PermissionModel } from "@/models";
+import ShowNotification from "@/components/mantine/show_notification";
 
 interface Props {
 	roleId: string;
@@ -85,13 +85,14 @@ const AddRoleModal = (props: Props) => {
 		try {
 			await upsertRoleApi(
 				roleBody,
-				() => {
+				(response) => {
 					onClose();
 					setCallApi(val => !val);
 					setLoading(false);
+					ShowNotification(response.message, "success");
 				},
 				(message: string) => {
-					console.log(message);
+					ShowNotification(message, "error");
 					setLoading(false);
 				},
 				() => logoutUser(router)

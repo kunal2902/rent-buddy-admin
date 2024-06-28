@@ -27,6 +27,7 @@ import {
 	TextComponent,
 } from "../mantine";
 import { centeredInputTheme } from "@/constants";
+import ShowNotification from "@/components/mantine/show_notification";
 
 interface Props {
 	cartItem: CartItemModel | undefined;
@@ -86,8 +87,11 @@ export const ProductCard = (props: Props) => {
 					{},
 					(response: any) => {
 						setCartId(response.cart.cart_id);
+						ShowNotification(response.message, "success");
 					},
-					() => {},
+				(err) => {
+						ShowNotification(err, "error");
+					},
 					() => {
 						logoutUser(router);
 					},

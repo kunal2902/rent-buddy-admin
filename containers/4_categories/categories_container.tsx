@@ -29,6 +29,7 @@ import {
 import { CategoryModel } from "@/models";
 import { deleteCategoryApi, disableCategoryApi, formatDate, getCategoryApi, logoutUser } from "@/utils";
 import AddCategoryModal from "./add_category_modal";
+import ShowNotification from "@/components/mantine/show_notification";
 
 const CategoriesContainer = () => {
 	const router = useRouter();
@@ -116,10 +117,12 @@ const CategoriesContainer = () => {
 		if (actionType === "disable") {
 			await disableCategoryApi(
 				id,
-				() => {
+				(response) => {
 					setCallApi(val => !val);
+					ShowNotification(response.message, "success");
 				},
-				() => {
+				(err) => {
+					ShowNotification(err, "error");
 					setCallApi(val => !val);
 				},
 				() => {
@@ -130,10 +133,12 @@ const CategoriesContainer = () => {
 		} else {
 			await deleteCategoryApi(
 				id,
-				() => {
+				(response) => {
 					setCallApi(val => !val);
+					ShowNotification(response.message, "success");
 				},
-				() => {
+				(err) => {
+					ShowNotification(err, "error");
 					setCallApi(val => !val);
 				},
 				() => {

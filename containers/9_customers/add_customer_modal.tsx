@@ -1,3 +1,5 @@
+"use client";
+
 import { Stack } from "@mantine/core";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -11,6 +13,7 @@ import {
 } from "@/components";
 import { NumberInputComponent } from "@/components/mantine/number_input_component";
 import { logoutUser, upsertCustomerApi } from "@/utils";
+import ShowNotification from "@/components/mantine/show_notification";
 
 interface Props {
 	isOpen: boolean;
@@ -54,11 +57,13 @@ const AddCustomerModal = (props: Props) => {
 		try {
 			await upsertCustomerApi(
 				body,
-				() => {
+				(response) => {
+					ShowNotification(response.message, "success");
 					onClose();
 					setCallApi(val => !val);
 				},
-				() => {
+				(err) => {
+					ShowNotification(err, "error");
 				},
 				() => {
 					logoutUser(router);

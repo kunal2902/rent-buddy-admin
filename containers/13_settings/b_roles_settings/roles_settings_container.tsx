@@ -23,6 +23,7 @@ import {
 import { deleteRoleApi, disableRoleApi, formatDate, getRoleApi, logoutUser } from "@/utils";
 import { PermissionModel, RoleModel } from "@/models";
 import AddRoleModal from "./add_role_modal";
+import ShowNotification from "@/components/mantine/show_notification";
 
 const RolesSettingsContainer = () => {
 	const router = useRouter();
@@ -114,11 +115,13 @@ const RolesSettingsContainer = () => {
 		if (actionType === "disable") {
 			await disableRoleApi(
 				id,
-				() => {
+				(response) => {
 					setCallApi(val => !val);
+					ShowNotification(response.message, "success");
 				},
-				() => {
+				(err) => {
 					setCallApi(val => !val);
+					ShowNotification(err, "error");
 				},
 				() => {
 					setCallApi(val => !val);
@@ -128,11 +131,13 @@ const RolesSettingsContainer = () => {
 		} else {
 			await deleteRoleApi(
 				id,
-				() => {
+				(response) => {
 					setCallApi(val => !val);
+					ShowNotification(response.message, "success");
 				},
-				() => {
+				(err) => {
 					setCallApi(val => !val);
+					ShowNotification(err, "error");
 				},
 				() => {
 					setCallApi(val => !val);

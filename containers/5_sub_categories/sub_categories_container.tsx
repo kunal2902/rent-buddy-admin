@@ -29,6 +29,7 @@ import {
 import { SubCategoryModel } from "@/models";
 import { deleteSubCategoryApi, disableSubCategoryApi, formatDate, getSubCategoryApi, logoutUser } from "@/utils";
 import AddSubCategoryModal from "./add_sub_category_modal";
+import ShowNotification from "@/components/mantine/show_notification";
 
 const SubCategoriesContainer = () => {
 	const router = useRouter();
@@ -123,11 +124,13 @@ const SubCategoriesContainer = () => {
 		if (actionType === "disable") {
 			await disableSubCategoryApi(
 				id,
-				() => {
+				(response) => {
 					setCallApi(val => !val);
+					ShowNotification(response.message, "success");
 				},
-				() => {
+				(err) => {
 					setCallApi(val => !val);
+					ShowNotification(err, "error");
 				},
 				() => {
 					setCallApi(val => !val);
@@ -137,11 +140,13 @@ const SubCategoriesContainer = () => {
 		} else {
 			await deleteSubCategoryApi(
 				id,
-				() => {
+				(response) => {
 					setCallApi(val => !val);
+					ShowNotification(response.message, "success");
 				},
-				() => {
+				(err) => {
 					setCallApi(val => !val);
+					ShowNotification(err, "error");
 				},
 				() => {
 					setCallApi(val => !val);

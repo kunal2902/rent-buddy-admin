@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 import {
 	ButtonComponent,
 	CheckboxComponent,
@@ -13,7 +13,7 @@ import {
 } from "@/components";
 import { CustomAttributeTaxTypeOptions, CustomAttributeTypeOptions } from "@/constants";
 import { logoutUser, mantineSize, upsertAttributeApi } from "@/utils";
-import { useRouter } from "next/navigation";
+import ShowNotification from "@/components/mantine/show_notification";
 
 interface Props {
 	isOpen: boolean;
@@ -85,13 +85,14 @@ const AddCustomAttributeModal = (props: Props) => {
 		try {
 			await upsertAttributeApi(
 				customAttributeBody,
-				() => {
+				(response) => {
 					onClose();
 					setCallApi(val => !val);
 					setLoading(false);
+					ShowNotification(response.message, "success");
 				},
 				(message: string) => {
-					toast.error(message);
+					ShowNotification(message, "error");
 					setLoading(false);
 				},
 				() => {

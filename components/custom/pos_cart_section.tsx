@@ -41,6 +41,7 @@ import {
 import { ComboBoxProps } from "@/types";
 import { CartItemModel, CartModel } from "@/models";
 import InvoiceDetailModal from "@/components/custom/invoice_detail_modal";
+import ShowNotification from "@/components/mantine/show_notification";
 
 export const PosCartSection = () => {
 	const router = useRouter();
@@ -230,10 +231,13 @@ export const PosCartSection = () => {
 				};
 				checkoutApi(
 					checkoutBody,
-					() => {
+					(response) => {
 						setInvoiceDialogOpen(true);
+						ShowNotification(response.message, "success");
 					},
-					() => {},
+					(err) => {
+						ShowNotification(err, "error");
+					},
 					() => {},
 				);
 			},

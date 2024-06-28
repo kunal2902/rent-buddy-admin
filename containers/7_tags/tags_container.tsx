@@ -4,6 +4,7 @@ import { Table } from "@mantine/core";
 import { MdOutlineEdit } from "react-icons/md";
 import { useDebouncedCallback } from "@mantine/hooks";
 import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
 	ActionIconComponent,
 	BoxComponent,
@@ -22,7 +23,7 @@ import {
 import AddTagModal from "./add_tag_modal";
 import { TagModel } from "@/models";
 import { deleteTagApi, disableTagApi, formatDate, getTagApi, logoutUser } from "@/utils";
-import { useRouter } from "next/navigation";
+import ShowNotification from "@/components/mantine/show_notification";
 
 const TagsContainer = () => {
 	const router = useRouter();
@@ -108,11 +109,13 @@ const TagsContainer = () => {
 		if (actionType === "disable") {
 			await disableTagApi(
 				id,
-				() => {
+				(response) => {
 					setCallApi(val => !val);
+					ShowNotification(response.message, "success");
 				},
-				() => {
+				(err) => {
 					setCallApi(val => !val);
+					ShowNotification(err, "error");
 				},
 				() => {
 					setCallApi(val => !val);
@@ -122,11 +125,13 @@ const TagsContainer = () => {
 		} else {
 			await deleteTagApi(
 				id,
-				() => {
+				(response) => {
 					setCallApi(val => !val);
+					ShowNotification(response.message, "success");
 				},
-				() => {
+				(err) => {
 					setCallApi(val => !val);
+					ShowNotification(err, "error");
 				},
 				() => {
 					setCallApi(val => !val);

@@ -21,10 +21,11 @@ import { CustomerModel } from "@/models";
 import {
 	deleteCustomerApi,
 	disableCustomerApi,
-	formatDate, getCustomerApi, getItemTypeApi,
+	formatDate, getCustomerApi,
 	getUserId, logoutUser,
 } from "@/utils";
 import AddCustomerModal from "@/containers/9_customers/add_customer_modal";
+import ShowNotification from "@/components/mantine/show_notification";
 
 const CustomersContainer = () => {
 	const router = useRouter();
@@ -119,11 +120,13 @@ const CustomersContainer = () => {
 		if (actionType === "disable") {
 			await disableCustomerApi(
 				id,
-				() => {
+				(response) => {
 					setCallApi(val => !val);
+					ShowNotification(response.message, "success");
 				},
-				() => {
+				(err) => {
 					setCallApi(val => !val);
+					ShowNotification(err, "error");
 				},
 				() => {
 					setCallApi(val => !val);
@@ -133,11 +136,13 @@ const CustomersContainer = () => {
 		} else {
 			await deleteCustomerApi(
 				id,
-				() => {
+				(response) => {
 					setCallApi(val => !val);
+					ShowNotification(response.message, "success");
 				},
-				() => {
+				(err) => {
 					setCallApi(val => !val);
+					ShowNotification(err, "error");
 				},
 				() => {
 					setCallApi(val => !val);

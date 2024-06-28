@@ -2,7 +2,6 @@
 
 import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
-import { toast } from "react-toastify";
 import Image from "next/image";
 import { Image as ImageIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -17,6 +16,7 @@ import {
 	TitleComponent,
 } from "@/components";
 import { logoutUser, upsertCategoryApi } from "@/utils";
+import ShowNotification from "@/components/mantine/show_notification";
 
 interface Props {
 	isOpen: boolean;
@@ -96,13 +96,14 @@ const AddCategoryModal = (props: Props) => {
 		try {
 			await upsertCategoryApi(
 				categoryData,
-				() => {
+				(response) => {
 					onClose();
 					setCallApi(val => !val);
 					setLoading(false);
+					ShowNotification(response.message, "success");
 				},
 				(message: string) => {
-					toast.error(message);
+					ShowNotification(message, "error");
 					setLoading(false);
 				},
 				() => {

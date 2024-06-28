@@ -2,6 +2,9 @@
 
 import React, { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Notification, rem } from "@mantine/core";
+import { MdCancel } from "react-icons/md";
+import { notifications } from "@mantine/notifications";
 import {
 	BadgeComponent,
 	CardComponent,
@@ -35,10 +38,13 @@ const DashboardContainer = () => {
 					});
 				});
 				setData(tempList);
+				setLoading(false);
 			},
 			() => {
+				setLoading(false);
 			},
 			() => {
+				setLoading(false);
 				logoutUser(router);
 			}
 		).then();

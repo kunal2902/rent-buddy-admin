@@ -23,6 +23,7 @@ import {
 import { UserModel } from "@/models";
 import { deleteUserApi, disableUserApi, formatDate, getUserId, getUsersApi, logoutUser } from "@/utils";
 import AddUserModal from "./add_user_modal";
+import ShowNotification from "@/components/mantine/show_notification";
 
 const UsersContainer = () => {
 	const router = useRouter();
@@ -122,10 +123,12 @@ const UsersContainer = () => {
 		if (actionType === "disable") {
 			await disableUserApi(
 				id,
-				() => {
+				(response) => {
 					setCallApi(val => !val);
+					ShowNotification(response.message, "success");
 				},
-				() => {
+				(err) => {
+					ShowNotification(err, "error");
 					setCallApi(val => !val);
 				},
 				() => {
@@ -136,10 +139,12 @@ const UsersContainer = () => {
 		} else {
 			await deleteUserApi(
 				id,
-				() => {
+				(response) => {
 					setCallApi(val => !val);
+					ShowNotification(response.message, "success");
 				},
-				() => {
+				(err) => {
+					ShowNotification(err, "error");
 					setCallApi(val => !val);
 				},
 				() => {

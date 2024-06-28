@@ -23,6 +23,7 @@ import AddCustomAttributeModal from "./add_custom_attribute_modal";
 import { CustomAttributeModel } from "@/models";
 import { deleteAttributeApi, disableAttributeApi, formatDate, getAttributeApi, logoutUser } from "@/utils";
 import { useRouter } from "next/navigation";
+import ShowNotification from "@/components/mantine/show_notification";
 
 const CustomAttributesContainer = () => {
 	const router = useRouter();
@@ -123,11 +124,13 @@ const CustomAttributesContainer = () => {
 		if (actionType === "disable") {
 			await disableAttributeApi(
 				id,
-				() => {
+				(response) => {
 					setCallApi(val => !val);
+					ShowNotification(response.message, "success");
 				},
-				() => {
+				(err) => {
 					setCallApi(val => !val);
+					ShowNotification(err, "error");
 				},
 				() => {
 					setCallApi(val => !val);
@@ -137,11 +140,13 @@ const CustomAttributesContainer = () => {
 		} else {
 			await deleteAttributeApi(
 				id,
-				() => {
+				(response) => {
 					setCallApi(val => !val);
+					ShowNotification(response.message, "success");
 				},
-				() => {
+				(err) => {
 					setCallApi(val => !val);
+					ShowNotification(err, "error");
 				},
 				() => {
 					setCallApi(val => !val);

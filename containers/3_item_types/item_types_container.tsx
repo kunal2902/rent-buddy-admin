@@ -29,6 +29,7 @@ import {
 import { ItemTypeModel } from "@/models";
 import { deleteItemTypeApi, disableItemTypeApi, formatDate, getItemTypeApi, logoutUser } from "@/utils";
 import AddItemTypeModal from "./add_item_type_modal";
+import ShowNotification from "@/components/mantine/show_notification";
 
 const ItemTypesContainer = () => {
 	const router = useRouter();
@@ -116,11 +117,13 @@ const ItemTypesContainer = () => {
 		if (type === "disable") {
 			await disableItemTypeApi(
 				id,
-				() => {
+				(response) => {
 					setCallApi(val => !val);
+					ShowNotification(response.message, "success");
 				},
-				() => {
+				(err) => {
 					setCallApi(val => !val);
+					ShowNotification(err, "error");
 				},
 				() => {
 					setCallApi(val => !val);
@@ -130,11 +133,13 @@ const ItemTypesContainer = () => {
 		} else {
 			await deleteItemTypeApi(
 				id,
-				() => {
+				(response) => {
 					setCallApi(val => !val);
+					ShowNotification(response.message, "success");
 				},
-				() => {
+				(err) => {
 					setCallApi(val => !val);
+					ShowNotification(err, "error");
 				},
 				() => {
 					setCallApi(val => !val);
