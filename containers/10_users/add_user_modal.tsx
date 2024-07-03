@@ -37,6 +37,7 @@ const AddUserModal = (props: Props) => {
 	} = props;
 	const router = useRouter();
 	const [name, setName] = useState<string>(initialValueName);
+	const [loading, setLoading] = useState(false);
 	const [userName, setUserName] = useState<string>(initialValueUserName);
 	const [password, setPassword] = useState<string>(initialValuePassword);
 	const [email, setEmail] = useState<string>(initialValueEmail);
@@ -81,19 +82,24 @@ const AddUserModal = (props: Props) => {
 			username: userName,
 			role_id: roleId,
 		};
+		setLoading(true);
+
 		try {
 			await upsertUserApi(
 				body,
-				(response) => {
+				() => {
 					onClose();
 					setCallApi(val => !val);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
+					setLoading(false);
 				},
-				(message: string) => {
-					ShowNotification(message, "error");
+				(message: any) => {
+					ShowNotification(message.error, "error");
+					setLoading(false);
 				},
 				() => {
 					logoutUser(router);
+					setLoading(false);
 				},
 			);
 		} catch (error) {
@@ -169,6 +175,7 @@ const AddUserModal = (props: Props) => {
 				<ButtonComponent
 					title="Save"
 					w={100}
+					loading={loading}
 					onClick={handleSubmitUser}
 				/>
 			</GroupComponent>

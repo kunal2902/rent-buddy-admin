@@ -124,13 +124,13 @@ const SubCategoriesContainer = () => {
 		if (actionType === "disable") {
 			await disableSubCategoryApi(
 				id,
-				(response) => {
+				() => {
 					setCallApi(val => !val);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
 				(err) => {
 					setCallApi(val => !val);
-					ShowNotification(err, "error");
+					ShowNotification(err.error, "error");
 				},
 				() => {
 					setCallApi(val => !val);
@@ -140,13 +140,13 @@ const SubCategoriesContainer = () => {
 		} else {
 			await deleteSubCategoryApi(
 				id,
-				(response) => {
+				() => {
 					setCallApi(val => !val);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
 				(err) => {
 					setCallApi(val => !val);
-					ShowNotification(err, "error");
+					ShowNotification(err.error, "error");
 				},
 				() => {
 					setCallApi(val => !val);

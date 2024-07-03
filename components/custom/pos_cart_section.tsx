@@ -42,12 +42,14 @@ import { ComboBoxProps } from "@/types";
 import { CartItemModel, CartModel } from "@/models";
 import InvoiceDetailModal from "@/components/custom/invoice_detail_modal";
 import ShowNotification from "@/components/mantine/show_notification";
+import AddCustomerModal from "@/containers/9_customers/add_customer_modal";
 
 export const PosCartSection = () => {
 	const router = useRouter();
 
 	const [subTotal, setSubTotal] = useState(0);
-	const [customerModalOpen, setCustomerModalOpen] = useState(false);
+	const [callApi, setCallApi] = useState<boolean>(true);
+	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [invoiceDialogOpen, setInvoiceDialogOpen] = useState<boolean>(false);
 	const [customersList, setCustomersList] = useState<ComboBoxProps[]>([]);
 
@@ -57,6 +59,7 @@ export const PosCartSection = () => {
 		useRecoilState(customerAtom);
 	const [cartItems, setCartItems] =
 		useRecoilState<Array<CartItemModel>>(cartItemsAtom);
+	const selectComponentKey = selectedCustomer.id + selectedCustomer.name;
 
 	useEffect(() => {
 		getCustomerApi(
@@ -71,9 +74,11 @@ export const PosCartSection = () => {
 				setCustomersList(formattedCustomers);
 			},
 			() => {},
-			() => {},
+			() => {
+				logoutUser(router);
+			},
 		).then();
-	}, []);
+	}, [callApi]);
 
 	useEffect(() => {
 		const subtotal = calculateSubtotal();
@@ -123,9 +128,14 @@ export const PosCartSection = () => {
 					id: "",
 					name: "",
 				});
+				ShowNotification("Successfully", "success");
 			},
-			() => {},
-			() => {},
+			(err: any) => {
+				ShowNotification(err.error, "error");
+			},
+			() => {
+				logoutUser(router);
+			},
 		).then();
 	};
 
@@ -140,9 +150,14 @@ export const PosCartSection = () => {
 					id: "",
 					name: "",
 				});
+				ShowNotification("Successfully", "success");
 			},
-			() => {},
-			() => {},
+			(err: any) => {
+				ShowNotification(err.error, "error");
+			},
+			() => {
+				logoutUser(router);
+			},
 		).then();
 	};
 
@@ -218,34 +233,42 @@ export const PosCartSection = () => {
 	};
 
 	const handleCheckout = async () => {
-		const body = {
-			id: cartId,
-			customer_id: selectedCustomer.id,
-			label: "Purchased!",
-		};
-		await upsertCartApi(
-			body,
-			() => {
-				const checkoutBody = {
-					cartId,
-				};
-				checkoutApi(
-					checkoutBody,
-					(response) => {
-						setInvoiceDialogOpen(true);
-						ShowNotification(response.message, "success");
-					},
-					(err) => {
-						ShowNotification(err, "error");
-					},
-					() => {},
-				);
-			},
-			() => {},
-			() => {
-				logoutUser(router);
-			},
-		);
+		if (cartItems.length === 0) {
+			ShowNotification("Please select item first!", "error");
+		} else if (!selectedCustomer.id) {
+			ShowNotification("Please select customer first!", "error");
+		} else {
+			const body = {
+				id: cartId,
+				customer_id: selectedCustomer.id,
+				label: "Purchased!",
+			};
+			await upsertCartApi(
+				body,
+				() => {
+					const checkoutBody = {
+						cartId,
+					};
+					checkoutApi(
+						checkoutBody,
+						() => {
+							setInvoiceDialogOpen(true);
+							ShowNotification("Successfully", "success");
+						},
+						(err: any) => {
+							ShowNotification(err.error, "error");
+						},
+						() => {
+							logoutUser(router);
+						},
+					);
+				},
+				() => {},
+				() => {
+					logoutUser(router);
+				},
+			);
+		}
 	};
 
 	return (
@@ -261,6 +284,7 @@ export const PosCartSection = () => {
 				<BoxComponent h={40}>
 					<GroupComponent>
 						<SelectComponent
+							key={selectComponentKey}
 							required
 							data={customersList}
 							value={selectedCustomer.id ?? ""}
@@ -282,7 +306,7 @@ export const PosCartSection = () => {
 								h={40}
 								variant="filled"
 								onClick={() => {
-									setCustomerModalOpen(true);
+									setOpenAddModal(true);
 								}}
 							>
 								<AddIcon />
@@ -379,10 +403,11 @@ export const PosCartSection = () => {
 											</StackComponent>
 										</GroupComponent>
 										{item.item.custom_attributes.map(
-											(ca) => (
+											(ca, key) => (
 												<GroupComponent
 													justify="space-between"
 													my={2}
+													key={key}
 												>
 													<TextComponent
 														lh={1}
@@ -473,22 +498,29 @@ export const PosCartSection = () => {
 							justify="space-evenly"
 							style={{ flexGrow: 1 }}
 						>
+							{/*<TooltipComponent*/}
+							{/*	label="Please select customer"*/}
+							{/*	disabled={selectedCustomer.id && cartItems.length > 0}*/}
+							{/*>*/}
+							{/*	<ButtonComponent*/}
+							{/*		color={appAccentColorRGBA}*/}
+							{/*		title="Save Draft"*/}
+							{/*		onClick={handleSaveDraft}*/}
+							{/*		disabled={selectedCustomer.id === ""}*/}
+							{/*		fullWidth*/}
+							{/*	/>*/}
+							{/*</TooltipComponent>*/}
+							{/*<TooltipComponent*/}
+							{/*	label="Please select customer"*/}
+							{/*	disabled={selectedCustomer.id && cartItems.length > 0}*/}
+							{/*>*/}
 							<ButtonComponent
-								color={appAccentColorRGBA}
-								title="Save Draft"
-								onClick={handleSaveDraft}
-							/>
-							<TooltipComponent
-								label="Please select customer"
-								disabled={selectedCustomer.id}
-							>
-								<ButtonComponent
-									title="Checkout"
-									onClick={handleCheckout}
-									disabled={selectedCustomer.id === ""}
-									fullWidth
+								title="Checkout"
+								onClick={handleCheckout}
+									// disabled={selectedCustomer.id === ""}
+								fullWidth
 								/>
-							</TooltipComponent>
+							{/*</TooltipComponent>*/}
 						</GroupComponent>
 					</GroupComponent>
 				</BoxComponent>
@@ -501,6 +533,18 @@ export const PosCartSection = () => {
 					subTotal={subTotal}
 				/>
 			)}
+
+			{openAddModal &&
+				<AddCustomerModal
+					customerId=""
+					isOpen={openAddModal}
+					onClose={() => setOpenAddModal(false)}
+					setCallApi={setCallApi}
+					initialValueName=""
+					initialValuePhoneNumber=""
+					initialValueEmail=""
+				/>
+			}
 		</>
 	);
 };

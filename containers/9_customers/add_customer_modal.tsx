@@ -57,13 +57,13 @@ const AddCustomerModal = (props: Props) => {
 		try {
 			await upsertCustomerApi(
 				body,
-				(response) => {
-					ShowNotification(response.message, "success");
+				() => {
+					ShowNotification("Successfully", "success");
 					onClose();
 					setCallApi(val => !val);
 				},
-				(err) => {
-					ShowNotification(err, "error");
+				(err: any) => {
+					ShowNotification(err.error, "error");
 				},
 				() => {
 					logoutUser(router);

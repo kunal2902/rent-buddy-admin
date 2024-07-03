@@ -123,12 +123,12 @@ const UsersContainer = () => {
 		if (actionType === "disable") {
 			await disableUserApi(
 				id,
-				(response) => {
+				() => {
 					setCallApi(val => !val);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
 				(err) => {
-					ShowNotification(err, "error");
+					ShowNotification(err.error, "error");
 					setCallApi(val => !val);
 				},
 				() => {
@@ -139,12 +139,12 @@ const UsersContainer = () => {
 		} else {
 			await deleteUserApi(
 				id,
-				(response) => {
+				() => {
 					setCallApi(val => !val);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
 				(err) => {
-					ShowNotification(err, "error");
+					ShowNotification(err.error, "error");
 					setCallApi(val => !val);
 				},
 				() => {

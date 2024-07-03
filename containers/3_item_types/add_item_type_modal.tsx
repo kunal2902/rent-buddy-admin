@@ -91,19 +91,22 @@ const AddItemTypeModal: React.FC<Props> = (props: Props) => {
 		}
 		itemTypeData.append("name", itemTypeName);
 		itemTypeData.append("id", itemTypeId);
+		if (selectedFileToUpload === null) {
+			itemTypeData.append("delete_icon", JSON.stringify(true));
+		}
 		setLoading(true);
 
 		try {
 			await upsertItemTypeApi(
 				itemTypeData,
-				(response) => {
+				() => {
 					onClose();
 					setCallApi(val => !val);
 					setLoading(false);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
-				(message: string) => {
-					ShowNotification(message, "error");
+				(message: any) => {
+					ShowNotification(message.error, "error");
 					setLoading(false);
 				},
 				() => {

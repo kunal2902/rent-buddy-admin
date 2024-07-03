@@ -91,18 +91,21 @@ const AddAddOnModal: React.FC<Props> = ({
 		addOnData.append("name", addOnName);
 		addOnData.append("price", addOnPrice);
 		addOnData.append("id", id ?? "");
+		if (selectedFileToUpload === null) {
+			addOnData.append("delete_icon", JSON.stringify(true));
+		}
 		setLoading(true);
 		try {
 			await upsertAddOnApi(
 				addOnData,
-				(response) => {
+				() => {
 					onClose();
 					setCallApi((val) => !val);
 					setLoading(false);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
-				(message: string) => {
-					ShowNotification(message, "error");
+				(message: any) => {
+					ShowNotification(message.error, "error");
 					setLoading(false);
 				},
 				() => {

@@ -85,14 +85,14 @@ const AddRoleModal = (props: Props) => {
 		try {
 			await upsertRoleApi(
 				roleBody,
-				(response) => {
+				() => {
 					onClose();
 					setCallApi(val => !val);
 					setLoading(false);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
-				(message: string) => {
-					ShowNotification(message, "error");
+				(message: any) => {
+					ShowNotification(message.error, "error");
 					setLoading(false);
 				},
 				() => logoutUser(router)
