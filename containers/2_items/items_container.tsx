@@ -146,13 +146,13 @@ const ItemsContainer = () => {
 	const handleActionItem = async (id: string, itemType: string) => {
 		if (itemType === "disable") {
 			await disableItemApi(id,
-				(response) => {
+				() => {
 					setCallApi(val => !val);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
 				(err) => {
 					setCallApi(val => !val);
-					ShowNotification(err, "error");
+					ShowNotification(err.error, "error");
 				},
 				() => {
 					setCallApi(val => !val);
@@ -160,13 +160,13 @@ const ItemsContainer = () => {
 				});
 		} else {
 			await deleteItemApi(id,
-				(response) => {
+				() => {
 					setCallApi(val => !val);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
 				(err) => {
 					setCallApi(val => !val);
-					ShowNotification(err, "error");
+					ShowNotification(err.error, "error");
 				},
 				() => {
 					setCallApi(val => !val);

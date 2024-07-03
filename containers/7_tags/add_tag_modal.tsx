@@ -45,14 +45,14 @@ const AddTagModal = (props: Props) => {
 		try {
 			await upsertTagApi(
 				body,
-				(response) => {
+				() => {
 					onClose();
 					setCallApi(val => !val);
 					setLoading(false);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
-				(message: string) => {
-					ShowNotification(message, "error");
+				(message: any) => {
+					ShowNotification(message.error, "error");
 					setLoading(false);
 				},
 				() => {

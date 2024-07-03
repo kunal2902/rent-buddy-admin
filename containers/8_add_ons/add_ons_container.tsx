@@ -113,12 +113,12 @@ const AddOnsContainer = () => {
 		if (actionType === "disable") {
 			await disableAddOnApi(
 				id,
-				(response) => {
+				() => {
 					setCallApi(val => !val);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
 				(err) => {
-					ShowNotification(err, "error");
+					ShowNotification(err.error, "error");
 					setCallApi(val => !val);
 				},
 				() => {
@@ -129,12 +129,12 @@ const AddOnsContainer = () => {
 		} else {
 			await deleteAddOnApi(
 				id,
-				(response) => {
+				() => {
 					setCallApi(val => !val);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
 				(err) => {
-					ShowNotification(err, "error");
+					ShowNotification(err.error, "error");
 					setCallApi(val => !val);
 				},
 				() => {

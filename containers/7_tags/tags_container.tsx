@@ -109,13 +109,13 @@ const TagsContainer = () => {
 		if (actionType === "disable") {
 			await disableTagApi(
 				id,
-				(response) => {
+				() => {
 					setCallApi(val => !val);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
 				(err) => {
 					setCallApi(val => !val);
-					ShowNotification(err, "error");
+					ShowNotification(err.error, "error");
 				},
 				() => {
 					setCallApi(val => !val);
@@ -125,13 +125,13 @@ const TagsContainer = () => {
 		} else {
 			await deleteTagApi(
 				id,
-				(response) => {
+				() => {
 					setCallApi(val => !val);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
 				(err) => {
 					setCallApi(val => !val);
-					ShowNotification(err, "error");
+					ShowNotification(err.error, "error");
 				},
 				() => {
 					setCallApi(val => !val);

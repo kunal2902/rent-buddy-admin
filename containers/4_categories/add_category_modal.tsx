@@ -91,19 +91,22 @@ const AddCategoryModal = (props: Props) => {
 		}
 		categoryData.append("name", categoryName);
 		categoryData.append("id", categoryId);
+		if (selectedFileToUpload === null) {
+			categoryData.append("delete_icon", JSON.stringify(true));
+		}
 		setLoading(true);
 
 		try {
 			await upsertCategoryApi(
 				categoryData,
-				(response) => {
+				() => {
 					onClose();
 					setCallApi(val => !val);
 					setLoading(false);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
-				(message: string) => {
-					ShowNotification(message, "error");
+				(message: any) => {
+					ShowNotification(message.error, "error");
 					setLoading(false);
 				},
 				() => {

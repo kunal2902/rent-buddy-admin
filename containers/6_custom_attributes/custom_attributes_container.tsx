@@ -124,13 +124,13 @@ const CustomAttributesContainer = () => {
 		if (actionType === "disable") {
 			await disableAttributeApi(
 				id,
-				(response) => {
+				() => {
 					setCallApi(val => !val);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
-				(err) => {
+				(err: any) => {
 					setCallApi(val => !val);
-					ShowNotification(err, "error");
+					ShowNotification(err.error, "error");
 				},
 				() => {
 					setCallApi(val => !val);
@@ -140,13 +140,13 @@ const CustomAttributesContainer = () => {
 		} else {
 			await deleteAttributeApi(
 				id,
-				(response) => {
+				() => {
 					setCallApi(val => !val);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
-				(err) => {
+				(err: any) => {
 					setCallApi(val => !val);
-					ShowNotification(err, "error");
+					ShowNotification(err.error, "error");
 				},
 				() => {
 					setCallApi(val => !val);

@@ -135,19 +135,22 @@ const AddSubCategoryModal = (props: Props) => {
 		subCatData.append("name", subCategoryName);
 		subCatData.append("category_id", categoryId);
 		subCatData.append("id", subCategoryId);
+		if (selectedFileToUpload === null) {
+			subCatData.append("delete_icon", JSON.stringify(true));
+		}
 		setLoading(true);
 
 		try {
 			await upsertSubCategoryApi(
 				subCatData,
-				(response) => {
+				() => {
 					onClose();
 					setCallApi((val) => !val);
 					setLoading(false);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
-				(message: string) => {
-					ShowNotification(message, "error");
+				(message: any) => {
+					ShowNotification(message.error, "error");
 					setLoading(false);
 				},
 				() => {

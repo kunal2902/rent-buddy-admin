@@ -87,10 +87,9 @@ export const ProductCard = (props: Props) => {
 					{},
 					(response: any) => {
 						setCartId(response.cart.cart_id);
-						ShowNotification(response.message, "success");
 					},
-				(err) => {
-						ShowNotification(err, "error");
+				(err: any) => {
+						ShowNotification(err.error, "error");
 					},
 					() => {
 						logoutUser(router);
@@ -113,7 +112,9 @@ export const ProductCard = (props: Props) => {
 					quantity: 1,
 				},
 				() => {},
-				() => {},
+				(err: any) => {
+					ShowNotification(err.error, "error");
+				},
 				() => {
 					logoutUser(router);
 				},

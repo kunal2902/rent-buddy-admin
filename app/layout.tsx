@@ -32,7 +32,7 @@ export default function RootLayout({ children }: { children: any }) {
 				<ReactQueryProvider>
 					<RecoilProvider>
 						<MantineProviderComponent theme={mainTheme}>
-							{/*<Notifications />*/}
+							<Notifications />
 							<ThemeProvider>
 								{children}
 							</ThemeProvider>

@@ -117,12 +117,12 @@ const CategoriesContainer = () => {
 		if (actionType === "disable") {
 			await disableCategoryApi(
 				id,
-				(response) => {
+				() => {
 					setCallApi(val => !val);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
 				(err) => {
-					ShowNotification(err, "error");
+					ShowNotification(err.error, "error");
 					setCallApi(val => !val);
 				},
 				() => {
@@ -133,12 +133,12 @@ const CategoriesContainer = () => {
 		} else {
 			await deleteCategoryApi(
 				id,
-				(response) => {
+				() => {
 					setCallApi(val => !val);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
 				(err) => {
-					ShowNotification(err, "error");
+					ShowNotification(err.error, "error");
 					setCallApi(val => !val);
 				},
 				() => {

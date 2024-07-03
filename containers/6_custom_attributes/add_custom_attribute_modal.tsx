@@ -85,14 +85,14 @@ const AddCustomAttributeModal = (props: Props) => {
 		try {
 			await upsertAttributeApi(
 				customAttributeBody,
-				(response) => {
+				() => {
 					onClose();
 					setCallApi(val => !val);
 					setLoading(false);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
-				(message: string) => {
-					ShowNotification(message, "error");
+				(message: any) => {
+					ShowNotification(message.error, "error");
 					setLoading(false);
 				},
 				() => {

@@ -115,13 +115,13 @@ const RolesSettingsContainer = () => {
 		if (actionType === "disable") {
 			await disableRoleApi(
 				id,
-				(response) => {
+				() => {
 					setCallApi(val => !val);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
 				(err) => {
 					setCallApi(val => !val);
-					ShowNotification(err, "error");
+					ShowNotification(err.error, "error");
 				},
 				() => {
 					setCallApi(val => !val);
@@ -131,13 +131,13 @@ const RolesSettingsContainer = () => {
 		} else {
 			await deleteRoleApi(
 				id,
-				(response) => {
+				() => {
 					setCallApi(val => !val);
-					ShowNotification(response.message, "success");
+					ShowNotification("Successfully", "success");
 				},
 				(err) => {
 					setCallApi(val => !val);
-					ShowNotification(err, "error");
+					ShowNotification(err.error, "error");
 				},
 				() => {
 					setCallApi(val => !val);
