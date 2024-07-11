@@ -266,62 +266,54 @@ export const ProductCard = (props: Props) => {
 	};
 
 	return (
-		<CardComponent shadow="sm" padding="sm" radius="md" withBorder>
-			<CardSectionComponent>
-				<ImageComponent
-					miw={250}
-					maw={250}
-					mih={150}
-					mah={150}
-					fit="fill"
-					src={item.images[0]}
-				/>
-			</CardSectionComponent>
+		<CardComponent shadow="sm" padding="sm" radius="md" withBorder style={{ height: "auto", display: "flex", flexDirection: "column", justifyContent: "space-between", gap: "10px" }}>
+			<div>
+				<CardSectionComponent>
+					<ImageComponent
+						style={{ width: 250, height: 150, objectFit: "cover" }}
+						src={item.images[0]}
+					/>
+				</CardSectionComponent>
 
-			<GroupComponent justify="space-between" mt="md" mb="xs">
-				<TextComponent
-					text={`${item.name}`}
-					bold
-					className="text-justify"
-				/>
-			</GroupComponent>
+				<GroupComponent justify="center" mt="md" mb="xs">
+					<TextComponent
+						text={`${item.name}`}
+						bold
+						style={{ margin: 0, padding: 0, lineHeight: "1.2em" }}
+					/>
+				</GroupComponent>
 
-			<SpoilerComponent maxHeight={40} showLabel="more" hideLabel="less">
-				<TextComponent
-					size="sm"
-					c="dimmed"
-					className="text-justify"
-					text={item.short_description}
-				/>
-			</SpoilerComponent>
+				<SpoilerComponent maxHeight={35} showLabel="more" hideLabel="less">
+					<TextComponent
+						size="sm"
+						c="dimmed"
+						style={{ textAlign: "justify", margin: 0, padding: 0, lineHeight: "1.2em" }}
+						text={item.short_description}
+					/>
+				</SpoilerComponent>
+			</div>
 
-			<GroupComponent justify="space-between" mt="md">
+			<GroupComponent justify="space-between" mt="md" style={{ marginTop: "auto" }}>
 				<TextComponent
 					bold
 					size="xl"
 					text={`${currencySign} ${item.price}`}
 					c="green"
-					className="text-justify"
+					style={{ textAlign: "center", margin: 0, padding: 0, lineHeight: "1.2em" }}
 				/>
 
 				{!cartItem ? (
-					<ButtonComponent w="50%" h={40} onClick={onAddClick} loading={loading}>
+					<ButtonComponent
+						style={{ width: "50%", height: 40 }}
+						onClick={onAddClick}
+						loading={loading}
+					>
 						Add
 					</ButtonComponent>
 				) : (
-					<div className="w-[50%] h-[40px] rounded-[20px] flex bg-gray-200 justify-between items-center">
+					<div style={{ width: "50%", borderRadius: "20px", display: "flex", backgroundColor: "gray-200", justifyContent: "space-between", alignItems: "center" }}>
 						<ButtonComponent
-							style={{
-								height: "40px",
-								width: "30%",
-								fontSize: 30,
-								alignContent: "center",
-								backgroundColor: "bg-gr",
-								justifyContent: "center",
-								display: "flex",
-								border: "1px solid gray",
-								borderRadius: "8px 0 0 8px",
-							}}
+							style={{ height: 40, width: "30%", fontSize: 30, display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "bg-gr", border: "1px solid gray", borderRadius: "8px 0 0 8px" }}
 							px={5}
 							onClick={handleSubtractButtonClick}
 						>
@@ -334,37 +326,18 @@ export const ProductCard = (props: Props) => {
 								step={1}
 								hideControls
 								placeholder="0"
-								setValue={(val: string | number) => {
-									setQuantity(Number(val));
-								}}
+								setValue={(val) => setQuantity(Number(val))}
 								value={quantity}
 								variant="unstyled"
 								handlersRef={numberInputRef}
-								style={{
-									width: "40%",
-									height: "38px",
-									border: "none",
-									display: "flex",
-									fontWeight: "bold",
-									backgroundColor: "white",
-								}}
+								style={{ width: "40%", height: 38, border: "none", display: "flex", fontWeight: "bold", backgroundColor: "white", justifyContent: "center", alignItems: "center" }}
 								contentEditable={!isAddToCartApiBusy}
 								onBlur={onQuantityTypingEnd}
 							/>
 						</MantineProviderComponent>
 
 						<ButtonComponent
-							style={{
-								height: "40px",
-								width: "30%",
-								fontSize: 30,
-								alignContent: "center",
-								backgroundColor: "bg-gr",
-								justifyContent: "center",
-								display: "flex",
-								border: "1px solid gray",
-								borderRadius: "0 8px 8px 0",
-							}}
+							style={{ height: 40, width: "30%", fontSize: 30, display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "bg-gr", border: "1px solid gray", borderRadius: "0 8px 8px 0" }}
 							px={5}
 							onClick={handleAddButtonClick}
 						>

@@ -74,7 +74,7 @@ export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
 					</TooltipComponent>
 				)}
 			</GroupComponent>
-			<GroupComponent>d
+			<GroupComponent>
 
 				<MantineProviderComponent theme={coloredInputTheme(darkMode)}>
 					<SelectComponent
