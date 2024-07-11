@@ -102,7 +102,7 @@ const AddAddOnModal: React.FC<Props> = ({
 					onClose();
 					setCallApi((val) => !val);
 					setLoading(false);
-					ShowNotification("Successfully", "success");
+					ShowNotification("Success", "success");
 				},
 				(message: any) => {
 					ShowNotification(message.error, "error");

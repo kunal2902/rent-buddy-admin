@@ -58,7 +58,7 @@ const AddCustomerModal = (props: Props) => {
 			await upsertCustomerApi(
 				body,
 				() => {
-					ShowNotification("Successfully", "success");
+					ShowNotification("Success", "success");
 					onClose();
 					setCallApi(val => !val);
 				},

@@ -117,7 +117,7 @@ const RolesSettingsContainer = () => {
 				id,
 				() => {
 					setCallApi(val => !val);
-					ShowNotification("Successfully", "success");
+					ShowNotification("Success", "success");
 				},
 				(err) => {
 					setCallApi(val => !val);
@@ -133,7 +133,7 @@ const RolesSettingsContainer = () => {
 				id,
 				() => {
 					setCallApi(val => !val);
-					ShowNotification("Successfully", "success");
+					ShowNotification("Success", "success");
 				},
 				(err) => {
 					setCallApi(val => !val);
