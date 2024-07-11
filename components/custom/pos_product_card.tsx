@@ -269,8 +269,10 @@ export const ProductCard = (props: Props) => {
 		<CardComponent shadow="sm" padding="sm" radius="md" withBorder>
 			<CardSectionComponent>
 				<ImageComponent
-					w={250}
-					h={150}
+					miw={250}
+					maw={250}
+					mih={150}
+					mah={150}
 					fit="fill"
 					src={item.images[0]}
 				/>
