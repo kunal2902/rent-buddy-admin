@@ -7,7 +7,8 @@ import { useEffect, useRef, useState } from "react";
 import { NumberInputHandlers } from "@mantine/core";
 import { CartItemModel, CartModel, ItemModel } from "@/models";
 import {
-	cartAtom, cartIdAtom,
+	cartAtom,
+	cartIdAtom,
 	cartItemsAtom,
 	currencySign,
 	deleteCartItemApi,
@@ -23,8 +24,8 @@ import {
 	ImageComponent,
 	MantineProviderComponent,
 	NumberInputComponent,
-	SpoilerComponent,
-	TextComponent,
+	SpoilerComponent, StackComponent,
+	TextComponent, TooltipComponent,
 } from "../mantine";
 import { centeredInputTheme } from "@/constants";
 import ShowNotification from "@/components/mantine/show_notification";
@@ -53,7 +54,7 @@ export const ProductCard = (props: Props) => {
 	const numberInputRef = useRef<NumberInputHandlers>(null);
 	const [sendDebouncedCall, setSendDebouncedCall] = useState<boolean>(false);
 	const [quantity, setQuantity] = useState<number>(
-		cartItem ? cartItem.quantity : 0,
+		cartItem ? cartItem.quantity : 0
 	);
 
 	const setCartId = useSetRecoilState(cartIdAtom);
@@ -91,14 +92,14 @@ export const ProductCard = (props: Props) => {
 						setCartId(response.cart.cart_id);
 						setLoading(false);
 					},
-				(err: any) => {
+					(err: any) => {
 						ShowNotification(err.error, "error");
 						setLoading(false);
 					},
 					() => {
 						logoutUser(router);
 						setLoading(false);
-					},
+					}
 				);
 
 				if (
@@ -116,13 +117,14 @@ export const ProductCard = (props: Props) => {
 					cart_id: cart ? cart.cart_id : prevCart?.cart_id,
 					quantity: 1,
 				},
-				() => {},
+				() => {
+				},
 				(err: any) => {
 					ShowNotification(err.error, "error");
 				},
 				() => {
 					logoutUser(router);
-				},
+				}
 			);
 
 			toggleIsAddToCartApiBusy(false);
@@ -153,6 +155,7 @@ export const ProductCard = (props: Props) => {
 			toggleIsAddToCartApiBusy(true);
 			setAddSubCartItem(cartItem?.cart_item_id ?? null);
 			setQuantity((prev) => prev - 1);
+			setLoading(false);
 			setTimeout(async () => {
 				setSendDebouncedCall(true);
 				setAddSubCartItem(null);
@@ -177,6 +180,7 @@ export const ProductCard = (props: Props) => {
 			toggleIsAddToCartApiBusy(true);
 			setAddSubCartItem(cartItem?.cart_item_id ?? null);
 			setQuantity((prev) => prev + 1);
+			setLoading(false);
 			setTimeout(async () => {
 				setSendDebouncedCall(true);
 				setAddSubCartItem(null);
@@ -203,18 +207,20 @@ export const ProductCard = (props: Props) => {
 			if (Number(quantity) < 1) {
 				await deleteCartItemApi(
 					cartItem?.cart_item_id ?? "",
-					() => {},
-					() => {},
+					() => {
+					},
+					() => {
+					},
 					() => {
 						logoutUser(router);
-					},
+					}
 				);
 
 				setCartItems((prev) =>
 					prev.filter(
 						(prevItem) =>
-							prevItem.cart_item_id !== cartItem?.cart_item_id,
-					),
+							prevItem.cart_item_id !== cartItem?.cart_item_id
+					)
 				);
 			} else {
 				const updatedCartItem = await upsertCartItemApi(
@@ -224,11 +230,13 @@ export const ProductCard = (props: Props) => {
 						cart_id: cart ? cart.cart_id : undefined,
 						quantity,
 					},
-					() => {},
-					() => {},
+					() => {
+					},
+					() => {
+					},
 					() => {
 						logoutUser(router);
-					},
+					}
 				);
 
 				if (updatedCartItem && typeof updatedCartItem !== "string") {
@@ -255,6 +263,7 @@ export const ProductCard = (props: Props) => {
 			toggleIsAddToCartApiBusy(false);
 			setAddSubCartItem(null);
 			setQuantity(cartItem?.quantity ?? 0);
+			setLoading(false);
 
 			if (error instanceof Error) {
 				console.log(error.message);
@@ -266,86 +275,125 @@ export const ProductCard = (props: Props) => {
 	};
 
 	return (
-		<CardComponent shadow="sm" padding="sm" radius="md" withBorder style={{ height: "auto", display: "flex", flexDirection: "column", justifyContent: "space-between", gap: "10px" }}>
-			<div>
-				<CardSectionComponent>
-					<ImageComponent
-						style={{ width: 250, height: 150, objectFit: "cover" }}
-						src={item.images[0]}
+		<CardComponent shadow="sm" padding="sm" radius="md" withBorder>
+			<CardSectionComponent>
+				<ImageComponent
+					h={150}
+					mih={150}
+					src={item.images[0]}
 					/>
-				</CardSectionComponent>
+			</CardSectionComponent>
 
-				<GroupComponent justify="center" mt="md" mb="xs">
+			<StackComponent gap={10} pt={10} justify="space-between">
+
+				<TooltipComponent position="bottom-start" label={item.name}>
 					<TextComponent
-						text={`${item.name}`}
 						bold
-						style={{ margin: 0, padding: 0, lineHeight: "1.2em" }}
+						lineClamp={1}
+						text={item.name}
 					/>
-				</GroupComponent>
+				</TooltipComponent>
 
-				<SpoilerComponent maxHeight={35} showLabel="more" hideLabel="less">
+				<SpoilerComponent maxHeight={40} showLabel="more" hideLabel="less">
 					<TextComponent
 						size="sm"
 						c="dimmed"
-						style={{ textAlign: "justify", margin: 0, padding: 0, lineHeight: "1.2em" }}
+						ta="justify"
 						text={item.short_description}
 					/>
 				</SpoilerComponent>
-			</div>
 
-			<GroupComponent justify="space-between" mt="md" style={{ marginTop: "auto" }}>
-				<TextComponent
-					bold
-					size="xl"
-					text={`${currencySign} ${item.price}`}
-					c="green"
-					style={{ textAlign: "center", margin: 0, padding: 0, lineHeight: "1.2em" }}
-				/>
+				<GroupComponent justify="space-between">
+					<TextComponent
+						bold
+						size="xl"
+						text={`${currencySign} ${item.price}`}
+						c="green"
+					/>
 
-				{!cartItem ? (
-					<ButtonComponent
-						style={{ width: "50%", height: 40 }}
-						onClick={onAddClick}
-						loading={loading}
-					>
-						Add
-					</ButtonComponent>
-				) : (
-					<div style={{ width: "50%", borderRadius: "20px", display: "flex", backgroundColor: "gray-200", justifyContent: "space-between", alignItems: "center" }}>
+					{!cartItem ? (
 						<ButtonComponent
-							style={{ height: 40, width: "30%", fontSize: 30, display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "bg-gr", border: "1px solid gray", borderRadius: "8px 0 0 8px" }}
-							px={5}
-							onClick={handleSubtractButtonClick}
+							w="50%"
+							h={40}
+							onClick={onAddClick}
+							loading={loading}
 						>
-							<Minus size={16} />
+							Add
 						</ButtonComponent>
+					) : (
+						<div style={{
+							width: "50%",
+							borderRadius: "20px",
+							display: "flex",
+							backgroundColor: "gray-200",
+							justifyContent: "space-between",
+							alignItems: "center",
+						}}>
+							<ButtonComponent
+								style={{
+									height: 40,
+									width: "30%",
+									fontSize: 30,
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+									backgroundColor: "bg-gr",
+									border: "1px solid gray",
+									borderRadius: "8px 0 0 8px",
+								}}
+								px={5}
+								onClick={handleSubtractButtonClick}
+							>
+								<Minus size={16} />
+							</ButtonComponent>
 
-						<MantineProviderComponent theme={centeredInputTheme}>
-							<NumberInputComponent
-								min={0}
-								step={1}
-								hideControls
-								placeholder="0"
-								setValue={(val) => setQuantity(Number(val))}
-								value={quantity}
-								variant="unstyled"
-								handlersRef={numberInputRef}
-								style={{ width: "40%", height: 38, border: "none", display: "flex", fontWeight: "bold", backgroundColor: "white", justifyContent: "center", alignItems: "center" }}
-								contentEditable={!isAddToCartApiBusy}
-								onBlur={onQuantityTypingEnd}
-							/>
-						</MantineProviderComponent>
+							<MantineProviderComponent theme={centeredInputTheme}>
+								<NumberInputComponent
+									min={0}
+									step={1}
+									hideControls
+									placeholder="0"
+									setValue={(val) => setQuantity(Number(val))}
+									value={quantity}
+									variant="unstyled"
+									handlersRef={numberInputRef}
+									style={{
+										width: "40%",
+										height: 38,
+										border: "none",
+										display: "flex",
+										fontWeight: "bold",
+										backgroundColor: "white",
+										justifyContent: "center",
+										alignItems: "center",
+									}}
+									contentEditable={!isAddToCartApiBusy}
+									onBlur={onQuantityTypingEnd}
+								/>
+							</MantineProviderComponent>
 
-						<ButtonComponent
-							style={{ height: 40, width: "30%", fontSize: 30, display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "bg-gr", border: "1px solid gray", borderRadius: "0 8px 8px 0" }}
-							px={5}
-							onClick={handleAddButtonClick}
-						>
-							<Plus size={16} />
-						</ButtonComponent>
-					</div>
-				)}
-			</GroupComponent>
+							<ButtonComponent
+								style={{
+									height: 40,
+									width: "30%",
+									fontSize: 30,
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+									backgroundColor: "bg-gr",
+									border: "1px solid gray",
+									borderRadius: "0 8px 8px 0",
+								}}
+								px={5}
+								onClick={handleAddButtonClick}
+							>
+								<Plus size={16} />
+							</ButtonComponent>
+						</div>
+					)}
+				</GroupComponent>
+
+			</StackComponent>
 		</CardComponent>
 	);
 };
