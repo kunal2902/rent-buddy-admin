@@ -90,7 +90,7 @@ const AddUserModal = (props: Props) => {
 				() => {
 					onClose();
 					setCallApi(val => !val);
-					ShowNotification("Successfully", "success");
+					ShowNotification("Success", "success");
 					setLoading(false);
 				},
 				(message: any) => {

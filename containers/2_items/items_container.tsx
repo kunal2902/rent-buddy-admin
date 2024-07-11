@@ -148,7 +148,7 @@ const ItemsContainer = () => {
 			await disableItemApi(id,
 				() => {
 					setCallApi(val => !val);
-					ShowNotification("Successfully", "success");
+					ShowNotification("Success", "success");
 				},
 				(err) => {
 					setCallApi(val => !val);
@@ -162,7 +162,7 @@ const ItemsContainer = () => {
 			await deleteItemApi(id,
 				() => {
 					setCallApi(val => !val);
-					ShowNotification("Successfully", "success");
+					ShowNotification("Success", "success");
 				},
 				(err) => {
 					setCallApi(val => !val);

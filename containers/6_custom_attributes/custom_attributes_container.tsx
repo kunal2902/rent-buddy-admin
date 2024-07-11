@@ -126,7 +126,7 @@ const CustomAttributesContainer = () => {
 				id,
 				() => {
 					setCallApi(val => !val);
-					ShowNotification("Successfully", "success");
+					ShowNotification("Success", "success");
 				},
 				(err: any) => {
 					setCallApi(val => !val);
@@ -142,7 +142,7 @@ const CustomAttributesContainer = () => {
 				id,
 				() => {
 					setCallApi(val => !val);
-					ShowNotification("Successfully", "success");
+					ShowNotification("Success", "success");
 				},
 				(err: any) => {
 					setCallApi(val => !val);

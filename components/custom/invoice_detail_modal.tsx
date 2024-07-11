@@ -84,10 +84,18 @@ const InvoiceDetailModal = (props: Props) => {
 		return taxOnBill;
 	};
 
+	const handleCloseModal = () => {
+			setCartItems([]);
+			setCart(null);
+			setCartId("");
+			setCustomer({ id: "", name: "" });
+			onClose();
+	};
+
 	return (
 		<ModalComponent
 			opened={isOpen}
-			onClose={onClose}
+			onClose={handleCloseModal}
 			className="border-grey-800"
 			title={<TitleComponent title="Invoice Detail" />}
 		>
@@ -126,13 +134,12 @@ const InvoiceDetailModal = (props: Props) => {
 									<BoxComponent
 										key={index}
 										px={12}
-										pt={6}
-										pb={index === cartItems.length - 1 ? 0 : 6}
+										py={8}
+										pb={index === cartItems.length - 1 ? 0 : 12}
 									>
-										<StackComponent gap={0}>
-											<GroupComponent justify="space-between" align="start" gap={0}>
+										<StackComponent gap="sm" mb="10" >
+											<GroupComponent justify="space-between">
 												<StackComponent
-													ml={10}
 													gap={0}
 													style={{ flexGrow: 1 }}
 												>
@@ -157,7 +164,7 @@ const InvoiceDetailModal = (props: Props) => {
 											</GroupComponent>
 											{
 												item.item.custom_attributes.map(ca => (
-													<GroupComponent justify="space-between" my={2}>
+													<GroupComponent justify="space-between">
 														<TextComponent
 															lh={1}
 															fz={12}
@@ -183,7 +190,7 @@ const InvoiceDetailModal = (props: Props) => {
 												))
 											}
 											{index !== cartItems.length - 1 &&
-												<DividerComponent my={0} variant="dashed" p={0} py={0} />}
+												<DividerComponent my={0} mt={6} variant="dashed" p={0} py={0} />}
 										</StackComponent>
 									</BoxComponent>
 								))}
@@ -216,13 +223,7 @@ const InvoiceDetailModal = (props: Props) => {
 							title="Close"
 							variant="subtle"
 							color={appAccentColorRGBA}
-							onClick={() => {
-								setCartItems([]);
-								setCart(null);
-								setCartId("");
-								setCustomer({ id: "", name: "" });
-								onClose();
-							}}
+							onClick={handleCloseModal}
 						/>
 						<ButtonComponent title="Print" />
 					</GroupComponent>

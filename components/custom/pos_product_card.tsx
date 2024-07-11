@@ -49,6 +49,7 @@ export const ProductCard = (props: Props) => {
 	} = props;
 
 	const router = useRouter();
+	const [loading, setLoading] = useState(false);
 	const numberInputRef = useRef<NumberInputHandlers>(null);
 	const [sendDebouncedCall, setSendDebouncedCall] = useState<boolean>(false);
 	const [quantity, setQuantity] = useState<number>(
@@ -75,6 +76,7 @@ export const ProductCard = (props: Props) => {
 	}, [cartItem]);
 
 	const onAddClick = async () => {
+		setLoading(true);
 		if (isAddToCartApiBusy) return;
 
 		toggleIsAddToCartApiBusy(true);
@@ -87,12 +89,15 @@ export const ProductCard = (props: Props) => {
 					{},
 					(response: any) => {
 						setCartId(response.cart.cart_id);
+						setLoading(false);
 					},
 				(err: any) => {
 						ShowNotification(err.error, "error");
+						setLoading(false);
 					},
 					() => {
 						logoutUser(router);
+						setLoading(false);
 					},
 				);
 
@@ -263,7 +268,12 @@ export const ProductCard = (props: Props) => {
 	return (
 		<CardComponent shadow="sm" padding="sm" radius="md" withBorder>
 			<CardSectionComponent>
-				<ImageComponent h={150} fit="fill" src={item.images[0]} />
+				<ImageComponent
+					w={250}
+					h={150}
+					fit="fill"
+					src={item.images[0]}
+				/>
 			</CardSectionComponent>
 
 			<GroupComponent justify="space-between" mt="md" mb="xs">
@@ -274,7 +284,7 @@ export const ProductCard = (props: Props) => {
 				/>
 			</GroupComponent>
 
-			<SpoilerComponent maxHeight={45} showLabel="more" hideLabel="less">
+			<SpoilerComponent maxHeight={40} showLabel="more" hideLabel="less">
 				<TextComponent
 					size="sm"
 					c="dimmed"
@@ -293,7 +303,7 @@ export const ProductCard = (props: Props) => {
 				/>
 
 				{!cartItem ? (
-					<ButtonComponent w="50%" h={40} onClick={onAddClick}>
+					<ButtonComponent w="50%" h={40} onClick={onAddClick} loading={loading}>
 						Add
 					</ButtonComponent>
 				) : (

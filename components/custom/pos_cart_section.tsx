@@ -46,8 +46,8 @@ import AddCustomerModal from "@/containers/9_customers/add_customer_modal";
 
 export const PosCartSection = () => {
 	const router = useRouter();
-
 	const [subTotal, setSubTotal] = useState(0);
+	const [loading, setLoading] = useState(false);
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [invoiceDialogOpen, setInvoiceDialogOpen] = useState<boolean>(false);
@@ -128,7 +128,7 @@ export const PosCartSection = () => {
 					id: "",
 					name: "",
 				});
-				ShowNotification("Successfully", "success");
+				ShowNotification("Success", "success");
 			},
 			(err: any) => {
 				ShowNotification(err.error, "error");
@@ -150,7 +150,7 @@ export const PosCartSection = () => {
 					id: "",
 					name: "",
 				});
-				ShowNotification("Successfully", "success");
+				ShowNotification("Success", "success");
 			},
 			(err: any) => {
 				ShowNotification(err.error, "error");
@@ -238,6 +238,7 @@ export const PosCartSection = () => {
 		} else if (!selectedCustomer.id) {
 			ShowNotification("Please select customer first!", "error");
 		} else {
+			setLoading(true);
 			const body = {
 				id: cartId,
 				customer_id: selectedCustomer.id,
@@ -252,11 +253,13 @@ export const PosCartSection = () => {
 					checkoutApi(
 						checkoutBody,
 						() => {
+							setLoading(false);
 							setInvoiceDialogOpen(true);
-							ShowNotification("Successfully", "success");
+							ShowNotification("Success", "success");
 						},
 						(err: any) => {
 							ShowNotification(err.error, "error");
+							setLoading(false);
 						},
 						() => {
 							logoutUser(router);
@@ -363,9 +366,9 @@ export const PosCartSection = () => {
 							{cartItems.map((item, index) => (
 								<BoxComponent
 									key={index}
-									px={12}
-									pt={6}
-									pb={index === cartItems.length - 1 ? 0 : 6}
+									px={20}
+									py={8}
+									pb={index === cartItems.length - 1 ? 0 : 12}
 								>
 									<StackComponent gap={0}>
 										<GroupComponent
@@ -387,6 +390,7 @@ export const PosCartSection = () => {
 													<TitleComponent
 														fz={14}
 														title={item.item.name}
+														mb={5}
 													/>
 
 													<TitleComponent
@@ -406,7 +410,7 @@ export const PosCartSection = () => {
 											(ca, key) => (
 												<GroupComponent
 													justify="space-between"
-													my={2}
+													my={5}
 													key={key}
 												>
 													<TextComponent
@@ -428,6 +432,7 @@ export const PosCartSection = () => {
 										)}
 										{index !== cartItems.length - 1 && (
 											<DividerComponent
+												mt={6}
 												my={0}
 												variant="dashed"
 												p={0}
@@ -517,6 +522,7 @@ export const PosCartSection = () => {
 							<ButtonComponent
 								title="Checkout"
 								onClick={handleCheckout}
+								loading={loading}
 									// disabled={selectedCustomer.id === ""}
 								fullWidth
 								/>

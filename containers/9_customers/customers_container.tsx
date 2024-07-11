@@ -122,7 +122,7 @@ const CustomersContainer = () => {
 				id,
 				() => {
 					setCallApi(val => !val);
-					ShowNotification("Successfully", "success");
+					ShowNotification("Success", "success");
 				},
 				(err) => {
 					setCallApi(val => !val);
@@ -138,7 +138,7 @@ const CustomersContainer = () => {
 				id,
 				() => {
 					setCallApi(val => !val);
-					ShowNotification("Successfully", "success");
+					ShowNotification("Success", "success");
 				},
 				(err) => {
 					setCallApi(val => !val);

@@ -115,7 +115,7 @@ const AddOnsContainer = () => {
 				id,
 				() => {
 					setCallApi(val => !val);
-					ShowNotification("Successfully", "success");
+					ShowNotification("Success", "success");
 				},
 				(err) => {
 					ShowNotification(err.error, "error");
@@ -131,7 +131,7 @@ const AddOnsContainer = () => {
 				id,
 				() => {
 					setCallApi(val => !val);
-					ShowNotification("Successfully", "success");
+					ShowNotification("Success", "success");
 				},
 				(err) => {
 					ShowNotification(err.error, "error");

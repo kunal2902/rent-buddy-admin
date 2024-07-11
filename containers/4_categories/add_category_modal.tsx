@@ -103,7 +103,7 @@ const AddCategoryModal = (props: Props) => {
 					onClose();
 					setCallApi(val => !val);
 					setLoading(false);
-					ShowNotification("Successfully", "success");
+					ShowNotification("Success", "success");
 				},
 				(message: any) => {
 					ShowNotification(message.error, "error");
