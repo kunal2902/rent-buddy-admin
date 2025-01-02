@@ -7,7 +7,7 @@ import {
 	ButtonComponent,
 	GroupComponent,
 	ModalComponent,
-	SpaceComponent,
+	SpaceComponent, StackComponent,
 	TextInputComponent,
 	TitleComponent,
 } from "@/components";
@@ -20,9 +20,13 @@ interface Props {
 	onClose: () => void;
 	setCallApi: Dispatch<SetStateAction<boolean>>;
 	initialValueName: string;
-	initialValuePhoneNumber: string;
+	initialValuePhoneNumber: string | undefined;
 	initialValueEmail?: string;
 	customerId?: string;
+	initialValueAddress: string | undefined;
+	initialValueCity: string | undefined;
+	initialValueState: string | undefined;
+	initialValuePinCode: string | undefined;
 }
 
 const AddCustomerModal = (props: Props) => {
@@ -34,11 +38,20 @@ const AddCustomerModal = (props: Props) => {
 		initialValuePhoneNumber,
 		initialValueEmail,
 		customerId,
+		initialValueAddress,
+		initialValueCity,
+		initialValueState,
+		initialValuePinCode,
 	} = props;
 	const router = useRouter();
 	const [name, setName] = useState<string>(initialValueName);
 	const [email, setEmail] = useState<string | undefined>(initialValueEmail);
-	const [phoneNumber, setPhoneNumber] = useState<string | number>(initialValuePhoneNumber);
+	const [phoneNumber, setPhoneNumber] =
+		useState<string | number | undefined>(initialValuePhoneNumber);
+	const [address, setAddress] = useState<string | undefined>(initialValueAddress);
+	const [city, setCity] = useState<string | undefined>(initialValueCity);
+	const [state, setState] = useState<string | undefined>(initialValueState);
+	const [pinCode, setPinCode] = useState<string | number | undefined>(initialValuePinCode);
 	const [inputError, setInputError] = useState<string | null>(null);
 
 	const isEditModal: boolean = initialValueName !== "";
@@ -51,8 +64,12 @@ const AddCustomerModal = (props: Props) => {
 		const body = {
 			email,
 			name,
+			city,
+			state,
+			address,
+			pinCode: pinCode ? pinCode.toString() : undefined,
 			id: customerId,
-			phone: phoneNumber.toString(),
+			phone: phoneNumber,
 		};
 		try {
 			await upsertCustomerApi(
@@ -80,9 +97,10 @@ const AddCustomerModal = (props: Props) => {
 			onClose={onClose}
 			className="border-grey-800"
 			title={<TitleComponent title={isEditModal ? "Edit User" : "New User"} />}
+			size="lg"
 		>
-			<GroupComponent grow align="start">
-				<Stack>
+			<StackComponent>
+				<GroupComponent grow align="start">
 					<TextInputComponent
 						required
 						title="Name"
@@ -100,20 +118,60 @@ const AddCustomerModal = (props: Props) => {
 						value={phoneNumber}
 						error={inputError}
 						setValue={setPhoneNumber}
-						placeholder="Phone number"
+						placeholder="Phone Number"
 					/>
+				</GroupComponent>
 
+				<TextInputComponent
+					title="Email"
+					label="Email"
+					value={email}
+					error={inputError}
+					setValue={setEmail}
+					placeholder="abc@gmail.com"
+				/>
+
+				<TextInputComponent
+					required
+					title="Address"
+					label="Address"
+					value={address}
+					error={inputError}
+					setValue={setAddress}
+					placeholder="Address"
+				/>
+
+				<GroupComponent grow>
 					<TextInputComponent
-						title="Email"
-						label="Email"
-						value={email}
+						required
+						title="City"
+						label="City"
+						value={city}
 						error={inputError}
-						setValue={setEmail}
-						placeholder="abc@gmail.com"
+						setValue={setCity}
+						placeholder="City"
 					/>
+					<TextInputComponent
+						required
+						title="State"
+						label="State"
+						value={state}
+						error={inputError}
+						setValue={setState}
+						placeholder="State"
+					/>
+					<NumberInputComponent
+						required
+						title="Pin Code"
+						label="Pin Code"
+						value={pinCode}
+						error={inputError}
+						setValue={setPinCode}
+						placeholder="Pin Code"
+					/>
+				</GroupComponent>
 
-				</Stack>
-			</GroupComponent>
+			</StackComponent>
 
 			<SpaceComponent showHeight />
 

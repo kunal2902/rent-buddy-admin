@@ -18,7 +18,7 @@ export const appTitle: string = "NCA CRM";
 export const appDescription: string = "NCM ";
 export const appLogoWidth: number = 40;
 export const appLogoHeight: number = 40;
-export const currencySign: string = "₹";
+export const currencySign: string = "$";
 
 /** App colors */
 export const appColor: string = "#7469B6";

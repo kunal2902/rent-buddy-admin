@@ -92,6 +92,8 @@ const InvoiceDetailModal = (props: Props) => {
 			onClose();
 	};
 
+	const truncateText = (text: string, maxLength: number): string => text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
+
 	return (
 		<ModalComponent
 			opened={isOpen}
@@ -137,7 +139,7 @@ const InvoiceDetailModal = (props: Props) => {
 										py={8}
 										pb={index === cartItems.length - 1 ? 0 : 12}
 									>
-										<StackComponent gap="sm" mb="10" >
+										<StackComponent gap="sm" mb="10">
 											<GroupComponent justify="space-between">
 												<StackComponent
 													gap={0}
@@ -146,7 +148,7 @@ const InvoiceDetailModal = (props: Props) => {
 													<GroupComponent justify="space-between">
 														<TitleComponent
 															fz={14}
-															title={item.item.name}
+															title={truncateText(item.item.name, 30)}
 														/>
 
 														<TitleComponent

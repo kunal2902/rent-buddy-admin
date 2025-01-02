@@ -23,7 +23,6 @@ import {
 	TooltipComponent,
 } from "@/components";
 import {
-	appAccentColorRGBA,
 	cartAtom,
 	cartDraftApi,
 	cartIdAtom,
@@ -52,6 +51,7 @@ export const PosCartSection = () => {
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [invoiceDialogOpen, setInvoiceDialogOpen] = useState<boolean>(false);
 	const [customersList, setCustomersList] = useState<ComboBoxProps[]>([]);
+	const [selectedPayment, setSelectedPayment] = useState<string>("");
 
 	const [cartId, setCartId] = useRecoilState(cartIdAtom);
 	const setCart = useSetRecoilState<CartModel | null>(cartAtom);
@@ -237,12 +237,15 @@ export const PosCartSection = () => {
 			ShowNotification("Please select item first!", "error");
 		} else if (!selectedCustomer.id) {
 			ShowNotification("Please select customer first!", "error");
+		} else if (!selectedPayment) {
+			ShowNotification("Please select payment method first!", "error");
 		} else {
 			setLoading(true);
 			const body = {
 				id: cartId,
 				customer_id: selectedCustomer.id,
 				label: "Purchased!",
+				payment_method: selectedPayment,
 			};
 			await upsertCartApi(
 				body,
@@ -266,12 +269,31 @@ export const PosCartSection = () => {
 						},
 					);
 				},
-				() => {},
+				(err: any) => {
+					ShowNotification(err.error, "error");
+					setLoading(false);
+				},
 				() => {
 					logoutUser(router);
 				},
 			);
 		}
+	};
+
+	const truncateText = (text: string, maxLength: number): string => text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
+
+	const paymentOptions = [
+		{ id: "1", value: "cash", label: "Cash" },
+		{ id: "2", value: "debit", label: "Debit" },
+		{ id: "3", value: "visa", label: "Visa" },
+		{ id: "4", value: "master card", label: "Master Card" },
+		{ id: "5", value: "amex", label: "Amex" },
+		{ id: "6", value: "cheque", label: "Cheque" },
+	];
+
+	const handlePaymentMethodChange = (option: ComboBoxProps) => {
+		console.log("Selected Option:", option.value);
+		setSelectedPayment(option.value);
 	};
 
 	return (
@@ -345,6 +367,17 @@ export const PosCartSection = () => {
 							<TextComponent text="Order Date:" bold />
 							<TextComponent text={formatDate(new Date())} />
 						</GroupComponent>
+						<GroupComponent justify="space-between">
+							<TextComponent text="Payment type" bold />
+							<SelectComponent
+								required
+								data={paymentOptions}
+								value={selectedPayment}
+								placeholder="Select Payment Type"
+								setValue={setSelectedPayment}
+								setOption={handlePaymentMethodChange}
+							/>
+						</GroupComponent>
 					</StackComponent>
 				</CardComponent>
 
@@ -387,11 +420,13 @@ export const PosCartSection = () => {
 												style={{ flexGrow: 1 }}
 											>
 												<GroupComponent justify="space-between">
-													<TitleComponent
-														fz={14}
-														title={item.item.name}
-														mb={5}
-													/>
+													<TooltipComponent position="bottom-start" label={item.item.name}>
+														<TitleComponent
+															fz={14}
+															title={truncateText(item.item.name, 30)}
+															mb={5}
+														/>
+													</TooltipComponent>
 
 													<TitleComponent
 														fz={14}
@@ -549,6 +584,10 @@ export const PosCartSection = () => {
 					initialValueName=""
 					initialValuePhoneNumber=""
 					initialValueEmail=""
+					initialValueAddress=""
+					initialValueCity=""
+					initialValuePinCode=""
+					initialValueState=""
 				/>
 			}
 		</>

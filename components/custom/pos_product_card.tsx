@@ -294,14 +294,14 @@ export const ProductCard = (props: Props) => {
 					/>
 				</TooltipComponent>
 
-				<SpoilerComponent maxHeight={40} showLabel="more" hideLabel="less">
-					<TextComponent
-						size="sm"
-						c="dimmed"
-						ta="justify"
-						text={item.short_description}
-					/>
-				</SpoilerComponent>
+				{/*<SpoilerComponent maxHeight={40} showLabel="more" hideLabel="less">*/}
+				{/*	<TextComponent*/}
+				{/*		size="sm"*/}
+				{/*		c="dimmed"*/}
+				{/*		ta="justify"*/}
+				{/*		text={item.short_description}*/}
+				{/*	/>*/}
+				{/*</SpoilerComponent>*/}
 
 				<GroupComponent justify="space-between">
 					<TextComponent

@@ -44,6 +44,10 @@ const CustomersContainer = () => {
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const [customersList, setCustomersList] = useState<CustomerModel[]>([]);
 	const [customerInitialPhoneNumber, setCustomerInitialPhoneNumber] = useState("");
+	const [customerInitialAddress, setCustomerInitialAddress] = useState<string | undefined>("");
+	const [customerInitialCity, setCustomerInitialCity] = useState<string | undefined>("");
+	const [customerInitialState, setCustomerInitialState] = useState<string | undefined>("");
+	const [customerInitialPinCode, setCustomerInitialPinCode] = useState<string | undefined>("");
 	const [customerInitialEmail, setCustomerInitialEmail] = useState<string | undefined>();
 	const currentQueryRef = useRef(searchValue);
 
@@ -108,11 +112,19 @@ const CustomersContainer = () => {
 		name: string,
 		phone: string,
 		email?: string,
+		address?: string,
+		city?: string,
+		state?: string,
+		pinCode?: string,
 	) => {
 		setCustomerId(id);
 		setCustomerInitialName(name);
 		setCustomerInitialEmail(email);
 		setCustomerInitialPhoneNumber(phone);
+		setCustomerInitialAddress(address);
+		setCustomerInitialCity(city);
+		setCustomerInitialState(state);
+		setCustomerInitialPinCode(pinCode);
 		setOpenAddModal(true);
 	};
 
@@ -201,6 +213,10 @@ const CustomersContainer = () => {
 							element.name,
 							element.phone,
 							element.email,
+							element.address,
+							element.city,
+							element.state,
+							element.pinCode,
 						)}
 						size="md">
 						<MdOutlineEdit size={18} />
@@ -224,7 +240,7 @@ const CustomersContainer = () => {
 				searchValue={searchValue}
 				setSearchValue={setSearchValue}
 				setOption={(option) => setFilter(option.value)}
-				onClick={() => handleAddOpenModal("", "", "", "")}
+				onClick={() => handleAddOpenModal("", "", "", "", "", "", "", "")}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {
 					setOrderBy(selected.value);
 					setOrder(selected.direction);
@@ -270,6 +286,10 @@ const CustomersContainer = () => {
 					initialValueName={customerInitialName}
 					initialValuePhoneNumber={customerInitialPhoneNumber}
 					initialValueEmail={customerInitialEmail}
+					initialValueAddress={customerInitialAddress}
+					initialValueCity={customerInitialCity}
+					initialValuePinCode={customerInitialPinCode}
+					initialValueState={customerInitialState}
 				/>
 			}
 		</MainComponent>
