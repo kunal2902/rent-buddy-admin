@@ -71,26 +71,26 @@ interface AddOnData {
 }
 
 export interface InitialItemValue {
-	item_id: string;
-	category_id: string;
-	sub_category_id: string;
-	add_ons: string[];
-	name: string;
-	internal_name: string;
-	description: string;
-	short_description: string;
 	sku: string;
+	name: string;
+	item_id: string;
 	images: string[];
-	item_tags: ItemTag[];
-	custom_attributes: ItemCustomAttribute[];
-	icon: string | null;
-	price: string | number;
-	stock_quantity: string | number;
-	created_by_id: string;
+	add_ons: string[];
 	created_at: string;
+	category_id: string;
+	description: string;
+	icon: string | null;
 	is_deleted: boolean;
 	is_disabled: boolean;
 	item_type_id: string;
+	item_tags: ItemTag[];
+	internal_name: string;
+	created_by_id: string;
+	price: string | number;
+	sub_category_id: string;
+	short_description: string;
+	stock_quantity: string | number;
+	custom_attributes: ItemCustomAttribute[];
 	created_by: {
 		name: string;
 	};
@@ -148,46 +148,51 @@ interface ItemCustomAttribute {
 
 const AddItemModal = (props: Props) => {
 	const { isOpen, onClose, setCallApi, initialItemValue } = props;
+
 	const router = useRouter();
-	const isEditModal: boolean = initialItemValue.name !== "";
-	const [sku, setSku] = useState<string>(initialItemValue.sku);
+	const isEditModal: boolean = initialItemValue.name !== undefined;
+	const hasInitializedCustomAttributes = useRef(false);
+	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
+
+	const [loading, setLoading] = useState<boolean>(false);
+	const [searchLoading, setSearchLoading] = useState<boolean>(false);
+	const [inputError, setInputError] = useState<string | null>(null);
+	const [replaceIndex, setReplaceIndex] = useState<number | null>(null);
+
 	const [tagsList, setTagsList] = useState([]);
-	const [categories, setCategories] = useState([]);
 	const [addOnsList, setAddOnsList] = useState([]);
+	const [categories, setCategories] = useState([]);
+	const [itemTypesList, setItemTypesList] = useState([]);
+	const [subCategoryList, setSubCategoryList] = useState([]);
+	const [removedImages, setRemovedImages] = useState<string[]>([]);
+	const [customAttributesList, setCustomAttributesList] =
+		useState<CustomAttribute[]>([]);
+
+	const [addOnData, setAddOnData] = useState<AddOnData>({});
+	const [attributesState, setAttributesState] = useState<
+		Record<string, AttributeState>
+	>({});
+
+	// const [longDesc, setLongDesc] = useState<string>(initialItemValue.description);
+	const [sku, setSku] = useState<string>(initialItemValue.sku);
+	const [itemName, setItemName] = useState<string>(initialItemValue.name);
+	const [addOnsId, setAddOnsId] = useState<string[]>(initialItemValue.add_ons);
+	const [categoryId, setCategoryId] = useState<string>(initialItemValue.category_id);
+	const [price, setPrice] = useState<string | number>(initialItemValue.price);
+	const [itemTypeId, setItemTypeId] = useState<string>(initialItemValue.item_type_id);
+	const [shortDesc, setShortDesc] = useState<string>(initialItemValue.short_description);
 	const [tagsId, setTagsId] = useState<string[]>(
 		initialItemValue?.item_tags?.map(tagItem => tagItem?.tag?.tag_id)
 	);
-	const [longDesc, setLongDesc] = useState<string>(initialItemValue.description);
-	const [addOnsId, setAddOnsId] = useState<string[]>(initialItemValue.add_ons);
-	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
-	const [shortDesc, setShortDesc] = useState<string>(initialItemValue.short_description);
-	const [itemName, setItemName] = useState<string>(initialItemValue.name);
-	const [itemTypesList, setItemTypesList] = useState([]);
-	const [loading, setLoading] = useState<boolean>(false);
-	const [categoryId, setCategoryId] = useState<string>(initialItemValue.category_id);
-	const [itemTypeId, setItemTypeId] = useState<string>(initialItemValue.item_type_id);
-	const [subCategoryList, setSubCategoryList] = useState([]);
-	const [addOnData, setAddOnData] = useState<AddOnData>({});
 	const [subCategoryId, setSubCategoryId] = useState<string>(initialItemValue.sub_category_id);
-	const [price, setPrice] = useState<string | number>(initialItemValue.price);
-	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const [itemInternalName, setItemInternalName] =
 		useState<string>(initialItemValue.internal_name);
-	const [inputError, setInputError] = useState<string | null>(null);
-	const [replaceIndex, setReplaceIndex] = useState<number | null>(null);
 	const [stockQuantity, setStockQuantity]
 		= useState<string | number>(initialItemValue.stock_quantity);
 	const [images, setImages] = useState<{ file: File | null; previewURL: string }[]>(
 		initialItemValue.images ? initialItemValue.images.map(imageURL =>
 			({ file: null, previewURL: imageURL })) : []
 	);
-	const [customAttributesList, setCustomAttributesList] =
-		useState<CustomAttribute[]>([]);
-	const [attributesState, setAttributesState] = useState<
-		Record<string, AttributeState>
-	>({});
-	const hasInitializedCustomAttributes = useRef(false);
-	const [removedImages, setRemovedImages] = useState<string[]>([]);
 
 	const initializeCustomAttributes = (list: any, initialValue: any) =>
 		list.map((att2: { custom_attribute_id: any; default_value: any; }) => {
@@ -366,23 +371,26 @@ const AddItemModal = (props: Props) => {
 		event.preventDefault();
 		if (!itemName) {
 			setInputError("Please enter the name first");
+			return; // Exit the function early if validation fails
 		}
-		setLoading(true);
+
+		// setLoading(true);
 		const itemBody = new FormData();
-		itemBody.append("sku", sku);
+		itemBody.append("sku", sku || "");
 		itemBody.append("id", initialItemValue.item_id || "");
-		itemBody.append("name", itemName);
-		itemBody.append("price", String(price));
-		if (longDesc.trim()) itemBody.append("description", longDesc);
-		itemBody.append("short_description", shortDesc);
-		if (subCategoryId.trim()) itemBody.append("sub_category_id", subCategoryId);
-		itemBody.append("category_id", categoryId);
-		itemBody.append("item_type_id", itemTypeId);
-		itemBody.append("tags", JSON.stringify(tagsId));
-		if (itemInternalName.trim()) itemBody.append("internal_name", itemInternalName);
-		itemBody.append("add_ons", JSON.stringify(addOnsId));
-		itemBody.append("stock_quantity", String(stockQuantity));
-		itemBody.append("attributes", JSON.stringify(checkedAttributes));
+		itemBody.append("name", itemName || "");
+		itemBody.append("price", String(price) || "");
+
+		itemBody.append("short_description", shortDesc || "");
+		if (subCategoryId?.trim()) itemBody.append("sub_category_id", subCategoryId.trim());
+		itemBody.append("category_id", categoryId || "");
+		itemBody.append("item_type_id", itemTypeId || "");
+		itemBody.append("tags", JSON.stringify(tagsId || []));
+		if (itemInternalName?.trim()) itemBody.append("internal_name", itemInternalName.trim());
+		itemBody.append("add_ons", JSON.stringify(addOnsId || []));
+		itemBody.append("stock_quantity", String(stockQuantity || ""));
+		itemBody.append("attributes", JSON.stringify(checkedAttributes || []));
+
 		images.forEach((image) => {
 			if (image.file instanceof File) {
 				itemBody.append("image_files_added", image.file);
@@ -390,10 +398,9 @@ const AddItemModal = (props: Props) => {
 				itemBody.append("image_files_added", image.previewURL);
 			}
 		});
-		if (isEditModal) {
-			if (removedImages.length > 0) {
-				itemBody.append("images_deleted", JSON.stringify(removedImages));
-			}
+
+		if (isEditModal && removedImages.length > 0) {
+			itemBody.append("images_deleted", JSON.stringify(removedImages));
 		}
 
 		try {
@@ -411,7 +418,7 @@ const AddItemModal = (props: Props) => {
 				},
 				() => {
 					logoutUser(router);
-				},
+				}
 			);
 		} catch (error) {
 			console.error("Error:", error);
@@ -521,7 +528,6 @@ const AddItemModal = (props: Props) => {
 			title={
 				<TitleComponent
 					title={isEditModal ? "Edit Item" : "Add New Item"}
-					// title="add"
 				/>
 			}
 		>
@@ -584,9 +590,17 @@ const AddItemModal = (props: Props) => {
 							placeholder="Enter Price"
 						/>
 					</SimpleGridComponent>
-					<GroupComponent grow>
+
+					<SimpleGridComponent
+						cols={{
+							sm: 2,
+							md: 2,
+							lg: 2,
+							xl: 2,
+							base: 1,
+						}}
+					>
 						<TextAreaInputComponent
-							required
 							value={shortDesc}
 							resize="vertical"
 							error={inputError}
@@ -595,15 +609,27 @@ const AddItemModal = (props: Props) => {
 							label="Short Description"
 							placeholder="Enter Short Description"
 						/>
-						<TextAreaInputComponent
-							value={longDesc}
-							resize="vertical"
-							title="Description"
-							label="Description"
-							setValue={setLongDesc}
-							placeholder="Enter Description"
-						/>
-					</GroupComponent>
+					</SimpleGridComponent>
+
+					{/*<GroupComponent grow>*/}
+					{/*	<TextAreaInputComponent*/}
+					{/*		value={shortDesc}*/}
+					{/*		resize="vertical"*/}
+					{/*		error={inputError}*/}
+					{/*		setValue={setShortDesc}*/}
+					{/*		title="Short Description"*/}
+					{/*		label="Short Description"*/}
+					{/*		placeholder="Enter Short Description"*/}
+					{/*	/>*/}
+					{/*	<TextAreaInputComponent*/}
+					{/*		value={longDesc}*/}
+					{/*		resize="vertical"*/}
+					{/*		title="Description"*/}
+					{/*		label="Description"*/}
+					{/*		setValue={setLongDesc}*/}
+					{/*		placeholder="Enter Description"*/}
+					{/*	/>*/}
+					{/*</GroupComponent>*/}
 				</StackComponent>
 			</FieldsetComponent>
 
@@ -736,6 +762,7 @@ const AddItemModal = (props: Props) => {
 						checkIconPosition="right"
 					/>
 					<MultiSelectComponent
+						required
 						label="Tags"
 						value={tagsId}
 						data={tagsList}

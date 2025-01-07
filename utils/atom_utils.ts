@@ -26,7 +26,7 @@ export const posCart = atom<any>({
 
 export const customerAtom = atom<any>({
 	key: "customerAtom",
-	default: { id: "", name: "" },
+	default: { id: "", name: "", address: "", city: "", state: "", pinCode: "" },
 });
 
 export const cartIdAtom = atom<string>({
@@ -42,4 +42,9 @@ export const cartItemsAtom = atom<Array<CartItemModel>>({
 export const cartAtom = atom<CartModel | null>({
 	default: null,
 	key: "cartAtom",
+});
+
+	export const cartPaymentMethodAtom = atom<string>({
+	key: "paymentMethod",
+	default: "",
 });

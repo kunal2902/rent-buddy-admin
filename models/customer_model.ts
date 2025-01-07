@@ -18,4 +18,7 @@ export interface CustomerModel {
     created_location?: Location;
     carts: CartModel[];
     invoices: InvoiceModel[];
+    state: string;
+    city: string;
+    pinCode: string;
 }

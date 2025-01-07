@@ -23,20 +23,19 @@ import {
 	TooltipComponent,
 } from "@/components";
 import {
-	appAccentColorRGBA,
 	cartAtom,
 	cartDraftApi,
 	cartIdAtom,
-	cartItemsAtom,
+	cartItemsAtom, cartPaymentMethodAtom,
 	checkoutApi,
 	currencySign,
 	customerAtom,
 	deleteCartApi,
 	formatDate,
 	getCustomerApi,
-	logoutUser,
+	logoutUser, paymentOptions,
 	toTitleCase,
-	upsertCartApi,
+	upsertCartApi
 } from "@/utils";
 import { ComboBoxProps } from "@/types";
 import { CartItemModel, CartModel } from "@/models";
@@ -53,10 +52,16 @@ export const PosCartSection = () => {
 	const [invoiceDialogOpen, setInvoiceDialogOpen] = useState<boolean>(false);
 	const [customersList, setCustomersList] = useState<ComboBoxProps[]>([]);
 
+	const [total, setTotal] = useState(0); // State for total amount
+	const [tax5, setTax5] = useState(0); // State for 5% tax
+	const [tax7, setTax7] = useState(0); // State for 7% tax
+
 	const [cartId, setCartId] = useRecoilState(cartIdAtom);
+	const [paymentMethod, setPaymentMethod] = useRecoilState(cartPaymentMethodAtom);
 	const setCart = useSetRecoilState<CartModel | null>(cartAtom);
 	const [selectedCustomer, setSelectedCustomer] =
 		useRecoilState(customerAtom);
+	console.log(selectedCustomer);
 	const [cartItems, setCartItems] =
 		useRecoilState<Array<CartItemModel>>(cartItemsAtom);
 	const selectComponentKey = selectedCustomer.id + selectedCustomer.name;
@@ -66,9 +71,20 @@ export const PosCartSection = () => {
 			"",
 			(data: any) => {
 				const formattedCustomers = data.customers.map(
-					(customer: { customer_id: string; name: string }) => ({
+					(customer: {
+						customer_id: string;
+						name: string
+						address: string;
+						city: string;
+						state: string;
+						pinCode: string;
+					}) => ({
 						value: customer.customer_id,
 						label: customer.name,
+						address: customer.address,
+						city: customer.city,
+						state: customer.state,
+						pinCode: customer.pinCode,
 					}),
 				);
 				setCustomersList(formattedCustomers);
@@ -82,14 +98,38 @@ export const PosCartSection = () => {
 
 	useEffect(() => {
 		const subtotal = calculateSubtotal();
-		const taxProduct = calculateTotalTaxOnProducts();
-		setSubTotal(subtotal + (taxProduct > 0 ? taxProduct : 0));
+		setSubTotal(subtotal);
+
+		// Calculate 5% tax
+		const calculatedTax5 = (subtotal * 5) / 100;
+
+		// Calculate 7% tax
+		const calculatedTax7 = (subtotal * 7) / 100;
+
+		// Calculate total
+		const calculatedTotal = subtotal + calculatedTax5 + calculatedTax7;
+
+		// Update state
+		setTax5(calculatedTax5);
+		setTax7(calculatedTax7);
+		setTotal(calculatedTotal);
 	}, [cartItems]);
 
-	const handleCustomerChange = (option: { value: string; label: string }) => {
+	const handleCustomerChange = (option: {
+		value: string;
+		label: string
+		address: string;
+		city: string;
+		state: string;
+		pinCode: string;
+	}) => {
 		setSelectedCustomer({
 			id: option.value,
 			name: option.label,
+			address: option.address,
+			city: option.city,
+			state: option.state,
+			pinCode: option.pinCode,
 		});
 	};
 
@@ -115,8 +155,6 @@ export const PosCartSection = () => {
 		return subtotal;
 	};
 
-	const calculateTotal = () => subTotal;
-
 	const clearCart = () => {
 		deleteCartApi(
 			cartId,
@@ -127,7 +165,12 @@ export const PosCartSection = () => {
 				setSelectedCustomer({
 					id: "",
 					name: "",
+					address: "",
+					city: "",
+					state: "",
+					pinCode: "",
 				});
+				setPaymentMethod("");
 				ShowNotification("Success", "success");
 			},
 			(err: any) => {
@@ -186,63 +229,20 @@ export const PosCartSection = () => {
 		return null;
 	};
 
-	const calculateTotalTaxOnProducts = () => {
-		const totalTax = 0;
-		cartItems.forEach(() => {
-			// totalTax += calculateTaxOnProduct(item);
-		});
-		return totalTax;
-	};
-
-	const calculateTaxOnBill = () => {
-		let taxOnBill = 0;
-
-		cartItems.forEach((item) => {
-			if (item.item.custom_attributes) {
-				item.item.custom_attributes.forEach(
-					(attr: {
-						custom_attribute: {
-							is_tax: any;
-							tax_type: string;
-							type: string;
-						};
-						attribute_value: string;
-					}) => {
-						if (
-							attr.custom_attribute.is_tax &&
-							attr.custom_attribute.tax_type === "on_bill"
-						) {
-							if (attr.custom_attribute.type === "number") {
-								taxOnBill += parseFloat(attr.attribute_value);
-							} else if (
-								attr.custom_attribute.type === "percentage"
-							) {
-								const itemPrice = parseFloat(item.item.price);
-								const percentageValue =
-									parseFloat(attr.attribute_value) / 100;
-								const taxForItem = itemPrice * percentageValue;
-								taxOnBill += taxForItem;
-							}
-						}
-					},
-				);
-			}
-		});
-
-		return taxOnBill;
-	};
-
 	const handleCheckout = async () => {
 		if (cartItems.length === 0) {
 			ShowNotification("Please select item first!", "error");
 		} else if (!selectedCustomer.id) {
 			ShowNotification("Please select customer first!", "error");
+		} else if (!paymentMethod) {
+			ShowNotification("Please select payment method first!", "error");
 		} else {
 			setLoading(true);
 			const body = {
 				id: cartId,
 				customer_id: selectedCustomer.id,
 				label: "Purchased!",
+				payment_method: paymentMethod,
 			};
 			await upsertCartApi(
 				body,
@@ -266,12 +266,21 @@ export const PosCartSection = () => {
 						},
 					);
 				},
-				() => {},
+				(err: any) => {
+					ShowNotification(err.error, "error");
+					setLoading(false);
+				},
 				() => {
 					logoutUser(router);
 				},
 			);
 		}
+	};
+
+	const truncateText = (text: string, maxLength: number): string => text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
+
+	const handlePaymentMethodChange = (option: ComboBoxProps) => {
+		setPaymentMethod(option.value);
 	};
 
 	return (
@@ -288,19 +297,15 @@ export const PosCartSection = () => {
 					<GroupComponent>
 						<SelectComponent
 							key={selectComponentKey}
-							required
 							data={customersList}
-							value={selectedCustomer.id ?? ""}
+							value={selectedCustomer.id}
 							placeholder="Select Customer"
 							setValue={(val) => {
-								const option = customersList.find(
-									(c) => c.value === val,
-								);
+								const option = customersList.find((c) => c.value === val);
 								if (option) {
 									handleCustomerChange(option);
 								}
 							}}
-							setOption={handleCustomerChange}
 							style={{ width: "calc(100% - 60px)" }}
 						/>
 						<TooltipComponent label="Add Customer">
@@ -345,6 +350,17 @@ export const PosCartSection = () => {
 							<TextComponent text="Order Date:" bold />
 							<TextComponent text={formatDate(new Date())} />
 						</GroupComponent>
+						<GroupComponent justify="space-between">
+							<TextComponent text="Payment type" bold />
+							<SelectComponent
+								required
+								data={paymentOptions}
+								value={paymentMethod}
+								placeholder="Select Payment Type"
+								setValue={setPaymentMethod}
+								setOption={handlePaymentMethodChange}
+							/>
+						</GroupComponent>
 					</StackComponent>
 				</CardComponent>
 
@@ -387,11 +403,13 @@ export const PosCartSection = () => {
 												style={{ flexGrow: 1 }}
 											>
 												<GroupComponent justify="space-between">
-													<TitleComponent
-														fz={14}
-														title={item.item.name}
-														mb={5}
-													/>
+													<TooltipComponent position="bottom-start" label={item.item.name}>
+														<TitleComponent
+															fz={14}
+															title={truncateText(item.item.name, 30)}
+															mb={5}
+														/>
+													</TooltipComponent>
 
 													<TitleComponent
 														fz={14}
@@ -463,9 +481,17 @@ export const PosCartSection = () => {
 							/>
 						</GroupComponent>
 						<GroupComponent justify="space-between">
-							<TextComponent text="On Bill:" size="sm" />
+							<TextComponent text="5% GST:" size="sm" />
 							<TextComponent
-								text={`${currencySign} ${calculateTaxOnBill().toFixed(2)}`}
+								text={`${currencySign} ${tax5.toFixed(2)}`}
+								bold
+								size="sm"
+							/>
+						</GroupComponent>
+						<GroupComponent justify="space-between">
+							<TextComponent text="7% PST:" size="sm" />
+							<TextComponent
+								text={`${currencySign} ${tax7.toFixed(2)}`}
 								bold
 								size="sm"
 							/>
@@ -479,7 +505,7 @@ export const PosCartSection = () => {
 						<GroupComponent justify="space-between">
 							<TextComponent text="Total:" bold />
 							<TextComponent
-								text={`${currencySign} ${calculateTotal().toFixed(2)}`}
+								text={`${currencySign} ${total.toFixed(2)}`}
 								bold
 							/>
 						</GroupComponent>
@@ -493,7 +519,7 @@ export const PosCartSection = () => {
 								c="red"
 								maw={36}
 								h={36}
-								onClick={clearCart}
+								onClick={() => clearCart()}
 							>
 								<RiDeleteBin6Line />
 							</ActionIconComponent>
@@ -531,15 +557,16 @@ export const PosCartSection = () => {
 					</GroupComponent>
 				</BoxComponent>
 			</div>
-
 			{invoiceDialogOpen && (
 				<InvoiceDetailModal
 					isOpen={invoiceDialogOpen}
 					onClose={() => setInvoiceDialogOpen(false)}
 					subTotal={subTotal}
+					total={total}
+					tax5={tax5}
+					tax7={tax7}
 				/>
 			)}
-
 			{openAddModal &&
 				<AddCustomerModal
 					customerId=""
@@ -549,6 +576,10 @@ export const PosCartSection = () => {
 					initialValueName=""
 					initialValuePhoneNumber=""
 					initialValueEmail=""
+					initialValueAddress=""
+					initialValueCity=""
+					initialValuePinCode=""
+					initialValueState=""
 				/>
 			}
 		</>
