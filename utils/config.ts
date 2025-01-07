@@ -244,3 +244,12 @@ export const logoutUser = (router: AppRouterInstance) => {
 	deleteCookie(themeModeConstant, cookieOptions);
 	router.replace("/");
 };
+
+export const paymentOptions = [
+	{ id: "1", value: "Cash", label: "Cash" },
+	{ id: "2", value: "Debit", label: "Debit" },
+	{ id: "3", value: "Visa", label: "Visa" },
+	{ id: "4", value: "Master Card", label: "Master Card" },
+	{ id: "5", value: "Amex", label: "Amex" },
+	{ id: "6", value: "Cheque", label: "Cheque" },
+];

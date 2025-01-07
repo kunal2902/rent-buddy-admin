@@ -379,9 +379,7 @@ const AddItemModal = (props: Props) => {
 		itemBody.append("sku", sku || "");
 		itemBody.append("id", initialItemValue.item_id || "");
 		itemBody.append("name", itemName || "");
-
-		// Add only if longDesc is defined and non-empty
-		// if (longDesc?.trim()) itemBody.append("description", longDesc.trim());
+		itemBody.append("price", String(price) || "");
 
 		itemBody.append("short_description", shortDesc || "");
 		if (subCategoryId?.trim()) itemBody.append("sub_category_id", subCategoryId.trim());
