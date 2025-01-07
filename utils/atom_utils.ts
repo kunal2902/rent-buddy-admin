@@ -26,7 +26,7 @@ export const posCart = atom<any>({
 
 export const customerAtom = atom<any>({
 	key: "customerAtom",
-	default: { id: "", name: "", address: "", city: "", state: "", pinCode: "" },
+	default: { id: "", name: "" },
 });
 
 export const cartIdAtom = atom<string>({

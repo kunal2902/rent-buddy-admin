@@ -37,7 +37,7 @@ import {
 	toTitleCase,
 	upsertCartApi
 } from "@/utils";
-import { ComboBoxProps, FullComboBoxProps } from "@/types";
+import { ComboBoxProps } from "@/types";
 import { CartItemModel, CartModel } from "@/models";
 import InvoiceDetailModal from "@/components/custom/invoice_detail_modal";
 import ShowNotification from "@/components/mantine/show_notification";
@@ -50,7 +50,7 @@ export const PosCartSection = () => {
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [invoiceDialogOpen, setInvoiceDialogOpen] = useState<boolean>(false);
-	const [customersList, setCustomersList] = useState<FullComboBoxProps[]>([]);
+	const [customersList, setCustomersList] = useState<ComboBoxProps[]>([]);
 
 	const [total, setTotal] = useState(0); // State for total amount
 	const [tax5, setTax5] = useState(0); // State for 5% tax
@@ -61,7 +61,7 @@ export const PosCartSection = () => {
 	const setCart = useSetRecoilState<CartModel | null>(cartAtom);
 	const [selectedCustomer, setSelectedCustomer] =
 		useRecoilState(customerAtom);
-	console.log(selectedCustomer);
+
 	const [cartItems, setCartItems] =
 		useRecoilState<Array<CartItemModel>>(cartItemsAtom);
 	const selectComponentKey = selectedCustomer.id + selectedCustomer.name;
@@ -71,20 +71,9 @@ export const PosCartSection = () => {
 			"",
 			(data: any) => {
 				const formattedCustomers = data.customers.map(
-					(customer: {
-						customer_id: string;
-						name: string
-						address: string;
-						city: string;
-						state: string;
-						pinCode: string;
-					}) => ({
+					(customer: { customer_id: string; name: string }) => ({
 						value: customer.customer_id,
 						label: customer.name,
-						address: customer.address,
-						city: customer.city,
-						state: customer.state,
-						pinCode: customer.pinCode,
 					}),
 				);
 				setCustomersList(formattedCustomers);
@@ -115,21 +104,10 @@ export const PosCartSection = () => {
 		setTotal(calculatedTotal);
 	}, [cartItems]);
 
-	const handleCustomerChange = (option: {
-		value: string;
-		label: string
-		address: string;
-		city: string;
-		state: string;
-		pinCode: string;
-	}) => {
+	const handleCustomerChange = (option: { value: string; label: string }) => {
 		setSelectedCustomer({
 			id: option.value,
 			name: option.label,
-			address: option.address,
-			city: option.city,
-			state: option.state,
-			pinCode: option.pinCode,
 		});
 	};
 
@@ -165,10 +143,6 @@ export const PosCartSection = () => {
 				setSelectedCustomer({
 					id: "",
 					name: "",
-					address: "",
-					city: "",
-					state: "",
-					pinCode: "",
 				});
 				setPaymentMethod("");
 				ShowNotification("Success", "success");
@@ -297,18 +271,21 @@ export const PosCartSection = () => {
 					<GroupComponent>
 						<SelectComponent
 							key={selectComponentKey}
+							required
 							data={customersList}
-							value={selectedCustomer.id}
+							value={selectedCustomer.id ?? ""}
 							placeholder="Select Customer"
 							setValue={(val) => {
-								const option = customersList.find((c) => c.value === val);
+								const option = customersList.find(
+									(c) => c.value === val,
+								);
 								if (option) {
 									handleCustomerChange(option);
 								}
 							}}
+							setOption={handleCustomerChange}
 							style={{ width: "calc(100% - 60px)" }}
 						/>
-
 						<TooltipComponent label="Add Customer">
 							<ActionIconComponent
 								w={40}
