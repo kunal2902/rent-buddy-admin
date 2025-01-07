@@ -308,6 +308,7 @@ export const PosCartSection = () => {
 							}}
 							style={{ width: "calc(100% - 60px)" }}
 						/>
+
 						<TooltipComponent label="Add Customer">
 							<ActionIconComponent
 								w={40}
