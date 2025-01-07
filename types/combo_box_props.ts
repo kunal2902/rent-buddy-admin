@@ -9,3 +9,10 @@ export interface GroupedComboBoxProps extends ComboboxItemGroup {
 	group: string,
 	items: ComboBoxProps[],
 }
+
+export interface FullComboBoxProps extends ComboBoxProps {
+	address: string;
+	city: string;
+	state: string;
+	pinCode: string;
+}

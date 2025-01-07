@@ -37,7 +37,7 @@ import {
 	toTitleCase,
 	upsertCartApi
 } from "@/utils";
-import { ComboBoxProps } from "@/types";
+import { ComboBoxProps, FullComboBoxProps } from "@/types";
 import { CartItemModel, CartModel } from "@/models";
 import InvoiceDetailModal from "@/components/custom/invoice_detail_modal";
 import ShowNotification from "@/components/mantine/show_notification";
@@ -50,7 +50,7 @@ export const PosCartSection = () => {
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [invoiceDialogOpen, setInvoiceDialogOpen] = useState<boolean>(false);
-	const [customersList, setCustomersList] = useState<ComboBoxProps[]>([]);
+	const [customersList, setCustomersList] = useState<FullComboBoxProps[]>([]);
 
 	const [total, setTotal] = useState(0); // State for total amount
 	const [tax5, setTax5] = useState(0); // State for 5% tax
@@ -557,6 +557,7 @@ export const PosCartSection = () => {
 					</GroupComponent>
 				</BoxComponent>
 			</div>
+
 			{invoiceDialogOpen && (
 				<InvoiceDetailModal
 					isOpen={invoiceDialogOpen}
@@ -567,6 +568,7 @@ export const PosCartSection = () => {
 					tax7={tax7}
 				/>
 			)}
+
 			{openAddModal &&
 				<AddCustomerModal
 					customerId=""
