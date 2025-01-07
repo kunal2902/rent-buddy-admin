@@ -557,7 +557,6 @@ export const PosCartSection = () => {
 					</GroupComponent>
 				</BoxComponent>
 			</div>
-
 			{invoiceDialogOpen && (
 				<InvoiceDetailModal
 					isOpen={invoiceDialogOpen}
@@ -568,7 +567,6 @@ export const PosCartSection = () => {
 					tax7={tax7}
 				/>
 			)}
-
 			{openAddModal &&
 				<AddCustomerModal
 					customerId=""
