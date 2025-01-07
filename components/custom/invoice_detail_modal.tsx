@@ -234,8 +234,8 @@ const InvoiceDetailModal = (props: Props) => {
 			<h1>INVOICE</h1>
 		</div>
 		<div class="image_container">
-			<img src="logo.png" alt="Company Logo">
-<!--			<a href="mailto:ncaisales@gmail.com"><h4>ncaisales@gmail.com</h4></a>-->
+<!--			<img src="logo.png" alt="Company Logo">-->
+			<a href="mailto:ncaisales@gmail.com"><h4>ncaisales@gmail.com</h4></a>
 		</div>
 
 	</div>
@@ -254,7 +254,7 @@ const InvoiceDetailModal = (props: Props) => {
 			<th>SOLD TO:</th>
 			<td>${customer.name}</td>
 			<th>SHIP TO:</th>
-			<td>${customer.address}, ${customer.city}, ${customer.state}, ${customer.pinCode}</td>
+			<td></td>
 		</tr>
 	</table>
 
