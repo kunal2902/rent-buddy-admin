@@ -61,7 +61,7 @@ export const PosCartSection = () => {
 	const setCart = useSetRecoilState<CartModel | null>(cartAtom);
 	const [selectedCustomer, setSelectedCustomer] =
 		useRecoilState(customerAtom);
-	console.log(selectedCustomer);
+
 	const [cartItems, setCartItems] =
 		useRecoilState<Array<CartItemModel>>(cartItemsAtom);
 	const selectComponentKey = selectedCustomer.id + selectedCustomer.name;
@@ -71,20 +71,9 @@ export const PosCartSection = () => {
 			"",
 			(data: any) => {
 				const formattedCustomers = data.customers.map(
-					(customer: {
-						customer_id: string;
-						name: string
-						address: string;
-						city: string;
-						state: string;
-						pinCode: string;
-					}) => ({
+					(customer: { customer_id: string; name: string }) => ({
 						value: customer.customer_id,
 						label: customer.name,
-						address: customer.address,
-						city: customer.city,
-						state: customer.state,
-						pinCode: customer.pinCode,
 					}),
 				);
 				setCustomersList(formattedCustomers);
@@ -115,21 +104,10 @@ export const PosCartSection = () => {
 		setTotal(calculatedTotal);
 	}, [cartItems]);
 
-	const handleCustomerChange = (option: {
-		value: string;
-		label: string
-		address: string;
-		city: string;
-		state: string;
-		pinCode: string;
-	}) => {
+	const handleCustomerChange = (option: { value: string; label: string }) => {
 		setSelectedCustomer({
 			id: option.value,
 			name: option.label,
-			address: option.address,
-			city: option.city,
-			state: option.state,
-			pinCode: option.pinCode,
 		});
 	};
 
@@ -165,10 +143,6 @@ export const PosCartSection = () => {
 				setSelectedCustomer({
 					id: "",
 					name: "",
-					address: "",
-					city: "",
-					state: "",
-					pinCode: "",
 				});
 				setPaymentMethod("");
 				ShowNotification("Success", "success");
@@ -297,15 +271,19 @@ export const PosCartSection = () => {
 					<GroupComponent>
 						<SelectComponent
 							key={selectComponentKey}
+							required
 							data={customersList}
-							value={selectedCustomer.id}
+							value={selectedCustomer.id ?? ""}
 							placeholder="Select Customer"
 							setValue={(val) => {
-								const option = customersList.find((c) => c.value === val);
+								const option = customersList.find(
+									(c) => c.value === val,
+								);
 								if (option) {
 									handleCustomerChange(option);
 								}
 							}}
+							setOption={handleCustomerChange}
 							style={{ width: "calc(100% - 60px)" }}
 						/>
 						<TooltipComponent label="Add Customer">
@@ -557,6 +535,7 @@ export const PosCartSection = () => {
 					</GroupComponent>
 				</BoxComponent>
 			</div>
+
 			{invoiceDialogOpen && (
 				<InvoiceDetailModal
 					isOpen={invoiceDialogOpen}
@@ -567,6 +546,7 @@ export const PosCartSection = () => {
 					tax7={tax7}
 				/>
 			)}
+
 			{openAddModal &&
 				<AddCustomerModal
 					customerId=""
