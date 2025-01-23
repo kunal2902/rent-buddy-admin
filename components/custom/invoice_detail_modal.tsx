@@ -102,23 +102,6 @@ const InvoiceDetailModal = (props: Props) => {
 			onClose();
 	};
 
-	const calculateTotalTaxes = () => cartItems.reduce(
-			(totals, item) => {
-				item.item.custom_attributes.forEach((attr) => {
-					const tax = calculateTaxOnProduct(attr, item.item.price, item.quantity);
-					if (tax) {
-						if (attr.custom_attribute.type === "number") {
-							totals.number += tax;
-						} else if (attr.custom_attribute.type === "percentage") {
-							totals.percentage += tax;
-						}
-					}
-				});
-				return totals;
-			},
-			{ number: 0, percentage: 0 } // Initial totals for number and percentage
-		);
-
 	const truncateText = (text: string, maxLength: number): string => text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
 
 	const renderInvoice = () => {
@@ -283,17 +266,17 @@ const InvoiceDetailModal = (props: Props) => {
 		<tr>
 			<td colspan="3"></td>
 			<td>EHF</td>
-			<td>${calculateTotalTaxes().percentage}</td>
+			<td>00</td>
 		</tr>
 		<tr>
 			<td colspan="3"></td>
 			<td>DELIVERY</td>
-			<td>0.00</td>
+			<td>$0.00</td>
 		</tr>
 		<tr>
 			<td colspan="3"></td>
 			<td>REMOVAL</td>
-			<td>${calculateTotalTaxes().number}</td>
+			<td>00</td>
 		</tr>
 		<tr>
 			<td colspan="3"></td>
@@ -449,13 +432,7 @@ const InvoiceDetailModal = (props: Props) => {
 															lh={1}
 															fz={12}
 															text={
-																`${currencySign} 
-																${calculateTaxOnProduct(
-																	ca,
-																	item.item.price,
-																	item.quantity
-																)}`
-															}
+																`${currencySign}`}
 														/>
 													</GroupComponent>
 												))

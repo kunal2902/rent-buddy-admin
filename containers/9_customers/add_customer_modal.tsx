@@ -1,6 +1,5 @@
 "use client";
 
-import { Stack } from "@mantine/core";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -153,21 +152,21 @@ const AddCustomerModal = (props: Props) => {
 					/>
 					<TextInputComponent
 						required
-						title="State"
-						label="State"
+						title="Province"
+						label="Province"
 						value={state}
 						error={inputError}
 						setValue={setState}
-						placeholder="State"
+						placeholder="Province"
 					/>
-					<NumberInputComponent
+					<TextInputComponent
 						required
-						title="Pin Code"
-						label="Pin Code"
+						title="Postal Code"
+						label="Postal Code"
 						value={pinCode}
 						error={inputError}
 						setValue={setPinCode}
-						placeholder="Pin Code"
+						placeholder="Postal Code"
 					/>
 				</GroupComponent>
 
