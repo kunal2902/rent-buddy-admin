@@ -208,24 +208,45 @@ export const PosProductSection = () => {
 					/>
 				</GroupComponent>
 			</BoxComponent>
-			<BoxComponent h={30} className="px-3 mt-3">
-				<ChipGroupComponent
-					value={catValue}
-					onChange={handleCategoryChange}
-				>
-					<GroupComponent justify="start">
-						<ChipComponent value="">All items</ChipComponent>
+			<ScrollAreaComponent
+				h={110}
+				style={{ overflowX: "auto", overflowY: "hidden", whiteSpace: "nowrap" }}
+			>
+				<BoxComponent className="px-3 mt-3" h={30}>
+					<ChipGroupComponent value={catValue} onChange={handleCategoryChange}>
+						<ChipComponent value="" style={{ display: "inline-block", marginRight: "8px" }}>
+							All items
+						</ChipComponent>
 						{categoriesList.map((item: any) => (
 							<ChipComponent
 								key={item.category_id}
 								value={item.category_id}
+								style={{ display: "inline-block", marginRight: "8px" }}
 							>
 								{item.name}
 							</ChipComponent>
 						))}
-					</GroupComponent>
-				</ChipGroupComponent>
-			</BoxComponent>
+					</ChipGroupComponent>
+				</BoxComponent>
+			</ScrollAreaComponent>
+			{/*<BoxComponent h={30} className="px-3 mt-3">*/}
+			{/*	<ChipGroupComponent*/}
+			{/*		value={catValue}*/}
+			{/*		onChange={handleCategoryChange}*/}
+			{/*	>*/}
+			{/*		<GroupComponent justify="start">*/}
+			{/*			<ChipComponent value="">All items</ChipComponent>*/}
+			{/*			{categoriesList.map((item: any) => (*/}
+			{/*				<ChipComponent*/}
+			{/*					key={item.category_id}*/}
+			{/*					value={item.category_id}*/}
+			{/*				>*/}
+			{/*					{item.name}*/}
+			{/*				</ChipComponent>*/}
+			{/*			))}*/}
+			{/*		</GroupComponent>*/}
+			{/*	</ChipGroupComponent>*/}
+			{/*</BoxComponent>*/}
 
 			{subCategories.length > 0 && (
 				<BoxComponent h={70} className="px-3 mt-1">

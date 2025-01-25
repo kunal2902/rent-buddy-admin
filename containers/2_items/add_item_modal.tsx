@@ -368,10 +368,11 @@ const AddItemModal = (props: Props) => {
 	}, [categoryId]);
 
 	const handleSubmitItem = async (event: React.FormEvent) => {
+		setLoading(true);
 		event.preventDefault();
 		if (!itemName) {
 			setInputError("Please enter the name first");
-			return; // Exit the function early if validation fails
+			return;
 		}
 
 		// setLoading(true);

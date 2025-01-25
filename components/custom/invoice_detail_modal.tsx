@@ -29,17 +29,25 @@ interface Props {
 	subTotal: number;
 	total: number;
 	tax5:number;
-	tax7: number;
+	tax7: number
+	totalEHF: number | undefined;
+	totalRemovalCharges: number;
+	fullAddress:string | undefined;
+	deliveryCharges: string | number | undefined;
 }
 
 const InvoiceDetailModal = (props: Props) => {
 	const {
 		isOpen,
 		onClose,
-		subTotal,
 		total,
 		tax5,
 		tax7,
+		subTotal,
+		totalEHF,
+		fullAddress,
+		deliveryCharges,
+		totalRemovalCharges,
 	} = props;
 	const setCartId = useSetRecoilState(cartIdAtom);
 	const [customer, setCustomer] = useRecoilState(customerAtom);
@@ -50,50 +58,6 @@ const InvoiceDetailModal = (props: Props) => {
 	const [cartItems, setCartItems] = useRecoilState<Array<CartItemModel>>(cartItemsAtom);
 	const date = formatDate(new Date());
 
-	const calculateTaxOnProduct = (attr: any, price: any, quantity: any) => {
-		if (attr) {
-			if (attr.custom_attribute.is_tax && attr.custom_attribute.tax_type === "on_product") {
-				if (attr.custom_attribute.type === "number") {
-					const attributeVal = Number(attr.attribute_value);
-					return attributeVal * quantity;
-				}
-				if (attr.custom_attribute.type === "percentage") {
-					const itemPrice = Number(price);
-					return ((itemPrice / 100) * Number(attr.attribute_value)) * Number(quantity);
-				}
-				return null;
-			}
-			return null;
-		}
-		return null;
-	};
-
-	const calculateTaxOnBill = () => {
-		let taxOnBill = 0;
-
-		cartItems.forEach((item) => {
-			if (item.item.custom_attributes) {
-				item.item.custom_attributes.forEach((attr: {
-					custom_attribute: { is_tax: any; tax_type: string; type: string; };
-					attribute_value: string;
-				}) => {
-					if (attr.custom_attribute.is_tax && attr.custom_attribute.tax_type === "on_bill") {
-						if (attr.custom_attribute.type === "number") {
-							taxOnBill += parseFloat(attr.attribute_value);
-						} else if (attr.custom_attribute.type === "percentage") {
-							const itemPrice = parseFloat(item.item.price);
-							const percentageValue = parseFloat(attr.attribute_value) / 100;
-							const taxForItem = itemPrice * percentageValue;
-							taxOnBill += taxForItem;
-						}
-					}
-				});
-			}
-		});
-
-		return taxOnBill;
-	};
-
 	const handleCloseModal = () => {
 			setCartItems([]);
 			setCart(null);
@@ -101,23 +65,6 @@ const InvoiceDetailModal = (props: Props) => {
 			setCustomer({ id: "", name: "" });
 			onClose();
 	};
-
-	const calculateTotalTaxes = () => cartItems.reduce(
-			(totals, item) => {
-				item.item.custom_attributes.forEach((attr) => {
-					const tax = calculateTaxOnProduct(attr, item.item.price, item.quantity);
-					if (tax) {
-						if (attr.custom_attribute.type === "number") {
-							totals.number += tax;
-						} else if (attr.custom_attribute.type === "percentage") {
-							totals.percentage += tax;
-						}
-					}
-				});
-				return totals;
-			},
-			{ number: 0, percentage: 0 } // Initial totals for number and percentage
-		);
 
 	const truncateText = (text: string, maxLength: number): string => text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
 
@@ -254,7 +201,7 @@ const InvoiceDetailModal = (props: Props) => {
 			<th>SOLD TO:</th>
 			<td>${customer.name}</td>
 			<th>SHIP TO:</th>
-			<td></td>
+			<td>${fullAddress}</td>
 		</tr>
 	</table>
 
@@ -283,38 +230,38 @@ const InvoiceDetailModal = (props: Props) => {
 		<tr>
 			<td colspan="3"></td>
 			<td>EHF</td>
-			<td>${calculateTotalTaxes().percentage}</td>
+			<td>${currencySign} ${totalEHF}</td>
 		</tr>
 		<tr>
 			<td colspan="3"></td>
 			<td>DELIVERY</td>
-			<td>0.00</td>
+			<td>${currencySign} ${deliveryCharges}</td>
 		</tr>
 		<tr>
 			<td colspan="3"></td>
 			<td>REMOVAL</td>
-			<td>${calculateTotalTaxes().number}</td>
+			<td>${currencySign} ${totalRemovalCharges}</td>
 		</tr>
 		<tr>
 			<td colspan="3"></td>
 			<td>SUBTOTAL</td>
-			<td>${subTotal.toFixed(2)}</td>
+			<td>${currencySign} ${subTotal.toFixed(2)}</td>
 		</tr>
 		<tr>
 			<td colspan="3"></td>
 			<td>5% GST</td>
-			<td>${tax5.toFixed(2)}</td>
+			<td>${currencySign} ${tax5.toFixed(2)}</td>
 		</tr>
 		<tr>
 			<td colspan="3"></td>
 			<td>7% PST</td>
-			<td>${tax7.toFixed(2)}</td>
+			<td>${currencySign} ${tax7.toFixed(2)}</td>
 		</tr>
 		<tr>
 			<td colspan="3"></td>
 			<td>TOTAL</td>
 			<td>
-				<strong>${total.toFixed(2)}</strong>
+				<strong>${currencySign} ${total.toFixed(2)}</strong>
 			</td>
 		</tr>
 		<tr>
@@ -449,13 +396,7 @@ const InvoiceDetailModal = (props: Props) => {
 															lh={1}
 															fz={12}
 															text={
-																`${currencySign} 
-																${calculateTaxOnProduct(
-																	ca,
-																	item.item.price,
-																	item.quantity
-																)}`
-															}
+																`${currencySign}`}
 														/>
 													</GroupComponent>
 												))

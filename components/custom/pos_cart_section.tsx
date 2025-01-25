@@ -14,13 +14,13 @@ import {
 	CenterComponent,
 	DividerComponent,
 	GroupComponent,
-	ImageComponent,
+	ImageComponent, NumberInputComponent,
 	ScrollAreaComponent,
 	SelectComponent,
 	StackComponent,
 	TextComponent,
 	TitleComponent,
-	TooltipComponent,
+	TooltipComponent
 } from "@/components";
 import {
 	cartAtom,
@@ -42,6 +42,10 @@ import { CartItemModel, CartModel } from "@/models";
 import InvoiceDetailModal from "@/components/custom/invoice_detail_modal";
 import ShowNotification from "@/components/mantine/show_notification";
 import AddCustomerModal from "@/containers/9_customers/add_customer_modal";
+import AddShipToModal from "@/components/custom/add_ship_to_modal";
+import { MdOutlineEdit } from "react-icons/md";
+import PriceBreakupModal from "@/components/custom/price_breakup_modal";
+import WarrantyModal from "@/components/custom/warranty_modal";
 
 export const PosCartSection = () => {
 	const router = useRouter();
@@ -49,12 +53,26 @@ export const PosCartSection = () => {
 	const [loading, setLoading] = useState(false);
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
+	const [openShipToModal, setOpenShipToModal] = useState<boolean>(false);
 	const [invoiceDialogOpen, setInvoiceDialogOpen] = useState<boolean>(false);
-	const [customersList, setCustomersList] = useState<ComboBoxProps[]>([]);
+	const [priceBreakupModal, setPriceBreakupModal] = useState<boolean>(false);
+	const [warrentyModal, setWarrentyModal] = useState<number | null>(null);
 
-	const [total, setTotal] = useState(0); // State for total amount
-	const [tax5, setTax5] = useState(0); // State for 5% tax
-	const [tax7, setTax7] = useState(0); // State for 7% tax
+	const [customersList, setCustomersList] = useState<ComboBoxProps[]>([]);
+	const [selectedWarranties, setSelectedWarranties] = useState<{ [key: number]: { duration: string; price: number } } | null>(null);
+	const [totalEHF, setTotalEHF] = useState<number>();
+	const [address, setAddress] = useState<string | undefined>("");
+	const [city, setCity] = useState<string | undefined>("");
+	const [state, setState] = useState<string | undefined>("");
+	const [pinCode, setPinCode] = useState<string | undefined>("");
+	const [fullAddress, setFullAddress] = useState<string | undefined>("");
+
+	const [deliveryCharges, setDeliveryCharges] = useState<string | number | undefined>(0);
+	const [removalCharges, setRemovalCharges] = useState<Record<number, number>>({});
+
+	const [total, setTotal] = useState(0);
+	const [tax5, setTax5] = useState(0);
+	const [tax7, setTax7] = useState(0);
 
 	const [cartId, setCartId] = useRecoilState(cartIdAtom);
 	const [paymentMethod, setPaymentMethod] = useRecoilState(cartPaymentMethodAtom);
@@ -86,23 +104,32 @@ export const PosCartSection = () => {
 	}, [callApi]);
 
 	useEffect(() => {
+		const combinedAddress = `${address || ''}, ${city || ''}, ${state || ''}, ${pinCode || ''}`;
+		setFullAddress(combinedAddress);
+	}, [address, city, state, pinCode]);
+
+	useEffect(() => {
 		const subtotal = calculateSubtotal();
 		setSubTotal(subtotal);
 
-		// Calculate 5% tax
 		const calculatedTax5 = (subtotal * 5) / 100;
 
-		// Calculate 7% tax
 		const calculatedTax7 = (subtotal * 7) / 100;
 
-		// Calculate total
-		const calculatedTotal = subtotal + calculatedTax5 + calculatedTax7;
+		const warrantyTotal = cartItems.reduce((total, item, index) => {
+			const warranty = selectedWarranties?.[index];
+			if (warranty) {
+				return total + (warranty.price * item.quantity);
+			}
+			return total;
+		}, 0);
 
-		// Update state
+		const calculatedTotal = subtotal + calculatedTax5 + calculatedTax7 + totalRemovalCharges + Number(deliveryCharges) + warrantyTotal;
+
 		setTax5(calculatedTax5);
 		setTax7(calculatedTax7);
 		setTotal(calculatedTotal);
-	}, [cartItems]);
+	}, [cartItems, removalCharges, deliveryCharges]);
 
 	const handleCustomerChange = (option: { value: string; label: string }) => {
 		setSelectedCustomer({
@@ -121,12 +148,12 @@ export const PosCartSection = () => {
 			const itemPrice = parseInt(price, 10);
 			let itemTotal = itemPrice * quantity;
 
-			custom_attributes.forEach((attr) => {
-				const tax = calculateTaxOnProduct(attr, itemPrice, quantity);
-				if (tax !== null) {
-					itemTotal += tax;
-				}
-			});
+			// custom_attributes.forEach((attr) => {
+			// 	const tax = calculateTaxOnProduct(attr, itemPrice, quantity);
+			// 	if (tax !== null) {
+			// 		itemTotal += tax;
+			// 	}
+			// });
 
 			subtotal += itemTotal;
 		});
@@ -156,6 +183,40 @@ export const PosCartSection = () => {
 		).then();
 	};
 
+	const ehfFees: Record<string, number> = {
+		"Fridges/Freezers/AC": 6.50,
+		"Dishwashers": 2.00,
+		"Washer/Dryer/Range/Stacker/Laundry Paris": 2.00,
+		"Microwaves": 5.00,
+		"OTR/Hoodfan": 2.00,
+		"DVD/Bluray/OLED/Sound Bar": 2.50,
+	};
+
+	const findCategory = (categoryName: string): string | undefined => {
+		return Object.keys(ehfFees).find((key) =>
+			key.toLowerCase().includes(categoryName.toLowerCase())
+		);
+	};
+
+	const calculateEHF = (categoryName: string, quantity: number) => {
+		const matchedCategory = findCategory(categoryName);
+
+		if (!matchedCategory) {
+			return 0;
+		}
+
+		const fee = ehfFees[matchedCategory] || 0;
+		return fee * quantity;
+	};
+
+	useEffect(() => {
+		const ehfAmount = cartItems.reduce((total, item) => {
+			return total + calculateEHF(item.item.category.name, item.quantity);
+		}, 0);
+
+		setTotalEHF(ehfAmount);
+	}, [cartItems, ehfFees]);
+
 	const handleSaveDraft = () => {
 		cartDraftApi(
 			cartId,
@@ -178,31 +239,6 @@ export const PosCartSection = () => {
 		).then();
 	};
 
-	const calculateTaxOnProduct = (attr: any, price: any, quantity: any) => {
-		if (attr) {
-			if (
-				attr.custom_attribute.is_tax &&
-				attr.custom_attribute.tax_type === "on_product"
-			) {
-				if (attr.custom_attribute.type === "number") {
-					const attributeVal = Number(attr.attribute_value);
-					return attributeVal * quantity;
-				}
-				if (attr.custom_attribute.type === "percentage") {
-					const itemPrice = Number(price);
-					return (
-						(itemPrice / 100) *
-						Number(attr.attribute_value) *
-						Number(quantity)
-					);
-				}
-				return null;
-			}
-			return null;
-		}
-		return null;
-	};
-
 	const handleCheckout = async () => {
 		if (cartItems.length === 0) {
 			ShowNotification("Please select item first!", "error");
@@ -210,6 +246,10 @@ export const PosCartSection = () => {
 			ShowNotification("Please select customer first!", "error");
 		} else if (!paymentMethod) {
 			ShowNotification("Please select payment method first!", "error");
+		} else if (!address) {
+			ShowNotification("Please select shipping address first!", "error");
+		} else if (!deliveryCharges) {
+			ShowNotification("Please select delivery charges first!", "error");
 		} else {
 			setLoading(true);
 			const body = {
@@ -257,6 +297,15 @@ export const PosCartSection = () => {
 		setPaymentMethod(option.value);
 	};
 
+	const handleRemovalChargeChange = (index: number, value: number) => {
+		setRemovalCharges((prev) => ({
+			...prev,
+			[index]: value,
+		}));
+	};
+
+	const totalRemovalCharges = Object.values(removalCharges).reduce((sum, charge) => sum + (charge || 0), 0);
+
 	return (
 		<>
 			<div
@@ -302,7 +351,7 @@ export const PosCartSection = () => {
 				</BoxComponent>
 
 				<BoxComponent className="mt-3" h={30}>
-					<TextComponent bold size="xl" text="Order Details" />
+					<TextComponent bold size="l" text="Order Details" />
 				</BoxComponent>
 
 				<CardComponent
@@ -314,23 +363,24 @@ export const PosCartSection = () => {
 					withBorder
 				>
 					<StackComponent gap="sm">
-						<GroupComponent justify="space-between">
-							<TextComponent text="Customer Name:" bold />
-							<TextComponent
-								text={
-									selectedCustomer.name
-										? selectedCustomer.name
-										: ""
-								}
-							/>
-						</GroupComponent>
+						{/*<GroupComponent justify="space-between">*/}
+						{/*	<TextComponent text="Customer Name:" bold />*/}
+						{/*	<TextComponent*/}
+						{/*		text={*/}
+						{/*			selectedCustomer.name*/}
+						{/*				? selectedCustomer.name*/}
+						{/*				: ""*/}
+						{/*		}*/}
+						{/*	/>*/}
+						{/*</GroupComponent>*/}
 						<GroupComponent justify="space-between">
 							<TextComponent text="Order Date:" bold />
 							<TextComponent text={formatDate(new Date())} />
 						</GroupComponent>
 						<GroupComponent justify="space-between">
-							<TextComponent text="Payment type" bold />
+							<TextComponent text="Payment type:" bold />
 							<SelectComponent
+								size="sm"
 								required
 								data={paymentOptions}
 								value={paymentMethod}
@@ -339,6 +389,49 @@ export const PosCartSection = () => {
 								setOption={handlePaymentMethodChange}
 							/>
 						</GroupComponent>
+						{address === "" && city === "" && state === "" && pinCode === "" ?
+						<GroupComponent justify="end">
+							<ButtonComponent
+								variant="subtle"
+								title="Add Shipping Address"
+								onClick={() =>setOpenShipToModal(true)}
+							/>
+						</GroupComponent>
+						:
+							<GroupComponent justify="space-between">
+								<TextComponent text="Ship To:" bold />
+								<TooltipComponent position="bottom-start" label={fullAddress}>
+									<TextComponent text={truncateText(fullAddress || '', 35)} />
+								</TooltipComponent>
+								<ActionIconComponent
+									onClick={() =>setOpenShipToModal(true)}
+									size="md"
+								>
+									<MdOutlineEdit size={18} />
+								</ActionIconComponent>
+							</GroupComponent>
+						}
+						{/*<GroupComponent justify="space-between">*/}
+						{/*	{address === "" && city === "" && state === "" && pinCode === "" ?*/}
+						{/*		<>*/}
+						{/*			<TextComponent text="Ship To:" bold />*/}
+						{/*			<TooltipComponent label="Add Shipping Address">*/}
+						{/*				<ActionIconComponent*/}
+						{/*					w={40}*/}
+						{/*					h={40}*/}
+						{/*					variant="filled"*/}
+						{/*					onClick={() => {*/}
+						{/*						setOpenShipToModal(true);*/}
+						{/*					}}*/}
+						{/*				>*/}
+						{/*					<AddIcon />*/}
+						{/*				</ActionIconComponent>*/}
+						{/*			</TooltipComponent>*/}
+						{/*		</>*/}
+						{/*		:*/}
+						{/*		<TextComponent text={`${address}, ${city}, ${state}, ${pinCode}`} />*/}
+						{/*	}*/}
+						{/*</GroupComponent>*/}
 					</StackComponent>
 				</CardComponent>
 
@@ -365,21 +458,9 @@ export const PosCartSection = () => {
 									pb={index === cartItems.length - 1 ? 0 : 12}
 								>
 									<StackComponent gap={0}>
-										<GroupComponent
-											justify="space-between"
-											align="start"
-											gap={0}
-										>
-											<ImageComponent
-												src={item.item.images[0]}
-												w={30}
-												h={30}
-											/>
-											<StackComponent
-												ml={10}
-												gap={0}
-												style={{ flexGrow: 1 }}
-											>
+										<GroupComponent justify="space-between" align="start" gap={0}>
+											<ImageComponent src={item.item.images[0]} w={30} h={30} />
+											<StackComponent ml={10} gap={0} style={{ flexGrow: 1 }}>
 												<GroupComponent justify="space-between">
 													<TooltipComponent position="bottom-start" label={item.item.name}>
 														<TitleComponent
@@ -388,7 +469,6 @@ export const PosCartSection = () => {
 															mb={5}
 														/>
 													</TooltipComponent>
-
 													<TitleComponent
 														fz={14}
 														c="green"
@@ -398,34 +478,64 @@ export const PosCartSection = () => {
 												<TextComponent
 													c="gray"
 													fz={12}
-													text={`${currencySign} ${parseInt(item.item.price.toString(), 10)} x ${item.quantity}`}
+													text={`${currencySign} ${parseInt(
+														item.item.price.toString(),
+														10
+													)} x ${item.quantity}`}
 												/>
 											</StackComponent>
 										</GroupComponent>
-										{item.item.custom_attributes.map(
-											(ca, key) => (
-												<GroupComponent
-													justify="space-between"
-													my={5}
-													key={key}
-												>
+
+										<GroupComponent justify="space-between" my={5}>
+											<TextComponent lh={1} fz={12} text={"EHF"} />
+											<TextComponent
+												lh={1}
+												fz={12}
+												text={`${currencySign} ${calculateEHF(
+													item.item.category.name,
+													item.quantity
+												)}`}
+											/>
+										</GroupComponent>
+
+										<GroupComponent justify="space-between" my={5}>
+											<TextComponent lh={1} fz={12} text={"Removal"} />
+											<NumberInputComponent
+												w={80}
+												min={0}
+												required
+												size="xs"
+												prefix="$ "
+												value={removalCharges[index] || 0}
+												setValue={(value) =>
+													handleRemovalChargeChange(index, Number(value))
+												}
+											/>
+										</GroupComponent>
+
+										{/* Warranty Logic */}
+										{Number(item.item.price) >= 1500 ? (
+											selectedWarranties?.[index] ? (
+												<GroupComponent justify="space-between" my={5}>
+													<TextComponent lh={1} fz={12} text={`${selectedWarranties[index]?.duration} Warranty: `} />
 													<TextComponent
 														lh={1}
 														fz={12}
-														text={toTitleCase(
-															ca.custom_attribute
-																.name,
-														)}
-													/>
-													<TextComponent
-														lh={1}
-														fz={12}
-														text={`${currencySign} 
-																${calculateTaxOnProduct(ca, item.item.price, item.quantity)?.toFixed(2)}`}
+														text={`$ ${selectedWarranties[index]?.price * item.quantity}`}
 													/>
 												</GroupComponent>
-											),
-										)}
+											) : (
+												<GroupComponent justify="end">
+													<ButtonComponent
+														variant="subtle"
+														title="Add Warranty"
+														onClick={() => setWarrentyModal(index)}
+													/>
+												</GroupComponent>
+											)
+										) : null}
+
+										{/* Divider */}
 										{index !== cartItems.length - 1 && (
 											<DividerComponent
 												mt={6}
@@ -450,28 +560,42 @@ export const PosCartSection = () => {
 					style={{ height: "auto" }}
 				>
 					<StackComponent gap="sm">
+						{/*<GroupComponent justify="space-between">*/}
+						{/*	<TextComponent text="Sub Total:" size="sm" />*/}
+						{/*	<TextComponent*/}
+						{/*		text={`${currencySign} ${subTotal.toFixed(2)}`}*/}
+						{/*		bold*/}
+						{/*		size="sm"*/}
+						{/*	/>*/}
+						{/*</GroupComponent>*/}
+						{/*<GroupComponent justify="space-between">*/}
+						{/*	<TextComponent text="5% GST:" size="sm" />*/}
+						{/*	<TextComponent*/}
+						{/*		text={`${currencySign} ${tax5.toFixed(2)}`}*/}
+						{/*		bold*/}
+						{/*		size="sm"*/}
+						{/*	/>*/}
+						{/*</GroupComponent>*/}
+						{/*<GroupComponent justify="space-between">*/}
+						{/*	<TextComponent text="7% PST:" size="sm" />*/}
+						{/*	<TextComponent*/}
+						{/*		text={`${currencySign} ${tax7.toFixed(2)}`}*/}
+						{/*		bold*/}
+						{/*		size="sm"*/}
+						{/*	/>*/}
+						{/*</GroupComponent>*/}
 						<GroupComponent justify="space-between">
-							<TextComponent text="Sub Total:" size="sm" />
-							<TextComponent
-								text={`${currencySign} ${subTotal.toFixed(2)}`}
-								bold
+							<TextComponent text="Delivery Charges:" size="sm" bold />
+							<NumberInputComponent
+								w={80}
+								min={0}
+								required
 								size="sm"
-							/>
-						</GroupComponent>
-						<GroupComponent justify="space-between">
-							<TextComponent text="5% GST:" size="sm" />
-							<TextComponent
-								text={`${currencySign} ${tax5.toFixed(2)}`}
-								bold
-								size="sm"
-							/>
-						</GroupComponent>
-						<GroupComponent justify="space-between">
-							<TextComponent text="7% PST:" size="sm" />
-							<TextComponent
-								text={`${currencySign} ${tax7.toFixed(2)}`}
-								bold
-								size="sm"
+								prefix="$ "
+								title="Delivery Charges"
+								value={deliveryCharges}
+								setValue={setDeliveryCharges}
+								placeholder="Delivery Charges"
 							/>
 						</GroupComponent>
 						<DividerComponent
@@ -485,6 +609,13 @@ export const PosCartSection = () => {
 							<TextComponent
 								text={`${currencySign} ${total.toFixed(2)}`}
 								bold
+							/>
+						</GroupComponent>
+						<GroupComponent justify="end">
+							<ButtonComponent
+								variant="subtle"
+								title="View Price Breakup"
+								onClick={() => setPriceBreakupModal(true)}
 							/>
 						</GroupComponent>
 					</StackComponent>
@@ -540,10 +671,43 @@ export const PosCartSection = () => {
 				<InvoiceDetailModal
 					isOpen={invoiceDialogOpen}
 					onClose={() => setInvoiceDialogOpen(false)}
+					totalRemovalCharges={totalRemovalCharges}
+					deliveryCharges={deliveryCharges}
+					fullAddress={fullAddress}
+					totalEHF={totalEHF}
 					subTotal={subTotal}
 					total={total}
 					tax5={tax5}
 					tax7={tax7}
+				/>
+			)}
+
+			{priceBreakupModal && (
+				<PriceBreakupModal
+					isOpen={priceBreakupModal}
+					onClose={() => setPriceBreakupModal(false)}
+					totalRemovalCharges={totalRemovalCharges}
+					deliveryCharges={deliveryCharges}
+					totalEHF={totalEHF}
+					subTotal={subTotal}
+					total={total}
+					tax5={tax5}
+					tax7={tax7}
+				/>
+			)}
+
+			{warrentyModal !== null && (
+				<WarrantyModal
+					isOpen={warrentyModal !== null}
+					onClose={() => setWarrentyModal(null)}
+					itemPrice={Number(cartItems[warrentyModal]?.item.price)}
+					setSelectedWarranty={(warranty) => {
+						setSelectedWarranties(prev => ({
+							...prev,
+							[warrentyModal]: warranty,
+						}));
+					}}
+					selectedWarranty={selectedWarranties?.[warrentyModal] || null}
 				/>
 			)}
 
@@ -560,6 +724,21 @@ export const PosCartSection = () => {
 					initialValueCity=""
 					initialValuePinCode=""
 					initialValueState=""
+				/>
+			}
+
+			{openShipToModal &&
+				<AddShipToModal
+					isOpen={openShipToModal}
+					onClose={() => setOpenShipToModal(false)}
+					setAddress={setAddress}
+					address={address}
+					setCity={setCity}
+					city={city}
+					setState={setState}
+					state={state}
+					setPinCode={setPinCode}
+					pinCode={pinCode}
 				/>
 			}
 		</>

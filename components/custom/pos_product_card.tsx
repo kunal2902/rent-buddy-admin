@@ -24,7 +24,7 @@ import {
 	ImageComponent,
 	MantineProviderComponent,
 	NumberInputComponent,
-	SpoilerComponent, StackComponent,
+	StackComponent,
 	TextComponent, TooltipComponent,
 } from "../mantine";
 import { centeredInputTheme } from "@/constants";
