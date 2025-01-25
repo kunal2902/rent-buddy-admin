@@ -21,6 +21,7 @@ interface Props {
 	total: number;
 	tax5:number;
 	tax7: number;
+	totalEHF: number | undefined;
 	totalRemovalCharges: number;
 	deliveryCharges: string | number | undefined;
 }
@@ -33,6 +34,7 @@ const PriceBreakupModal = (props: Props) => {
 		total,
 		tax5,
 		tax7,
+		totalEHF,
 		totalRemovalCharges,
 		deliveryCharges,
 	} = props;
@@ -48,23 +50,27 @@ const PriceBreakupModal = (props: Props) => {
 			<CardComponent padding="sm" shadow="sm" radius="md" withBorder style={{ height: "auto" }}>
 				<StackComponent gap="sm">
 					<GroupComponent justify="space-between">
-						<TextComponent text="Sub Total:" size="sm" />
+						<TextComponent text="Sub Total:" size="sm" bold />
 						<TextComponent text={`${currencySign} ${subTotal.toFixed(2)}`} bold size="sm" />
 					</GroupComponent>
 					<GroupComponent justify="space-between">
-						<TextComponent text="Delivery Charges:" size="sm" />
+						<TextComponent text="EHF:" size="sm" bold />
+						<TextComponent text={`${currencySign} ${totalEHF}`} bold size="sm" />
+					</GroupComponent>
+					<GroupComponent justify="space-between">
+						<TextComponent text="Delivery Charges:" size="sm" bold />
 						<TextComponent text={`${currencySign} ${Number(deliveryCharges).toFixed(2)}`} bold size="sm" />
 					</GroupComponent>
 					<GroupComponent justify="space-between">
-						<TextComponent text="Removal" size="sm" />
+						<TextComponent text="Removal" size="sm" bold />
 						<TextComponent text={`${currencySign} ${totalRemovalCharges.toFixed(2)}`} bold size="sm" />
 					</GroupComponent>
 					<GroupComponent justify="space-between">
-						<TextComponent text="5% GST:" size="sm" />
+						<TextComponent text="5% GST:" size="sm" bold />
 						<TextComponent text={`${currencySign} ${tax5.toFixed(2)}`} bold size="sm" />
 					</GroupComponent>
 					<GroupComponent justify="space-between">
-						<TextComponent text="7% PST:" size="sm" />
+						<TextComponent text="7% PST:" size="sm" bold />
 						<TextComponent text={`${currencySign} ${tax7.toFixed(2)}`} bold size="sm" />
 					</GroupComponent>
 					<DividerComponent my={0} variant="dashed" p={0} py={0} />

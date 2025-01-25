@@ -45,6 +45,7 @@ import AddCustomerModal from "@/containers/9_customers/add_customer_modal";
 import AddShipToModal from "@/components/custom/add_ship_to_modal";
 import { MdOutlineEdit } from "react-icons/md";
 import PriceBreakupModal from "@/components/custom/price_breakup_modal";
+import WarrantyModal from "@/components/custom/warranty_modal";
 
 export const PosCartSection = () => {
 	const router = useRouter();
@@ -55,8 +56,11 @@ export const PosCartSection = () => {
 	const [openShipToModal, setOpenShipToModal] = useState<boolean>(false);
 	const [invoiceDialogOpen, setInvoiceDialogOpen] = useState<boolean>(false);
 	const [priceBreakupModal, setPriceBreakupModal] = useState<boolean>(false);
-	const [customersList, setCustomersList] = useState<ComboBoxProps[]>([]);
+	const [warrentyModal, setWarrentyModal] = useState<number | null>(null);
 
+	const [customersList, setCustomersList] = useState<ComboBoxProps[]>([]);
+	const [selectedWarranties, setSelectedWarranties] = useState<{ [key: number]: { duration: string; price: number } } | null>(null);
+	const [totalEHF, setTotalEHF] = useState<number>();
 	const [address, setAddress] = useState<string | undefined>("");
 	const [city, setCity] = useState<string | undefined>("");
 	const [state, setState] = useState<string | undefined>("");
@@ -112,7 +116,15 @@ export const PosCartSection = () => {
 
 		const calculatedTax7 = (subtotal * 7) / 100;
 
-		const calculatedTotal = subtotal + calculatedTax5 + calculatedTax7 + totalRemovalCharges + Number(deliveryCharges);
+		const warrantyTotal = cartItems.reduce((total, item, index) => {
+			const warranty = selectedWarranties?.[index];
+			if (warranty) {
+				return total + (warranty.price * item.quantity);
+			}
+			return total;
+		}, 0);
+
+		const calculatedTotal = subtotal + calculatedTax5 + calculatedTax7 + totalRemovalCharges + Number(deliveryCharges) + warrantyTotal;
 
 		setTax5(calculatedTax5);
 		setTax7(calculatedTax7);
@@ -194,9 +206,16 @@ export const PosCartSection = () => {
 		}
 
 		const fee = ehfFees[matchedCategory] || 0;
-
 		return fee * quantity;
 	};
+
+	useEffect(() => {
+		const ehfAmount = cartItems.reduce((total, item) => {
+			return total + calculateEHF(item.item.category.name, item.quantity);
+		}, 0);
+
+		setTotalEHF(ehfAmount);
+	}, [cartItems, ehfFees]);
 
 	const handleSaveDraft = () => {
 		cartDraftApi(
@@ -439,21 +458,9 @@ export const PosCartSection = () => {
 									pb={index === cartItems.length - 1 ? 0 : 12}
 								>
 									<StackComponent gap={0}>
-										<GroupComponent
-											justify="space-between"
-											align="start"
-											gap={0}
-										>
-											<ImageComponent
-												src={item.item.images[0]}
-												w={30}
-												h={30}
-											/>
-											<StackComponent
-												ml={10}
-												gap={0}
-												style={{ flexGrow: 1 }}
-											>
+										<GroupComponent justify="space-between" align="start" gap={0}>
+											<ImageComponent src={item.item.images[0]} w={30} h={30} />
+											<StackComponent ml={10} gap={0} style={{ flexGrow: 1 }}>
 												<GroupComponent justify="space-between">
 													<TooltipComponent position="bottom-start" label={item.item.name}>
 														<TitleComponent
@@ -462,7 +469,6 @@ export const PosCartSection = () => {
 															mb={5}
 														/>
 													</TooltipComponent>
-
 													<TitleComponent
 														fz={14}
 														c="green"
@@ -472,34 +478,28 @@ export const PosCartSection = () => {
 												<TextComponent
 													c="gray"
 													fz={12}
-													text={`${currencySign} ${parseInt(item.item.price.toString(), 10)} x ${item.quantity}`}
+													text={`${currencySign} ${parseInt(
+														item.item.price.toString(),
+														10
+													)} x ${item.quantity}`}
 												/>
 											</StackComponent>
 										</GroupComponent>
-										<GroupComponent
-											justify="space-between"
-											my={5}
-										>
+
+										<GroupComponent justify="space-between" my={5}>
+											<TextComponent lh={1} fz={12} text={"EHF"} />
 											<TextComponent
 												lh={1}
 												fz={12}
-												text={"EHF"}
-											/>
-											<TextComponent
-												lh={1}
-												fz={12}
-												text={`${currencySign} ${calculateEHF(item.item.category.name, item.quantity)}`}
+												text={`${currencySign} ${calculateEHF(
+													item.item.category.name,
+													item.quantity
+												)}`}
 											/>
 										</GroupComponent>
-										<GroupComponent
-											justify="space-between"
-											my={5}
-										>
-											<TextComponent
-												lh={1}
-												fz={12}
-												text={"Removal"}
-											/>
+
+										<GroupComponent justify="space-between" my={5}>
+											<TextComponent lh={1} fz={12} text={"Removal"} />
 											<NumberInputComponent
 												w={80}
 												min={0}
@@ -507,9 +507,35 @@ export const PosCartSection = () => {
 												size="xs"
 												prefix="$ "
 												value={removalCharges[index] || 0}
-												setValue={(value) => handleRemovalChargeChange(index, Number(value))}
+												setValue={(value) =>
+													handleRemovalChargeChange(index, Number(value))
+												}
 											/>
 										</GroupComponent>
+
+										{/* Warranty Logic */}
+										{Number(item.item.price) >= 1500 ? (
+											selectedWarranties?.[index] ? (
+												<GroupComponent justify="space-between" my={5}>
+													<TextComponent lh={1} fz={12} text={`${selectedWarranties[index]?.duration} Warranty: `} />
+													<TextComponent
+														lh={1}
+														fz={12}
+														text={`$ ${selectedWarranties[index]?.price * item.quantity}`}
+													/>
+												</GroupComponent>
+											) : (
+												<GroupComponent justify="end">
+													<ButtonComponent
+														variant="subtle"
+														title="Add Warranty"
+														onClick={() => setWarrentyModal(index)}
+													/>
+												</GroupComponent>
+											)
+										) : null}
+
+										{/* Divider */}
 										{index !== cartItems.length - 1 && (
 											<DividerComponent
 												mt={6}
@@ -645,6 +671,10 @@ export const PosCartSection = () => {
 				<InvoiceDetailModal
 					isOpen={invoiceDialogOpen}
 					onClose={() => setInvoiceDialogOpen(false)}
+					totalRemovalCharges={totalRemovalCharges}
+					deliveryCharges={deliveryCharges}
+					fullAddress={fullAddress}
+					totalEHF={totalEHF}
 					subTotal={subTotal}
 					total={total}
 					tax5={tax5}
@@ -652,16 +682,32 @@ export const PosCartSection = () => {
 				/>
 			)}
 
-			{priceBreakupModal &&(
+			{priceBreakupModal && (
 				<PriceBreakupModal
 					isOpen={priceBreakupModal}
 					onClose={() => setPriceBreakupModal(false)}
 					totalRemovalCharges={totalRemovalCharges}
 					deliveryCharges={deliveryCharges}
+					totalEHF={totalEHF}
 					subTotal={subTotal}
 					total={total}
 					tax5={tax5}
 					tax7={tax7}
+				/>
+			)}
+
+			{warrentyModal !== null && (
+				<WarrantyModal
+					isOpen={warrentyModal !== null}
+					onClose={() => setWarrentyModal(null)}
+					itemPrice={Number(cartItems[warrentyModal]?.item.price)}
+					setSelectedWarranty={(warranty) => {
+						setSelectedWarranties(prev => ({
+							...prev,
+							[warrentyModal]: warranty,
+						}));
+					}}
+					selectedWarranty={selectedWarranties?.[warrentyModal] || null}
 				/>
 			)}
 
