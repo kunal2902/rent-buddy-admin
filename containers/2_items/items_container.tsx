@@ -29,6 +29,7 @@ import { ItemModel } from "@/models";
 import { deleteItemApi, disableItemApi, formatDate, getItemApi, logoutUser } from "@/utils";
 import AddItemModal, { InitialItemValue } from "./add_item_modal";
 import ShowNotification from "@/components/mantine/show_notification";
+import { checkPermissions } from "@/components/custom/check_permission_entities";
 
 const initialItemValue: InitialItemValue = {
 	item_id: "",
@@ -81,6 +82,11 @@ const ItemsContainer = () => {
 	const [order, setOrder] = useState<string>("asc");
 	const [pageSize, setPageSize] = useState<number>(15);
 	const currentQueryRef = useRef(searchValue);
+
+	const canDeleteItem = checkPermissions("item", ["delete"]);
+	const canUpdateItem = checkPermissions("item", ["update"]);
+	const canCreateItem = checkPermissions("item", ["create"]);
+	const canDisableItem = checkPermissions("item", ["disable"]);
 
 	useEffect(() => {
 		initState().then();
@@ -185,8 +191,8 @@ const ItemsContainer = () => {
 		"Quantity",
 		"Created By",
 		"Created At",
-		"Disable",
-		"Action",
+		...(canDisableItem ? ["Disable"] : []),
+		...(canUpdateItem && canDisableItem ? ["Action"] : []),
 	];
 
 	const rows = itemList.map((element, index) => (
@@ -205,31 +211,37 @@ const ItemsContainer = () => {
 				{formatDate(element.created_at)}
 			</TableTdComponent>
 			<TableTdComponent w={60}>
-				<PopConfirmComponent
-					entityName="item"
-					type={PopConfirmType.switch}
-					isDisabled={element.is_disabled}
-					actionName={element.is_disabled ? "enable" : "disable"}
-					onConfirm={async () =>
-						handleActionItem(element.item_id, "disable")
-					}
-				/>
+				{canDisableItem &&
+					<PopConfirmComponent
+						entityName="item"
+						type={PopConfirmType.switch}
+						isDisabled={element.is_disabled}
+						actionName={element.is_disabled ? "enable" : "disable"}
+						onConfirm={async () =>
+							handleActionItem(element.item_id, "disable")
+						}
+					/>
+				}
 			</TableTdComponent>
 			<TableTdComponent w={110}>
 				<GroupComponent>
-					<PopConfirmComponent
-						entityName="item"
-						actionName="delete"
-						onConfirm={async () =>
-							handleActionItem(element.item_id, "delete")
-						}
-					/>
-					<ActionIconComponent
-						onClick={() => handleAddOpenModal(element)}
-						size="md"
-					>
-						<MdOutlineEdit size={18} />
-					</ActionIconComponent>
+					{canDeleteItem &&
+						<PopConfirmComponent
+							entityName="item"
+							actionName="delete"
+							onConfirm={async () =>
+								handleActionItem(element.item_id, "delete")
+							}
+						/>
+					}
+					{canUpdateItem &&
+						<ActionIconComponent
+							onClick={() => handleAddOpenModal(element)}
+							size="md"
+						>
+							<MdOutlineEdit size={18} />
+						</ActionIconComponent>
+					}
 				</GroupComponent>
 			</TableTdComponent>
 		</TableTrComponent>
@@ -248,6 +260,7 @@ const ItemsContainer = () => {
 				loading={searchLoading}
 				searchValue={searchValue}
 				setSearchValue={setSearchValue}
+				showAddButton={canCreateItem}
 				onClick={() => handleAddOpenModal("")}
 				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {

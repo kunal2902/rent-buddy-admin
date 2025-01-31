@@ -19,3 +19,4 @@ export * from "@/components/custom/pos_product_section";
 export * from "@/components/custom/sort_button";
 export * from "./pos_cart_loader";
 export * from "./price_breakup_modal";
+export * from "./use_sidebar_items";

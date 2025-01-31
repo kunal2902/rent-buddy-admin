@@ -26,6 +26,7 @@ import {
 } from "@/utils";
 import AddCustomerModal from "@/containers/9_customers/add_customer_modal";
 import ShowNotification from "@/components/mantine/show_notification";
+import { checkPermissions } from "@/components/custom/check_permission_entities";
 
 const CustomersContainer = () => {
 	const router = useRouter();
@@ -51,6 +52,11 @@ const CustomersContainer = () => {
 	const [customerInitialEmail, setCustomerInitialEmail] = useState<string | undefined>();
 	const currentQueryRef = useRef(searchValue);
 
+	const canDeleteCustomer = checkPermissions("customer", ["delete"]);
+	const canUpdateCustomer = checkPermissions("customer", ["update"]);
+	const canCreateCustomer = checkPermissions("customer", ["create"]);
+	const canDisableCustomer = checkPermissions("customer", ["disable"]);
+
 	useEffect(() => {
 		initState().then();
 	}, [filter, page, callApi, orderBy, order]);
@@ -65,7 +71,7 @@ const CustomersContainer = () => {
 			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
 				setCustomersList(data.customers);
-				setTotal(data.customers_count);
+				setTotal(data.count);
 				setLoading(false);
 			},
 			() => {
@@ -172,8 +178,8 @@ const CustomersContainer = () => {
 		"Phone",
 		"Created By",
 		"Created At",
-		"Disable",
-		"Action",
+		...(canDisableCustomer ? ["Disable"] : []),
+		...(canUpdateCustomer && canDeleteCustomer ? ["Action"] : []),
 	];
 
 	const rows = customersList.map((element, index) => (
@@ -187,7 +193,7 @@ const CustomersContainer = () => {
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 			<Table.Td w={60}>
 				{
-					getUserId() !== element.customer_id &&
+					getUserId() !== element.customer_id && canDisableCustomer &&
 					<PopConfirmComponent
 						entityName="user"
 						type={PopConfirmType.switch}
@@ -200,27 +206,29 @@ const CustomersContainer = () => {
 			<Table.Td w={110}>
 				<GroupComponent>
 					{
-						getUserId() !== element.customer_id &&
+						canDeleteCustomer &&
 						<PopConfirmComponent
 							entityName="user"
 							actionName="delete"
 							onConfirm={async () => handleAction(element.customer_id, "delete")}
 						/>
 					}
-					<ActionIconComponent
-						onClick={() => handleAddOpenModal(
-							element.customer_id,
-							element.name,
-							element.phone,
-							element.email,
-							element.address,
-							element.city,
-							element.state,
-							element.pinCode,
-						)}
-						size="md">
-						<MdOutlineEdit size={18} />
-					</ActionIconComponent>
+					{canUpdateCustomer &&
+						<ActionIconComponent
+							onClick={() => handleAddOpenModal(
+								element.customer_id,
+								element.name,
+								element.phone,
+								element.email,
+								element.address,
+								element.city,
+								element.state,
+								element.pinCode,
+							)}
+							size="md">
+							<MdOutlineEdit size={18} />
+						</ActionIconComponent>
+					}
 				</GroupComponent>
 			</Table.Td>
 		</Table.Tr>
@@ -239,6 +247,7 @@ const CustomersContainer = () => {
 				buttonTitle="Add Customer"
 				searchValue={searchValue}
 				setSearchValue={setSearchValue}
+				showAddButton={canCreateCustomer}
 				setOption={(option) => setFilter(option.value)}
 				onClick={() => handleAddOpenModal("", "", "", "", "", "", "", "")}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {

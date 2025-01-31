@@ -30,6 +30,7 @@ import { CategoryModel } from "@/models";
 import { deleteCategoryApi, disableCategoryApi, formatDate, getCategoryApi, logoutUser } from "@/utils";
 import AddCategoryModal from "./add_category_modal";
 import ShowNotification from "@/components/mantine/show_notification";
+import { checkPermissions } from "@/components/custom/check_permission_entities";
 
 const CategoriesContainer = () => {
 	const router = useRouter();
@@ -49,6 +50,11 @@ const CategoriesContainer = () => {
 	const [categoryIcon, setCategoryIcon] = useState<string | undefined>("");
 	const [categoriesList, setCategoriesList] = useState<CategoryModel[]>([]);
 	const currentQueryRef = useRef(searchValue);
+
+	const canDeleteCategory = checkPermissions("category", ["delete"]);
+	const canUpdateCategory = checkPermissions("category", ["update"]);
+	const canCreateCategory = checkPermissions("category", ["create"]);
+	const canDisableCategory = checkPermissions("category", ["disable"]);
 
 	useEffect(() => {
 		initState().then();
@@ -156,8 +162,8 @@ const CategoriesContainer = () => {
 		"Name",
 		"Created At",
 		"Created By",
-		"Disable",
-		"Action",
+		...(canDisableCategory ? ["Disable"] : []),
+		...(canUpdateCategory && canDeleteCategory ? ["Action"] : []),
 	];
 
 	const rows = categoriesList.map((element, index) => (
@@ -175,30 +181,36 @@ const CategoriesContainer = () => {
 			<TableTdComponent>{formatDate(element.created_at)}</TableTdComponent>
 			<TableTdComponent>{element.created_by.name}</TableTdComponent>
 			<TableTdComponent w={60}>
-				<PopConfirmComponent
-					entityName="category"
-					type={PopConfirmType.switch}
-					isDisabled={element.is_disabled}
-					actionName={element.is_disabled ? "enable" : "disable"}
-					onConfirm={async () => handleAction(element.category_id, "disable")}
-				/>
+				{canDisableCategory &&
+					<PopConfirmComponent
+						entityName="category"
+						type={PopConfirmType.switch}
+						isDisabled={element.is_disabled}
+						actionName={element.is_disabled ? "enable" : "disable"}
+						onConfirm={async () => handleAction(element.category_id, "disable")}
+					/>
+				}
 			</TableTdComponent>
 			<TableTdComponent w={110}>
 				<GroupComponent>
-					<PopConfirmComponent
-						entityName="category"
-						actionName="delete"
-						onConfirm={async () => handleAction(element.category_id, "delete")}
-					/>
-					<ActionIconComponent
-						onClick={() => handleAddOpenModal(
-							element.category_id,
-							element.name,
-							element.icon
-						)}
-						size="md">
-						<MdOutlineEdit size={18} />
-					</ActionIconComponent>
+					{canDeleteCategory &&
+						<PopConfirmComponent
+							entityName="category"
+							actionName="delete"
+							onConfirm={async () => handleAction(element.category_id, "delete")}
+						/>
+					}
+					{canUpdateCategory &&
+						<ActionIconComponent
+							onClick={() => handleAddOpenModal(
+								element.category_id,
+								element.name,
+								element.icon
+							)}
+							size="md">
+							<MdOutlineEdit size={18} />
+						</ActionIconComponent>
+					}
 				</GroupComponent>
 			</TableTdComponent>
 		</TableTrComponent>
@@ -208,15 +220,16 @@ const CategoriesContainer = () => {
 		<MainComponent>
 			<DashboardPageHeader
 				total={total}
+				filter={filter}
 				title="Categories"
 				idLabel="Category Id"
-				filter={filter}
 				setFilter={setFilter}
 				loading={searchLoading}
 				idVariable="category_id"
 				searchValue={searchValue}
 				buttonTitle="Add Category"
 				setSearchValue={setSearchValue}
+				showAddButton={canCreateCategory}
 				onClick={() => handleAddOpenModal("", "", "")}
 				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {

@@ -30,6 +30,7 @@ import { ItemTypeModel } from "@/models";
 import { deleteItemTypeApi, disableItemTypeApi, formatDate, getItemTypeApi, logoutUser } from "@/utils";
 import AddItemTypeModal from "./add_item_type_modal";
 import ShowNotification from "@/components/mantine/show_notification";
+import { checkPermissions } from "@/components/custom/check_permission_entities";
 
 const ItemTypesContainer = () => {
 	const router = useRouter();
@@ -49,6 +50,11 @@ const ItemTypesContainer = () => {
 	const [itemTypesList, setItemTypesList] = useState<ItemTypeModel[]>([]);
 	const [itemTypeIcon, setItemTypeIcon] = useState<string | undefined>("");
 	const currentQueryRef = useRef(searchValue);
+
+	const canDeleteItemType = checkPermissions("item-type", ["delete"]);
+	const canUpdateItemType = checkPermissions("item-type", ["update"]);
+	const canCreateItemType = checkPermissions("item-type", ["create"]);
+	const canDisableItemType = checkPermissions("item-type", ["disable"]);
 
 	useEffect(() => {
 		initState().then();
@@ -156,8 +162,8 @@ const ItemTypesContainer = () => {
 		"Name",
 		"Created At",
 		"Created By",
-		"Disable",
-		"Action",
+		...(canDisableItemType ? ["Disable"] : []),
+		...(canUpdateItemType && canDeleteItemType ? ["Action"] : []),
 	];
 
 	const rows = itemTypesList.map((element, index) => (
@@ -175,29 +181,35 @@ const ItemTypesContainer = () => {
 			<TableTdComponent>{formatDate(element.created_at)}</TableTdComponent>
 			<TableTdComponent>{element.created_by.name}</TableTdComponent>
 			<TableTdComponent w={60}>
-				<PopConfirmComponent
-					entityName="item type"
-					type={PopConfirmType.switch}
-					isDisabled={element.is_disabled}
-					actionName={element.is_disabled ? "enable" : "disable"}
-					onConfirm={async () => handleAction(element.item_type_id, "disable")}
-				/>
+				{canDisableItemType &&
+					<PopConfirmComponent
+						entityName="item type"
+						type={PopConfirmType.switch}
+						isDisabled={element.is_disabled}
+						actionName={element.is_disabled ? "enable" : "disable"}
+						onConfirm={async () => handleAction(element.item_type_id, "disable")}
+					/>
+				}
 			</TableTdComponent>
 			<TableTdComponent w={110}>
 				<GroupComponent>
-					<PopConfirmComponent
-						entityName="item type"
-						actionName="delete"
-						onConfirm={async () => handleAction(element.item_type_id, "delete")}
-					/>
-					<ActionIconComponent
-						onClick={() => handleAddOpenModal(
-							element.item_type_id,
-							element.name,
-							element.icon)}
-						size="md">
-						<MdOutlineEdit size={18} />
-					</ActionIconComponent>
+					{canDeleteItemType &&
+						<PopConfirmComponent
+							entityName="item type"
+							actionName="delete"
+							onConfirm={async () => handleAction(element.item_type_id, "delete")}
+						/>
+					}
+					{canUpdateItemType &&
+						<ActionIconComponent
+							onClick={() => handleAddOpenModal(
+								element.item_type_id,
+								element.name,
+								element.icon)}
+							size="md">
+							<MdOutlineEdit size={18} />
+						</ActionIconComponent>
+					}
 				</GroupComponent>
 			</TableTdComponent>
 		</TableTrComponent>
@@ -216,6 +228,7 @@ const ItemTypesContainer = () => {
 				searchValue={searchValue}
 				buttonTitle="Add Item Type"
 				setSearchValue={setSearchValue}
+				showAddButton={canCreateItemType}
 				onClick={() => handleAddOpenModal("", "", "")}
 				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {

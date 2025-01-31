@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { setCookie } from "cookies-next";
 import { useState } from "react";
 import { Fieldset } from "@mantine/core";
+import { useSetRecoilState } from "recoil";
 import {
 	appLogoHeight,
 	appLogoWidth,
@@ -11,10 +12,10 @@ import {
 	cookieOptions,
 	crmJwtConstant,
 	emailConstant,
-	getSurfaceColor,
+	getSurfaceColor, isAdminAtom, isAdminConstant,
 	loginApi,
 	mantineRadius,
-	nameConstant,
+	nameConstant, permissionEntitiesAtom, permissionEntityConstant,
 	roleIdConstant,
 	userIdConstant,
 	userNameConstant,
@@ -40,6 +41,8 @@ const LoginContainer = () => {
 	const [password, setPassword] = useState<string>("bulai002");
 	const [email, setEmail] = useState<string>("simon@admin.com");
 	const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+	const setIsAdmin = useSetRecoilState(isAdminAtom);
+	const setPermissionEntities = useSetRecoilState(permissionEntitiesAtom);
 
 	const handleLogin = async (event: { preventDefault: () => void }) => {
 		setLoading(true);
@@ -60,6 +63,15 @@ const LoginContainer = () => {
 					setCookie(emailConstant, result.data.user.email, cookieOptions);
 					setCookie(userNameConstant, result.data.user.username, cookieOptions);
 					setCookie(roleIdConstant, result.data.user.role_id, cookieOptions);
+					setCookie(isAdminConstant, result.data.user.role.isAdmin, cookieOptions);
+
+					const permissionEntities = result.data.user.role.permission_entities;
+					setCookie(permissionEntityConstant,
+						JSON.stringify(permissionEntities),
+						cookieOptions);
+					setPermissionEntities(permissionEntities);
+					setIsAdmin(result.data.user.role.isAdmin);
+
 					router.replace("/");
 					setTimeout(() => {
 						setLoading(false);
