@@ -5,9 +5,15 @@
 import { twMerge } from "tailwind-merge";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { NavLinkComponent, ScrollAreaComponent, TooltipComponent } from "@/components";
-import { LinkType, SidebarItems, SideBarProps, SideBarType, SubMenuType } from "@/constants";
-import { appColorRGBA, getSurfaceColor, mantineNavLinkChildOffset, useSidebarState, useThemeProvider } from "@/utils";
+import { NavLinkComponent, ScrollAreaComponent, TooltipComponent, useSidebarItems } from "@/components";
+import { LinkType, SideBarProps, SideBarType, SubMenuType } from "@/constants";
+import {
+	appColorRGBA,
+	getSurfaceColor,
+	mantineNavLinkChildOffset,
+	useSidebarState,
+	useThemeProvider,
+} from "@/utils";
 
 export const MainSidebar = () => {
 	const currentPathname = usePathname();
@@ -15,6 +21,8 @@ export const MainSidebar = () => {
 	const { isSidebarOpen } = useSidebarState();
 	const [disableParentTooltip, setDisableParentTooltip] = useState<boolean>(false);
 	const [disableSubParentTooltip, setDisableSubParentTooltip] = useState<boolean>(false);
+
+	const sidebarItems = useSidebarItems();
 
 	const checkCurrentPathMatch = (
 		options: Array<SideBarProps<SideBarType>>
@@ -36,7 +44,7 @@ export const MainSidebar = () => {
 				className={isSidebarOpen ? "lg:w-64 w-56" : "w-[56px]"}
 			>
 				<div className="flex-grow flex flex-col w-full">
-					{SidebarItems.map((item) => {
+					{sidebarItems.map((item) => {
 						const { Icon } = item;
 						const {
 							options,

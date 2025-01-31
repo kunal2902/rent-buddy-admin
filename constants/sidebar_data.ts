@@ -1,58 +1,40 @@
 import {
 	Blocks,
 	Bookmark,
-	LayoutPanelTop,
 	List,
 	LucideIcon,
 	ScanBarcode,
 	ScanLine,
-	Settings,
 	ShieldCheck,
 	Tag,
 	Tags,
 	Users,
 } from "lucide-react";
-import { MdOutlineAdminPanelSettings, MdOutlineContactPage, MdOutlinePrivacyTip } from "react-icons/md";
-import { LuBadgeInfo, LuMail } from "react-icons/lu";
+import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { HiOutlineDocumentReport } from "react-icons/hi";
-import { RxActivityLog, RxDashboard } from "react-icons/rx";
-import { TbReceiptTax } from "react-icons/tb";
-import { CgFileDocument } from "react-icons/cg";
+import { RxActivityLog } from "react-icons/rx";
 import { IconType } from "react-icons";
 import { VscDashboard } from "react-icons/vsc";
 import { PiWarehouse, PiWarehouseFill } from "react-icons/pi";
 import { RiSettingsFill, RiSettingsLine } from "react-icons/ri";
 import {
-	aboutName,
-	aboutRoute,
 	activityLogsName,
 	activityLogsRoute,
 	addOnsName,
 	addOnsRoute,
 	categoriesName,
 	categoriesRoute,
-	contactName,
-	contactRoute,
 	customAttributesName,
 	customAttributesRoute,
 	customersName,
 	customersRoute,
 	dashboardName,
 	dashboardRoute,
-	emailRoute,
-	emailSettingsName,
-	generalSettingsName,
-	generalSettingsRoute,
 	inventoryName,
 	itemsName,
 	itemsRoute,
 	itemTypesName,
 	itemTypesRoute,
-	pageLayoutName,
-	pageLayoutRoute,
-	pagesName,
-	privacyPolicyName,
-	privacyPolicyRoute,
 	reportsName,
 	reportsRoute,
 	rolesName,
@@ -62,10 +44,6 @@ import {
 	subCategoriesRoute,
 	tagsName,
 	tagsRoute,
-	taxesName,
-	taxesRoute,
-	tncName,
-	tncRoute,
 	usersName,
 	usersRoute,
 } from "@/utils";

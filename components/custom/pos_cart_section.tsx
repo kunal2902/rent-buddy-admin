@@ -6,6 +6,7 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import { useRouter } from "next/navigation";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { FiShoppingCart } from "react-icons/fi";
+import { MdOutlineEdit } from "react-icons/md";
 import {
 	ActionIconComponent,
 	BoxComponent,
@@ -20,7 +21,7 @@ import {
 	StackComponent,
 	TextComponent,
 	TitleComponent,
-	TooltipComponent
+	TooltipComponent,
 } from "@/components";
 import {
 	cartAtom,
@@ -35,7 +36,7 @@ import {
 	getCustomerApi,
 	logoutUser, paymentOptions,
 	toTitleCase,
-	upsertCartApi
+	upsertCartApi,
 } from "@/utils";
 import { ComboBoxProps } from "@/types";
 import { CartItemModel, CartModel } from "@/models";
@@ -43,7 +44,6 @@ import InvoiceDetailModal from "@/components/custom/invoice_detail_modal";
 import ShowNotification from "@/components/mantine/show_notification";
 import AddCustomerModal from "@/containers/9_customers/add_customer_modal";
 import AddShipToModal from "@/components/custom/add_ship_to_modal";
-import { MdOutlineEdit } from "react-icons/md";
 import PriceBreakupModal from "@/components/custom/price_breakup_modal";
 import WarrantyModal from "@/components/custom/warranty_modal";
 
@@ -57,6 +57,7 @@ export const PosCartSection = () => {
 	const [invoiceDialogOpen, setInvoiceDialogOpen] = useState<boolean>(false);
 	const [priceBreakupModal, setPriceBreakupModal] = useState<boolean>(false);
 	const [warrentyModal, setWarrentyModal] = useState<number | null>(null);
+	const [orderDate, setOrderDate] = useState<string>("");
 
 	const [customersList, setCustomersList] = useState<ComboBoxProps[]>([]);
 	const [selectedWarranties, setSelectedWarranties] = useState<{ [key: number]: { duration: string; price: number } } | null>(null);
@@ -104,7 +105,7 @@ export const PosCartSection = () => {
 	}, [callApi]);
 
 	useEffect(() => {
-		const combinedAddress = `${address || ''}, ${city || ''}, ${state || ''}, ${pinCode || ''}`;
+		const combinedAddress = `${address || ""}, ${city || ""}, ${state || ""}, ${pinCode || ""}`;
 		setFullAddress(combinedAddress);
 	}, [address, city, state, pinCode]);
 
@@ -146,7 +147,7 @@ export const PosCartSection = () => {
 				quantity,
 			} = cartItem;
 			const itemPrice = parseInt(price, 10);
-			let itemTotal = itemPrice * quantity;
+			const itemTotal = itemPrice * quantity;
 
 			// custom_attributes.forEach((attr) => {
 			// 	const tax = calculateTaxOnProduct(attr, itemPrice, quantity);
@@ -185,18 +186,16 @@ export const PosCartSection = () => {
 
 	const ehfFees: Record<string, number> = {
 		"Fridges/Freezers/AC": 6.50,
-		"Dishwashers": 2.00,
+		Dishwashers: 2.00,
 		"Washer/Dryer/Range/Stacker/Laundry Paris": 2.00,
-		"Microwaves": 5.00,
+		Microwaves: 5.00,
 		"OTR/Hoodfan": 2.00,
 		"DVD/Bluray/OLED/Sound Bar": 2.50,
 	};
 
-	const findCategory = (categoryName: string): string | undefined => {
-		return Object.keys(ehfFees).find((key) =>
+	const findCategory = (categoryName: string): string | undefined => Object.keys(ehfFees).find((key) =>
 			key.toLowerCase().includes(categoryName.toLowerCase())
 		);
-	};
 
 	const calculateEHF = (categoryName: string, quantity: number) => {
 		const matchedCategory = findCategory(categoryName);
@@ -210,9 +209,7 @@ export const PosCartSection = () => {
 	};
 
 	useEffect(() => {
-		const ehfAmount = cartItems.reduce((total, item) => {
-			return total + calculateEHF(item.item.category.name, item.quantity);
-		}, 0);
+		const ehfAmount = cartItems.reduce((total, item) => total + calculateEHF(item.item.category.name, item.quantity), 0);
 
 		setTotalEHF(ehfAmount);
 	}, [cartItems, ehfFees]);
@@ -263,12 +260,24 @@ export const PosCartSection = () => {
 				() => {
 					const checkoutBody = {
 						cartId,
+						details: {
+							totalRemovalCharges,
+							deliveryCharges,
+							paymentMethod,
+							fullAddress,
+							totalEHF,
+							subTotal,
+							total,
+							tax5,
+							tax7,
+						},
 					};
 					checkoutApi(
 						checkoutBody,
-						() => {
+						(res: any) => {
 							setLoading(false);
 							setInvoiceDialogOpen(true);
+							setOrderDate(res.invoice.created_at);
 							ShowNotification("Success", "success");
 						},
 						(err: any) => {
@@ -390,21 +399,21 @@ export const PosCartSection = () => {
 							/>
 						</GroupComponent>
 						{address === "" && city === "" && state === "" && pinCode === "" ?
-						<GroupComponent justify="end">
-							<ButtonComponent
-								variant="subtle"
-								title="Add Shipping Address"
-								onClick={() =>setOpenShipToModal(true)}
+							<GroupComponent justify="end">
+								<ButtonComponent
+									variant="subtle"
+									title="Add Shipping Address"
+									onClick={() => setOpenShipToModal(true)}
 							/>
-						</GroupComponent>
+							</GroupComponent>
 						:
 							<GroupComponent justify="space-between">
 								<TextComponent text="Ship To:" bold />
 								<TooltipComponent position="bottom-start" label={fullAddress}>
-									<TextComponent text={truncateText(fullAddress || '', 35)} />
+									<TextComponent text={truncateText(fullAddress || "", 35)} />
 								</TooltipComponent>
 								<ActionIconComponent
-									onClick={() =>setOpenShipToModal(true)}
+									onClick={() => setOpenShipToModal(true)}
 									size="md"
 								>
 									<MdOutlineEdit size={18} />
@@ -487,7 +496,7 @@ export const PosCartSection = () => {
 										</GroupComponent>
 
 										<GroupComponent justify="space-between" my={5}>
-											<TextComponent lh={1} fz={12} text={"EHF"} />
+											<TextComponent lh={1} fz={12} text="EHF" />
 											<TextComponent
 												lh={1}
 												fz={12}
@@ -499,7 +508,7 @@ export const PosCartSection = () => {
 										</GroupComponent>
 
 										<GroupComponent justify="space-between" my={5}>
-											<TextComponent lh={1} fz={12} text={"Removal"} />
+											<TextComponent lh={1} fz={12} text="Removal" />
 											<NumberInputComponent
 												w={80}
 												min={0}
@@ -674,6 +683,7 @@ export const PosCartSection = () => {
 					totalRemovalCharges={totalRemovalCharges}
 					deliveryCharges={deliveryCharges}
 					fullAddress={fullAddress}
+					orderDate={orderDate}
 					totalEHF={totalEHF}
 					subTotal={subTotal}
 					total={total}

@@ -1,8 +1,10 @@
 "use client";
 
 import { atom } from "recoil";
+import { getCookie, setCookie } from "cookies-next";
 import { Theme } from "@/types";
 import { CartItemModel, CartModel } from "@/models";
+import { isAdminConstant } from "@/utils/config";
 
 export const sidebarStateAtom = atom<boolean>({
 	key: "sidebarStateAtom",
@@ -44,7 +46,17 @@ export const cartAtom = atom<CartModel | null>({
 	key: "cartAtom",
 });
 
-	export const cartPaymentMethodAtom = atom<string>({
+export const cartPaymentMethodAtom = atom<string>({
 	key: "paymentMethod",
 	default: "",
+});
+
+export const isAdminAtom = atom<boolean>({
+	key: "isAdmin",
+	default: false,
+});
+
+export const permissionEntitiesAtom = atom({
+	key: "permissionEntities",
+	default: [],
 });

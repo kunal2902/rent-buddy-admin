@@ -30,6 +30,7 @@ import { SubCategoryModel } from "@/models";
 import { deleteSubCategoryApi, disableSubCategoryApi, formatDate, getSubCategoryApi, logoutUser } from "@/utils";
 import AddSubCategoryModal from "./add_sub_category_modal";
 import ShowNotification from "@/components/mantine/show_notification";
+import { checkPermissions } from "@/components/custom/check_permission_entities";
 
 const SubCategoriesContainer = () => {
 	const router = useRouter();
@@ -50,6 +51,11 @@ const SubCategoriesContainer = () => {
 	const [subCatgoryIcon, setSubCategoryIcon] = useState<string | undefined>("");
 	const [subCategoryList, setSubCategoryList] = useState<SubCategoryModel[]>([]);
 	const currentQueryRef = useRef(searchValue);
+
+	const canDeleteSubCategory = checkPermissions("sub-category", ["delete"]);
+	const canUpdateSubCategory = checkPermissions("sub-category", ["update"]);
+	const canCreateSubCategory = checkPermissions("sub-category", ["create"]);
+	const canDisableSubCategory = checkPermissions("sub-category", ["disable"]);
 
 	useEffect(() => {
 		initState().then();
@@ -164,8 +170,8 @@ const SubCategoriesContainer = () => {
 		"Category Name",
 		"Created At",
 		"Created By",
-		"Disable",
-		"Action",
+		...(canDisableSubCategory ? ["Disable"] : []),
+		...(canUpdateSubCategory && canDeleteSubCategory ? ["Action"] : []),
 	];
 
 	const rows = subCategoryList.map((element, index) => (
@@ -184,31 +190,37 @@ const SubCategoriesContainer = () => {
 			<TableTdComponent>{formatDate(element.created_at)}</TableTdComponent>
 			<TableTdComponent>{element.created_by.name}</TableTdComponent>
 			<TableTdComponent w={60}>
-				<PopConfirmComponent
-					entityName="sub category"
-					type={PopConfirmType.switch}
-					isDisabled={element.is_disabled}
-					actionName={element.is_disabled ? "enable" : "disable"}
-					onConfirm={async () => handleAction(element.sub_category_id, "disable")}
-				/>
+				{canDisableSubCategory &&
+					<PopConfirmComponent
+						entityName="sub category"
+						type={PopConfirmType.switch}
+						isDisabled={element.is_disabled}
+						actionName={element.is_disabled ? "enable" : "disable"}
+						onConfirm={async () => handleAction(element.sub_category_id, "disable")}
+					/>
+				}
 			</TableTdComponent>
 			<TableTdComponent w={110}>
 				<GroupComponent>
-					<PopConfirmComponent
-						entityName="sub category"
-						actionName="delete"
-						onConfirm={async () => handleAction(element.sub_category_id, "delete")}
-					/>
-					<ActionIconComponent
-						onClick={() => handleAddOpenModal(
-							element.sub_category_id,
-							element.name,
-							element.icon,
-							element.category_id
-						)}
-						size="md">
-						<MdOutlineEdit size={18} />
-					</ActionIconComponent>
+					{canDeleteSubCategory &&
+						<PopConfirmComponent
+							entityName="sub category"
+							actionName="delete"
+							onConfirm={async () => handleAction(element.sub_category_id, "delete")}
+						/>
+					}
+					{canUpdateSubCategory &&
+						<ActionIconComponent
+							onClick={() => handleAddOpenModal(
+								element.sub_category_id,
+								element.name,
+								element.icon,
+								element.category_id
+							)}
+							size="md">
+							<MdOutlineEdit size={18} />
+						</ActionIconComponent>
+					}
 				</GroupComponent>
 			</TableTdComponent>
 		</TableTrComponent>
@@ -227,6 +239,7 @@ const SubCategoriesContainer = () => {
 				idVariable="sub_category_id"
 				buttonTitle="Add Sub-category"
 				setSearchValue={setSearchValue}
+				showAddButton={canCreateSubCategory}
 				onClick={() => handleAddOpenModal("", "", "", "")}
 				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {

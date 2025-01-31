@@ -23,6 +23,7 @@ import AddAddOnModal from "./add_add_on_modal";
 import { AddOnModel } from "@/models";
 import { deleteAddOnApi, disableAddOnApi, formatDate, getAddOnApi, logoutUser } from "@/utils";
 import ShowNotification from "@/components/mantine/show_notification";
+import { checkPermissions } from "@/components/custom/check_permission_entities";
 
 const AddOnsContainer = () => {
 	const router = useRouter();
@@ -43,6 +44,11 @@ const AddOnsContainer = () => {
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const [addOnIcon, setAddOnIcon] = useState<string | undefined>("");
 	const currentQueryRef = useRef(searchValue);
+
+	const canDeleteAddOn = checkPermissions("add-on", ["delete"]);
+	const canUpdateAddOn = checkPermissions("add-on", ["update"]);
+	const canCreateAddOn = checkPermissions("add-on", ["create"]);
+	const canDisableAddOn = checkPermissions("add-on", ["disable"]);
 
 	useEffect(() => {
 		initState().then();
@@ -153,8 +159,8 @@ const AddOnsContainer = () => {
 		"Price",
 		"Created At",
 		"Created By",
-		"Disable",
-		"Action",
+		...(canDisableAddOn ? ["Disable"] : []),
+		...(canUpdateAddOn && canDeleteAddOn ? ["Action"] : []),
 	];
 
 	const rows = addOnsList.map((element, index) => (
@@ -173,31 +179,37 @@ const AddOnsContainer = () => {
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 			<Table.Td>{element.created_by.name}</Table.Td>
 			<Table.Td w={60}>
-				<PopConfirmComponent
-					entityName="addOn"
-					type={PopConfirmType.switch}
-					isDisabled={element.is_disabled}
-					actionName={element.is_disabled ? "enable" : "disable"}
-					onConfirm={async () => handleAction(element.add_on_id, "disable")}
-				/>
+				{canDisableAddOn &&
+					<PopConfirmComponent
+						entityName="addOn"
+						type={PopConfirmType.switch}
+						isDisabled={element.is_disabled}
+						actionName={element.is_disabled ? "enable" : "disable"}
+						onConfirm={async () => handleAction(element.add_on_id, "disable")}
+					/>
+				}
 			</Table.Td>
 			<Table.Td w={110}>
 				<GroupComponent>
-					<PopConfirmComponent
-						entityName="addOn"
-						actionName="delete"
-						onConfirm={async () => handleAction(element.add_on_id, "delete")}
-					/>
-					<ActionIconComponent
-						onClick={() => handleAddOpenModal(
-							element.add_on_id,
-							element.name,
-							element.price,
-							element.icon
-						)}
-						size="md">
-						<MdOutlineEdit size={18} />
-					</ActionIconComponent>
+					{canDeleteAddOn &&
+						<PopConfirmComponent
+							entityName="addOn"
+							actionName="delete"
+							onConfirm={async () => handleAction(element.add_on_id, "delete")}
+						/>
+					}
+					{canUpdateAddOn &&
+						<ActionIconComponent
+							onClick={() => handleAddOpenModal(
+								element.add_on_id,
+								element.name,
+								element.price,
+								element.icon
+							)}
+							size="md">
+							<MdOutlineEdit size={18} />
+						</ActionIconComponent>
+					}
 				</GroupComponent>
 			</Table.Td>
 		</Table.Tr>
@@ -216,6 +228,7 @@ const AddOnsContainer = () => {
 				loading={searchLoading}
 				searchValue={searchValue}
 				setSearchValue={setSearchValue}
+				showAddButton={canCreateAddOn}
 				onClick={() => handleAddOpenModal("", "", "", "")}
 				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { FiShoppingCart } from "react-icons/fi";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import {
 	BoxComponent, ButtonComponent,
 	CardComponent,
@@ -14,30 +14,31 @@ import {
 } from "@/components";
 import {
 	appAccentColorRGBA,
-	cartAtom, cartIdAtom,
-	cartItemsAtom, cartPaymentMethodAtom,
 	currencySign,
-	customerAtom,
 	formatDate,
 	toTitleCase,
+	cartPaymentMethodAtom,
 } from "@/utils";
-import { CartItemModel, CartModel } from "@/models";
+import { CartItemModel, CustomerModel } from "@/models";
 
 interface Props {
 	isOpen: boolean;
 	onClose: () => void;
 	subTotal: number;
 	total: number;
-	tax5:number;
+	tax5: number;
 	tax7: number;
 	orderDate: string;
-	totalEHF: number | undefined;
+	totalEHF?: number;
 	totalRemovalCharges: number;
-	fullAddress:string | undefined;
-	deliveryCharges: string | number | undefined;
+	fullAddress?: string;
+	deliveryCharges?: string | number;
+	paymentType: string,
+	customer: CustomerModel;
+	cartItems: CartItemModel[];
 }
 
-const InvoiceDetailModal = (props: Props) => {
+const InvoiceModal = (props: Props) => {
 	const {
 		isOpen,
 		onClose,
@@ -45,27 +46,22 @@ const InvoiceDetailModal = (props: Props) => {
 		tax5,
 		tax7,
 		subTotal,
-		totalEHF,
+		totalEHF = 0,
 		orderDate,
-		fullAddress,
-		deliveryCharges,
+		fullAddress = "N/A",
+		deliveryCharges = 0,
 		totalRemovalCharges,
+		paymentType,
+		customer,
+		cartItems,
 	} = props;
-	const setCartId = useSetRecoilState(cartIdAtom);
-	const [customer, setCustomer] = useRecoilState(customerAtom);
-	const paymentMethod = useRecoilState(cartPaymentMethodAtom);
-	const setCart = useSetRecoilState<CartModel | null>(cartAtom);
-	const [cartItems, setCartItems] = useRecoilState<Array<CartItemModel>>(cartItemsAtom);
 
 	const handleCloseModal = () => {
-			setCartItems([]);
-			setCart(null);
-			setCartId("");
-			setCustomer({ id: "", name: "" });
-			onClose();
+		onClose();
 	};
 
-	const truncateText = (text: string, maxLength: number): string => text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
+	const truncateText = (text: string, maxLength: number): string =>
+		text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
 
 	const renderInvoice = () => {
 		// Try to open a new window
@@ -305,14 +301,8 @@ const InvoiceDetailModal = (props: Props) => {
 	};
 
 	return (
-		<ModalComponent
-			opened={isOpen}
-			onClose={handleCloseModal}
-			className="border-grey-800"
-			title={<TitleComponent title="Invoice Detail" />}
-		>
-
-			<CardComponent className="mt-3" mih={90} shadow="sm" radius="md" padding="sm" withBorder>
+		<ModalComponent opened={isOpen} onClose={handleCloseModal} title={<TitleComponent title="Invoice Detail" />}>
+			<CardComponent className="mt-3" shadow="sm" radius="md" padding="sm" withBorder>
 				<StackComponent gap="sm">
 					<GroupComponent justify="space-between">
 						<TextComponent text="Customer Name:" bold />
@@ -323,8 +313,8 @@ const InvoiceDetailModal = (props: Props) => {
 						<TextComponent text={formatDate(orderDate)} />
 					</GroupComponent>
 					<GroupComponent justify="space-between">
-						<TextComponent text="Paynebt method:" bold />
-						<TextComponent text={paymentMethod[0]} />
+						<TextComponent text="Payment Method:" bold />
+						<TextComponent text={paymentType} />
 					</GroupComponent>
 				</StackComponent>
 			</CardComponent>
@@ -337,75 +327,46 @@ const InvoiceDetailModal = (props: Props) => {
 				className="my-3"
 				style={{ flexGrow: 1 }}
 			>
-				{
-					cartItems.length === 0 ?
-						<CenterComponent h="100%">
-							<FiShoppingCart />
-							<TextComponent text="Cart is Empty!" ml={5} />
-						</CenterComponent>
-						:
-						<ScrollAreaComponent>
-							{
-								cartItems.map((item, index) => (
-									<BoxComponent
-										key={index}
-										px={12}
-										py={8}
-										pb={index === cartItems.length - 1 ? 0 : 12}
-									>
-										<StackComponent gap="sm" mb="10">
+				<ScrollAreaComponent>
+					{
+						cartItems.map((item, index) => (
+							<BoxComponent
+								key={index}
+								px={12}
+								py={8}
+								pb={index === cartItems.length - 1 ? 0 : 12}
+							>
+								<StackComponent gap="sm" mb="10">
+									<GroupComponent justify="space-between">
+										<StackComponent
+											gap={0}
+											style={{ flexGrow: 1 }}
+										>
 											<GroupComponent justify="space-between">
-												<StackComponent
-													gap={0}
-													style={{ flexGrow: 1 }}
-												>
-													<GroupComponent justify="space-between">
-														<TitleComponent
-															fz={14}
-															title={truncateText(item.item.name, 30)}
-														/>
+												<TitleComponent
+													fz={14}
+													title={truncateText(item.item.name, 30)}
+												/>
 
-														<TitleComponent
-															fz={14}
-															c="green"
-															title={`${currencySign} ${parseInt(item.item.price.toString(), 10) * item.quantity}`}
-														/>
-													</GroupComponent>
-													<TextComponent
-														c="gray"
-														fz={12}
-														text={`${currencySign} ${parseInt(item.item.price.toString(), 10)} x ${item.quantity}`}
-													/>
-												</StackComponent>
+												<TitleComponent
+													fz={14}
+													c="green"
+													title={`${currencySign} ${parseInt(item.item.price.toString(), 10) * item.quantity}`}
+												/>
 											</GroupComponent>
-											{
-												item.item.custom_attributes.map(ca => (
-													<GroupComponent justify="space-between">
-														<TextComponent
-															lh={1}
-															fz={12}
-															text={
-																toTitleCase(
-																	ca.custom_attribute.name
-																)
-															}
-														/>
-														<TextComponent
-															lh={1}
-															fz={12}
-															text={
-																`${currencySign}`}
-														/>
-													</GroupComponent>
-												))
-											}
-											{index !== cartItems.length - 1 &&
-												<DividerComponent my={0} mt={6} variant="dashed" p={0} py={0} />}
+											<TextComponent
+												c="gray"
+												fz={12}
+												text={`${currencySign} ${parseInt(item.item.price.toString(), 10)} x ${item.quantity}`}
+											/>
 										</StackComponent>
-									</BoxComponent>
-								))}
-						</ScrollAreaComponent>
-				}
+									</GroupComponent>
+									{index !== cartItems.length - 1 &&
+										<DividerComponent my={0} mt={6} variant="dashed" p={0} py={0} />}
+								</StackComponent>
+							</BoxComponent>
+						))}
+				</ScrollAreaComponent>
 			</CardComponent>
 
 			<CardComponent padding="sm" shadow="sm" radius="md" withBorder style={{ height: "auto" }}>
@@ -434,4 +395,4 @@ const InvoiceDetailModal = (props: Props) => {
 	);
 };
 
-export default InvoiceDetailModal;
+export default InvoiceModal;

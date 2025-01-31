@@ -5,6 +5,7 @@ import { MdOutlineEdit } from "react-icons/md";
 import { useDebouncedCallback } from "@mantine/hooks";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { getCookie } from "cookies-next";
 import {
 	ActionIconComponent,
 	BoxComponent,
@@ -24,6 +25,7 @@ import { UserModel } from "@/models";
 import { deleteUserApi, disableUserApi, formatDate, getUserId, getUsersApi, logoutUser } from "@/utils";
 import AddUserModal from "./add_user_modal";
 import ShowNotification from "@/components/mantine/show_notification";
+import { checkPermissions } from "@/components/custom/check_permission_entities";
 
 const UsersContainer = () => {
 	const router = useRouter();
@@ -47,6 +49,11 @@ const UsersContainer = () => {
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const currentQueryRef = useRef(searchValue);
 
+	const canDeleteUsers = checkPermissions("user", ["delete"]);
+	const canUpdateUsers = checkPermissions("user", ["update"]);
+	const canCreateUsers = checkPermissions("user", ["create"]);
+	const canDisableUsers = checkPermissions("user", ["disable"]);
+
 	useEffect(() => {
 		initState().then();
 	}, [filter, page, callApi, orderBy, order]);
@@ -60,7 +67,7 @@ const UsersContainer = () => {
 			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
 				setUsersList(data.users);
-				setTotal(data.users.length);
+				setTotal(data.users_count);
 				setLoading(false);
 			},
 			() => {
@@ -162,8 +169,8 @@ const UsersContainer = () => {
 		"User name",
 		"Email",
 		"Created At",
-		"Disable",
-		"Action",
+		...(canDisableUsers ? ["Disable"] : []),
+		...(canUpdateUsers && canDeleteUsers ? ["Action"] : []),
 	];
 
 	const rows = usersList.map((element, index) => (
@@ -176,7 +183,7 @@ const UsersContainer = () => {
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 			<Table.Td w={60}>
 				{
-					getUserId() !== element.user_id &&
+					getUserId() !== element.user_id && canDisableUsers &&
 					<PopConfirmComponent
 						entityName="user"
 						type={PopConfirmType.switch}
@@ -189,25 +196,28 @@ const UsersContainer = () => {
 			<Table.Td w={110}>
 				<GroupComponent>
 					{
-						getUserId() !== element.user_id &&
+						getUserId() !== element.user_id && canDeleteUsers &&
 						<PopConfirmComponent
 							entityName="user"
 							actionName="delete"
 							onConfirm={async () => handleAction(element.user_id, "delete")}
 						/>
 					}
-					<ActionIconComponent
-						onClick={() => handleAddOpenModal(
-							element.user_id,
-							element.name,
-							element.username,
-							element.email,
-							element.password,
-							element.role_id,
-						)}
-						size="md">
-						<MdOutlineEdit size={18} />
-					</ActionIconComponent>
+					{
+						canUpdateUsers &&
+						<ActionIconComponent
+							onClick={() => handleAddOpenModal(
+								element.user_id,
+								element.name,
+								element.username,
+								element.email,
+								element.password,
+								element.role_id,
+							)}
+							size="md">
+							<MdOutlineEdit size={18} />
+						</ActionIconComponent>
+					}
 				</GroupComponent>
 			</Table.Td>
 		</Table.Tr>
@@ -225,6 +235,7 @@ const UsersContainer = () => {
 				setFilter={setFilter}
 				buttonTitle="Add User"
 				searchValue={searchValue}
+				showAddButton={canCreateUsers}
 				setSearchValue={setSearchValue}
 				setOption={(option) => {
 					setFilter(option.value);

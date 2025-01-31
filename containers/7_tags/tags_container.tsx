@@ -24,6 +24,7 @@ import AddTagModal from "./add_tag_modal";
 import { TagModel } from "@/models";
 import { deleteTagApi, disableTagApi, formatDate, getTagApi, logoutUser } from "@/utils";
 import ShowNotification from "@/components/mantine/show_notification";
+import { checkPermissions } from "@/components/custom/check_permission_entities";
 
 const TagsContainer = () => {
 	const router = useRouter();
@@ -42,6 +43,11 @@ const TagsContainer = () => {
 	const [tagsList, setTagsList] = useState<TagModel[]>([]);
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
 	const currentQueryRef = useRef(searchValue);
+
+	const canDeleteTag = checkPermissions("tag", ["delete"]);
+	const canUpdateTag = checkPermissions("tag", ["update"]);
+	const canCreateTag = checkPermissions("tag", ["create"]);
+	const canDisableTag = checkPermissions("tag", ["disable"]);
 
 	useEffect(() => {
 		initState().then();
@@ -147,8 +153,8 @@ const TagsContainer = () => {
 		"Name",
 		"Created At",
 		"Created By",
-		"Disable",
-		"Action",
+		...(canDisableTag ? ["Disable"] : []),
+		...(canUpdateTag && canDeleteTag ? ["Action"] : []),
 	];
 
 	const rows = tagsList.map((element, index) => (
@@ -159,26 +165,32 @@ const TagsContainer = () => {
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 			<Table.Td>{element.created_by.name}</Table.Td>
 			<Table.Td w={60}>
-				<PopConfirmComponent
-					entityName="tag"
-					type={PopConfirmType.switch}
-					isDisabled={element.is_disabled}
-					actionName={element.is_disabled ? "enable" : "disable"}
-					onConfirm={async () => handleAction(element.tag_id, "disable")}
-				/>
+				{canDisableTag &&
+					<PopConfirmComponent
+						entityName="tag"
+						type={PopConfirmType.switch}
+						isDisabled={element.is_disabled}
+						actionName={element.is_disabled ? "enable" : "disable"}
+						onConfirm={async () => handleAction(element.tag_id, "disable")}
+					/>
+				}
 			</Table.Td>
 			<Table.Td w={110}>
 				<GroupComponent>
-					<PopConfirmComponent
-						entityName="tag"
-						actionName="delete"
-						onConfirm={async () => handleAction(element.tag_id, "delete")}
-					/>
-					<ActionIconComponent
-						onClick={() => handleAddOpenModal(element.tag_id, element.name)}
-						size="md">
-						<MdOutlineEdit size={18} />
-					</ActionIconComponent>
+					{canDeleteTag &&
+						<PopConfirmComponent
+							entityName="tag"
+							actionName="delete"
+							onConfirm={async () => handleAction(element.tag_id, "delete")}
+						/>
+					}
+					{canUpdateTag &&
+						<ActionIconComponent
+							onClick={() => handleAddOpenModal(element.tag_id, element.name)}
+							size="md">
+							<MdOutlineEdit size={18} />
+						</ActionIconComponent>
+					}
 				</GroupComponent>
 			</Table.Td>
 		</Table.Tr>
@@ -197,6 +209,7 @@ const TagsContainer = () => {
 				loading={searchLoading}
 				searchValue={searchValue}
 				setSearchValue={setSearchValue}
+				showAddButton={canCreateTag}
 				onClick={() => handleAddOpenModal("", "")}
 				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {

@@ -24,6 +24,7 @@ import { CustomAttributeModel } from "@/models";
 import { deleteAttributeApi, disableAttributeApi, formatDate, getAttributeApi, logoutUser } from "@/utils";
 import { useRouter } from "next/navigation";
 import ShowNotification from "@/components/mantine/show_notification";
+import { checkPermissions } from "@/components/custom/check_permission_entities";
 
 const CustomAttributesContainer = () => {
 	const router = useRouter();
@@ -46,6 +47,11 @@ const CustomAttributesContainer = () => {
 	const [order, setOrder] = useState<string>("asc");
 	const [customAttributesList, setCustomAttributesList] = useState<CustomAttributeModel[]>([]);
 	const currentQueryRef = useRef(searchValue);
+
+	const canDeleteCustomAttribute = checkPermissions("custom-attribute", ["delete"]);
+	const canUpdateCustomAttribute = checkPermissions("custom-attribute", ["update"]);
+	const canCreateCustomAttribute = checkPermissions("custom-attribute", ["create"]);
+	const canDisableCustomAttribute = checkPermissions("custom-attribute", ["disable"]);
 
 	useEffect(() => {
 		initState().then();
@@ -166,8 +172,8 @@ const CustomAttributesContainer = () => {
 		"Tax Type",
 		"Created At",
 		"Created By",
-		"Disable",
-		"Action",
+		...(canDisableCustomAttribute ? ["Disable"] : []),
+		...(canUpdateCustomAttribute && canDeleteCustomAttribute ? ["Action"] : []),
 	];
 
 	const rows = customAttributesList.map((element, index) => (
@@ -182,33 +188,39 @@ const CustomAttributesContainer = () => {
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 			<Table.Td>{element.created_by.name}</Table.Td>
 			<Table.Td w={60}>
-				<PopConfirmComponent
-					entityName="custom attribute"
-					type={PopConfirmType.switch}
-					isDisabled={element.is_disabled}
-					actionName={element.is_disabled ? "enable" : "disable"}
-					onConfirm={async () => handleAction(element.custom_attribute_id, "disable")}
-				/>
+				{canDisableCustomAttribute &&
+					<PopConfirmComponent
+						entityName="custom attribute"
+						type={PopConfirmType.switch}
+						isDisabled={element.is_disabled}
+						actionName={element.is_disabled ? "enable" : "disable"}
+						onConfirm={async () => handleAction(element.custom_attribute_id, "disable")}
+					/>
+				}
 			</Table.Td>
 			<Table.Td w={110}>
 				<GroupComponent>
-					<PopConfirmComponent
-						entityName="custom attribute"
-						actionName="delete"
-						onConfirm={async () => handleAction(element.custom_attribute_id, "delete")}
-					/>
-					<ActionIconComponent
-						onClick={() => handleAddOpenModal(
-							element.custom_attribute_id,
-							element.name,
-							element.type,
-							element.default_value,
-							element.is_tax,
-							element.tax_type,
-						)}
-						size="md">
-						<MdOutlineEdit size={18} />
-					</ActionIconComponent>
+					{canDeleteCustomAttribute &&
+						<PopConfirmComponent
+							entityName="custom attribute"
+							actionName="delete"
+							onConfirm={async () => handleAction(element.custom_attribute_id, "delete")}
+						/>
+					}
+					{canUpdateCustomAttribute &&
+						<ActionIconComponent
+							onClick={() => handleAddOpenModal(
+								element.custom_attribute_id,
+								element.name,
+								element.type,
+								element.default_value,
+								element.is_tax,
+								element.tax_type,
+							)}
+							size="md">
+							<MdOutlineEdit size={18} />
+						</ActionIconComponent>
+					}
 				</GroupComponent>
 			</Table.Td>
 		</Table.Tr>
@@ -227,6 +239,7 @@ const CustomAttributesContainer = () => {
 				setSearchValue={setSearchValue}
 				idVariable="custom_attribute_id"
 				buttonTitle="Add Custom Attribute"
+				showAddButton={canCreateCustomAttribute}
 				onClick={() => handleAddOpenModal("", "", "", "", false, "")}
 				setOption={(option) => setFilter(option.value)}
 				onSortSelected={(selected: SortButtonComponentItemProps) => {

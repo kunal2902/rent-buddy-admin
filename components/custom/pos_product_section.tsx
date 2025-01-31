@@ -28,6 +28,7 @@ export interface Categories {
 export const PosProductSection = () => {
 	const router = useRouter();
 	const [searchQuery, setSearchQuery] = useState("");
+	const [catQuery, setCatQuery] = useState<string>();
 	const [subCategories, setSubCategories] = useState([]);
 	const [itemList, setItemList] = useState<ItemModel[]>([]);
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
@@ -104,10 +105,10 @@ export const PosProductSection = () => {
 	);
 
 	useEffect(() => {
-		if (catValue) {
+		if (catValue || catQuery) {
 			catState().then();
 		}
-	}, [catValue]);
+	}, [catValue, catQuery]);
 
 	useEffect(() => {
 		if (subCatValue) {
@@ -117,7 +118,7 @@ export const PosProductSection = () => {
 
 	const catState = async () => {
 		getItemApi(
-			`filter_type=category&filter_query=${catValue}`,
+			catQuery,
 			(data: any) => {
 				setItemList(data.items);
 			},
@@ -128,9 +129,12 @@ export const PosProductSection = () => {
 		).then();
 	};
 
+	console.log("subCatValue", subCatValue);
+
 	const subCatState = async () => {
+		const query = subCatValue === "all_item" ? "filter_type=sub_category&filter_query=" : `filter_type=sub_category&filter_query=${subCatValue}`;
 		getItemApi(
-			`filter_type=sub_category&filter_query=${subCatValue}`,
+			query,
 			(data: any) => {
 				setItemList(data.items);
 			},
@@ -142,6 +146,8 @@ export const PosProductSection = () => {
 	};
 
 	const handleCategoryChange = (val: string | string[]) => {
+		const selectedValue = val === "all_item" ? "filter_type=category&filter_query=" : `filter_type=category&filter_query=${val}`;
+		setCatQuery(selectedValue);
 		setCatValue(val as string);
 		setSubCategories([]);
 		fetchSubCategories(val as string);
@@ -214,7 +220,7 @@ export const PosProductSection = () => {
 			>
 				<BoxComponent className="px-3 mt-3" h={30}>
 					<ChipGroupComponent value={catValue} onChange={handleCategoryChange}>
-						<ChipComponent value="" style={{ display: "inline-block", marginRight: "8px" }}>
+						<ChipComponent value="all_item" style={{ display: "inline-block", marginRight: "8px" }}>
 							All items
 						</ChipComponent>
 						{categoriesList.map((item: any) => (
@@ -257,7 +263,7 @@ export const PosProductSection = () => {
 						onChange={(val) => setSubCatValue(val)}
 					>
 						<GroupComponent justify="start">
-							<ChipComponent value="">All items</ChipComponent>
+							<ChipComponent value="all_item">All items</ChipComponent>
 							{subCategories.map((item: any) => (
 								<ChipComponent
 									key={item.sub_category_id}

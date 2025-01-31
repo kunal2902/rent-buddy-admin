@@ -65,6 +65,8 @@ export const nameConstant: string = "name";
 export const emailConstant: string = "email";
 export const userNameConstant: string = "username";
 export const roleIdConstant: string = "role_id";
+export const isAdminConstant: string = "is_admin";
+export const permissionEntityConstant: string = "permission_entities";
 export const sidebarStateConstant: string = "sidebar_state";
 export const themeModeConstant: string = "theme_mode";
 
@@ -242,6 +244,8 @@ export const logoutUser = (router: AppRouterInstance) => {
 	deleteCookie(roleIdConstant, cookieOptions);
 	deleteCookie(sidebarStateConstant, cookieOptions);
 	deleteCookie(themeModeConstant, cookieOptions);
+	deleteCookie(permissionEntityConstant, cookieOptions);
+	deleteCookie(isAdminConstant, cookieOptions);
 	router.replace("/");
 };
 
