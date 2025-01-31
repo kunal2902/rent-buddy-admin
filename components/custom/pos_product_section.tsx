@@ -32,8 +32,8 @@ export const PosProductSection = () => {
 	const [subCategories, setSubCategories] = useState([]);
 	const [itemList, setItemList] = useState<ItemModel[]>([]);
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
-	const [catValue, setCatValue] = useState<string | string[]>("");
-	const [subCatValue, setSubCatValue] = useState<string | string[]>("");
+	const [catValue, setCatValue] = useState<string | string[]>("all_item");
+	const [subCatValue, setSubCatValue] = useState<string | string[]>("all_item");
 	const [addSubCartItem, setAddSubCartItem] = useState<string | null>(null);
 	const [categoriesList, setCategoriesList] = useState<CategoryModel[]>([]);
 	const [cartItemIndexes, setCartItemIndexes] = useState<Map<string, number>>(
@@ -129,8 +129,6 @@ export const PosProductSection = () => {
 		).then();
 	};
 
-	console.log("subCatValue", subCatValue);
-
 	const subCatState = async () => {
 		const query = subCatValue === "all_item" ? "filter_type=sub_category&filter_query=" : `filter_type=sub_category&filter_query=${subCatValue}`;
 		getItemApi(
@@ -214,27 +212,26 @@ export const PosProductSection = () => {
 					/>
 				</GroupComponent>
 			</BoxComponent>
-			<ScrollAreaComponent
-				h={110}
-				style={{ overflowX: "auto", overflowY: "hidden", whiteSpace: "nowrap" }}
-			>
-				<BoxComponent className="px-3 mt-3" h={30}>
-					<ChipGroupComponent value={catValue} onChange={handleCategoryChange}>
-						<ChipComponent value="all_item" style={{ display: "inline-block", marginRight: "8px" }}>
-							All items
-						</ChipComponent>
-						{categoriesList.map((item: any) => (
-							<ChipComponent
-								key={item.category_id}
-								value={item.category_id}
-								style={{ display: "inline-block", marginRight: "8px" }}
-							>
-								{item.name}
+			<div style={{ whiteSpace: "nowrap" }}>
+				<ScrollAreaComponent h={60}>
+					<BoxComponent className="mt-3">
+						<ChipGroupComponent value={catValue} onChange={handleCategoryChange}>
+							<ChipComponent value="all_item" style={{ display: "inline-block", marginRight: "8px" }}>
+								All items
 							</ChipComponent>
+							{categoriesList.map((item: any) => (
+								<ChipComponent
+									key={item.category_id}
+									value={item.category_id}
+									style={{ display: "inline-block", marginRight: "8px" }}
+							>
+									{item.name}
+								</ChipComponent>
 						))}
-					</ChipGroupComponent>
-				</BoxComponent>
-			</ScrollAreaComponent>
+						</ChipGroupComponent>
+					</BoxComponent>
+				</ScrollAreaComponent>
+			</div>
 			{/*<BoxComponent h={30} className="px-3 mt-3">*/}
 			{/*	<ChipGroupComponent*/}
 			{/*		value={catValue}*/}
