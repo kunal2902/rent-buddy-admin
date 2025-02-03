@@ -5,7 +5,6 @@ import { MdOutlineEdit } from "react-icons/md";
 import { useDebouncedCallback } from "@mantine/hooks";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getCookie } from "cookies-next";
 import {
 	ActionIconComponent,
 	BoxComponent,
@@ -49,10 +48,12 @@ const UsersContainer = () => {
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const currentQueryRef = useRef(searchValue);
 
-	const canDeleteUsers = checkPermissions("user", ["delete"]);
-	const canUpdateUsers = checkPermissions("user", ["update"]);
-	const canCreateUsers = checkPermissions("user", ["create"]);
-	const canDisableUsers = checkPermissions("user", ["disable"]);
+	const canDeleteUser = checkPermissions("user", ["delete"]);
+	const canUpdateUser = checkPermissions("user", ["update"]);
+	const canCreateUser = checkPermissions("user", ["create"]);
+	const canDisableUser = checkPermissions("user", ["disable"]);
+
+	console.log(canDeleteUser, canUpdateUser, canCreateUser, canDisableUser);
 
 	useEffect(() => {
 		initState().then();
@@ -63,6 +64,7 @@ const UsersContainer = () => {
 	}, [searchValue]);
 
 	const initState = async () => {
+		setLoading(true);
 		await getUsersApi(
 			`filter_type=${filter}&filter_query=${searchValue}&orderBy=${orderBy}&page=${page}&order=${order}&page_size=${pageSize}&page_offset=${(page - 1) * pageSize}`,
 			(data: any) => {
@@ -116,7 +118,7 @@ const UsersContainer = () => {
 		email: string,
 		password: string,
 		roleId?: string,
-		) => {
+	) => {
 		setUserId(id);
 		setInitialValueName(name);
 		setInitialValueUserName(userName);
@@ -169,8 +171,8 @@ const UsersContainer = () => {
 		"User name",
 		"Email",
 		"Created At",
-		...(canDisableUsers ? ["Disable"] : []),
-		...(canUpdateUsers && canDeleteUsers ? ["Action"] : []),
+		...(canDisableUser ? ["Disable"] : []),
+		...(canUpdateUser && canDeleteUser ? ["Action"] : []),
 	];
 
 	const rows = usersList.map((element, index) => (
@@ -183,7 +185,7 @@ const UsersContainer = () => {
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 			<Table.Td w={60}>
 				{
-					getUserId() !== element.user_id && canDisableUsers &&
+					getUserId() !== element.user_id && canDisableUser &&
 					<PopConfirmComponent
 						entityName="user"
 						type={PopConfirmType.switch}
@@ -196,15 +198,14 @@ const UsersContainer = () => {
 			<Table.Td w={110}>
 				<GroupComponent>
 					{
-						getUserId() !== element.user_id && canDeleteUsers &&
+						getUserId() !== element.user_id && canDeleteUser &&
 						<PopConfirmComponent
 							entityName="user"
 							actionName="delete"
 							onConfirm={async () => handleAction(element.user_id, "delete")}
 						/>
 					}
-					{
-						canUpdateUsers &&
+					{canUpdateUser &&
 						<ActionIconComponent
 							onClick={() => handleAddOpenModal(
 								element.user_id,
@@ -235,7 +236,7 @@ const UsersContainer = () => {
 				setFilter={setFilter}
 				buttonTitle="Add User"
 				searchValue={searchValue}
-				showAddButton={canCreateUsers}
+				showAddButton={canCreateUser}
 				setSearchValue={setSearchValue}
 				setOption={(option) => {
 					setFilter(option.value);

@@ -149,13 +149,6 @@ export const PosCartSection = () => {
 			const itemPrice = parseInt(price, 10);
 			const itemTotal = itemPrice * quantity;
 
-			// custom_attributes.forEach((attr) => {
-			// 	const tax = calculateTaxOnProduct(attr, itemPrice, quantity);
-			// 	if (tax !== null) {
-			// 		itemTotal += tax;
-			// 	}
-			// });
-
 			subtotal += itemTotal;
 		});
 		return subtotal;
@@ -372,16 +365,6 @@ export const PosCartSection = () => {
 					withBorder
 				>
 					<StackComponent gap="sm">
-						{/*<GroupComponent justify="space-between">*/}
-						{/*	<TextComponent text="Customer Name:" bold />*/}
-						{/*	<TextComponent*/}
-						{/*		text={*/}
-						{/*			selectedCustomer.name*/}
-						{/*				? selectedCustomer.name*/}
-						{/*				: ""*/}
-						{/*		}*/}
-						{/*	/>*/}
-						{/*</GroupComponent>*/}
 						<GroupComponent justify="space-between">
 							<TextComponent text="Order Date:" bold />
 							<TextComponent text={formatDate(new Date())} />
@@ -401,7 +384,9 @@ export const PosCartSection = () => {
 						{address === "" && city === "" && state === "" && pinCode === "" ?
 							<GroupComponent justify="end">
 								<ButtonComponent
-									variant="subtle"
+									p={0}
+									m={0}
+									variant="transparent"
 									title="Add Shipping Address"
 									onClick={() => setOpenShipToModal(true)}
 							/>
@@ -420,27 +405,6 @@ export const PosCartSection = () => {
 								</ActionIconComponent>
 							</GroupComponent>
 						}
-						{/*<GroupComponent justify="space-between">*/}
-						{/*	{address === "" && city === "" && state === "" && pinCode === "" ?*/}
-						{/*		<>*/}
-						{/*			<TextComponent text="Ship To:" bold />*/}
-						{/*			<TooltipComponent label="Add Shipping Address">*/}
-						{/*				<ActionIconComponent*/}
-						{/*					w={40}*/}
-						{/*					h={40}*/}
-						{/*					variant="filled"*/}
-						{/*					onClick={() => {*/}
-						{/*						setOpenShipToModal(true);*/}
-						{/*					}}*/}
-						{/*				>*/}
-						{/*					<AddIcon />*/}
-						{/*				</ActionIconComponent>*/}
-						{/*			</TooltipComponent>*/}
-						{/*		</>*/}
-						{/*		:*/}
-						{/*		<TextComponent text={`${address}, ${city}, ${state}, ${pinCode}`} />*/}
-						{/*	}*/}
-						{/*</GroupComponent>*/}
 					</StackComponent>
 				</CardComponent>
 
@@ -536,7 +500,9 @@ export const PosCartSection = () => {
 											) : (
 												<GroupComponent justify="end">
 													<ButtonComponent
-														variant="subtle"
+														p={0}
+														m={0}
+														variant="transparent"
 														title="Add Warranty"
 														onClick={() => setWarrentyModal(index)}
 													/>
@@ -569,30 +535,6 @@ export const PosCartSection = () => {
 					style={{ height: "auto" }}
 				>
 					<StackComponent gap="sm">
-						{/*<GroupComponent justify="space-between">*/}
-						{/*	<TextComponent text="Sub Total:" size="sm" />*/}
-						{/*	<TextComponent*/}
-						{/*		text={`${currencySign} ${subTotal.toFixed(2)}`}*/}
-						{/*		bold*/}
-						{/*		size="sm"*/}
-						{/*	/>*/}
-						{/*</GroupComponent>*/}
-						{/*<GroupComponent justify="space-between">*/}
-						{/*	<TextComponent text="5% GST:" size="sm" />*/}
-						{/*	<TextComponent*/}
-						{/*		text={`${currencySign} ${tax5.toFixed(2)}`}*/}
-						{/*		bold*/}
-						{/*		size="sm"*/}
-						{/*	/>*/}
-						{/*</GroupComponent>*/}
-						{/*<GroupComponent justify="space-between">*/}
-						{/*	<TextComponent text="7% PST:" size="sm" />*/}
-						{/*	<TextComponent*/}
-						{/*		text={`${currencySign} ${tax7.toFixed(2)}`}*/}
-						{/*		bold*/}
-						{/*		size="sm"*/}
-						{/*	/>*/}
-						{/*</GroupComponent>*/}
 						<GroupComponent justify="space-between">
 							<TextComponent text="Delivery Charges:" size="sm" bold />
 							<NumberInputComponent
@@ -622,7 +564,9 @@ export const PosCartSection = () => {
 						</GroupComponent>
 						<GroupComponent justify="end">
 							<ButtonComponent
-								variant="subtle"
+								p={0}
+								m={0}
+								variant="transparent"
 								title="View Price Breakup"
 								onClick={() => setPriceBreakupModal(true)}
 							/>
@@ -647,30 +591,12 @@ export const PosCartSection = () => {
 							justify="space-evenly"
 							style={{ flexGrow: 1 }}
 						>
-							{/*<TooltipComponent*/}
-							{/*	label="Please select customer"*/}
-							{/*	disabled={selectedCustomer.id && cartItems.length > 0}*/}
-							{/*>*/}
-							{/*	<ButtonComponent*/}
-							{/*		color={appAccentColorRGBA}*/}
-							{/*		title="Save Draft"*/}
-							{/*		onClick={handleSaveDraft}*/}
-							{/*		disabled={selectedCustomer.id === ""}*/}
-							{/*		fullWidth*/}
-							{/*	/>*/}
-							{/*</TooltipComponent>*/}
-							{/*<TooltipComponent*/}
-							{/*	label="Please select customer"*/}
-							{/*	disabled={selectedCustomer.id && cartItems.length > 0}*/}
-							{/*>*/}
 							<ButtonComponent
 								title="Checkout"
 								onClick={handleCheckout}
 								loading={loading}
-									// disabled={selectedCustomer.id === ""}
 								fullWidth
-								/>
-							{/*</TooltipComponent>*/}
+							/>
 						</GroupComponent>
 					</GroupComponent>
 				</BoxComponent>
