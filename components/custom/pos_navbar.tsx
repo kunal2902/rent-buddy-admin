@@ -15,13 +15,16 @@ import {
 	TooltipComponent,
 	UnstyledButtonComponent,
 } from "@/components";
-import { appLogoHeight, appLogoWidth, dashboardRoute, posRoute } from "@/utils";
+import { appLogoHeight, appLogoWidth, dashboardRoute, logoutUser, posRoute } from "@/utils";
+import { useRouter } from "next/navigation";
 
 export const PosNavbar = () => {
 	const {
 		toggle,
 		fullscreen,
 	} = useFullscreen();
+
+	const router = useRouter();
 
 	const [isDraftModalOpen, setDraftModalOpen] = useState(false);
 
@@ -82,9 +85,9 @@ export const PosNavbar = () => {
 					<SpaceComponent showWidth />
 
 					<ButtonComponent
-						title="LogOut"
-						href={
-							posRoute} />
+						title="Logout"
+						onClick={() => logoutUser(router)}
+					/>
 					<SpaceComponent showWidth />
 				</div>
 			</div>

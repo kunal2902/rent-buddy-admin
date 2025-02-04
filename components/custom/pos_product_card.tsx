@@ -164,7 +164,6 @@ export const ProductCard = (props: Props) => {
 			setSendDebouncedCall(true);
 
 			setTimeout(async () => {
-				setSendDebouncedCall(true);
 				setAddSubCartItem(null);
 			}, 1000);
 
@@ -192,7 +191,6 @@ export const ProductCard = (props: Props) => {
 
 			setTimeout(async () => {
 				setAddSubCartItem(null);
-				setSendDebouncedCall(true);
 			}, 1000);
 
 			return;
@@ -361,6 +359,7 @@ export const ProductCard = (props: Props) => {
 								<NumberInputComponent
 									min={0}
 									step={1}
+									readOnly
 									hideControls
 									placeholder="0"
 									setValue={(val) => setQuantity(Number(val))}
@@ -376,6 +375,8 @@ export const ProductCard = (props: Props) => {
 										backgroundColor: "white",
 										justifyContent: "center",
 										alignItems: "center",
+										color: "black", // Keep the text color active
+										cursor: "default", // Normal cursor to avoid confusion
 									}}
 									contentEditable={!isAddToCartApiBusy}
 									onBlur={onQuantityTypingEnd}
