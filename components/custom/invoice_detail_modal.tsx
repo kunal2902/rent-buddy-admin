@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { FiShoppingCart } from "react-icons/fi";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useResetRecoilState, useSetRecoilState } from "recoil";
 import {
 	BoxComponent, ButtonComponent,
 	CardComponent,
@@ -24,17 +24,23 @@ import {
 import { CartItemModel, CartModel } from "@/models";
 
 interface Props {
-	isOpen: boolean;
-	onClose: () => void;
-	subTotal: number;
-	total: number;
 	tax5:number;
 	tax7: number;
+	total: number;
+	isOpen: boolean;
+	subTotal: number;
 	orderDate: string;
+	onClose: () => void;
 	totalEHF: number | undefined;
-	totalRemovalCharges: number;
 	fullAddress:string | undefined;
+	totalRemovalCharges: number | undefined;
 	deliveryCharges: string | number | undefined;
+	setDeliveryCharges: Dispatch<SetStateAction<number | undefined | string>>;
+	setAddress: Dispatch<SetStateAction<undefined | string>>;
+	setPinCode: Dispatch<SetStateAction<undefined | string>>;
+	setState: Dispatch<SetStateAction<undefined | string>>;
+	setCity: Dispatch<SetStateAction<undefined | string>>;
+	setTotalRemovalCharges: Dispatch<SetStateAction<number | undefined>>;
 }
 
 const InvoiceDetailModal = (props: Props) => {
@@ -50,19 +56,34 @@ const InvoiceDetailModal = (props: Props) => {
 		fullAddress,
 		deliveryCharges,
 		totalRemovalCharges,
+		setDeliveryCharges,
+		setCity,
+		setPinCode,
+		setAddress,
+		setState,
+		setTotalRemovalCharges,
 	} = props;
 	const setCartId = useSetRecoilState(cartIdAtom);
 	const [customer, setCustomer] = useRecoilState(customerAtom);
-	const paymentMethod = useRecoilState(cartPaymentMethodAtom);
+	const [paymentMethod, setPaymentMethod] = useRecoilState(cartPaymentMethodAtom);
+	const resetPaymentMethod = useResetRecoilState(cartPaymentMethodAtom);
 	const setCart = useSetRecoilState<CartModel | null>(cartAtom);
 	const [cartItems, setCartItems] = useRecoilState<Array<CartItemModel>>(cartItemsAtom);
 
 	const handleCloseModal = () => {
-			setCartItems([]);
-			setCart(null);
-			setCartId("");
-			setCustomer({ id: "", name: "" });
-			onClose();
+		setCustomer({ id: "", name: "" });
+		setPaymentMethod("");
+		setTotalRemovalCharges(0);
+		setCartItems([]);
+		setDeliveryCharges(0);
+		setCart(null);
+		setCartId("");
+		resetPaymentMethod();
+		setPinCode("");
+		setAddress("");
+		setState("");
+		setCity("");
+		onClose();
 	};
 
 	const truncateText = (text: string, maxLength: number): string => text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
@@ -324,7 +345,7 @@ const InvoiceDetailModal = (props: Props) => {
 					</GroupComponent>
 					<GroupComponent justify="space-between">
 						<TextComponent text="Paynebt method:" bold />
-						<TextComponent text={paymentMethod[0]} />
+						<TextComponent text={paymentMethod} />
 					</GroupComponent>
 				</StackComponent>
 			</CardComponent>
@@ -408,8 +429,39 @@ const InvoiceDetailModal = (props: Props) => {
 				}
 			</CardComponent>
 
-			<CardComponent padding="sm" shadow="sm" radius="md" withBorder style={{ height: "auto" }}>
+			<CardComponent
+				padding="sm"
+				shadow="sm"
+				radius="md"
+				withBorder
+				style={{ height: "auto" }}
+			>
 				<StackComponent gap="sm">
+					<GroupComponent justify="space-between">
+						<TextComponent text="Sub Total:" size="sm" bold />
+						<TextComponent text={`${currencySign} ${subTotal.toFixed(2)}`} bold size="sm" />
+					</GroupComponent>
+					<GroupComponent justify="space-between">
+						<TextComponent text="EHF:" size="sm" bold />
+						<TextComponent text={`${currencySign} ${totalEHF}`} bold size="sm" />
+					</GroupComponent>
+					<GroupComponent justify="space-between">
+						<TextComponent text="Delivery Charges:" size="sm" bold />
+						<TextComponent text={`${currencySign} ${Number(deliveryCharges).toFixed(2)}`} bold size="sm" />
+					</GroupComponent>
+					<GroupComponent justify="space-between">
+						<TextComponent text="Removal" size="sm" bold />
+						<TextComponent text={`${currencySign} ${Number(totalRemovalCharges).toFixed(2)}`} bold size="sm" />
+					</GroupComponent>
+					<GroupComponent justify="space-between">
+						<TextComponent text="5% GST:" size="sm" bold />
+						<TextComponent text={`${currencySign} ${tax5.toFixed(2)}`} bold size="sm" />
+					</GroupComponent>
+					<GroupComponent justify="space-between">
+						<TextComponent text="7% PST:" size="sm" bold />
+						<TextComponent text={`${currencySign} ${tax7.toFixed(2)}`} bold size="sm" />
+					</GroupComponent>
+					<DividerComponent my={0} variant="dashed" p={0} py={0} />
 					<GroupComponent justify="space-between">
 						<TextComponent text="Total:" bold />
 						<TextComponent text={`${currencySign} ${total.toFixed(2)}`} bold />

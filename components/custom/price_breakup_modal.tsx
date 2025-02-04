@@ -22,7 +22,7 @@ interface Props {
 	tax5:number;
 	tax7: number;
 	totalEHF: number | undefined;
-	totalRemovalCharges: number;
+	totalRemovalCharges: number | undefined;
 	deliveryCharges: string | number | undefined;
 }
 
@@ -63,7 +63,7 @@ const PriceBreakupModal = (props: Props) => {
 					</GroupComponent>
 					<GroupComponent justify="space-between">
 						<TextComponent text="Removal" size="sm" bold />
-						<TextComponent text={`${currencySign} ${totalRemovalCharges.toFixed(2)}`} bold size="sm" />
+						<TextComponent text={`${currencySign} ${Number(totalRemovalCharges).toFixed(2)}`} bold size="sm" />
 					</GroupComponent>
 					<GroupComponent justify="space-between">
 						<TextComponent text="5% GST:" size="sm" bold />

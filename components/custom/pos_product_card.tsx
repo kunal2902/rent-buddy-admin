@@ -90,7 +90,6 @@ export const ProductCard = (props: Props) => {
 					{},
 					(response: any) => {
 						setCartId(response.cart.cart_id);
-						setLoading(false);
 					},
 					(err: any) => {
 						ShowNotification(err.error, "error");
@@ -118,12 +117,18 @@ export const ProductCard = (props: Props) => {
 					quantity: 1,
 				},
 				() => {
+					setLoading(false);
+					setSendDebouncedCall(false);
 				},
 				(err: any) => {
 					ShowNotification(err.error, "error");
+					setLoading(false);
+					setSendDebouncedCall(false);
 				},
 				() => {
 					logoutUser(router);
+					setLoading(false);
+					setSendDebouncedCall(false);
 				}
 			);
 
@@ -156,6 +161,8 @@ export const ProductCard = (props: Props) => {
 			setAddSubCartItem(cartItem?.cart_item_id ?? null);
 			setQuantity((prev) => prev - 1);
 			setLoading(false);
+			setSendDebouncedCall(true);
+
 			setTimeout(async () => {
 				setSendDebouncedCall(true);
 				setAddSubCartItem(null);
@@ -180,10 +187,12 @@ export const ProductCard = (props: Props) => {
 			toggleIsAddToCartApiBusy(true);
 			setAddSubCartItem(cartItem?.cart_item_id ?? null);
 			setQuantity((prev) => prev + 1);
+			setSendDebouncedCall(true);
 			setLoading(false);
+
 			setTimeout(async () => {
-				setSendDebouncedCall(true);
 				setAddSubCartItem(null);
+				setSendDebouncedCall(true);
 			}, 500);
 
 			return;
@@ -343,6 +352,7 @@ export const ProductCard = (props: Props) => {
 								}}
 								px={5}
 								onClick={handleSubtractButtonClick}
+								disabled={sendDebouncedCall}
 							>
 								<Minus size={16} />
 							</ButtonComponent>
@@ -386,6 +396,7 @@ export const ProductCard = (props: Props) => {
 								}}
 								px={5}
 								onClick={handleAddButtonClick}
+								disabled={sendDebouncedCall}
 							>
 								<Plus size={16} />
 							</ButtonComponent>
