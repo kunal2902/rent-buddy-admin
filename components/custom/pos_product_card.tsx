@@ -164,7 +164,6 @@ export const ProductCard = (props: Props) => {
 			setSendDebouncedCall(true);
 
 			setTimeout(async () => {
-				setSendDebouncedCall(true);
 				setAddSubCartItem(null);
 			}, 1000);
 
@@ -192,7 +191,6 @@ export const ProductCard = (props: Props) => {
 
 			setTimeout(async () => {
 				setAddSubCartItem(null);
-				setSendDebouncedCall(true);
 			}, 1000);
 
 			return;
