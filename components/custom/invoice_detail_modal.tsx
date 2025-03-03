@@ -31,6 +31,7 @@ interface Props {
 	subTotal: number;
 	orderDate: string;
 	onClose: () => void;
+	totalDiscount: number;
 	totalEHF: number | undefined;
 	fullAddress:string | undefined;
 	totalRemovalCharges: number | undefined;
@@ -62,6 +63,7 @@ const InvoiceDetailModal = (props: Props) => {
 		setAddress,
 		setState,
 		setTotalRemovalCharges,
+		totalDiscount,
 	} = props;
 	const setCartId = useSetRecoilState(cartIdAtom);
 	const [customer, setCustomer] = useRecoilState(customerAtom);
@@ -279,6 +281,13 @@ const InvoiceDetailModal = (props: Props) => {
 		</tr>
 		<tr>
 			<td colspan="3"></td>
+			<td>DISCOUNT</td>
+			<td>
+				${currencySign} ${totalDiscount.toFixed(2)}
+			</td>
+		</tr>
+		<tr>
+			<td colspan="3"></td>
 			<td>TOTAL</td>
 			<td>
 				<strong>${currencySign} ${total.toFixed(2)}</strong>
@@ -392,11 +401,19 @@ const InvoiceDetailModal = (props: Props) => {
 															title={`${currencySign} ${parseInt(item.item.price.toString(), 10) * item.quantity}`}
 														/>
 													</GroupComponent>
-													<TextComponent
-														c="gray"
-														fz={12}
-														text={`${currencySign} ${parseInt(item.item.price.toString(), 10)} x ${item.quantity}`}
-													/>
+													<GroupComponent justify="space-between">
+														<TextComponent
+															c="gray"
+															fz={12}
+															text={`${currencySign} ${parseInt(item.item.price.toString(), 10)} x ${item.quantity}`}
+														/>
+														<TextComponent
+															td="line-through"
+															c="gray"
+															fz={12}
+															text={`${currencySign} ${parseInt(item.item.msrp.toString(), 10)}`}
+														/>
+													</GroupComponent>
 												</StackComponent>
 											</GroupComponent>
 											{
@@ -463,8 +480,12 @@ const InvoiceDetailModal = (props: Props) => {
 					</GroupComponent>
 					<DividerComponent my={0} variant="dashed" p={0} py={0} />
 					<GroupComponent justify="space-between">
-						<TextComponent text="Total:" bold />
-						<TextComponent text={`${currencySign} ${total.toFixed(2)}`} bold />
+						<TextComponent text="Discount:" bold c="red" />
+						<TextComponent text={`- ${currencySign} ${totalDiscount.toFixed(2)}`} bold c="red" />
+					</GroupComponent>
+					<GroupComponent justify="space-between">
+						<TextComponent text="Total:" bold c="green" />
+						<TextComponent text={`${currencySign} ${total.toFixed(2)}`} bold c="green" />
 					</GroupComponent>
 				</StackComponent>
 			</CardComponent>

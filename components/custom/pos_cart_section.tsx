@@ -60,8 +60,8 @@ export const PosCartSection = () => {
 	const [orderDate, setOrderDate] = useState<string>("");
 
 	const [customersList, setCustomersList] = useState<ComboBoxProps[]>([]);
-	const [selectedWarranties, setSelectedWarranties] = useState<{ [key: number]: { duration: string; price: number } } | null>(null);
-	const [totalEHF, setTotalEHF] = useState<number>();
+		const [selectedWarranties, setSelectedWarranties] = useState<{ [key: number]: { duration: string; price: number } } | null>(null);
+	const [totalEHF, setTotalEHF] = useState<number>(0);
 	const [address, setAddress] = useState<string | undefined>("");
 	const [city, setCity] = useState<string | undefined>("");
 	const [state, setState] = useState<string | undefined>("");
@@ -70,6 +70,7 @@ export const PosCartSection = () => {
 	const [totalRemovalCharges, setTotalRemovalCharges] = useState<number | undefined>(0);
 	const [deliveryCharges, setDeliveryCharges] = useState<string | number | undefined>(0);
 	const [removalCharges, setRemovalCharges] = useState<Record<number, number>>({});
+	const [totalDiscount, setTotalDiscount] = useState<number>(0);
 
 	const [total, setTotal] = useState(0);
 	const [tax5, setTax5] = useState(0);
@@ -119,6 +120,11 @@ export const PosCartSection = () => {
 
 	useEffect(() => {
 		const subtotal = calculateSubtotal();
+		const disTotal = calculateDiscountTotal();
+		setTotalDiscount(disTotal - subtotal);
+		console.log({ subtotal });
+		console.log({ disTotal });
+		console.log("dis-------------------", disTotal - subtotal);
 		setSubTotal(subtotal);
 
 		const calculatedTax5 = (subtotal * 5) / 100;
@@ -134,11 +140,12 @@ export const PosCartSection = () => {
 		}, 0);
 
 		const calculatedTotal = subtotal + calculatedTax5 + calculatedTax7 + Number(totalRemovalCharges) + Number(deliveryCharges) + warrantyTotal;
+		const discountTotal =
 
 		setTax5(calculatedTax5);
 		setTax7(calculatedTax7);
 		setTotal(calculatedTotal);
-	}, [cartItems, removalCharges, deliveryCharges]);
+	}, [cartItems, removalCharges, deliveryCharges, totalDiscount]);
 
 	const handleCustomerChange = (option: { value: string; label: string }) => {
 		setSelectedCustomer({
@@ -160,6 +167,20 @@ export const PosCartSection = () => {
 			subtotal += itemTotal;
 		});
 		return subtotal;
+	};
+
+	const calculateDiscountTotal = () => {
+		let discounTotal = 0;
+		cartItems.forEach((cartItem) => {
+			const {
+				item: { msrp, price },
+				quantity,
+			} = cartItem;
+			const itemMsrp = parseInt(msrp, 10);
+
+			discounTotal += itemMsrp;
+		});
+		return discounTotal;
 	};
 
 	const clearCart = () => {
@@ -454,14 +475,25 @@ export const PosCartSection = () => {
 														title={`${currencySign} ${Number(Number(item.item.price).toFixed(2)) * item.quantity}`}
 													/>
 												</GroupComponent>
-												<TextComponent
-													c="gray"
-													fz={12}
-													text={`${currencySign} ${parseInt(
-														item.item.price.toString(),
-														10
-													)} x ${item.quantity}`}
-												/>
+												<GroupComponent justify="space-between">
+													<TextComponent
+														c="gray"
+														fz={12}
+														text={`${currencySign} ${parseInt(
+															item.item.price.toString(),
+															10
+														)} x ${item.quantity}`}
+													/>
+													<TextComponent
+														c="gray"
+														fz={12}
+														td="line-through"
+														text={`${currencySign} ${parseInt(
+															item.item.msrp.toString(),
+															10
+														)}`}
+													/>
+												</GroupComponent>
 											</StackComponent>
 										</GroupComponent>
 
@@ -624,6 +656,7 @@ export const PosCartSection = () => {
 					totalRemovalCharges={totalRemovalCharges}
 					setDeliveryCharges={setDeliveryCharges}
 					deliveryCharges={deliveryCharges}
+					totalDiscount={totalDiscount}
 					fullAddress={fullAddress}
 					setAddress={setAddress}
 					setPinCode={setPinCode}
@@ -644,6 +677,7 @@ export const PosCartSection = () => {
 					onClose={() => setPriceBreakupModal(false)}
 					totalRemovalCharges={totalRemovalCharges}
 					deliveryCharges={deliveryCharges}
+					totalDiscount={totalDiscount}
 					totalEHF={totalEHF}
 					subTotal={subTotal}
 					total={total}

@@ -87,6 +87,7 @@ export interface InitialItemValue {
 	internal_name: string;
 	created_by_id: string;
 	price: string | number;
+	msrp: string | number;
 	sub_category_id: string;
 	short_description: string;
 	stock_quantity: string | number;
@@ -157,6 +158,7 @@ const AddItemModal = (props: Props) => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const [inputError, setInputError] = useState<string | null>(null);
+	const [inputPriceError, setInputPriceError] = useState<string | null>(null);
 	const [replaceIndex, setReplaceIndex] = useState<number | null>(null);
 
 	const [tagsList, setTagsList] = useState([]);
@@ -179,6 +181,7 @@ const AddItemModal = (props: Props) => {
 	const [addOnsId, setAddOnsId] = useState<string[]>(initialItemValue.add_ons);
 	const [categoryId, setCategoryId] = useState<string>(initialItemValue.category_id);
 	const [price, setPrice] = useState<string | number>(initialItemValue.price);
+	const [MSRP, setMSRP] = useState<string | number>(initialItemValue.msrp);
 	const [itemTypeId, setItemTypeId] = useState<string>(initialItemValue.item_type_id);
 	const [shortDesc, setShortDesc] = useState<string>(initialItemValue.short_description);
 	const [tagsId, setTagsId] = useState<string[]>(
@@ -233,6 +236,11 @@ const AddItemModal = (props: Props) => {
 	useEffect(() => {
 		if (itemName) {
 			setInputError(null);
+		}
+		if (price > MSRP) {
+			setInputPriceError("Selling price cannot be greater than MSRP");
+		} else {
+			setInputPriceError(null);
 		}
 		getCategoryApi(
 			"",
@@ -336,7 +344,7 @@ const AddItemModal = (props: Props) => {
 				logoutUser(router);
 			},
 		).then();
-	}, [itemName]);
+	}, [itemName, price, MSRP]);
 
 	useEffect(() => {
 		if (categoryId) {
@@ -381,6 +389,7 @@ const AddItemModal = (props: Props) => {
 		itemBody.append("id", initialItemValue.item_id || "");
 		itemBody.append("name", itemName || "");
 		itemBody.append("price", String(price) || "");
+		itemBody.append("msrp", String(MSRP) || "");
 
 		itemBody.append("short_description", shortDesc || "");
 		if (subCategoryId?.trim()) itemBody.append("sub_category_id", subCategoryId.trim());
@@ -582,13 +591,24 @@ const AddItemModal = (props: Props) => {
 							placeholder="Enter Stock Quantity"
 						/>
 						<NumberInputComponent
+							min={0}
 							required
-							title="Price"
-							label="Price"
 							value={price}
-							error={inputError}
 							setValue={setPrice}
+							title="Selling Price"
+							label="Selling Price"
+							error={inputPriceError}
 							placeholder="Enter Price"
+						/>
+						<NumberInputComponent
+							min={0}
+							required
+							title="MSRP"
+							label="MSRP"
+							value={MSRP}
+							error={inputError}
+							setValue={setMSRP}
+							placeholder="Enter MSRP"
 						/>
 					</SimpleGridComponent>
 

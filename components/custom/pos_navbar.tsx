@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Expand, ShoppingBag, Shrink } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useFullscreen } from "@mantine/hooks";
 import Logo from "@/public/images/logo.png";
@@ -15,8 +16,7 @@ import {
 	TooltipComponent,
 	UnstyledButtonComponent,
 } from "@/components";
-import { appLogoHeight, appLogoWidth, dashboardRoute, logoutUser, posRoute } from "@/utils";
-import { useRouter } from "next/navigation";
+import { appLogoHeight, appLogoWidth, dashboardRoute, logoutUser } from "@/utils";
 
 export const PosNavbar = () => {
 	const {
