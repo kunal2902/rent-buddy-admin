@@ -21,6 +21,7 @@ interface Props {
 	total: number;
 	tax5:number;
 	tax7: number;
+	totalDiscount: number;
 	totalEHF: number | undefined;
 	totalRemovalCharges: number | undefined;
 	deliveryCharges: string | number | undefined;
@@ -35,6 +36,7 @@ const PriceBreakupModal = (props: Props) => {
 		tax5,
 		tax7,
 		totalEHF,
+		totalDiscount,
 		totalRemovalCharges,
 		deliveryCharges,
 	} = props;
@@ -47,7 +49,13 @@ const PriceBreakupModal = (props: Props) => {
 			title={<TitleComponent title="Price Breakup" />}
 		>
 
-			<CardComponent padding="sm" shadow="sm" radius="md" withBorder style={{ height: "auto" }}>
+			<CardComponent
+				padding="sm"
+				shadow="sm"
+				radius="md"
+				withBorder
+				style={{ height: "auto" }}
+			>
 				<StackComponent gap="sm">
 					<GroupComponent justify="space-between">
 						<TextComponent text="Sub Total:" size="sm" bold />
@@ -75,22 +83,24 @@ const PriceBreakupModal = (props: Props) => {
 					</GroupComponent>
 					<DividerComponent my={0} variant="dashed" p={0} py={0} />
 					<GroupComponent justify="space-between">
-						<TextComponent text="Total:" bold />
-						<TextComponent text={`${currencySign} ${total.toFixed(2)}`} bold />
+						<TextComponent text="Discount:" bold c="red" />
+						<TextComponent text={`- ${currencySign} ${totalDiscount.toFixed(2)}`} bold c="red" />
+					</GroupComponent>
+					<GroupComponent justify="space-between">
+						<TextComponent text="Total:" bold c="green" />
+						<TextComponent text={`${currencySign} ${total.toFixed(2)}`} bold c="green" />
 					</GroupComponent>
 				</StackComponent>
 			</CardComponent>
 
 			<BoxComponent h={60} className="mt-3">
 				<GroupComponent grow justify="end">
-					<GroupComponent grow justify="end">
-						<ButtonComponent
-							title="Close"
-							variant="subtle"
-							color={appAccentColorRGBA}
-							onClick={onClose}
-						/>
-					</GroupComponent>
+					<ButtonComponent
+						title="Close"
+						variant="subtle"
+						color={appAccentColorRGBA}
+						onClick={onClose}
+					/>
 				</GroupComponent>
 			</BoxComponent>
 		</ModalComponent>

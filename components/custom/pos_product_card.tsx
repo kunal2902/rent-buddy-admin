@@ -311,12 +311,20 @@ export const ProductCard = (props: Props) => {
 				{/*</SpoilerComponent>*/}
 
 				<GroupComponent justify="space-between">
-					<TextComponent
-						bold
-						size="xl"
-						text={`${currencySign} ${item.price}`}
-						c="green"
-					/>
+					<StackComponent gap={0} pt={10} justify="start">
+						<TextComponent
+							size="xs"
+							text={`${currencySign} ${item.msrp}`}
+							td="line-through"
+							c="gray"
+						/>
+						<TextComponent
+							bold
+							size="md"
+							text={`${currencySign} ${item.price}`}
+							c="green"
+						/>
+					</StackComponent>
 
 					{!cartItem ? (
 						<ButtonComponent

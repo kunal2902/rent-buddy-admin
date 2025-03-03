@@ -44,6 +44,7 @@ const initialItemValue: InitialItemValue = {
 	images: [],
 	icon: "",
 	price: "",
+	msrp: "",
 	stock_quantity: "",
 	created_by_id: "",
 	created_at: "",
