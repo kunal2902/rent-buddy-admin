@@ -29,6 +29,8 @@ interface Props {
 	total: number;
 	isOpen: boolean;
 	subTotal: number;
+	discount: number;
+	totalMsrp: number;
 	orderDate: string;
 	onClose: () => void;
 	totalDiscount: number;
@@ -55,6 +57,8 @@ const InvoiceDetailModal = (props: Props) => {
 		totalEHF,
 		orderDate,
 		fullAddress,
+		totalMsrp,
+		discount,
 		deliveryCharges,
 		totalRemovalCharges,
 		setDeliveryCharges,
@@ -243,7 +247,7 @@ const InvoiceDetailModal = (props: Props) => {
 			<td>${item.quantity}</td>
 			<td>${item.item.name}</td>
 			<td></td>
-			<td>${currencySign} ${item.item.price}</td>
+			<td>${currencySign} ${parseInt(item.item.msrp, 10).toFixed(2)}</td>
 			<td>${currencySign} ${(parseInt(item.item.price, 10) * item.quantity).toFixed(2)}</td>
 		</tr>
 		`).join("")}
@@ -252,22 +256,17 @@ const InvoiceDetailModal = (props: Props) => {
 		<tr>
 			<td colspan="3"></td>
 			<td>EHF</td>
-			<td>${currencySign} ${totalEHF}</td>
+			<td>${currencySign} ${totalEHF?.toFixed(2)}</td>
 		</tr>
 		<tr>
 			<td colspan="3"></td>
 			<td>DELIVERY</td>
-			<td>${currencySign} ${deliveryCharges}</td>
+			<td>${currencySign} ${Number(deliveryCharges).toFixed(2)}</td>
 		</tr>
 		<tr>
 			<td colspan="3"></td>
 			<td>REMOVAL</td>
-			<td>${currencySign} ${totalRemovalCharges}</td>
-		</tr>
-		<tr>
-			<td colspan="3"></td>
-			<td>SUBTOTAL</td>
-			<td>${currencySign} ${subTotal.toFixed(2)}</td>
+			<td>${currencySign} ${Number(totalRemovalCharges).toFixed(2)}</td>
 		</tr>
 		<tr>
 			<td colspan="3"></td>
@@ -279,11 +278,16 @@ const InvoiceDetailModal = (props: Props) => {
 			<td>7% PST</td>
 			<td>${currencySign} ${tax7.toFixed(2)}</td>
 		</tr>
+			<tr>
+			<td colspan="3"></td>
+			<td>SUBTOTAL</td>
+			<td>${currencySign} ${subTotal.toFixed(2)}</td>
+		</tr>
 		<tr>
 			<td colspan="3"></td>
 			<td>DISCOUNT</td>
 			<td>
-				${currencySign} ${totalDiscount.toFixed(2)}
+				- ${currencySign} ${totalDiscount.toFixed(2)}
 			</td>
 		</tr>
 		<tr>
@@ -455,21 +459,25 @@ const InvoiceDetailModal = (props: Props) => {
 			>
 				<StackComponent gap="sm">
 					<GroupComponent justify="space-between">
-						<TextComponent text="Sub Total:" size="sm" bold />
-						<TextComponent text={`${currencySign} ${subTotal.toFixed(2)}`} bold size="sm" />
+						<TextComponent text="MSRP:" size="sm" bold />
+						<TextComponent text={`${currencySign} ${totalMsrp.toFixed(2)}`} bold size="sm" />
 					</GroupComponent>
 					<GroupComponent justify="space-between">
 						<TextComponent text="EHF:" size="sm" bold />
-						<TextComponent text={`${currencySign} ${totalEHF}`} bold size="sm" />
+						<TextComponent text={`${currencySign} ${totalEHF?.toFixed(2)}`} bold size="sm" />
 					</GroupComponent>
 					<GroupComponent justify="space-between">
 						<TextComponent text="Delivery Charges:" size="sm" bold />
 						<TextComponent text={`${currencySign} ${Number(deliveryCharges).toFixed(2)}`} bold size="sm" />
 					</GroupComponent>
 					<GroupComponent justify="space-between">
-						<TextComponent text="Removal" size="sm" bold />
+						<TextComponent text="Removal:" size="sm" bold />
 						<TextComponent text={`${currencySign} ${Number(totalRemovalCharges).toFixed(2)}`} bold size="sm" />
 					</GroupComponent>
+					{/*<GroupComponent justify="space-between">*/}
+					{/*	<TextComponent text="Warranty:" size="sm" bold />*/}
+					{/*	<TextComponent text={`${currencySign} ${warranty.toFixed(2)}`} bold size="sm" />*/}
+					{/*</GroupComponent>*/}
 					<GroupComponent justify="space-between">
 						<TextComponent text="5% GST:" size="sm" bold />
 						<TextComponent text={`${currencySign} ${tax5.toFixed(2)}`} bold size="sm" />
@@ -480,8 +488,12 @@ const InvoiceDetailModal = (props: Props) => {
 					</GroupComponent>
 					<DividerComponent my={0} variant="dashed" p={0} py={0} />
 					<GroupComponent justify="space-between">
+						<TextComponent text="Sub Total:" size="sm" bold />
+						<TextComponent text={`${currencySign} ${subTotal.toFixed(2)}`} bold size="sm" />
+					</GroupComponent>
+					<GroupComponent justify="space-between">
 						<TextComponent text="Discount:" bold c="red" />
-						<TextComponent text={`- ${currencySign} ${totalDiscount.toFixed(2)}`} bold c="red" />
+						<TextComponent text={`- ${currencySign} ${discount.toFixed(2)}`} bold c="red" />
 					</GroupComponent>
 					<GroupComponent justify="space-between">
 						<TextComponent text="Total:" bold c="green" />

@@ -50,6 +50,8 @@ import WarrantyModal from "@/components/custom/warranty_modal";
 export const PosCartSection = () => {
 	const router = useRouter();
 	const [subTotal, setSubTotal] = useState(0);
+	const [discount, setDiscount] = useState(0);
+	const [warranty, setWarranty] = useState(0);
 	const [loading, setLoading] = useState(false);
 	const [callApi, setCallApi] = useState<boolean>(true);
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
@@ -70,7 +72,7 @@ export const PosCartSection = () => {
 	const [totalRemovalCharges, setTotalRemovalCharges] = useState<number | undefined>(0);
 	const [deliveryCharges, setDeliveryCharges] = useState<string | number | undefined>(0);
 	const [removalCharges, setRemovalCharges] = useState<Record<number, number>>({});
-	const [totalDiscount, setTotalDiscount] = useState<number>(0);
+	const [totalMsrp, setTotalMsrp] = useState<number>(0);
 
 	const [total, setTotal] = useState(0);
 	const [tax5, setTax5] = useState(0);
@@ -119,33 +121,36 @@ export const PosCartSection = () => {
 	}, [address, city, state, pinCode]);
 
 	useEffect(() => {
-		const subtotal = calculateSubtotal();
-		const disTotal = calculateDiscountTotal();
-		setTotalDiscount(disTotal - subtotal);
-		console.log({ subtotal });
-		console.log({ disTotal });
-		console.log("dis-------------------", disTotal - subtotal);
-		setSubTotal(subtotal);
+		const totalMsrp = calculateMsrp();
+		const totalItemQuantity = calculateItemQuantity();
 
-		const calculatedTax5 = (subtotal * 5) / 100;
-
-		const calculatedTax7 = (subtotal * 7) / 100;
+		const calculatedTax5 = (totalItemQuantity * 5) / 100;
+		const calculatedTax7 = (totalItemQuantity * 7) / 100;
 
 		const warrantyTotal = cartItems.reduce((total, item, index) => {
 			const warranty = selectedWarranties?.[index];
+			console.log("warranty", warranty);
 			if (warranty) {
 				return total + (warranty.price * item.quantity);
 			}
+			console.log("total", total);
 			return total;
 		}, 0);
 
-		const calculatedTotal = subtotal + calculatedTax5 + calculatedTax7 + Number(totalRemovalCharges) + Number(deliveryCharges) + warrantyTotal;
-		const discountTotal =
+		console.log("warrantyTotal", warrantyTotal);
 
+		const calculateSubTotal = totalMsrp + calculatedTax5 + calculatedTax7 + Number(totalRemovalCharges) + Number(deliveryCharges) + warrantyTotal + totalEHF;
+
+		const calculatedTotal = calculateSubTotal - (totalMsrp - totalItemQuantity);
+
+		setTotalMsrp(totalMsrp);
 		setTax5(calculatedTax5);
 		setTax7(calculatedTax7);
 		setTotal(calculatedTotal);
-	}, [cartItems, removalCharges, deliveryCharges, totalDiscount]);
+		setWarranty(warrantyTotal);
+		setSubTotal(calculateSubTotal);
+		setDiscount(totalMsrp - totalItemQuantity);
+	}, [cartItems, removalCharges, deliveryCharges, totalMsrp]);
 
 	const handleCustomerChange = (option: { value: string; label: string }) => {
 		setSelectedCustomer({
@@ -154,11 +159,11 @@ export const PosCartSection = () => {
 		});
 	};
 
-	const calculateSubtotal = () => {
+	const calculateItemQuantity = () => {
 		let subtotal = 0;
 		cartItems.forEach((cartItem) => {
 			const {
-				item: { price, custom_attributes },
+				item: { price },
 				quantity,
 			} = cartItem;
 			const itemPrice = parseInt(price, 10);
@@ -169,8 +174,8 @@ export const PosCartSection = () => {
 		return subtotal;
 	};
 
-	const calculateDiscountTotal = () => {
-		let discounTotal = 0;
+	const calculateMsrp = () => {
+		let totalMsrp = 0;
 		cartItems.forEach((cartItem) => {
 			const {
 				item: { msrp, price },
@@ -178,9 +183,9 @@ export const PosCartSection = () => {
 			} = cartItem;
 			const itemMsrp = parseInt(msrp, 10);
 
-			discounTotal += itemMsrp;
+			totalMsrp += itemMsrp;
 		});
-		return discounTotal;
+		return totalMsrp;
 	};
 
 	const clearCart = () => {
@@ -232,9 +237,8 @@ export const PosCartSection = () => {
 
 	useEffect(() => {
 		const ehfAmount = cartItems.reduce((total, item) => total + calculateEHF(item.item.category.name, item.quantity), 0);
-
 		setTotalEHF(ehfAmount);
-	}, [cartItems, ehfFees]);
+	}, [cartItems, totalEHF]);
 
 	const handleSaveDraft = () => {
 		cartDraftApi(
@@ -656,12 +660,14 @@ export const PosCartSection = () => {
 					totalRemovalCharges={totalRemovalCharges}
 					setDeliveryCharges={setDeliveryCharges}
 					deliveryCharges={deliveryCharges}
-					totalDiscount={totalDiscount}
+					totalDiscount={totalMsrp}
 					fullAddress={fullAddress}
 					setAddress={setAddress}
 					setPinCode={setPinCode}
 					orderDate={orderDate}
 					totalEHF={totalEHF}
+					discount={discount}
+					totalMsrp={totalMsrp}
 					setState={setState}
 					subTotal={subTotal}
 					setCity={setCity}
@@ -677,8 +683,10 @@ export const PosCartSection = () => {
 					onClose={() => setPriceBreakupModal(false)}
 					totalRemovalCharges={totalRemovalCharges}
 					deliveryCharges={deliveryCharges}
-					totalDiscount={totalDiscount}
+					totalMsrp={totalMsrp}
+					discount={discount}
 					totalEHF={totalEHF}
+					warranty={warranty}
 					subTotal={subTotal}
 					total={total}
 					tax5={tax5}
