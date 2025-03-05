@@ -18,7 +18,7 @@ import {
 	roleAPIPath,
 	subCategoryAPIPath,
 	tagAPIPath,
-	usersAPIPath,
+	usersAPIPath, warrantyAPIPath,
 } from "@/utils";
 import { CartItemModel, CartModel } from "@/models";
 
@@ -2066,7 +2066,7 @@ export const upsertCartItemApi = async (
 ): Promise<
 	| {
 			cartItem: CartItemModel;
-	  }
+}
 	| string
 	| undefined
 > => {
@@ -2181,6 +2181,173 @@ export const checkoutApi = async (
 ) => {
 	const token = getCrmJWT();
 	const response = await makePostRequest(checkoutAPIPath, body, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 403:
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback(response.message);
+			toast.error(response.message);
+	}
+};
+
+// warranty api
+export const getWarrantyApi = async (
+	query: string | undefined,
+	successCallback: (arg0: any) => void,
+	errorCallback: (arg0: any) => void,
+	logoutCallback: () => void,
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === "" || token === "null") {
+		logoutCallback();
+		return;
+	}
+	const path = query === "" ? warrantyAPIPath : `${warrantyAPIPath}?${query}`;
+	const response = await makeGetRequest(path, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 403:
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback(response.message);
+			toast.error(response.message);
+	}
+};
+
+export const getWarrantyByIdApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: (arg0: any) => void,
+	logoutCallback: () => void,
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === "" || token === "null") {
+		logoutCallback();
+		return;
+	}
+	const response = await makeGetRequest(`${warrantyAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 403:
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback(response.message);
+			toast.error(response.message);
+	}
+};
+
+export const upsertWarrantyApi = async (
+	body: any,
+	successCallback: (arg0: any) => void,
+	errorCallback: (message: string) => void,
+	logoutCallback: () => void,
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === "" || token === "null") {
+		logoutCallback();
+		return;
+	}
+	const response = await makePostRequest(warrantyAPIPath, body, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 403:
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback(response.message);
+			toast.error(response.message);
+	}
+};
+
+export const disableWarrantyApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: (arg0: any) => void,
+	logoutCallback: () => void,
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === "" || token === "null") {
+		logoutCallback();
+		return;
+	}
+	const response = await makePutRequest(`${warrantyAPIPath}/${id}`, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 403:
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback(response.message);
+			toast.error(response.message);
+	}
+};
+
+export const deleteWarrantyApi = async (
+	id: string,
+	successCallback: (arg0: any) => void,
+	errorCallback: (arg0: any) => void,
+	logoutCallback: () => void,
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === "" || token === "null") {
+		logoutCallback();
+		return;
+	}
+	const response = await makeDeleteRequest(`${warrantyAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {

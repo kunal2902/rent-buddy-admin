@@ -33,7 +33,7 @@ import {
 	customerAtom,
 	deleteCartApi,
 	formatDate,
-	getCustomerApi,
+	getCustomerApi, getWarrantyApi,
 	logoutUser, paymentOptions,
 	toTitleCase,
 	upsertCartApi,
@@ -46,6 +46,7 @@ import AddCustomerModal from "@/containers/9_customers/add_customer_modal";
 import AddShipToModal from "@/components/custom/add_ship_to_modal";
 import PriceBreakupModal from "@/components/custom/price_breakup_modal";
 import WarrantyModal from "@/components/custom/warranty_modal";
+import { WarrantyModel } from "@/models/warranty_modal";
 
 export const PosCartSection = () => {
 	const router = useRouter();
@@ -62,7 +63,8 @@ export const PosCartSection = () => {
 	const [orderDate, setOrderDate] = useState<string>("");
 
 	const [customersList, setCustomersList] = useState<ComboBoxProps[]>([]);
-		const [selectedWarranties, setSelectedWarranties] = useState<{ [key: number]: { duration: string; price: number } } | null>(null);
+	const [selectedWarranties, setSelectedWarranties] = useState<{ [key: number]: { duration: string; price: number } } | null>(null);
+	console.log("selectedWarranties", selectedWarranties);
 	const [totalEHF, setTotalEHF] = useState<number>(0);
 	const [address, setAddress] = useState<string | undefined>("");
 	const [city, setCity] = useState<string | undefined>("");
@@ -73,6 +75,8 @@ export const PosCartSection = () => {
 	const [deliveryCharges, setDeliveryCharges] = useState<string | number | undefined>(0);
 	const [removalCharges, setRemovalCharges] = useState<Record<number, number>>({});
 	const [totalMsrp, setTotalMsrp] = useState<number>(0);
+	const [warrantiesList, setWarrantiesList] = useState<WarrantyModel[]>([]);
+	console.log("warrantiesList", warrantiesList);
 
 	const [total, setTotal] = useState(0);
 	const [tax5, setTax5] = useState(0);
@@ -113,6 +117,16 @@ export const PosCartSection = () => {
 				logoutUser(router);
 			},
 		).then();
+		getWarrantyApi(
+			"",
+			(data: any) => {
+				setWarrantiesList(data.warranty);
+			},
+			() => {},
+			() => {
+				logoutUser(router);
+			},
+		).then();
 	}, [callApi]);
 
 	useEffect(() => {
@@ -120,26 +134,34 @@ export const PosCartSection = () => {
 		setFullAddress(combinedAddress);
 	}, [address, city, state, pinCode]);
 
+	const calculateTotalWarrantyPrice = (selectedWarranties: { [key: number]: { duration: string; price: number } }): number => {
+		let totalPrice = 0;
+
+		for (const key in selectedWarranties) {
+			if (selectedWarranties.hasOwnProperty(key)) {
+				totalPrice += selectedWarranties[key].price;
+			}
+		}
+
+		return totalPrice;
+	};
+
 	useEffect(() => {
 		const totalMsrp = calculateMsrp();
 		const totalItemQuantity = calculateItemQuantity();
+		const warrantyTotal = calculateTotalWarrantyPrice(selectedWarranties || {});
 
 		const calculatedTax5 = (totalItemQuantity * 5) / 100;
 		const calculatedTax7 = (totalItemQuantity * 7) / 100;
 
-		const warrantyTotal = cartItems.reduce((total, item, index) => {
-			const warranty = selectedWarranties?.[index];
-			console.log("warranty", warranty);
-			if (warranty) {
-				return total + (warranty.price * item.quantity);
-			}
-			console.log("total", total);
-			return total;
-		}, 0);
-
-		console.log("warrantyTotal", warrantyTotal);
-
-		const calculateSubTotal = totalMsrp + calculatedTax5 + calculatedTax7 + Number(totalRemovalCharges) + Number(deliveryCharges) + warrantyTotal + totalEHF;
+		const calculateSubTotal =
+			totalMsrp +
+			calculatedTax5 +
+			calculatedTax7 +
+			Number(totalRemovalCharges || 0) +
+			Number(deliveryCharges || 0) +
+			warrantyTotal +
+			Number(totalEHF || 0);
 
 		const calculatedTotal = calculateSubTotal - (totalMsrp - totalItemQuantity);
 
@@ -150,7 +172,15 @@ export const PosCartSection = () => {
 		setWarranty(warrantyTotal);
 		setSubTotal(calculateSubTotal);
 		setDiscount(totalMsrp - totalItemQuantity);
-	}, [cartItems, removalCharges, deliveryCharges, totalMsrp]);
+	}, [
+		cartItems,
+		removalCharges,
+		deliveryCharges,
+		totalMsrp,
+		selectedWarranties,
+		totalRemovalCharges,
+		totalEHF,
+	]);
 
 	const handleCustomerChange = (option: { value: string; label: string }) => {
 		setSelectedCustomer({
@@ -529,10 +559,14 @@ export const PosCartSection = () => {
 										</GroupComponent>
 
 										{/* Warranty Logic */}
-										{Number(item.item.price) >= 1500 && (
+										{
 											selectedWarranties?.[index] ? (
 												<GroupComponent justify="space-between" my={5}>
-													<TextComponent lh={1} fz={12} text={`${selectedWarranties[index]?.duration} Warranty: `} />
+													<TextComponent
+														lh={1}
+														fz={12}
+														text={`${selectedWarranties[index]?.duration} Warranty: `}
+													/>
 													<GroupComponent justify="end">
 														<TextComponent
 															lh={1}
@@ -558,7 +592,7 @@ export const PosCartSection = () => {
 													/>
 												</GroupComponent>
 											)
-										)}
+										}
 
 										{/* Divider */}
 										{index !== cartItems.length - 1 && (
@@ -666,6 +700,7 @@ export const PosCartSection = () => {
 					setPinCode={setPinCode}
 					orderDate={orderDate}
 					totalEHF={totalEHF}
+					warranty={warranty}
 					discount={discount}
 					totalMsrp={totalMsrp}
 					setState={setState}
@@ -697,10 +732,11 @@ export const PosCartSection = () => {
 			{warrentyModal !== null && (
 				<WarrantyModal
 					isOpen={warrentyModal !== null}
+					warrantiesList={warrantiesList}
 					onClose={() => setWarrentyModal(null)}
 					itemPrice={Number(cartItems[warrentyModal]?.item.price)}
 					setSelectedWarranty={(warranty) => {
-						setSelectedWarranties(prev => ({
+						setSelectedWarranties((prev) => ({
 							...prev,
 							[warrentyModal]: warranty,
 						}));

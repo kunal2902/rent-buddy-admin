@@ -11,11 +11,13 @@ import {
 	TextComponent,
 	TitleComponent,
 } from "@/components";
+import { WarrantyModel } from "@/models/warranty_modal";
 
 interface Props {
 	isOpen: boolean;
-	onClose: () => void;
 	itemPrice: number;
+	onClose: () => void;
+	warrantiesList: Array<WarrantyModel>;
 	selectedWarranty: { duration: string; price: number } | null;
 	setSelectedWarranty: (warranty: { duration: string; price: number }) => void;
 }
@@ -26,27 +28,14 @@ const WarrantyModal = ({
    itemPrice,
    selectedWarranty,
    setSelectedWarranty,
+   warrantiesList,
 }: Props) => {
-	const warrantyOptions = [
-		{
-			duration: "1 Year",
-			price: itemPrice >= 1500 && itemPrice <= 3499 ? 109 : 129,
-		},
-		{
-			duration: "2 Years",
-			price: itemPrice >= 1500 && itemPrice <= 3499 ? 169 : 219,
-		},
-		{
-			duration: "3 Years",
-			price: itemPrice >= 1500 && itemPrice <= 3499 ? 219 : 249,
-		},
-	];
-
-	const handleCardClick = (option: { duration: string; price: number }) => {
-		setSelectedWarranty(option);
+	const handleCardClick = (option: WarrantyModel) => {
+		setSelectedWarranty({
+			duration: option.warranty_title,
+			price: Number(option.price),
+		});
 	};
-
-		console.log(selectedWarranty);
 
 	return (
 		<ModalComponent
@@ -55,45 +44,47 @@ const WarrantyModal = ({
 			title={<TitleComponent title="Choose Warranty" />}
 		>
 			<StackComponent gap="sm">
-				{warrantyOptions.map((option) => (
-					<div
-						key={option.duration}
-						onClick={() => handleCardClick(option)}
-					>
-						<CardComponent
-							padding="sm"
-							shadow="sm"
-							radius="md"
-							withBorder
-							style={{
-								cursor: "pointer",
-								backgroundColor:
-									selectedWarranty?.duration === option.duration
-										? "rgba(116, 105, 182, 0.12)"
-										: "white",
-							}}
+				{warrantiesList
+					.filter(
+						(option) =>
+							itemPrice >= Number(option.min_price) &&
+							itemPrice <= Number(option.max_price)
+					)
+					.map((option) => (
+						<div
+							key={option.warranty_id}
+							onClick={() => handleCardClick(option)}
 						>
-							<GroupComponent justify="space-between">
-								<TextComponent
-									text={`Up to $${
-										itemPrice >= 1500 && itemPrice <= 3499
-											? "1500"
-											: "3500"
-									}`}
-									bold
-								/>
-								<TextComponent text={option.duration} bold />
-								<TextComponent text={`$ ${option.price}`} />
-							</GroupComponent>
-						</CardComponent>
-					</div>
-				))}
+							<CardComponent
+								padding="sm"
+								shadow="sm"
+								radius="md"
+								withBorder
+								style={{
+									cursor: "pointer",
+									backgroundColor:
+										selectedWarranty?.duration === option.warranty_title
+											? "rgba(116, 105, 182, 0.12)" // Highlight color
+											: "white", // Default color
+								}}
+							>
+								<GroupComponent justify="space-between">
+									<TextComponent
+										text={`Up to $${option.max_price}`}
+										bold
+									/>
+									<TextComponent text={option.warranty_title} bold />
+									<TextComponent text={`$ ${option.price}`} />
+								</GroupComponent>
+							</CardComponent>
+						</div>
+					))}
 				<BoxComponent h={60} className="mt-3">
 					<GroupComponent grow justify="end">
 						<ButtonComponent
 							title="Add Warranty"
 							onClick={onClose}
-							disabled={!selectedWarranty} // Disable button if no warranty selected
+							disabled={!selectedWarranty}
 						/>
 					</GroupComponent>
 				</BoxComponent>

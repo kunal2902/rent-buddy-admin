@@ -27,6 +27,7 @@ interface Props {
 	tax5:number;
 	tax7: number;
 	total: number;
+	warranty: number;
 	isOpen: boolean;
 	subTotal: number;
 	discount: number;
@@ -68,6 +69,7 @@ const InvoiceDetailModal = (props: Props) => {
 		setState,
 		setTotalRemovalCharges,
 		totalDiscount,
+		warranty,
 	} = props;
 	const setCartId = useSetRecoilState(cartIdAtom);
 	const [customer, setCustomer] = useRecoilState(customerAtom);
@@ -267,6 +269,11 @@ const InvoiceDetailModal = (props: Props) => {
 			<td colspan="3"></td>
 			<td>REMOVAL</td>
 			<td>${currencySign} ${Number(totalRemovalCharges).toFixed(2)}</td>
+		</tr>
+			<tr>
+			<td colspan="3"></td>
+			<td>WARRANTY</td>
+			<td>${currencySign} ${Number(warranty).toFixed(2)}</td>
 		</tr>
 		<tr>
 			<td colspan="3"></td>
@@ -474,10 +481,10 @@ const InvoiceDetailModal = (props: Props) => {
 						<TextComponent text="Removal:" size="sm" bold />
 						<TextComponent text={`${currencySign} ${Number(totalRemovalCharges).toFixed(2)}`} bold size="sm" />
 					</GroupComponent>
-					{/*<GroupComponent justify="space-between">*/}
-					{/*	<TextComponent text="Warranty:" size="sm" bold />*/}
-					{/*	<TextComponent text={`${currencySign} ${warranty.toFixed(2)}`} bold size="sm" />*/}
-					{/*</GroupComponent>*/}
+					<GroupComponent justify="space-between">
+						<TextComponent text="Warranty:" size="sm" bold />
+						<TextComponent text={`${currencySign} ${warranty.toFixed(2)}`} bold size="sm" />
+					</GroupComponent>
 					<GroupComponent justify="space-between">
 						<TextComponent text="5% GST:" size="sm" bold />
 						<TextComponent text={`${currencySign} ${tax5.toFixed(2)}`} bold size="sm" />

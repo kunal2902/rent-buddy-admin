@@ -1,4 +1,5 @@
 import {
+	BadgeCheck,
 	Blocks,
 	Bookmark,
 	List,
@@ -45,7 +46,7 @@ import {
 	tagsName,
 	tagsRoute,
 	usersName,
-	usersRoute,
+	usersRoute, warrantyName, warrantyRoute,
 } from "@/utils";
 
 export enum SideBarType {
@@ -135,6 +136,13 @@ export const SidebarItems: Array<SideBarProps<SideBarType>> = [
 					title: addOnsName,
 					other: { link: addOnsRoute },
 					Icon: Blocks,
+					type: SideBarType.Simple,
+				},
+				{
+					id: 8,
+					title: warrantyName,
+					other: { link: warrantyRoute },
+					Icon: BadgeCheck,
 					type: SideBarType.Simple,
 				},
 			],

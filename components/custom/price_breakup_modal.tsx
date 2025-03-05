@@ -77,10 +77,10 @@ const PriceBreakupModal = (props: Props) => {
 						<TextComponent text="Removal:" size="sm" bold />
 						<TextComponent text={`${currencySign} ${Number(totalRemovalCharges).toFixed(2)}`} bold size="sm" />
 					</GroupComponent>
-					{/*<GroupComponent justify="space-between">*/}
-					{/*	<TextComponent text="Warranty:" size="sm" bold />*/}
-					{/*	<TextComponent text={`${currencySign} ${warranty.toFixed(2)}`} bold size="sm" />*/}
-					{/*</GroupComponent>*/}
+					<GroupComponent justify="space-between">
+						<TextComponent text="Warranty:" size="sm" bold />
+						<TextComponent text={`${currencySign} ${warranty.toFixed(2)}`} bold size="sm" />
+					</GroupComponent>
 					<GroupComponent justify="space-between">
 						<TextComponent text="5% GST:" size="sm" bold />
 						<TextComponent text={`${currencySign} ${tax5.toFixed(2)}`} bold size="sm" />

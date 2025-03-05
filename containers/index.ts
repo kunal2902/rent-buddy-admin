@@ -12,3 +12,4 @@ export * from "@/containers/11_reports/index";
 export * from "@/containers/12_activity_logs/index";
 export * from "@/containers/13_settings/index";
 export * from "@/containers/login/index";
+export * from "@/containers/14_warranties";
