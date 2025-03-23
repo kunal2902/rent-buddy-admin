@@ -141,6 +141,9 @@ export const cartItemAPIPath: string = `${apiUrl}/cart-item`;
 // Checkout path
 export const checkoutAPIPath: string = `${apiUrl}/checkout`;
 
+// Warranty path
+export const warrantyAPIPath: string = `${apiUrl}/warranty`;
+
 /** Constant Functions */
 /** To get the CRM JWT stored in Cookies */
 export const getCrmJWT = (): string => getCookie(crmJwtConstant) ?? "";
@@ -170,6 +173,7 @@ export const reportsRoute: string = "/reports";
 export const activityLogsRoute: string = "/logs";
 const inventoryRoute: string = "/inventory";
 export const addOnsRoute: string = `${inventoryRoute}/add-ons`;
+export const warrantyRoute: string = `${inventoryRoute}/warranties`;
 export const categoriesRoute: string = `${inventoryRoute}/categories`;
 export const customAttributesRoute: string = `${inventoryRoute}/custom-attributes`;
 export const itemTypesRoute: string = `${inventoryRoute}/item-types`;
@@ -197,6 +201,7 @@ export const subCategoriesName: string = "Sub-Categories";
 export const customAttributesName: string = "Custom Attributes";
 export const tagsName: string = "Tags";
 export const addOnsName: string = "Add-ons";
+export const warrantyName: string = "Warranty";
 export const customersName: string = "Customers";
 export const usersName: string = "Users";
 export const reportsName: string = "Reports";

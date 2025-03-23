@@ -18,7 +18,7 @@ import {
 	usersName,
 	inventoryName,
 	addOnsName,
-	customAttributesName,
+	customAttributesName, warrantyName
 } from "@/utils";
 import { SidebarItems, SideBarProps, SideBarType } from "@/constants";
 import { checkPermissions } from "@/components/custom/check_permission_entities";
@@ -39,6 +39,7 @@ export const useSidebarItems = (): Array<SideBarProps<SideBarType>> => {
 			{ key: "canViewCustomers", entity: "customer", permissions: ["view"] },
 			{ key: "canViewCategories", entity: "category", permissions: ["view"] },
 			{ key: "canViewItemTypes", entity: "item-type", permissions: ["view"] },
+			{ key: "canViewWarranties", entity: "warranties", permissions: ["view"] },
 			{ key: "canViewSubCategories", entity: "sub-category", permissions: ["view"] },
 			{ key: "canViewCustomAttributes", entity: "custom-attribute", permissions: ["view"] },
 		],
@@ -79,6 +80,7 @@ export const useSidebarItems = (): Array<SideBarProps<SideBarType>> => {
 				[categoriesName]: userPermissions.canViewCategories,
 				[subCategoriesName]: userPermissions.canViewSubCategories,
 				[customAttributesName]: userPermissions.canViewCustomAttributes,
+				[warrantyName]: userPermissions.canViewCustomAttributes,
 			};
 
 			if (item.title === inventoryName && item.type === SideBarType.Nested) {

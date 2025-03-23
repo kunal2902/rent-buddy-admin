@@ -61,6 +61,31 @@ export const ProductCard = (props: Props) => {
 	const setCartItems = useSetRecoilState<Array<CartItemModel>>(cartItemsAtom);
 	const [cart, setCart] = useRecoilState<CartModel | null>(cartAtom);
 
+	const [pendingQueue, setPendingQueue] = useState<(() => Promise<void>)[]>([]);
+	const [processingQueue, setProcessingQueue] = useState(false);
+
+	const processQueue = async () => {
+		if (processingQueue) return;
+
+		setProcessingQueue(true);
+
+		while (pendingQueue.length > 0) {
+			const task = pendingQueue.shift();
+			if (task) {
+				await task(); // Execute the task
+			}
+		}
+
+		setProcessingQueue(false);
+	};
+
+	const addToQueue = (task: () => Promise<void>) => {
+		setPendingQueue((prev) => [...prev, task]);
+		if (!processingQueue) {
+			processQueue(); // Start processing if not already processing
+		}
+	};
+
 	useEffect(() => {
 		if (sendDebouncedCall) {
 			(async () => {
@@ -77,14 +102,15 @@ export const ProductCard = (props: Props) => {
 	}, [cartItem]);
 
 	const onAddClick = async () => {
-		setLoading(true);
-		if (isAddToCartApiBusy) return;
+		if (loading) return;
 
+		setLoading(true);
 		toggleIsAddToCartApiBusy(true);
 
 		try {
-			let prevCart: CartModel | null = cart;
+			let prevCart = cart;
 
+			// If cart does not exist, create it
 			if (!prevCart) {
 				const cartCreationResponse = await upsertCartApi(
 					{},
@@ -94,26 +120,42 @@ export const ProductCard = (props: Props) => {
 					(err: any) => {
 						ShowNotification(err.error, "error");
 						setLoading(false);
+						toggleIsAddToCartApiBusy(false);
 					},
 					() => {
 						logoutUser(router);
 						setLoading(false);
+						toggleIsAddToCartApiBusy(false);
 					}
 				);
 
-				if (
-					cartCreationResponse &&
-					typeof cartCreationResponse !== "string"
-				) {
+				if (cartCreationResponse && typeof cartCreationResponse !== "string") {
 					setCart(cartCreationResponse.cart);
 					prevCart = cartCreationResponse.cart;
 				}
 			}
 
+			// Wait until cart is created before proceeding
+			if (!prevCart?.cart_id) {
+				let attempts = 0;
+				while (!cart?.cart_id && attempts < 5) {
+					await new Promise((resolve) => setTimeout(resolve, 500)); // wait for 500ms
+					attempts++;
+				}
+				if (!cart?.cart_id) {
+					ShowNotification("Failed to create cart", "error");
+					setLoading(false);
+					toggleIsAddToCartApiBusy(false);
+					return;
+				}
+				prevCart = cart;
+			}
+
+			// Add item to the cart
 			const cartItemCreated = await upsertCartItemApi(
 				{
 					item_id: item.item_id,
-					cart_id: cart ? cart.cart_id : prevCart?.cart_id,
+					cart_id: prevCart?.cart_id,
 					quantity: 1,
 				},
 				() => {
@@ -132,18 +174,17 @@ export const ProductCard = (props: Props) => {
 				}
 			);
 
-			toggleIsAddToCartApiBusy(false);
-
 			if (cartItemCreated && typeof cartItemCreated !== "string") {
 				setCartItems((prev) => [...prev, cartItemCreated.cartItem]);
 				setQuantity(cartItemCreated.cartItem.quantity);
 			}
 		} catch (error) {
-			toggleIsAddToCartApiBusy(false);
-
 			if (error instanceof Error) {
 				console.log(error.message);
 			}
+		} finally {
+			toggleIsAddToCartApiBusy(false);
+			setLoading(false);
 		}
 	};
 
