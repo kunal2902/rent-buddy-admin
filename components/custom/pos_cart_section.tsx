@@ -15,28 +15,31 @@ import {
 	CenterComponent,
 	DividerComponent,
 	GroupComponent,
-	ImageComponent, NumberInputComponent,
+	ImageComponent,
+	NumberInputComponent,
 	ScrollAreaComponent,
-	SelectComponent,
+	SelectComponent, SpoilerComponent,
 	StackComponent,
 	TextComponent,
 	TitleComponent,
-	TooltipComponent,
+	TooltipComponent
 } from "@/components";
 import {
 	cartAtom,
 	cartDraftApi,
 	cartIdAtom,
-	cartItemsAtom, cartPaymentMethodAtom,
+	cartItemsAtom,
+	cartPaymentMethodAtom,
 	checkoutApi,
 	currencySign,
 	customerAtom,
 	deleteCartApi,
 	formatDate,
-	getCustomerApi, getWarrantyApi,
-	logoutUser, paymentOptions,
-	toTitleCase,
-	upsertCartApi,
+	getCustomerApi,
+	getWarrantyApi,
+	logoutUser,
+	paymentOptions,
+	upsertCartApi
 } from "@/utils";
 import { ComboBoxProps } from "@/types";
 import { CartItemModel, CartModel } from "@/models";
@@ -47,6 +50,7 @@ import AddShipToModal from "@/components/custom/add_ship_to_modal";
 import PriceBreakupModal from "@/components/custom/price_breakup_modal";
 import WarrantyModal from "@/components/custom/warranty_modal";
 import { WarrantyModel } from "@/models/warranty_modal";
+import AdditionalNoteModal from "@/components/custom/additional_note";
 
 export const PosCartSection = () => {
 	const router = useRouter();
@@ -59,14 +63,18 @@ export const PosCartSection = () => {
 	const [openShipToModal, setOpenShipToModal] = useState<boolean>(false);
 	const [invoiceDialogOpen, setInvoiceDialogOpen] = useState<boolean>(false);
 	const [priceBreakupModal, setPriceBreakupModal] = useState<boolean>(false);
+	const [additionNoteModal, setAdditionalNoteModal] = useState<boolean>(false);
 	const [warrentyModal, setWarrentyModal] = useState<number | null>(null);
 	const [orderDate, setOrderDate] = useState<string>("");
 
 	const [customersList, setCustomersList] = useState<ComboBoxProps[]>([]);
-	const [selectedWarranties, setSelectedWarranties] = useState<{ [key: number]: { duration: string; price: number } } | null>(null);
+	const [selectedWarranties, setSelectedWarranties] = useState<{
+		[key: number]: { duration: string; price: number }
+	} | null>(null);
 	console.log("selectedWarranties", selectedWarranties);
 	const [totalEHF, setTotalEHF] = useState<number>(0);
 	const [address, setAddress] = useState<string | undefined>("");
+	const [note, setNote] = useState<string | undefined>("");
 	const [city, setCity] = useState<string | undefined>("");
 	const [state, setState] = useState<string | undefined>("");
 	const [pinCode, setPinCode] = useState<string | undefined>("");
@@ -74,6 +82,7 @@ export const PosCartSection = () => {
 	const [totalRemovalCharges, setTotalRemovalCharges] = useState<number | undefined>(0);
 	const [deliveryCharges, setDeliveryCharges] = useState<string | number | undefined>(0);
 	const [removalCharges, setRemovalCharges] = useState<Record<number, number>>({});
+	const [ehfCharges, setEhfCharges] = useState<Record<number, number>>({});
 	const [totalMsrp, setTotalMsrp] = useState<number>(0);
 	const [warrantiesList, setWarrantiesList] = useState<WarrantyModel[]>([]);
 	console.log("warrantiesList", warrantiesList);
@@ -107,25 +116,27 @@ export const PosCartSection = () => {
 				const formattedCustomers = data.customers.map(
 					(customer: { customer_id: string; name: string }) => ({
 						value: customer.customer_id,
-						label: customer.name,
-					}),
+						label: customer.name
+					})
 				);
 				setCustomersList(formattedCustomers);
 			},
-			() => {},
+			() => {
+			},
 			() => {
 				logoutUser(router);
-			},
+			}
 		).then();
 		getWarrantyApi(
 			"",
 			(data: any) => {
 				setWarrantiesList(data.warranty);
 			},
-			() => {},
+			() => {
+			},
 			() => {
 				logoutUser(router);
-			},
+			}
 		).then();
 	}, [callApi]);
 
@@ -134,7 +145,9 @@ export const PosCartSection = () => {
 		setFullAddress(combinedAddress);
 	}, [address, city, state, pinCode]);
 
-	const calculateTotalWarrantyPrice = (selectedWarranties: { [key: number]: { duration: string; price: number } }): number => {
+	const calculateTotalWarrantyPrice = (selectedWarranties: {
+		[key: number]: { duration: string; price: number }
+	}): number => {
 		let totalPrice = 0;
 
 		for (const key in selectedWarranties) {
@@ -179,13 +192,13 @@ export const PosCartSection = () => {
 		totalMsrp,
 		selectedWarranties,
 		totalRemovalCharges,
-		totalEHF,
+		totalEHF
 	]);
 
 	const handleCustomerChange = (option: { value: string; label: string }) => {
 		setSelectedCustomer({
 			id: option.value,
-			name: option.label,
+			name: option.label
 		});
 	};
 
@@ -194,7 +207,7 @@ export const PosCartSection = () => {
 		cartItems.forEach((cartItem) => {
 			const {
 				item: { price },
-				quantity,
+				quantity
 			} = cartItem;
 			const itemPrice = parseInt(price, 10);
 			const itemTotal = itemPrice * quantity;
@@ -209,7 +222,7 @@ export const PosCartSection = () => {
 		cartItems.forEach((cartItem) => {
 			const {
 				item: { msrp, price },
-				quantity,
+				quantity
 			} = cartItem;
 			const itemMsrp = parseInt(msrp, 10);
 
@@ -227,7 +240,7 @@ export const PosCartSection = () => {
 				setCart(null);
 				setSelectedCustomer({
 					id: "",
-					name: "",
+					name: ""
 				});
 				setPaymentMethod("");
 				ShowNotification("Success", "success");
@@ -237,7 +250,7 @@ export const PosCartSection = () => {
 			},
 			() => {
 				logoutUser(router);
-			},
+			}
 		).then();
 	};
 
@@ -247,12 +260,12 @@ export const PosCartSection = () => {
 		"Washer/Dryer/Range/Stacker/Laundry Paris": 2.00,
 		Microwaves: 5.00,
 		"OTR/Hoodfan": 2.00,
-		"DVD/Bluray/OLED/Sound Bar": 2.50,
+		"DVD/Bluray/OLED/Sound Bar": 2.50
 	};
 
 	const findCategory = (categoryName: string): string | undefined => Object.keys(ehfFees).find((key) =>
-			key.toLowerCase().includes(categoryName.toLowerCase())
-		);
+		key.toLowerCase().includes(categoryName.toLowerCase())
+	);
 
 	const calculateEHF = (categoryName: string, quantity: number) => {
 		const matchedCategory = findCategory(categoryName);
@@ -266,9 +279,16 @@ export const PosCartSection = () => {
 	};
 
 	useEffect(() => {
-		const ehfAmount = cartItems.reduce((total, item) => total + calculateEHF(item.item.category.name, item.quantity), 0);
-		setTotalEHF(ehfAmount);
-	}, [cartItems, totalEHF]);
+		const total = cartItems.reduce((sum, item, index) => {
+			const calculatedEHF =
+				ehfCharges[index] !== undefined
+					? ehfCharges[index]
+					: calculateEHF(item.item.category.name, item.quantity);
+			return sum + calculatedEHF;
+		}, 0);
+
+		setTotalEHF(total);
+	}, [ehfCharges, cartItems]);
 
 	const handleSaveDraft = () => {
 		cartDraftApi(
@@ -279,7 +299,7 @@ export const PosCartSection = () => {
 				setCart(null);
 				setSelectedCustomer({
 					id: "",
-					name: "",
+					name: ""
 				});
 				ShowNotification("Success", "success");
 			},
@@ -288,7 +308,7 @@ export const PosCartSection = () => {
 			},
 			() => {
 				logoutUser(router);
-			},
+			}
 		).then();
 	};
 
@@ -301,15 +321,13 @@ export const PosCartSection = () => {
 			ShowNotification("Please select payment method first!", "error");
 		} else if (!address) {
 			ShowNotification("Please select shipping address first!", "error");
-		} else if (!deliveryCharges) {
-			ShowNotification("Please select delivery charges first!", "error");
 		} else {
 			setLoading(true);
 			const body = {
 				id: cartId,
 				customer_id: selectedCustomer.id,
 				label: "Purchased!",
-				payment_method: paymentMethod,
+				payment_method: paymentMethod
 			};
 			await upsertCartApi(
 				body,
@@ -324,9 +342,10 @@ export const PosCartSection = () => {
 							totalEHF,
 							subTotal,
 							total,
+							note,
 							tax5,
-							tax7,
-						},
+							tax7
+						}
 					};
 					checkoutApi(
 						checkoutBody,
@@ -342,7 +361,7 @@ export const PosCartSection = () => {
 						},
 						() => {
 							logoutUser(router);
-						},
+						}
 					);
 				},
 				(err: any) => {
@@ -351,7 +370,7 @@ export const PosCartSection = () => {
 				},
 				() => {
 					logoutUser(router);
-				},
+				}
 			);
 		}
 	};
@@ -365,7 +384,14 @@ export const PosCartSection = () => {
 	const handleRemovalChargeChange = (index: number, value: number) => {
 		setRemovalCharges((prev) => ({
 			...prev,
-			[index]: value,
+			[index]: value
+		}));
+	};
+
+	const handleEhfChargeChange = (index: number, value: number) => {
+		setEhfCharges((prev) => ({
+			...prev,
+			[index]: value
 		}));
 	};
 
@@ -376,7 +402,7 @@ export const PosCartSection = () => {
 				style={{
 					display: "flex",
 					flexDirection: "column",
-					height: "calc(100vh - 56px)",
+					height: "calc(100vh - 56px)"
 				}}
 			>
 				<BoxComponent h={40}>
@@ -389,7 +415,7 @@ export const PosCartSection = () => {
 							placeholder="Select Customer"
 							setValue={(val) => {
 								const option = customersList.find(
-									(c) => c.value === val,
+									(c) => c.value === val
 								);
 								if (option) {
 									handleCustomerChange(option);
@@ -417,248 +443,280 @@ export const PosCartSection = () => {
 					<TextComponent bold size="l" text="Order Details" />
 				</BoxComponent>
 
-				<CardComponent
-					className="mt-3"
-					mih={90}
-					shadow="sm"
-					radius="md"
-					padding="sm"
-					withBorder
-				>
-					<StackComponent gap="sm">
-						<GroupComponent justify="space-between">
-							<TextComponent text="Order Date:" bold />
-							<TextComponent text={formatDate(new Date())} />
-						</GroupComponent>
-						<GroupComponent justify="space-between">
-							<TextComponent text="Payment type:" bold />
-							<SelectComponent
-								size="sm"
-								required
-								data={paymentOptions}
-								value={paymentMethod}
-								placeholder="Select Payment Type"
-								setValue={setPaymentMethod}
-								setOption={handlePaymentMethodChange}
-							/>
-						</GroupComponent>
-						{address === "" && city === "" && state === "" && pinCode === "" ?
-							<GroupComponent justify="end">
-								<ButtonComponent
-									p={0}
-									m={0}
-									variant="transparent"
-									title="Add Shipping Address"
-									onClick={() => setOpenShipToModal(true)}
-							/>
-							</GroupComponent>
-						:
+				<ScrollAreaComponent type={"always"} pt={12} h={"calc(100% - 80px)"}>
+					<CardComponent
+						shadow="sm"
+						radius="md"
+						padding="sm"
+						withBorder
+					>
+						<StackComponent gap="sm">
 							<GroupComponent justify="space-between">
-								<TextComponent text="Ship To:" bold />
-								<TooltipComponent position="bottom-start" label={fullAddress}>
-									<TextComponent text={truncateText(fullAddress || "", 35)} />
-								</TooltipComponent>
-								<ActionIconComponent
-									onClick={() => setOpenShipToModal(true)}
-									size="md"
-								>
-									<MdOutlineEdit size={18} />
-								</ActionIconComponent>
+								<TextComponent text="Order Date:" bold />
+								<TextComponent text={formatDate(new Date())} />
 							</GroupComponent>
-						}
-					</StackComponent>
-				</CardComponent>
+							<GroupComponent justify="space-between">
+								<TextComponent text="Payment type:" bold />
+								<SelectComponent
+									size="sm"
+									required
+									data={paymentOptions}
+									value={paymentMethod}
+									placeholder="Select Payment Type"
+									setValue={setPaymentMethod}
+									setOption={handlePaymentMethodChange}
+								/>
+							</GroupComponent>
+							{address === "" && city === "" && state === "" && pinCode === "" ?
+								<GroupComponent justify="end">
+									<ButtonComponent
+										px={0}
+										h={16}
+										variant="transparent"
+										title="Add Shipping Address"
+										onClick={() => setOpenShipToModal(true)}
+									/>
+								</GroupComponent>
+								:
+								<GroupComponent justify="space-between">
+									<TextComponent text="Ship To:" bold />
+									<TooltipComponent position="bottom-start" label={fullAddress}>
+										<TextComponent text={truncateText(fullAddress || "", 35)} />
+									</TooltipComponent>
+									<ActionIconComponent
+										onClick={() => setOpenShipToModal(true)}
+										size="md"
+									>
+										<MdOutlineEdit size={18} />
+									</ActionIconComponent>
+								</GroupComponent>
+							}
+						</StackComponent>
+					</CardComponent>
 
-				<CardComponent
-					p={0}
-					shadow="sm"
-					radius="md"
-					withBorder
-					className="my-3"
-					style={{ flexGrow: 1 }}
-				>
-					{cartItems.length === 0 ? (
-						<CenterComponent h="100%">
-							<FiShoppingCart />
-							<TextComponent text="Cart is Empty!" ml={5} />
-						</CenterComponent>
-					) : (
-						<ScrollAreaComponent>
-							{cartItems.map((item, index) => (
-								<BoxComponent
-									key={index}
-									px={20}
-									py={8}
-									pb={index === cartItems.length - 1 ? 0 : 12}
-								>
-									<StackComponent gap={0}>
-										<GroupComponent justify="space-between" align="start" gap={0}>
-											<ImageComponent src={item.item.images[0]} w={30} h={30} />
-											<StackComponent ml={10} gap={0} style={{ flexGrow: 1 }}>
-												<GroupComponent justify="space-between">
-													<TooltipComponent position="bottom-start" label={item.item.name}>
+					<CardComponent
+						p={0}
+						shadow="sm"
+						radius="md"
+						withBorder
+						className="mt-3"
+					>
+						{cartItems.length === 0 ? (
+							<CenterComponent h={200} >
+								<FiShoppingCart />
+								<TextComponent text="Cart is Empty!" ml={5} />
+							</CenterComponent>
+						) : (
+							<>
+								{cartItems.map((item, index) => (
+									<BoxComponent
+										key={index}
+										px={20}
+										py={8}
+										pb={index === cartItems.length - 1 ? 0 : 12}
+									>
+										<StackComponent gap={0}>
+											<GroupComponent justify="space-between" align="start" gap={0}>
+												<ImageComponent src={item.item.images[0]} w={30} h={30} />
+												<StackComponent ml={10} gap={0} style={{ flexGrow: 1 }}>
+													<GroupComponent justify="space-between">
+														<TooltipComponent position="bottom-start"
+																		  label={item.item.name}>
+															<TitleComponent
+																fz={14}
+																title={truncateText(item.item.name, 30)}
+																mb={5}
+															/>
+														</TooltipComponent>
 														<TitleComponent
 															fz={14}
-															title={truncateText(item.item.name, 30)}
-															mb={5}
+															c="green"
+															title={`${currencySign} ${Number(Number(item.item.price).toFixed(2)) * item.quantity}`}
 														/>
-													</TooltipComponent>
-													<TitleComponent
-														fz={14}
-														c="green"
-														title={`${currencySign} ${Number(Number(item.item.price).toFixed(2)) * item.quantity}`}
+													</GroupComponent>
+													<GroupComponent justify="space-between">
+														<TextComponent
+															c="gray"
+															fz={12}
+															text={`${currencySign} ${parseInt(
+																item.item.price.toString(),
+																10
+															)} x ${item.quantity}`}
+														/>
+														<TextComponent
+															c="gray"
+															fz={12}
+															td="line-through"
+															text={`${currencySign} ${parseInt(
+																item.item.msrp.toString(),
+																10
+															)}`}
+														/>
+													</GroupComponent>
+												</StackComponent>
+											</GroupComponent>
+
+											<GroupComponent justify={"space-between"} gap={0}>
+												<GroupComponent justify="space-between" my={5} w={"48%"}>
+													<TextComponent lh={1} fz={12} text="EHF" />
+													<NumberInputComponent
+														w={100}
+														min={0}
+														required
+														size="xs"
+														prefix="$ "
+														value={
+															ehfCharges[index] ?? calculateEHF(item.item.category.name, item.quantity)
+														}
+														setValue={(value) => handleEhfChargeChange(index, Number(value))}
 													/>
 												</GroupComponent>
-												<GroupComponent justify="space-between">
-													<TextComponent
-														c="gray"
-														fz={12}
-														text={`${currencySign} ${parseInt(
-															item.item.price.toString(),
-															10
-														)} x ${item.quantity}`}
-													/>
-													<TextComponent
-														c="gray"
-														fz={12}
-														td="line-through"
-														text={`${currencySign} ${parseInt(
-															item.item.msrp.toString(),
-															10
-														)}`}
+
+												<DividerComponent orientation="vertical" maw={"4%"} />
+
+												<GroupComponent justify="space-between" my={5} w={"48%"}>
+													<TextComponent lh={1} fz={12} text="Removal" />
+													<NumberInputComponent
+														w={100}
+														min={0}
+														required
+														size="xs"
+														prefix="$ "
+														value={removalCharges[index] || 0}
+														setValue={(value) =>
+															handleRemovalChargeChange(index, Number(value))
+														}
 													/>
 												</GroupComponent>
-											</StackComponent>
-										</GroupComponent>
+											</GroupComponent>
 
-										<GroupComponent justify="space-between" my={5}>
-											<TextComponent lh={1} fz={12} text="EHF" />
-											<TextComponent
-												lh={1}
-												fz={12}
-												text={`${currencySign} ${calculateEHF(
-													item.item.category.name,
-													item.quantity
-												)}`}
-											/>
-										</GroupComponent>
-
-										<GroupComponent justify="space-between" my={5}>
-											<TextComponent lh={1} fz={12} text="Removal" />
-											<NumberInputComponent
-												w={80}
-												min={0}
-												required
-												size="xs"
-												prefix="$ "
-												value={removalCharges[index] || 0}
-												setValue={(value) =>
-													handleRemovalChargeChange(index, Number(value))
-												}
-											/>
-										</GroupComponent>
-
-										{/* Warranty Logic */}
-										{
-											selectedWarranties?.[index] ? (
-												<GroupComponent justify="space-between" my={5}>
-													<TextComponent
-														lh={1}
-														fz={12}
-														text={`${selectedWarranties[index]?.duration} Warranty: `}
-													/>
-													<GroupComponent justify="end">
+											{/* Warranty Logic */}
+											{
+												selectedWarranties?.[index] ? (
+													<GroupComponent justify="space-between" my={5}>
 														<TextComponent
 															lh={1}
 															fz={12}
-															text={`$ ${selectedWarranties[index]?.price * item.quantity}`}
+															text={`${selectedWarranties[index]?.duration} Warranty: `}
 														/>
-														<ActionIconComponent
-															onClick={() => setWarrentyModal(index)}
-															size="md"
-														>
-															<MdOutlineEdit size={18} />
-														</ActionIconComponent>
+														<GroupComponent justify="end">
+															<TextComponent
+																lh={1}
+																fz={12}
+																text={`$ ${selectedWarranties[index]?.price * item.quantity}`}
+															/>
+															<ActionIconComponent
+																onClick={() => setWarrentyModal(index)}
+																size="md"
+															>
+																<MdOutlineEdit size={18} />
+															</ActionIconComponent>
+														</GroupComponent>
 													</GroupComponent>
-												</GroupComponent>
-											) : (
-												<GroupComponent justify="end">
-													<ButtonComponent
-														p={0}
-														m={0}
-														variant="transparent"
-														title="Add Warranty"
-														onClick={() => setWarrentyModal(index)}
-													/>
-												</GroupComponent>
-											)
-										}
+												) : (
+													<GroupComponent justify="end">
+														<ButtonComponent
+															px={0}
+															my={5}
+															h={16}
+															variant="transparent"
+															title="Add Warranty"
+															onClick={() => setWarrentyModal(index)}
+														/>
+													</GroupComponent>
+												)
+											}
 
-										{/* Divider */}
-										{index !== cartItems.length - 1 && (
-											<DividerComponent
-												mt={6}
-												my={0}
-												variant="dashed"
-												p={0}
-												py={0}
-											/>
-										)}
-									</StackComponent>
-								</BoxComponent>
-							))}
-						</ScrollAreaComponent>
-					)}
-				</CardComponent>
+											{/* Divider */}
+											{index !== cartItems.length - 1 && (
+												<DividerComponent
+													mt={6}
+													my={0}
+													variant="dashed"
+													p={0}
+													py={0}
+												/>
+											)}
+										</StackComponent>
+									</BoxComponent>
+								))}
+							</>
+						)}
+					</CardComponent>
 
-				<CardComponent
-					padding="sm"
-					shadow="sm"
-					radius="md"
-					withBorder
-					style={{ height: "auto" }}
-				>
-					<StackComponent gap="sm">
-						<GroupComponent justify="space-between">
-							<TextComponent text="Delivery Charges:" size="sm" bold />
-							<NumberInputComponent
-								w={80}
-								min={0}
-								required
-								size="sm"
-								prefix="$ "
-								title="Delivery Charges"
-								value={deliveryCharges}
-								setValue={setDeliveryCharges}
-								placeholder="Delivery Charges"
-							/>
-						</GroupComponent>
-						<DividerComponent
-							my={0}
-							variant="dashed"
-							p={0}
-							py={0}
-						/>
-						<GroupComponent justify="space-between">
-							<TextComponent text="Total:" bold />
-							<TextComponent
-								text={`${currencySign} ${total.toFixed(2)}`}
-								bold
-							/>
-						</GroupComponent>
-						<GroupComponent justify="end">
-							<ButtonComponent
+					<CardComponent
+						padding="sm"
+						shadow="sm"
+						radius="md"
+						withBorder
+						className="mt-3"
+					>
+						<StackComponent gap="sm">
+							<GroupComponent justify="space-between">
+								<TextComponent text="Delivery Charges:" size="sm" bold />
+								<NumberInputComponent
+									w={80}
+									min={0}
+									required
+									size="sm"
+									prefix="$ "
+									title="Delivery Charges"
+									value={deliveryCharges}
+									setValue={setDeliveryCharges}
+									placeholder="Delivery Charges"
+								/>
+							</GroupComponent>
+							<DividerComponent
+								my={0}
+								variant="dashed"
 								p={0}
-								m={0}
-								variant="transparent"
-								title="View Price Breakup"
-								onClick={() => setPriceBreakupModal(true)}
+								py={0}
 							/>
-						</GroupComponent>
-					</StackComponent>
-				</CardComponent>
+							<GroupComponent justify="space-between">
+								<TextComponent text="Total:" bold />
+								<TextComponent
+									text={`${currencySign} ${total.toFixed(2)}`}
+									bold
+								/>
+							</GroupComponent>
+							<GroupComponent justify={note === "" ? "space-between" : "right"}>
+								{note === "" &&
+									<ButtonComponent
+										h={16}
+										my={5}
+										px={0}
+										variant="transparent"
+										title="Add Additional Note"
+										onClick={() => setAdditionalNoteModal(true)}
+									/>
+								}
 
-				<BoxComponent h={60} className="mt-3">
+								<ButtonComponent
+									h={16}
+									my={5}
+									px={0}
+									variant="transparent"
+									title="View Price Breakup"
+									onClick={() => setPriceBreakupModal(true)}
+								/>
+							</GroupComponent>
+							{note !== "" && !additionNoteModal && <SpoilerComponent hideLabel={"Less"} showLabel={"More"}>
+								{note}
+								<TooltipComponent position="bottom-start" label="Edit Additional Note">
+									<ActionIconComponent
+										onClick={() => setAdditionalNoteModal(true)}
+										size="md"
+									>
+										<MdOutlineEdit size={18} />
+									</ActionIconComponent>
+								</TooltipComponent>
+							</SpoilerComponent>}
+						</StackComponent>
+					</CardComponent>
+
+				</ScrollAreaComponent>
+
+				<BoxComponent h={60} className="mt-3 mb-2">
 					<GroupComponent>
 						<TooltipComponent label="Clear cart">
 							<ActionIconComponent
@@ -709,6 +767,7 @@ export const PosCartSection = () => {
 					total={total}
 					tax5={tax5}
 					tax7={tax7}
+					note={note}
 				/>
 			)}
 
@@ -729,6 +788,15 @@ export const PosCartSection = () => {
 				/>
 			)}
 
+			{setAdditionalNoteModal && (
+				<AdditionalNoteModal
+					isOpen={additionNoteModal}
+					onClose={() => setAdditionalNoteModal(false)}
+					setNote={setNote}
+					note={note}
+				/>
+			)}
+
 			{warrentyModal !== null && (
 				<WarrantyModal
 					isOpen={warrentyModal !== null}
@@ -738,7 +806,7 @@ export const PosCartSection = () => {
 					setSelectedWarranty={(warranty) => {
 						setSelectedWarranties((prev) => ({
 							...prev,
-							[warrentyModal]: warranty,
+							[warrentyModal]: warranty
 						}));
 					}}
 					selectedWarranty={selectedWarranties?.[warrentyModal] || null}
