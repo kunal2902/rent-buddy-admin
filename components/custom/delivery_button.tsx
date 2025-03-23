@@ -31,16 +31,13 @@ const DeliveryButton = (props: Props) => {
 	} = props;
 
 	const renderDelivery = () => {
-		// Try to open a new window
 		const invoiceWindow = window.open("", "_blank", "width=800,height=900");
 
-		// Check if the window was successfully created
 		if (!invoiceWindow) {
 			console.log("Unable to open a new window. Please disable your popup blocker and try again.");
 			return;
 		}
 
-		// Add the invoice HTML content
 		invoiceWindow.document.write(`
 		<!DOCTYPE html>
 <html lang="en">
@@ -53,8 +50,8 @@ const DeliveryButton = (props: Props) => {
          body {
             font-family: Arial, sans-serif;
             font-size: 12px;
-            margin: 0; /* Remove default body margin */
-            padding: 0; /* Remove default body padding */
+            margin: 0;
+            padding: 0;
         }
 
         .container {
@@ -67,7 +64,7 @@ const DeliveryButton = (props: Props) => {
         .header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px; /* Reduced margin */
+            margin-bottom: 10px;
         }
 
         .header .image_container {
@@ -82,14 +79,14 @@ const DeliveryButton = (props: Props) => {
         .item-table td {
 			overflow: hidden;
 			text-overflow: ellipsis;
-			max-width: 150px; /* Adjust as needed */
+			max-width: 150px;
 		}
 
         .invoice-details,
         .totals-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 10px; /* Reduced margin */
+            margin-bottom: 10px;
         }
 
         .invoice-details th,
@@ -101,7 +98,7 @@ const DeliveryButton = (props: Props) => {
         .item-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 10px; /* Reduced margin */
+            margin-bottom: 10px;
         }
 
         .item-table th,
@@ -109,7 +106,7 @@ const DeliveryButton = (props: Props) => {
 			border: 1px solid #ccc;
 			overflow: hidden;
 			text-overflow: ellipsis;
-			max-width: 150px; /* Adjust as needed */
+			max-width: 150px;
 		}
 
         .totals-table td {
@@ -124,26 +121,25 @@ const DeliveryButton = (props: Props) => {
         .footer {
             text-align: center;
             font-size: 0.9em;
-            margin-top: 10px; /* Reduced margin */
+            margin-top: 10px;
         }
 
-        /* Remove date and page number from print */
         @media print {
             @page {
-                size: auto; /* Auto size */
-                margin: 0; /* Remove margin */
+                size: auto;
+                margin: 0;
             }
             body {
-                margin: 0; /* Remove body margin */
-                padding: 0; /* Remove body padding */
+                margin: 0;
+                padding: 0;
             }
             .container {
-                border: none; /* Remove border */
-                padding: 0; /* Remove padding */
+                border: none;
+                padding: 0;
             }
             .header, .invoice-details, .item-table, .warranty, .footer {
-                margin: 0; /* Remove margins */
-                padding: 0; /* Remove padding */
+                margin: 0;
+                padding: 0;
             }
 
         .balance-owing {

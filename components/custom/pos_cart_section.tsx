@@ -752,7 +752,6 @@ export const PosCartSection = () => {
 					totalRemovalCharges={totalRemovalCharges}
 					setDeliveryCharges={setDeliveryCharges}
 					deliveryCharges={deliveryCharges}
-					totalDiscount={totalMsrp}
 					fullAddress={fullAddress}
 					setAddress={setAddress}
 					setPinCode={setPinCode}
