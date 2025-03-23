@@ -37,7 +37,6 @@ interface Props {
 	totalMsrp: number;
 	orderDate: string;
 	onClose: () => void;
-	totalDiscount: number;
 	note: string | undefined;
 	totalEHF: number | undefined;
 	fullAddress:string | undefined;
@@ -73,7 +72,6 @@ const InvoiceDetailModal = (props: Props) => {
 		setAddress,
 		setState,
 		setTotalRemovalCharges,
-		totalDiscount,
 		warranty,
 	} = props;
 	const setCartId = useSetRecoilState(cartIdAtom);
@@ -291,7 +289,6 @@ const InvoiceDetailModal = (props: Props) => {
 					<InvoiceButton
 						totalRemovalCharges={totalRemovalCharges}
 						deliveryCharges={deliveryCharges}
-						totalDiscount={totalMsrp}
 						fullAddress={fullAddress}
 						orderDate={orderDate}
 						totalEHF={totalEHF}

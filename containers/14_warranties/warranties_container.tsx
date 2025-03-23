@@ -41,9 +41,9 @@ const WarrantiesContainer = () => {
 	const [searchValue, setSearchValue] = useState<string>("");
 	const [orderBy, setOrderBy] = useState<string>("warranty_id");
 	const [warrantyTitle, setWarrantyTitle] = useState<string>("");
-	const [price, setPrice] = useState<number | undefined>(0);
-	const [maxPrice, setMaxPrice] = useState<number | undefined>(0);
-	const [minPrice, setMinPrice] = useState<number | undefined>(0);
+	const [price, setPrice] = useState<number | undefined | string>(0);
+	const [maxPrice, setMaxPrice] = useState<number | undefined | string>(0);
+	const [minPrice, setMinPrice] = useState<number | undefined | string>(0);
 	const [searchLoading, setSearchLoading] = useState<boolean>(false);
 	const [warrantiesList, setWarrantiesList] = useState<WarrantyModel[]>([]);
 	const [openAddModal, setOpenAddModal] = useState<boolean>(false);
@@ -115,9 +115,9 @@ const WarrantiesContainer = () => {
 	const handleAddOpenModal = (
 		id: string,
 		warranty_title: string,
-		warranty_price: number | undefined,
-		min_price: number | undefined,
-		max_price: number | undefined,
+		warranty_price: string | number | undefined,
+		min_price: string | number | undefined,
+		max_price: string | number | undefined,
 	) => {
 		setWarrantyId(id);
 		setWarrantyTitle(warranty_title);

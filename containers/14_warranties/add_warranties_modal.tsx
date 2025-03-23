@@ -18,9 +18,9 @@ interface Props {
 	setCallApi: Dispatch<SetStateAction<boolean>>;
 	warrantyId: string;
 	initialWarrantyTitleValue:string;
-	initialPriceValue: number | undefined;
-	initialMinPrice: number | undefined;
-	initialMaxPrice: number | undefined;
+	initialPriceValue: number | undefined | string;
+	initialMinPrice: number | undefined | string;
+	initialMaxPrice: number | undefined | string;
 }
 
 const AddWarrantyModal = (props: Props) => {
@@ -39,9 +39,9 @@ const AddWarrantyModal = (props: Props) => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [warrantyTitle, setWarrantyTitle] = useState<string>(initialWarrantyTitleValue);
 	const [inputError, setInputError] = useState<string | null>(null);
-	const [price, setPrice] = useState<number | undefined>(initialPriceValue);
-	const [minPrice, setMinPrice] = useState<number | undefined>(initialMinPrice);
-	const [maxPrice, setMaxPrice] = useState<number | undefined>(initialMaxPrice);
+	const [price, setPrice] = useState<number | undefined | string>(initialPriceValue);
+	const [minPrice, setMinPrice] = useState<number | undefined | string>(initialMinPrice);
+	const [maxPrice, setMaxPrice] = useState<number | undefined | string>(initialMaxPrice);
 
 	useEffect(() => {
 		if (warrantyTitle) {
