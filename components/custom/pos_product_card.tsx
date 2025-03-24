@@ -3,7 +3,7 @@
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { Minus, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { NumberInputHandlers } from "@mantine/core";
 import { CartItemModel, CartModel, ItemModel } from "@/models";
 import {
@@ -25,7 +25,8 @@ import {
 	MantineProviderComponent,
 	NumberInputComponent,
 	StackComponent,
-	TextComponent, TooltipComponent,
+	TextComponent,
+	TooltipComponent,
 } from "../mantine";
 import { centeredInputTheme } from "@/constants";
 import ShowNotification from "@/components/mantine/show_notification";
@@ -61,30 +62,30 @@ export const ProductCard = (props: Props) => {
 	const setCartItems = useSetRecoilState<Array<CartItemModel>>(cartItemsAtom);
 	const [cart, setCart] = useRecoilState<CartModel | null>(cartAtom);
 
-	const [pendingQueue, setPendingQueue] = useState<(() => Promise<void>)[]>([]);
-	const [processingQueue, setProcessingQueue] = useState(false);
+	// const [pendingQueue, setPendingQueue] = useState<(() => Promise<void>)[]>([]);
+	// const [processingQueue, setProcessingQueue] = useState(false);
 
-	const processQueue = async () => {
-		if (processingQueue) return;
+	// const processQueue = async () => {
+	// 	if (processingQueue) return;
+	//
+	// 	setProcessingQueue(true);
+	//
+	// 	while (pendingQueue.length > 0) {
+	// 		const task = pendingQueue.shift();
+	// 		if (task) {
+	// 			await task(); // Execute the task
+	// 		}
+	// 	}
+	//
+	// 	setProcessingQueue(false);
+	// };
 
-		setProcessingQueue(true);
-
-		while (pendingQueue.length > 0) {
-			const task = pendingQueue.shift();
-			if (task) {
-				await task(); // Execute the task
-			}
-		}
-
-		setProcessingQueue(false);
-	};
-
-	const addToQueue = (task: () => Promise<void>) => {
-		setPendingQueue((prev) => [...prev, task]);
-		if (!processingQueue) {
-			processQueue(); // Start processing if not already processing
-		}
-	};
+	// const addToQueue = (task: () => Promise<void>) => {
+	// 	setPendingQueue((prev) => [...prev, task]);
+	// 	if (!processingQueue) {
+	// 		processQueue(); // Start processing if not already processing
+	// 	}
+	// };
 
 	useEffect(() => {
 		if (sendDebouncedCall) {
@@ -110,7 +111,6 @@ export const ProductCard = (props: Props) => {
 		try {
 			let prevCart = cart;
 
-			// If cart does not exist, create it
 			if (!prevCart) {
 				const cartCreationResponse = await upsertCartApi(
 					{},
@@ -135,12 +135,13 @@ export const ProductCard = (props: Props) => {
 				}
 			}
 
-			// Wait until cart is created before proceeding
 			if (!prevCart?.cart_id) {
 				let attempts = 0;
 				while (!cart?.cart_id && attempts < 5) {
-					await new Promise((resolve) => setTimeout(resolve, 500)); // wait for 500ms
-					attempts++;
+					await new Promise<void>((resolve) => {
+						setTimeout(resolve, 500);
+					});
+					attempts += 1;
 				}
 				if (!cart?.cart_id) {
 					ShowNotification("Failed to create cart", "error");
@@ -151,7 +152,6 @@ export const ProductCard = (props: Props) => {
 				prevCart = cart;
 			}
 
-			// Add item to the cart
 			const cartItemCreated = await upsertCartItemApi(
 				{
 					item_id: item.item_id,
@@ -288,20 +288,16 @@ export const ProductCard = (props: Props) => {
 				);
 
 				if (updatedCartItem && typeof updatedCartItem !== "string") {
-					setCartItems((prev) => {
-						const newItems = prev.map((prevItem) => {
-							if (
-								prevItem.cart_item_id ===
-								updatedCartItem.cartItem.cart_item_id
-							) {
-								return updatedCartItem.cartItem;
-							}
+					setCartItems((prev) => prev.map((prevItem) => {
+						if (
+							prevItem.cart_item_id ===
+							updatedCartItem.cartItem.cart_item_id
+						) {
+							return updatedCartItem.cartItem;
+						}
 
-							return prevItem;
-						});
-
-						return newItems;
-					});
+						return prevItem;
+					}));
 				}
 			}
 
