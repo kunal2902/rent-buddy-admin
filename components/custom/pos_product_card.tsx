@@ -115,10 +115,10 @@ export const ProductCard = (props: Props) => {
 				const cartCreationResponse = await upsertCartApi(
 					{},
 					(response: any) => {
-						setCartId(response.cart.cart_id);
+						setCartId(response?.cart?.cart_id);
 					},
 					(err: any) => {
-						ShowNotification(err.error, "error");
+						ShowNotification(err?.error, "error");
 						setLoading(false);
 						toggleIsAddToCartApiBusy(false);
 					},
@@ -129,7 +129,7 @@ export const ProductCard = (props: Props) => {
 					}
 				);
 
-				if (cartCreationResponse && typeof cartCreationResponse !== "string") {
+				if (cartCreationResponse && typeof cartCreationResponse !== "string" && cartCreationResponse?.cart) {
 					setCart(cartCreationResponse.cart);
 					prevCart = cartCreationResponse.cart;
 				}
@@ -154,7 +154,7 @@ export const ProductCard = (props: Props) => {
 
 			const cartItemCreated = await upsertCartItemApi(
 				{
-					item_id: item.item_id,
+					item_id: item?.item_id,
 					cart_id: prevCart?.cart_id,
 					quantity: 1,
 				},
@@ -163,7 +163,7 @@ export const ProductCard = (props: Props) => {
 					setSendDebouncedCall(false);
 				},
 				(err: any) => {
-					ShowNotification(err.error, "error");
+					ShowNotification(err?.error, "error");
 					setLoading(false);
 					setSendDebouncedCall(false);
 				},
@@ -174,7 +174,7 @@ export const ProductCard = (props: Props) => {
 				}
 			);
 
-			if (cartItemCreated && typeof cartItemCreated !== "string") {
+			if (cartItemCreated && typeof cartItemCreated !== "string" && cartItemCreated?.cartItem) {
 				setCartItems((prev) => [...prev, cartItemCreated.cartItem]);
 				setQuantity(cartItemCreated.cartItem.quantity);
 			}
@@ -187,6 +187,7 @@ export const ProductCard = (props: Props) => {
 			setLoading(false);
 		}
 	};
+
 
 	const handleSubtractButtonClick = () => {
 		if (
