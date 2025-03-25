@@ -4,6 +4,7 @@ import { Table } from "@mantine/core";
 import { MdOutlineEdit } from "react-icons/md";
 import { useDebouncedCallback } from "@mantine/hooks";
 import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
 	ActionIconComponent,
 	BoxComponent,
@@ -22,7 +23,6 @@ import {
 import AddCustomAttributeModal from "./add_custom_attribute_modal";
 import { CustomAttributeModel } from "@/models";
 import { deleteAttributeApi, disableAttributeApi, formatDate, getAttributeApi, logoutUser } from "@/utils";
-import { useRouter } from "next/navigation";
 import ShowNotification from "@/components/mantine/show_notification";
 import { checkPermissions } from "@/components/custom/check_permission_entities";
 
@@ -188,7 +188,7 @@ const CustomAttributesContainer = () => {
 			<Table.Td>{formatDate(element.created_at)}</Table.Td>
 			<Table.Td>{element.created_by.name}</Table.Td>
 			<Table.Td w={60}>
-				{canDisableCustomAttribute &&
+				{canDisableCustomAttribute && !["17", "18", "19"].includes(element.custom_attribute_id) && (
 					<PopConfirmComponent
 						entityName="custom attribute"
 						type={PopConfirmType.switch}
@@ -196,17 +196,17 @@ const CustomAttributesContainer = () => {
 						actionName={element.is_disabled ? "enable" : "disable"}
 						onConfirm={async () => handleAction(element.custom_attribute_id, "disable")}
 					/>
-				}
+				)}
 			</Table.Td>
 			<Table.Td w={110}>
 				<GroupComponent>
-					{canDeleteCustomAttribute &&
+					{canDeleteCustomAttribute && !["17", "18", "19"].includes(element.custom_attribute_id) && (
 						<PopConfirmComponent
 							entityName="custom attribute"
 							actionName="delete"
 							onConfirm={async () => handleAction(element.custom_attribute_id, "delete")}
 						/>
-					}
+					)}
 					{canUpdateCustomAttribute &&
 						<ActionIconComponent
 							onClick={() => handleAddOpenModal(

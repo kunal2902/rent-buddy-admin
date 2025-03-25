@@ -432,6 +432,7 @@ const AddItemModal = (props: Props) => {
 			);
 		} catch (error) {
 			console.error("Error:", error);
+			setLoading(false);
 		}
 	};
 
