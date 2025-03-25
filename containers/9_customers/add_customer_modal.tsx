@@ -68,7 +68,7 @@ const AddCustomerModal = (props: Props) => {
 			address,
 			pinCode: pinCode ? pinCode.toString() : undefined,
 			id: customerId,
-			phone: phoneNumber,
+			phone: phoneNumber?.toString(),
 		};
 		try {
 			await upsertCustomerApi(
