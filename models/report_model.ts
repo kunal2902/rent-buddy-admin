@@ -22,6 +22,8 @@ export interface ReportModel {
     created_at: Date;
     customer: CustomerModel;
     salesperson?: UserModel;
+    is_returned:boolean;
+    is_exchanged:boolean;
     invoice_items: InvoiceItemModel[];
     invoice_attributes: InvoiceAttributeModel[];
 }

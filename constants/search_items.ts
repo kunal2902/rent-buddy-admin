@@ -15,9 +15,14 @@ export const searchItems = (idLabel: string, idVariable: string): Array<GroupedC
 			value: idVariable,
 		},
 		{
-			id: "created_by",
-			label: "Added By",
-			value: "created_by",
+			id: "fullAddress",
+			label: "Address",
+			value: "fullAddress",
+		},
+		{
+			id: "phone",
+			label: "Phone",
+			value: "phone",
 		},
 	],
 }]);

@@ -19,6 +19,8 @@ interface Props {
 	orderDate: string;
 	fullAddress:string | undefined;
 	note: string | undefined;
+	customerSignature: string | undefined;
+
 }
 
 const DeliveryButton = (props: Props) => {
@@ -28,6 +30,7 @@ const DeliveryButton = (props: Props) => {
 		fullAddress,
 		cartItems,
 		note,
+		customerSignature,
 	} = props;
 
 	const renderDelivery = () => {
@@ -45,107 +48,195 @@ const DeliveryButton = (props: Props) => {
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Invoice</title>
+	<title>Delivery Slip</title>
 	<style>
-         body {
+        body {
             font-family: Arial, sans-serif;
-            font-size: 12px;
+            font-size: 11px;
             margin: 0;
-            padding: 0;
+            padding: 10px;
+            line-height: 1.2;
         }
 
         .container {
-            width: 80%;
-            margin: 20px auto;
-            border: 1px solid #ccc;
-            padding: 20px;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            border: 2px solid black;
+            padding: 10px;
         }
 
-        .header .image_container {
-            margin-left: 10px;
+        .company-info {
+            flex: 1;
+            font-size: 10px;
+            line-height: 1.3;
         }
 
-        .image_container img {
-            height: 50px;
-            width: 100px;
-        }
-        
-        .item-table td {
-			overflow: hidden;
-			text-overflow: ellipsis;
-			max-width: 150px;
-		}
-
-        .invoice-details,
-        .totals-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 10px;
+        .company-info a {
+            color: black;
+            text-decoration: none;
         }
 
-        .invoice-details th,
-        .invoice-details td {
-            padding: 5px;
-            text-align: left;
-        }
-
-        .item-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 10px;
-        }
-
-        .item-table th,
-        .item-table td {
-			border: 1px solid #ccc;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			max-width: 150px;
-		}
-
-        .totals-table td {
-            padding: 5px;
-            text-align: right;
-        }
-
-        .totals-table td:first-child {
-            text-align: left;
-        }
-
-        .footer {
+        .logo-section {
+            flex: 1;
             text-align: center;
-            font-size: 0.9em;
-            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo-placeholder {
+            width: 80px;
+            height: 80px;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            background-color: #f0f0f0;
+            font-size: 10px;
+        }
+
+        .contact-info {
+            flex: 1;
+            text-align: right;
+            font-size: 10px;
+        }
+
+        .invoice-date-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 10px;
+        }
+
+        .customer-info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            border: 2px solid black;
+        }
+
+        .customer-info-table td {
+            border: 1px solid black;
+            padding: 8px;
+            font-size: 10px;
+            vertical-align: top;
+        }
+
+        .customer-info-table .label-cell {
+            background-color: #f0f0f0;
+            font-weight: bold;
+            width: 15%;
+            text-align: center;
+        }
+
+        .customer-info-table .data-cell {
+            width: 35%;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            border: 2px solid black;
+        }
+
+        .items-table th {
+            background-color: #f0f0f0;
+            border: 1px solid black;
+            padding: 8px 4px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 10px;
+        }
+
+        .items-table td {
+            border: 1px solid black;
+            padding: 6px 4px;
+            text-align: center;
+            font-size: 10px;
+            height: 25px;
+        }
+
+        .items-table td:nth-child(2) {
+            text-align: left;
+        }
+
+        .terms-section {
+            font-size: 9px;
+            line-height: 1.2;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .delivery-details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            border: 2px solid black;
+        }
+
+        .delivery-details-table td {
+            border: 1px solid black;
+            padding: 8px;
+            font-size: 10px;
+            vertical-align: middle;
+        }
+
+        .delivery-details-table .category-cell {
+            background-color: #f0f0f0;
+            font-weight: bold;
+            width: 33%;
+        }
+
+        .delivery-details-table .service-cell {
+            width: 33%;
+        }
+
+        .delivery-details-table .yesno-cell {
+            width: 34%;
+            text-align: center;
+        }
+
+        .removals-cell {
+            text-align: center;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        .acknowledgment-section {
+            font-size: 9px;
+            line-height: 1.2;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .signature-section {
+            margin: 20px 0;
+            text-align: center;
+            font-size: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         @media print {
             @page {
                 size: auto;
-                margin: 0;
+                margin: 0.5in;
             }
             body {
                 margin: 0;
                 padding: 0;
             }
-            .container {
-                border: none;
-                padding: 0;
-            }
-            .header, .invoice-details, .item-table, .warranty, .footer {
-                margin: 0;
-                padding: 0;
-            }
-
-        .balance-owing {
-            font-weight: bold;
-            text-align: right;
-        }
         }
 	</style>
 </head>
@@ -153,108 +244,114 @@ const DeliveryButton = (props: Props) => {
 <body>
 <div class="container">
 	<div class="header">
-		<div>
-			<p>
-				13533 78 Avenue<br>
-				Surrey, BC. V3W 0A8<br>
-				Phone: 604-593-6890<br>
-				Fax: 604-593-1289<br>
-				<a href="https://www.newcountryappliances.com/">www.newcountryappliances.com</a><br>
-				ncasales@gmail.com
-			</p>
+		<div class="company-info">
+			<strong>New Country Appliances Inc.</strong><br>
+			13533 78 Avenue<br>
+			Surrey, BC. V3W 0A8<br>
+			Phone: 604-593-6890<br>
+			Fax: 604-593-1289<br>
+			<a href="https://www.newcountryappliances.com">www.newcountryappliances.com</a><br>
+			ncasales@gmail.com
 		</div>
-		<div class="image_container">
-<!--			<img src="/images/nca_logo_2.png" alt="Company Logo" />-->
-			<h1>DELIVERY SLIP</h1>
+		<div class="logo-section">
+			<div class="logo-placeholder">
+				LOGO
+			</div>
 		</div>
-		<div class="image_container">
-<!--			<img src="logo.png" alt="Company Logo">-->
-			<a href="mailto:ncaisales@gmail.com"><h4>ncaisales@gmail.com</h4></a>
+		<div class="contact-info">
+			<a href="mailto:ncaisales@gmail.com"><strong>ncaisales@gmail.com</strong></a>
 		</div>
-
 	</div>
 
-	<table class="invoice-details">
+	<div class="invoice-date-section">
+		<div><strong>INVOICE DATE:</strong> ${formatDate(orderDate)}</div>
+		<div><strong>DELIVERY DATE:</strong> _______________</div>
+	</div>
+
+	<table class="customer-info-table">
 		<tr>
-			<th>INVOICE DATE:</th>
-			<td>
-				<strong>${formatDate(orderDate)}</strong>
-			</td>
-			<th>DELIVERY DATE:</th>
-			<td>
-			</td>
-		</tr>
-		<tr>
-			<th>SOLD TO:</th>
-			<td>${customer.name}</td>
-			<th>SHIP TO:</th>
-			<td>${fullAddress}</td>
+			<td class="label-cell">SOLD TO:</td>
+			<td class="data-cell">${customer.name}</td>
+			<td class="label-cell">SHIP TO:</td>
+			<td class="data-cell">${fullAddress}</td>
 		</tr>
 	</table>
 
-	<table class="item-table">
+	<table class="items-table">
 		<thead>
 		<tr>
-			<th>QUANTITY</th>
-			<th>DESCRIPTION</th>
-			<th>ITEM #</th>
+			<th style="width: 15%;">QUANTITY</th>
+			<th style="width: 65%;">DESCRIPTION</th>
+			<th style="width: 20%;">ITEM #</th>
 		</tr>
 		</thead>
 		<tbody>
 		${cartItems.map(item => `
 		<tr>
 			<td>${item.quantity}</td>
+			<td style="text-align: left;">${note}</td>
 			<td>${item.item.name}</td>
-			<td></td>
+		</tr>
+		`).join("")}
+		${Array.from({ length: Math.max(0, 10 - cartItems.length) }, () => `
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
 		</tr>
 		`).join("")}
 		</tbody>
 	</table>
-	
-	<div class="terms">
-		<p>Additonal Note - ${note}</p>
+
+	<div class="terms-section">
+		<strong>Delivery -</strong> In order to facilitate the delivery of my shipment, I hereby give permission to the driver to use my driveway, walk, curb, lawn, steps, flooring etc. and hereby exempt New Country Appliances Inc. from responsibility for any damage caused either outside or inside my house by their REASONABLE and PRUDENT use of this authority. It is hereby understood and agreed that New Country Appliances Inc. does not take any responsibility for any loss or damage to my property. I agree to pay a $35 charge if the fridge doors or the house door needs to be removed for delivery.
 	</div>
 
-	<div class="terms">
-		<p>Delivery - In order to facilitate the delivery of my shipment, I hereby give permission to the driver to use my driveway, walk, curb, lawn, steps, flooring etc. and hereby exempt New Country Appliances Inc. from responsibility for any damage caused either outside or inside my house by their REASONABLE and PRUDENT use of this authority. It is hereby understood and agreed that New Country Appliances Inc. does not take any responsibility for any loss or damage to my property. I agree to pay a $35 charge if the fridge doors or the house door needs to be removed for delivery.</p>
-	</div>
-
-	<table class="item-table">
+	<table class="delivery-details-table">
 		<tbody>
 			<tr>
-				<td>STEPS OUTSIDE:</td>
-				<td>HOSES BODGHT ($25)</td>
-				<td>YES / NO</td>
+				<td class="category-cell">STEPS OUTSIDE:</td>
+				<td class="service-cell">HOSES BOUGHT ($25)</td>
+				<td class="yesno-cell"><strong>YES / NO</strong></td>
 			</tr>
 			<tr>
-				<td>STEPS INSIDE:</td>
-				<td>DOOR REMOVAL ($35ea.)</td>
-				<td><span>YES / NO</span></td>
+				<td class="category-cell">STEPS INSIDE:</td>
+				<td class="service-cell">DOOR REMOVAL ($35 ea.)</td>
+				<td class="yesno-cell"><strong>YES / NO</strong></td>
 			</tr>
 			<tr>
-				<td>ENTRY DOOR - SINGLE DOUBLE</td>
-				<td>DRYER VENT ($25)</td>
-				<td><span>YES / NO</span></td>
+				<td class="category-cell">ENTRY DOOR - SINGLE DOUBLE</td>
+				<td class="service-cell">DRYER VENT ($25)</td>
+				<td class="yesno-cell"><strong>YES / NO</strong></td>
 			</tr>
 			<tr>
-				<td>GROUND LVL UPSTAIRS BASEMENT</td>
-				<td>BALANCE OWING:</td>
-				<td></td>
+				<td class="category-cell">GROUND LVL UPSTAIRS BASEMENT</td>
+				<td class="service-cell"><strong>BALANCE OWING:</strong></td>
+				<td class="yesno-cell">$ ___________</td>
 			</tr>
-			<td colspan="4">
-				REMOVALS / RELOCATION - Fridge / Stacker $30 ea., Other items $10 ea. (MUST BE DISCONNECTED)
-			</td>
+			<tr>
+				<td colspan="3" class="removals-cell">
+					REMOVALS / RELOCATIONS - Fridge / Stacker $30 ea., Other items $10 ea. (MUST BE DISCONNECTED)
+				</td>
+			</tr>
 		</tbody>
 	</table>
 
-	<div class="terms">
-		<p>I acknowledge that I received all the products listed above safely and without any damage to my property. 
-            I am completely satisfied with the delivery service.</p>
+	<div class="acknowledgment-section">
+		I acknowledge that I received all the products listed above safely and without any damage to my property. I am completely satisfied with the delivery service.
 	</div>
-	
-	<div class="terms">
-		<p>Customer Signature: _______________________</p>
-	</div>
+
+	<div class="signature-section">
+		    <div>
+		    Customer Signature:
+            </div>
+            <div>
+            <img src=${customerSignature} height="100px" width="120px">
+            </div>
+				 
+			</div>
+
+	${note ? `<div style="margin-top: 15px; font-size: 10px;"><strong>Additional Note:</strong> ${note}</div>` : ""}
 </div>
 </body>
 

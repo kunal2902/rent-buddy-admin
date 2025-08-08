@@ -1,6 +1,7 @@
 import { CartItemModel, CustomerModel, InvoiceModel, LocationModel, UserModel } from "@/models";
 
 export interface CartModel {
+    id:string
     cart_id: string;
     customer_id?: string;
     salesperson_id?: string;

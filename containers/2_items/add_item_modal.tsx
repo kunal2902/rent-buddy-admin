@@ -90,7 +90,6 @@ export interface InitialItemValue {
 	msrp: string | number;
 	sub_category_id: string;
 	short_description: string;
-	stock_quantity: string | number;
 	custom_attributes: ItemCustomAttribute[];
 	created_by: {
 		name: string;
@@ -190,8 +189,8 @@ const AddItemModal = (props: Props) => {
 	const [subCategoryId, setSubCategoryId] = useState<string>(initialItemValue.sub_category_id);
 	const [itemInternalName, setItemInternalName] =
 		useState<string>(initialItemValue.internal_name);
-	const [stockQuantity, setStockQuantity]
-		= useState<string | number>(initialItemValue.stock_quantity);
+	// const [stockQuantity, setStockQuantity]
+	// 	= useState<string | number>(initialItemValue.stock_quantity);
 	const [images, setImages] = useState<{ file: File | null; previewURL: string }[]>(
 		initialItemValue.images ? initialItemValue.images.map(imageURL =>
 			({ file: null, previewURL: imageURL })) : []
@@ -398,7 +397,7 @@ const AddItemModal = (props: Props) => {
 		itemBody.append("tags", JSON.stringify(tagsId || []));
 		if (itemInternalName?.trim()) itemBody.append("internal_name", itemInternalName.trim());
 		itemBody.append("add_ons", JSON.stringify(addOnsId || []));
-		itemBody.append("stock_quantity", String(stockQuantity || ""));
+		// itemBody.append("stock_quantity", String(stockQuantity || ""));
 		itemBody.append("attributes", JSON.stringify(checkedAttributes || []));
 
 		images.forEach((image) => {
@@ -582,15 +581,15 @@ const AddItemModal = (props: Props) => {
 							setValue={setSku}
 							placeholder="Enter SKU"
 						/>
-						<NumberInputComponent
-							required
-							error={inputError}
-							value={stockQuantity}
-							title="Stock Quantity"
-							label="Stock Quantity"
-							setValue={setStockQuantity}
-							placeholder="Enter Stock Quantity"
-						/>
+						{/*<NumberInputComponent*/}
+						{/*	required*/}
+						{/*	error={inputError}*/}
+						{/*	value={stockQuantity}*/}
+						{/*	title="Stock Quantity"*/}
+						{/*	label="Stock Quantity"*/}
+						{/*	setValue={setStockQuantity}*/}
+						{/*	placeholder="Enter Stock Quantity"*/}
+						{/*/>*/}
 						<NumberInputComponent
 							min={0}
 							required

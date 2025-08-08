@@ -8,7 +8,7 @@ import { ComboBoxProps, GroupedComboBoxProps } from "@/types";
 /** Props list of Mantine's Select component - https://mantine.dev/core/select/?t=props */
 export interface SelectComponentProps extends SelectProps {
 	setOption?: (option: ComboBoxProps) => void;
-	setValue: (val: string) => void;
+	setValue?: (val: string) => void;
 	data: ComboBoxProps[] | GroupedComboBoxProps[]; // or GroupedComboBoxProps[] if your data is grouped
 }
 
@@ -22,7 +22,9 @@ export const SelectComponent = (props: SelectComponentProps) => {
 		);
 
 		if (option) {
-			setValue(option.value);
+			if (setValue) {
+				setValue(option.value);
+			}
 			if (setOption) {
 				setOption(option);
 			}

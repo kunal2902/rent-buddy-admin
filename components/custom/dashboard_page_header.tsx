@@ -57,7 +57,6 @@ export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
 		onSortSelected,
 		showAddButton = true,
 		showValueSelect = false,
-		setOption,
 		valueSelectItems,
 		searchSelectItems,
 	} = props;
@@ -79,9 +78,11 @@ export const DashboardPageHeader = (props: DashboardPageHeaderProps) => {
 				<MantineProviderComponent theme={coloredInputTheme(darkMode)}>
 					<SelectComponent
 						size="sm"
-						setValue={setFilter}
-						defaultValue={filter}
-						setOption={setOption}
+						// setValue={setFilter}
+						// defaultValue={filter}
+						value={filter}
+						// setOption={setOption}
+						onChange={(value) => setFilter(value!)}
 						placeholder="Searching In"
 						data={searchSelectItems ?? searchItems(idLabel, idVariable)}
 					/>

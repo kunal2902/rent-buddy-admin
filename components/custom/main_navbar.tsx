@@ -22,6 +22,7 @@ import {
 	posRoute,
 	useThemeProvider,
 } from "@/utils";
+import { LocationSwitcher } from "@/components/custom/location_switcher";
 
 export const MainNavbar = () => {
 	const { toggleSidebar } = useMainNavbar();
@@ -61,6 +62,10 @@ export const MainNavbar = () => {
 			</div>
 
 			<div className="flex items-center">
+				<LocationSwitcher />
+
+				<SpaceComponent showWidth />
+
 				<ButtonComponent
 					px={5}
 					w={80}
@@ -71,19 +76,6 @@ export const MainNavbar = () => {
 				/>
 
 				<SpaceComponent showWidth />
-
-				{/*<TooltipComponent
-					label={darkMode ? "Change to Light mode" : "Change to Dark mode"}>
-					<ActionIconComponent
-						variant="filled"
-						onClick={toggleDarkMode}
-					>
-						{darkMode ?
-							<MdOutlineDarkMode size={18} /> :
-							<MdOutlineLightMode size={18} />
-						}
-					</ActionIconComponent>
-				</TooltipComponent>*/}
 
 				<AvatarPopupComponent />
 

@@ -18,15 +18,15 @@ import {
 	ImageComponent,
 	NumberInputComponent,
 	ScrollAreaComponent,
-	SelectComponent, SpoilerComponent,
+	SelectComponent,
+	SpoilerComponent,
 	StackComponent,
 	TextComponent,
 	TitleComponent,
-	TooltipComponent
+	TooltipComponent,
 } from "@/components";
 import {
 	cartAtom,
-	cartDraftApi,
 	cartIdAtom,
 	cartItemsAtom,
 	cartPaymentMethodAtom,
@@ -35,11 +35,11 @@ import {
 	customerAtom,
 	deleteCartApi,
 	formatDate,
-	getCustomerApi,
+	getCustomerApi, getReportsAPI,
 	getWarrantyApi,
 	logoutUser,
-	paymentOptions,
-	upsertCartApi
+	paymentOptions, updateItemApi, updateReportApi,
+	upsertCartApi,
 } from "@/utils";
 import { ComboBoxProps } from "@/types";
 import { CartItemModel, CartModel } from "@/models";
@@ -51,6 +51,7 @@ import PriceBreakupModal from "@/components/custom/price_breakup_modal";
 import WarrantyModal from "@/components/custom/warranty_modal";
 import { WarrantyModel } from "@/models/warranty_modal";
 import AdditionalNoteModal from "@/components/custom/additional_note";
+import { DigitalSignatureModal } from "@/components/custom/digital_signature";
 
 export const PosCartSection = () => {
 	const router = useRouter();
@@ -63,13 +64,16 @@ export const PosCartSection = () => {
 	const [openShipToModal, setOpenShipToModal] = useState<boolean>(false);
 	const [invoiceDialogOpen, setInvoiceDialogOpen] = useState<boolean>(false);
 	const [priceBreakupModal, setPriceBreakupModal] = useState<boolean>(false);
-	const [additionNoteModal, setAdditionalNoteModal] = useState<boolean>(false);
+	const [exchangeDifference, setExchangeDifference] = useState<number>(0);
+
+	const [additionNoteModal, setAdditionalNoteModal] =
+		useState<boolean>(false);
 	const [warrentyModal, setWarrentyModal] = useState<number | null>(null);
 	const [orderDate, setOrderDate] = useState<string>("");
 
 	const [customersList, setCustomersList] = useState<ComboBoxProps[]>([]);
 	const [selectedWarranties, setSelectedWarranties] = useState<{
-		[key: number]: { duration: string; price: number }
+		[key: number]: { duration: string; price: number };
 	} | null>(null);
 	console.log("selectedWarranties", selectedWarranties);
 	const [totalEHF, setTotalEHF] = useState<number>(0);
@@ -79,9 +83,15 @@ export const PosCartSection = () => {
 	const [state, setState] = useState<string | undefined>("");
 	const [pinCode, setPinCode] = useState<string | undefined>("");
 	const [fullAddress, setFullAddress] = useState<string | undefined>("");
-	const [totalRemovalCharges, setTotalRemovalCharges] = useState<number | undefined>(0);
-	const [deliveryCharges, setDeliveryCharges] = useState<string | number | undefined>(0);
-	const [removalCharges, setRemovalCharges] = useState<Record<number, number>>({});
+	const [totalRemovalCharges, setTotalRemovalCharges] = useState<
+		number | undefined
+	>(0);
+	const [deliveryCharges, setDeliveryCharges] = useState<
+		string | number | undefined
+	>(0);
+	const [removalCharges, setRemovalCharges] = useState<
+		Record<number, number>
+	>({});
 	const [ehfCharges, setEhfCharges] = useState<Record<number, number>>({});
 	const [totalMsrp, setTotalMsrp] = useState<number>(0);
 	const [warrantiesList, setWarrantiesList] = useState<WarrantyModel[]>([]);
@@ -92,7 +102,9 @@ export const PosCartSection = () => {
 	const [tax7, setTax7] = useState(0);
 
 	const [cartId, setCartId] = useRecoilState(cartIdAtom);
-	const [paymentMethod, setPaymentMethod] = useRecoilState(cartPaymentMethodAtom);
+	const [paymentMethod, setPaymentMethod] = useRecoilState(
+		cartPaymentMethodAtom,
+	);
 	const setCart = useSetRecoilState<CartModel | null>(cartAtom);
 	const [selectedCustomer, setSelectedCustomer] =
 		useRecoilState(customerAtom);
@@ -101,10 +113,117 @@ export const PosCartSection = () => {
 		useRecoilState<Array<CartItemModel>>(cartItemsAtom);
 	const selectComponentKey = selectedCustomer.id + selectedCustomer.name;
 
+	const [isExchangeMode, setIsExchangeMode] = useState(false);
+	const [exchangeData, setExchangeData] = useState<any>(null);
+	const [signatureModalOpen, setSignatureModalOpen] = useState(false);
+	const [customerSignature, setCustomerSignature] = useState(null);
+
 	useEffect(() => {
+		const storedExchangeData = localStorage.getItem("exchangeData");
+		if (storedExchangeData) {
+			const parsedData = JSON.parse(storedExchangeData);
+
+			// Fetch the full report data using the stored ID
+			getReportsAPI(
+				`invoice_id=${parsedData.id}`,
+				(data) => {
+					// eslint-disable-next-line max-len
+					const originalInvoice = data.reports.find((report:any) => report.invoice_id === parsedData.id);
+
+					if (originalInvoice) {
+						const fullExchangeData = {
+							...parsedData,
+							originalInvoice,
+						};
+
+						setExchangeData(fullExchangeData);
+						setIsExchangeMode(true);
+
+						// Set customer from original invoice
+						if (originalInvoice.customer) {
+							setSelectedCustomer({
+								// eslint-disable-next-line max-len
+								id: originalInvoice.customer.customer_id || originalInvoice.customer.id,
+								name: originalInvoice.customer.name,
+							});
+						}
+
+						// Set address from original invoice
+						if (originalInvoice.transaction_detail) {
+							const detail = originalInvoice.transaction_detail;
+							setAddress(detail.address || "");
+							setCity(detail.city || "");
+							setState(detail.state || "");
+							setPinCode(detail.pinCode || "");
+							setDeliveryCharges(detail.deliveryCharges || 0);
+						}
+					} else {
+						ShowNotification("Original invoice not found", "error");
+					}
+
+					// Clean up localStorage after processing
+					localStorage.removeItem("exchangeData");
+				},
+				(error) => {
+					console.error("Failed to fetch exchange data:", error);
+					ShowNotification("Failed to load exchange data", "error");
+					localStorage.removeItem("exchangeData");
+				},
+				() => {
+					logoutUser(router);
+				}
+			);
+
+			return;
+		}
+
+		const storedExchangeState = localStorage.getItem("exchangeState");
+		if (storedExchangeState) {
+			const parsedState = JSON.parse(storedExchangeState);
+
+			setIsExchangeMode(parsedState.isExchangeMode);
+			setExchangeData(parsedState.exchangeData);
+			setCartItems(parsedState.cartItems || []);
+			setSelectedCustomer(parsedState.selectedCustomer || { id: "", name: "" });
+			setPaymentMethod(parsedState.paymentMethod || "");
+			setAddress(parsedState.address || "");
+			setCity(parsedState.city || "");
+			setState(parsedState.state || "");
+			setPinCode(parsedState.pinCode || "");
+			setDeliveryCharges(parsedState.deliveryCharges || 0);
+			setNote(parsedState.note || "");
+		}
+	}, []);
+
+	useEffect(() => {
+		if (cartItems.length > 0 && !cartId && selectedCustomer.id) {
+			// Create a new cart when items exist but no cartId
+			const createCartBody = {
+				customer_id: selectedCustomer.id,
+				label: "Draft",
+			};
+
+			upsertCartApi(
+				createCartBody,
+				(response: any) => {
+					setCartId(response.cart.id);
+					setCart(response.cart);
+				},
+				(err: any) => {
+					ShowNotification(err.error, "error");
+				},
+				() => {
+					logoutUser(router);
+				}
+			).then();
+		}
+	}, [cartItems, cartId, selectedCustomer.id]);
+
+	useEffect(() => {
+		// eslint-disable-next-line @typescript-eslint/no-shadow
 		const total = Object.values(removalCharges).reduce(
 			(sum, charge) => sum + (charge || 0),
-			0
+			0,
 		);
 		setTotalRemovalCharges(total);
 	}, [removalCharges]);
@@ -116,27 +235,25 @@ export const PosCartSection = () => {
 				const formattedCustomers = data.customers.map(
 					(customer: { customer_id: string; name: string }) => ({
 						value: customer.customer_id,
-						label: customer.name
-					})
+						label: customer.name,
+					}),
 				);
 				setCustomersList(formattedCustomers);
 			},
-			() => {
-			},
+			() => {},
 			() => {
 				logoutUser(router);
-			}
+			},
 		).then();
 		getWarrantyApi(
 			"",
 			(data: any) => {
 				setWarrantiesList(data.warranty);
 			},
-			() => {
-			},
+			() => {},
 			() => {
 				logoutUser(router);
-			}
+			},
 		).then();
 	}, [callApi]);
 
@@ -145,21 +262,29 @@ export const PosCartSection = () => {
 		setFullAddress(combinedAddress);
 	}, [address, city, state, pinCode]);
 
+	// eslint-disable-next-line @typescript-eslint/no-shadow
 	const calculateTotalWarrantyPrice = (selectedWarranties: {
-		[key: number]: { duration: string; price: number }
-	}): number => {
-		let totalPrice = 0;
+		[key: number]: { duration: string; price: number };
+	}): number => Object.values(selectedWarranties)
+			.reduce((sum, { price }) => sum + price, 0);
 
-		for (const key in selectedWarranties) {
-			if (selectedWarranties.hasOwnProperty(key)) {
-				totalPrice += selectedWarranties[key].price;
-			}
+	const getOriginalItemTotal = () => {
+		if (!exchangeData || !exchangeData.originalInvoice.invoice_items) {
+			return 0;
 		}
 
-		return totalPrice;
+		// eslint-disable-next-line @typescript-eslint/no-shadow
+		return exchangeData.originalInvoice.invoice_items.reduce((total: number, item: any) =>
+				// eslint-disable-next-line max-len,no-mixed-spaces-and-tabs
+			 total + (Number(item.selling_price || item.price || 0) * Number(item.quantity || 1)),
+			// eslint-disable-next-line no-mixed-spaces-and-tabs
+		 0);
 	};
 
+	// In PosCartSection - Replace the price calculation useEffect
+
 	useEffect(() => {
+		// eslint-disable-next-line @typescript-eslint/no-shadow
 		const totalMsrp = calculateMsrp();
 		const totalItemQuantity = calculateItemQuantity();
 		const warrantyTotal = calculateTotalWarrantyPrice(selectedWarranties || {});
@@ -176,7 +301,29 @@ export const PosCartSection = () => {
 			warrantyTotal +
 			Number(totalEHF || 0);
 
-		const calculatedTotal = calculateSubTotal - (totalMsrp - totalItemQuantity);
+		let calculatedTotal = calculateSubTotal - (totalMsrp - totalItemQuantity);
+
+		if (isExchangeMode && exchangeData) {
+			const newItemTotal = totalItemQuantity; // Current cart item total
+			const originalItemTotal = getOriginalItemTotal(); // Original item total
+			// eslint-disable-next-line @typescript-eslint/no-shadow
+			const exchangeDifference = newItemTotal - originalItemTotal;
+
+			setExchangeDifference(exchangeDifference);
+
+			// Calculate total including taxes and charges based on the difference
+			if (exchangeDifference >= 0) {
+				// Customer needs to pay additional amount
+				calculatedTotal = exchangeDifference + calculatedTax5 + calculatedTax7 +
+					Number(totalRemovalCharges || 0) + Number(deliveryCharges || 0) +
+					warrantyTotal + Number(totalEHF || 0);
+			} else {
+				// Customer gets refund (negative amount)
+				calculatedTotal = exchangeDifference; // This will be negative
+			}
+		} else {
+			setExchangeDifference(0);
+		}
 
 		setTotalMsrp(totalMsrp);
 		setTax5(calculatedTax5);
@@ -192,13 +339,15 @@ export const PosCartSection = () => {
 		totalMsrp,
 		selectedWarranties,
 		totalRemovalCharges,
-		totalEHF
+		totalEHF,
+		isExchangeMode,
+		exchangeData,
 	]);
 
 	const handleCustomerChange = (option: { value: string; label: string }) => {
 		setSelectedCustomer({
 			id: option.value,
-			name: option.label
+			name: option.label,
 		});
 	};
 
@@ -207,7 +356,7 @@ export const PosCartSection = () => {
 		cartItems.forEach((cartItem) => {
 			const {
 				item: { price },
-				quantity
+				quantity,
 			} = cartItem;
 			const itemPrice = parseInt(price, 10);
 			const itemTotal = itemPrice * quantity;
@@ -218,11 +367,12 @@ export const PosCartSection = () => {
 	};
 
 	const calculateMsrp = () => {
+		// eslint-disable-next-line @typescript-eslint/no-shadow
 		let totalMsrp = 0;
 		cartItems.forEach((cartItem) => {
 			const {
 				item: { msrp, price },
-				quantity
+				quantity,
 			} = cartItem;
 			const itemMsrp = parseInt(msrp, 10);
 
@@ -231,18 +381,58 @@ export const PosCartSection = () => {
 		return totalMsrp;
 	};
 
+	const resetCartStates = () => {
+		setCartItems([]);
+		setCartId("");
+		setCart(null);
+		setSelectedCustomer({
+			id: "",
+			name: "",
+		});
+		setPaymentMethod("");
+		setFullAddress("");
+		setOrderDate("");
+		setPinCode("");
+		setCity("");
+		setState("");
+		setAddress("");
+		setNote("");
+		setExchangeDifference(0);
+		setDiscount(0);
+		setTotal(0);
+		setSubTotal(0);
+		setWarranty(0);
+		setTax5(0);
+		setTax7(0);
+		setTotalMsrp(0);
+		setTotalEHF(0);
+		setTotalRemovalCharges(0);
+		setDeliveryCharges(0);
+		setRemovalCharges({});
+		setEhfCharges({});
+		setSelectedWarranties(null);
+
+		// Reset exchange mode states
+		setIsExchangeMode(false);
+		setExchangeData(null);
+
+		// Clear localStorage
+		localStorage.removeItem("exchangeData");
+		localStorage.removeItem("exchangeState");
+	};
+
 	const clearCart = () => {
+		if (!cartId) {
+			// If no cartId, just clear the local state
+			resetCartStates();
+			ShowNotification("Cart cleared", "success");
+			return;
+		}
+
 		deleteCartApi(
 			cartId,
 			() => {
-				setCartItems([]);
-				setCartId("");
-				setCart(null);
-				setSelectedCustomer({
-					id: "",
-					name: ""
-				});
-				setPaymentMethod("");
+				resetCartStates();
 				ShowNotification("Success", "success");
 			},
 			(err: any) => {
@@ -250,22 +440,54 @@ export const PosCartSection = () => {
 			},
 			() => {
 				logoutUser(router);
-			}
+			},
 		).then();
 	};
 
-	const ehfFees: Record<string, number> = {
-		"Fridges/Freezers/AC": 6.50,
-		Dishwashers: 2.00,
-		"Washer/Dryer/Range/Stacker/Laundry Paris": 2.00,
-		Microwaves: 5.00,
-		"OTR/Hoodfan": 2.00,
-		"DVD/Bluray/OLED/Sound Bar": 2.50
+	const ensureCartExists = async () => {
+		if (!cartId && selectedCustomer.id) {
+			const createCartBody = {
+				customer_id: selectedCustomer.id,
+				label: "Draft",
+			};
+
+			try {
+				const response = await upsertCartApi(
+					createCartBody,
+					(res: any) => res,
+					(err: any) => {
+						throw new Error(err.error);
+					},
+					() => {
+						logoutUser(router);
+					}
+				);
+				if (typeof response === "object" && response !== null && "cart" in response) {
+					setCartId(response.cart?.id);
+					setCart(response.cart);
+					return response.cart?.id;
+				}
+			} catch (error) {
+				ShowNotification("Failed to create cart", "error");
+				return null;
+			}
+		}
+		return cartId;
 	};
 
-	const findCategory = (categoryName: string): string | undefined => Object.keys(ehfFees).find((key) =>
-		key.toLowerCase().includes(categoryName.toLowerCase())
-	);
+	const ehfFees: Record<string, number> = {
+		"Fridges/Freezers/AC": 6.5,
+		Dishwashers: 2.0,
+		"Washer/Dryer/Range/Stacker/Laundry Paris": 2.0,
+		Microwaves: 5.0,
+		"OTR/Hoodfan": 2.0,
+		"DVD/Bluray/OLED/Sound Bar": 2.5,
+	};
+
+	const findCategory = (categoryName: string): string | undefined =>
+		Object.keys(ehfFees).find((key) =>
+			key.toLowerCase().includes(categoryName?.toLowerCase()),
+		);
 
 	const calculateEHF = (categoryName: string, quantity: number) => {
 		const matchedCategory = findCategory(categoryName);
@@ -279,103 +501,232 @@ export const PosCartSection = () => {
 	};
 
 	useEffect(() => {
+		// eslint-disable-next-line @typescript-eslint/no-shadow
 		const total = cartItems.reduce((sum, item, index) => {
 			const calculatedEHF =
 				ehfCharges[index] !== undefined
 					? ehfCharges[index]
-					: calculateEHF(item.item.category.name, item.quantity);
+					: calculateEHF(item.item?.category?.name, item?.quantity);
 			return sum + calculatedEHF;
 		}, 0);
 
 		setTotalEHF(total);
 	}, [ehfCharges, cartItems]);
 
-	const handleSaveDraft = () => {
-		cartDraftApi(
-			cartId,
-			() => {
-				setCartItems([]);
-				setCartId("");
-				setCart(null);
-				setSelectedCustomer({
-					id: "",
-					name: ""
-				});
-				ShowNotification("Success", "success");
-			},
-			(err: any) => {
-				ShowNotification(err.error, "error");
-			},
-			() => {
-				logoutUser(router);
-			}
-		).then();
-	};
-
 	const handleCheckout = async () => {
 		if (cartItems.length === 0) {
 			ShowNotification("Please select item first!", "error");
-		} else if (!selectedCustomer.id) {
+			return;
+		}
+
+		if (!selectedCustomer.id) {
 			ShowNotification("Please select customer first!", "error");
-		} else if (!paymentMethod) {
+			return;
+		}
+
+		if (!paymentMethod) {
 			ShowNotification("Please select payment method first!", "error");
-		} else if (!address) {
+			return;
+		}
+
+		if (!address) {
 			ShowNotification("Please select shipping address first!", "error");
-		} else {
-			setLoading(true);
-			const body = {
-				id: cartId,
+			return;
+		}
+
+		setLoading(true);
+
+		try {
+			// Ensure cart exists before checkout
+			const currentCartId = await ensureCartExists();
+
+			if (!currentCartId) {
+				setLoading(false);
+				return;
+			}
+
+			// Update cart with payment method
+			const cartUpdateBody = {
+				id: currentCartId,
 				customer_id: selectedCustomer.id,
 				label: "Purchased!",
-				payment_method: paymentMethod
+				payment_method: paymentMethod,
 			};
-			await upsertCartApi(
-				body,
-				() => {
-					const checkoutBody = {
-						cartId,
-						details: {
-							totalRemovalCharges,
-							deliveryCharges,
-							paymentMethod,
-							fullAddress,
-							totalEHF,
-							subTotal,
-							total,
-							note,
-							tax5,
-							tax7
-						}
+
+			await new Promise((resolve, reject) => {
+				upsertCartApi(
+					cartUpdateBody,
+					(response) => resolve(response),
+					(err) => reject(err),
+					() => {
+						logoutUser(router);
+						reject(new Error("Unauthorized"));
+					}
+				);
+			});
+
+			// Handle item quantity updates for exchange
+			if (isExchangeMode && exchangeData) {
+				try {
+					console.log("Processing exchange - updating item quantities");
+
+					// 1. Increase quantity for returned items (original invoice items)
+					const originalInvoiceItems = exchangeData.originalInvoice?.invoice_items || [];
+
+					for (const originalItem of originalInvoiceItems) {
+						// Only update stock - remove non-existent fields
+						const updateData = {
+							increment_stock: Number(originalItem.quantity),
+						};
+
+						console.log(`Increasing stock for item ${originalItem.item_id} by ${originalItem.quantity}`);
+
+						await new Promise((resolve, reject) => {
+							updateItemApi(
+								originalItem.item_id.toString(),
+								updateData,
+								(data) => {
+									console.log(`Successfully updated stock for item ${originalItem.item_id}`);
+									resolve(data);
+								},
+								(error) => {
+									console.error(`Failed to update stock for item ${originalItem.item_id}:`, error);
+									reject(error);
+								},
+								() => {
+									logoutUser(router);
+									reject(new Error("Unauthorized"));
+								}
+							);
+						});
+					}
+
+					// 2. Decrease quantity for new exchange items (current cart items)
+					for (const cartItem of cartItems) {
+						// Only update stock - remove non-existent fields
+						const updateData = {
+							decrement_stock: Number(cartItem.quantity),
+						};
+
+						console.log(`Decreasing stock for item ${cartItem.item.item_id} by ${cartItem.quantity}`);
+
+						await new Promise((resolve, reject) => {
+							updateItemApi(
+								cartItem.item.item_id.toString(),
+								updateData,
+								(data) => {
+									console.log(`Successfully updated stock for item ${cartItem.item.item_id}`);
+									resolve(data);
+								},
+								(error) => {
+									console.error(`Failed to update stock for item ${cartItem.item.item_id}:`, error);
+									reject(error);
+								},
+								() => {
+									logoutUser(router);
+									reject(new Error("Unauthorized"));
+								}
+							);
+						});
+					}
+
+					// 3. Update the original report/invoice status
+					const originalReportUpdateData = {
+						is_returned: false,
+						is_exchanged: true,
+						exchanged_at: new Date().toISOString(),
 					};
-					checkoutApi(
-						checkoutBody,
-						(res: any) => {
-							setLoading(false);
-							setInvoiceDialogOpen(true);
-							setOrderDate(res.invoice.created_at);
-							ShowNotification("Success", "success");
-						},
-						(err: any) => {
-							ShowNotification(err.error, "error");
-							setLoading(false);
-						},
-						() => {
-							logoutUser(router);
-						}
-					);
-				},
-				(err: any) => {
-					ShowNotification(err.error, "error");
+
+					console.log("Updating original invoice status");
+
+					await new Promise((resolve, reject) => {
+						updateReportApi(
+							exchangeData.originalInvoice.invoice_id,
+							originalReportUpdateData,
+							(data) => {
+								console.log("Successfully updated original invoice status");
+								resolve(data);
+							},
+							(error) => {
+								console.error("Failed to update original invoice status:", error);
+								reject(error);
+							},
+							() => {
+								logoutUser(router);
+								reject(new Error("Unauthorized"));
+							}
+						);
+					});
+
+					console.log("Exchange item updates completed successfully");
+				} catch (error) {
+					console.error("Failed to update items for exchange:", error);
 					setLoading(false);
-				},
-				() => {
-					logoutUser(router);
+					// ShowNotification(`Failed to process exchange: ${error?.message}`, "error");
+					return;
 				}
-			);
+			}
+
+			// Prepare checkout body
+			const checkoutBody = {
+				cartId: currentCartId,
+				details: {
+					totalRemovalCharges,
+					deliveryCharges,
+					paymentMethod,
+					fullAddress,
+					totalEHF,
+					subTotal,
+					total,
+					note,
+					tax5,
+					tax7,
+					isExchange: isExchangeMode,
+					originalInvoiceId: exchangeData?.originalInvoice?.invoice_id || null,
+					exchangeAmount: isExchangeMode ? total : null,
+				},
+			};
+
+			console.log("Calling checkout API with body:", checkoutBody);
+			// Call checkout API with proper Promise handling
+			// eslint-disable-next-line max-len
+			const checkoutResult: { invoice: { created_at: string } } = await new Promise((resolve, reject) => {
+				checkoutApi(
+					checkoutBody,
+					(res) => {
+						console.log("Checkout API successful:", res);
+						resolve(res);
+					},
+					(err) => {
+						console.error("Checkout API failed:", err);
+						reject(err);
+					},
+					() => {
+						console.error("Checkout API unauthorized");
+						logoutUser(router);
+						reject(new Error("Unauthorized"));
+					},
+				);
+			});
+
+			// Handle successful checkout
+			console.log("Checkout completed successfully:", checkoutResult);
+			setLoading(false);
+			setSignatureModalOpen(true);
+			setOrderDate(checkoutResult?.invoice.created_at);
+
+			const successMessage = isExchangeMode
+				? "Exchange completed successfully"
+				: "Checkout completed successfully";
+			ShowNotification(successMessage, "success");
+		} catch (error) {
+			console.error("Checkout process failed:", error);
+			setLoading(false);
 		}
 	};
 
-	const truncateText = (text: string, maxLength: number): string => text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
+	const truncateText = (text: string, maxLength: number): string =>
+		text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
 
 	const handlePaymentMethodChange = (option: ComboBoxProps) => {
 		setPaymentMethod(option.value);
@@ -384,15 +735,31 @@ export const PosCartSection = () => {
 	const handleRemovalChargeChange = (index: number, value: number) => {
 		setRemovalCharges((prev) => ({
 			...prev,
-			[index]: value
+			[index]: value,
 		}));
 	};
 
 	const handleEhfChargeChange = (index: number, value: number) => {
 		setEhfCharges((prev) => ({
 			...prev,
-			[index]: value
+			[index]: value,
 		}));
+	};
+
+	const handleSignatureConfirm = (signatureDataURL:any) => {
+		setCustomerSignature(signatureDataURL);
+		localStorage.setItem("customerSignature", signatureDataURL);
+		setSignatureModalOpen(false);
+		setInvoiceDialogOpen(true);
+	};
+
+	const handleSignatureSkip = () => {
+		setSignatureModalOpen(false);
+		setInvoiceDialogOpen(true);
+	};
+
+	const handleSignatureClose = () => {
+		setSignatureModalOpen(false);
 	};
 
 	return (
@@ -402,7 +769,7 @@ export const PosCartSection = () => {
 				style={{
 					display: "flex",
 					flexDirection: "column",
-					height: "calc(100vh - 56px)"
+					height: "calc(100vh - 56px)",
 				}}
 			>
 				<BoxComponent h={40}>
@@ -415,7 +782,7 @@ export const PosCartSection = () => {
 							placeholder="Select Customer"
 							setValue={(val) => {
 								const option = customersList.find(
-									(c) => c.value === val
+									(c) => c.value === val,
 								);
 								if (option) {
 									handleCustomerChange(option);
@@ -443,7 +810,11 @@ export const PosCartSection = () => {
 					<TextComponent bold size="l" text="Order Details" />
 				</BoxComponent>
 
-				<ScrollAreaComponent type={"always"} pt={12} h={"calc(100% - 80px)"}>
+				<ScrollAreaComponent
+					type="always"
+					pt={12}
+					h="calc(100% - 80px)"
+				>
 					<CardComponent
 						shadow="sm"
 						radius="md"
@@ -467,7 +838,10 @@ export const PosCartSection = () => {
 									setOption={handlePaymentMethodChange}
 								/>
 							</GroupComponent>
-							{address === "" && city === "" && state === "" && pinCode === "" ?
+							{address === "" &&
+							city === "" &&
+							state === "" &&
+							pinCode === "" ? (
 								<GroupComponent justify="end">
 									<ButtonComponent
 										px={0}
@@ -477,11 +851,19 @@ export const PosCartSection = () => {
 										onClick={() => setOpenShipToModal(true)}
 									/>
 								</GroupComponent>
-								:
+							) : (
 								<GroupComponent justify="space-between">
 									<TextComponent text="Ship To:" bold />
-									<TooltipComponent position="bottom-start" label={fullAddress}>
-										<TextComponent text={truncateText(fullAddress || "", 35)} />
+									<TooltipComponent
+										position="bottom-start"
+										label={fullAddress}
+									>
+										<TextComponent
+											text={truncateText(
+												fullAddress || "",
+												35,
+											)}
+										/>
 									</TooltipComponent>
 									<ActionIconComponent
 										onClick={() => setOpenShipToModal(true)}
@@ -490,7 +872,7 @@ export const PosCartSection = () => {
 										<MdOutlineEdit size={18} />
 									</ActionIconComponent>
 								</GroupComponent>
-							}
+							)}
 						</StackComponent>
 					</CardComponent>
 
@@ -502,7 +884,7 @@ export const PosCartSection = () => {
 						className="mt-3"
 					>
 						{cartItems.length === 0 ? (
-							<CenterComponent h={200} >
+							<CenterComponent h={200}>
 								<FiShoppingCart />
 								<TextComponent text="Cart is Empty!" ml={5} />
 							</CenterComponent>
@@ -513,18 +895,42 @@ export const PosCartSection = () => {
 										key={index}
 										px={20}
 										py={8}
-										pb={index === cartItems.length - 1 ? 0 : 12}
+										pb={
+											index === cartItems.length - 1
+												? 0
+												: 12
+										}
 									>
 										<StackComponent gap={0}>
-											<GroupComponent justify="space-between" align="start" gap={0}>
-												<ImageComponent src={item.item.images[0]} w={30} h={30} />
-												<StackComponent ml={10} gap={0} style={{ flexGrow: 1 }}>
+											<GroupComponent
+												justify="space-between"
+												align="start"
+												gap={0}
+											>
+												<ImageComponent
+													src={item.item.images[0]}
+													w={30}
+													h={30}
+												/>
+												<StackComponent
+													ml={10}
+													gap={0}
+													style={{ flexGrow: 1 }}
+												>
 													<GroupComponent justify="space-between">
-														<TooltipComponent position="bottom-start"
-																		  label={item.item.name}>
+														<TooltipComponent
+															position="bottom-start"
+															label={
+																item.item.name
+															}
+														>
 															<TitleComponent
 																fz={14}
-																title={truncateText(item.item.name, 30)}
+																title={truncateText(
+																	item.item
+																		.name,
+																	30,
+																)}
 																mb={5}
 															/>
 														</TooltipComponent>
@@ -540,7 +946,7 @@ export const PosCartSection = () => {
 															fz={12}
 															text={`${currencySign} ${parseInt(
 																item.item.price.toString(),
-																10
+																10,
 															)} x ${item.quantity}`}
 														/>
 														<TextComponent
@@ -549,16 +955,27 @@ export const PosCartSection = () => {
 															td="line-through"
 															text={`${currencySign} ${parseInt(
 																item.item.msrp.toString(),
-																10
+																10,
 															)}`}
 														/>
 													</GroupComponent>
 												</StackComponent>
 											</GroupComponent>
 
-											<GroupComponent justify={"space-between"} gap={0}>
-												<GroupComponent justify="space-between" my={5} w={"48%"}>
-													<TextComponent lh={1} fz={12} text="EHF" />
+											<GroupComponent
+												justify="space-between"
+												gap={0}
+											>
+												<GroupComponent
+													justify="space-between"
+													my={5}
+													w="48%"
+												>
+													<TextComponent
+														lh={1}
+														fz={12}
+														text="EHF"
+													/>
 													<NumberInputComponent
 														w={100}
 														min={0}
@@ -566,66 +983,106 @@ export const PosCartSection = () => {
 														size="xs"
 														prefix="$ "
 														value={
-															ehfCharges[index] ?? calculateEHF(item.item.category.name, item.quantity)
+															ehfCharges[index] ??
+															calculateEHF(
+																item.item
+																	?.category
+																	?.name,
+																item.quantity,
+															)
 														}
-														setValue={(value) => handleEhfChargeChange(index, Number(value))}
+														setValue={(value) =>
+															handleEhfChargeChange(
+																index,
+																Number(value),
+															)
+														}
 													/>
 												</GroupComponent>
 
-												<DividerComponent orientation="vertical" maw={"4%"} />
+												<DividerComponent
+													orientation="vertical"
+													maw="4%"
+												/>
 
-												<GroupComponent justify="space-between" my={5} w={"48%"}>
-													<TextComponent lh={1} fz={12} text="Removal" />
+												<GroupComponent
+													justify="space-between"
+													my={5}
+													w="48%"
+												>
+													<TextComponent
+														lh={1}
+														fz={12}
+														text="Removal"
+													/>
 													<NumberInputComponent
 														w={100}
 														min={0}
 														required
 														size="xs"
 														prefix="$ "
-														value={removalCharges[index] || 0}
+														value={
+															removalCharges[
+																index
+															] || 0
+														}
 														setValue={(value) =>
-															handleRemovalChargeChange(index, Number(value))
+															handleRemovalChargeChange(
+																index,
+																Number(value),
+															)
 														}
 													/>
 												</GroupComponent>
 											</GroupComponent>
 
 											{/* Warranty Logic */}
-											{
-												selectedWarranties?.[index] ? (
-													<GroupComponent justify="space-between" my={5}>
+											{selectedWarranties?.[index] ? (
+												<GroupComponent
+													justify="space-between"
+													my={5}
+												>
+													<TextComponent
+														lh={1}
+														fz={12}
+														text={`${selectedWarranties[index]?.duration} Warranty: `}
+													/>
+													<GroupComponent justify="end">
 														<TextComponent
 															lh={1}
 															fz={12}
-															text={`${selectedWarranties[index]?.duration} Warranty: `}
+															text={`$ ${selectedWarranties[index]?.price * item.quantity}`}
 														/>
-														<GroupComponent justify="end">
-															<TextComponent
-																lh={1}
-																fz={12}
-																text={`$ ${selectedWarranties[index]?.price * item.quantity}`}
+														<ActionIconComponent
+															onClick={() =>
+																setWarrentyModal(
+																	index,
+																)
+															}
+															size="md"
+														>
+															<MdOutlineEdit
+																size={18}
 															/>
-															<ActionIconComponent
-																onClick={() => setWarrentyModal(index)}
-																size="md"
-															>
-																<MdOutlineEdit size={18} />
-															</ActionIconComponent>
-														</GroupComponent>
+														</ActionIconComponent>
 													</GroupComponent>
-												) : (
-													<GroupComponent justify="end">
-														<ButtonComponent
-															px={0}
-															my={5}
-															h={16}
-															variant="transparent"
-															title="Add Warranty"
-															onClick={() => setWarrentyModal(index)}
-														/>
-													</GroupComponent>
-												)
-											}
+												</GroupComponent>
+											) : (
+												<GroupComponent justify="end">
+													<ButtonComponent
+														px={0}
+														my={5}
+														h={16}
+														variant="transparent"
+														title="Add Warranty"
+														onClick={() =>
+															setWarrentyModal(
+																index,
+															)
+														}
+													/>
+												</GroupComponent>
+											)}
 
 											{/* Divider */}
 											{index !== cartItems.length - 1 && (
@@ -653,7 +1110,11 @@ export const PosCartSection = () => {
 					>
 						<StackComponent gap="sm">
 							<GroupComponent justify="space-between">
-								<TextComponent text="Delivery Charges:" size="sm" bold />
+								<TextComponent
+									text="Delivery Charges:"
+									size="sm"
+									bold
+								/>
 								<NumberInputComponent
 									w={80}
 									min={0}
@@ -673,23 +1134,61 @@ export const PosCartSection = () => {
 								py={0}
 							/>
 							<GroupComponent justify="space-between">
-								<TextComponent text="Total:" bold />
 								<TextComponent
-									text={`${currencySign} ${total.toFixed(2)}`}
+									text={
+										isExchangeMode
+											? "Exchange Amount:"
+											: "Total:"
+									}
 									bold
 								/>
+								<StackComponent gap={0} align="end">
+									<TextComponent
+										text={`${currencySign} ${Math.abs(total).toFixed(2)}`}
+										bold
+										color={
+											isExchangeMode
+												? total === 0
+													? "dark"
+													: total > 0
+														? "red"
+														: "green"
+												: "dark"
+										}
+									/>
+									{isExchangeMode && (
+										<TextComponent
+											text={
+												total === 0
+													? "Even exchange"
+													: total < 0
+														? "Refund to customer"
+														: "Additional payment required"
+											}
+											size="xs"
+											color="gray"
+											ta="right"
+										/>
+									)}
+								</StackComponent>
 							</GroupComponent>
-							<GroupComponent justify={note === "" ? "space-between" : "right"}>
-								{note === "" &&
+							<GroupComponent
+								justify={
+									note === "" ? "space-between" : "right"
+								}
+							>
+								{note === "" && (
 									<ButtonComponent
 										h={16}
 										my={5}
 										px={0}
 										variant="transparent"
 										title="Add Additional Note"
-										onClick={() => setAdditionalNoteModal(true)}
+										onClick={() =>
+											setAdditionalNoteModal(true)
+										}
 									/>
-								}
+								)}
 
 								<ButtonComponent
 									h={16}
@@ -700,20 +1199,29 @@ export const PosCartSection = () => {
 									onClick={() => setPriceBreakupModal(true)}
 								/>
 							</GroupComponent>
-							{note !== "" && !additionNoteModal && <SpoilerComponent hideLabel={"Less"} showLabel={"More"}>
-								{note}
-								<TooltipComponent position="bottom-start" label="Edit Additional Note">
-									<ActionIconComponent
-										onClick={() => setAdditionalNoteModal(true)}
-										size="md"
+							{note !== "" && !additionNoteModal && (
+								<SpoilerComponent
+									hideLabel="Less"
+									showLabel="More"
+								>
+									{note}
+									<TooltipComponent
+										position="bottom-start"
+										label="Edit Additional Note"
 									>
-										<MdOutlineEdit size={18} />
-									</ActionIconComponent>
-								</TooltipComponent>
-							</SpoilerComponent>}
+										<ActionIconComponent
+											onClick={() =>
+												setAdditionalNoteModal(true)
+											}
+											size="md"
+										>
+											<MdOutlineEdit size={18} />
+										</ActionIconComponent>
+									</TooltipComponent>
+								</SpoilerComponent>
+							)}
 						</StackComponent>
 					</CardComponent>
-
 				</ScrollAreaComponent>
 
 				<BoxComponent h={60} className="mt-3 mb-2">
@@ -734,7 +1242,11 @@ export const PosCartSection = () => {
 							style={{ flexGrow: 1 }}
 						>
 							<ButtonComponent
-								title="Checkout"
+								title={
+									isExchangeMode
+										? "Complete Exchange"
+										: "Checkout"
+								}
 								onClick={handleCheckout}
 								loading={loading}
 								fullWidth
@@ -747,7 +1259,12 @@ export const PosCartSection = () => {
 			{invoiceDialogOpen && (
 				<InvoiceDetailModal
 					isOpen={invoiceDialogOpen}
-					onClose={() => setInvoiceDialogOpen(false)}
+					onClose={() => {
+						setInvoiceDialogOpen(false);
+						resetCartStates();
+						setCustomerSignature(null);
+						localStorage.removeItem("customerSignature");
+					}}
 					setTotalRemovalCharges={setTotalRemovalCharges}
 					totalRemovalCharges={totalRemovalCharges}
 					setDeliveryCharges={setDeliveryCharges}
@@ -767,6 +1284,10 @@ export const PosCartSection = () => {
 					tax5={tax5}
 					tax7={tax7}
 					note={note}
+					customerSignature={customerSignature!}
+					isExchangeMode={isExchangeMode}
+					originalItemTotal={isExchangeMode ? getOriginalItemTotal() : 0}
+					exchangeDifference={exchangeDifference}
 				/>
 			)}
 
@@ -784,6 +1305,9 @@ export const PosCartSection = () => {
 					total={total}
 					tax5={tax5}
 					tax7={tax7}
+					isExchangeMode={isExchangeMode}
+					originalItemTotal={isExchangeMode ? getOriginalItemTotal() : 0}
+					exchangeDifference={exchangeDifference}
 				/>
 			)}
 
@@ -805,14 +1329,16 @@ export const PosCartSection = () => {
 					setSelectedWarranty={(warranty) => {
 						setSelectedWarranties((prev) => ({
 							...prev,
-							[warrentyModal]: warranty
+							[warrentyModal]: warranty,
 						}));
 					}}
-					selectedWarranty={selectedWarranties?.[warrentyModal] || null}
+					selectedWarranty={
+						selectedWarranties?.[warrentyModal] || null
+					}
 				/>
 			)}
 
-			{openAddModal &&
+			{openAddModal && (
 				<AddCustomerModal
 					customerId=""
 					isOpen={openAddModal}
@@ -826,9 +1352,9 @@ export const PosCartSection = () => {
 					initialValuePinCode=""
 					initialValueState=""
 				/>
-			}
+			)}
 
-			{openShipToModal &&
+			{openShipToModal && (
 				<AddShipToModal
 					isOpen={openShipToModal}
 					onClose={() => setOpenShipToModal(false)}
@@ -841,7 +1367,17 @@ export const PosCartSection = () => {
 					setAddress={setAddress}
 					setPinCode={setPinCode}
 				/>
-			}
+			)}
+
+			{signatureModalOpen && (
+				<DigitalSignatureModal
+					isOpen={signatureModalOpen}
+					onClose={handleSignatureClose}
+					onConfirm={handleSignatureConfirm}
+					onSkip={handleSignatureSkip}
+					customerName={selectedCustomer?.name}
+				/>
+			)}
 		</>
 	);
 };

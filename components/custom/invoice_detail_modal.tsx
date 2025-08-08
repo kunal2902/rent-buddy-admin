@@ -48,6 +48,10 @@ interface Props {
 	setState: Dispatch<SetStateAction<undefined | string>>;
 	setCity: Dispatch<SetStateAction<undefined | string>>;
 	setTotalRemovalCharges: Dispatch<SetStateAction<number | undefined>>;
+	customerSignature: string | undefined;
+	isExchangeMode:boolean;
+originalItemTotal: number;
+exchangeDifference: number;
 }
 
 const InvoiceDetailModal = (props: Props) => {
@@ -73,6 +77,10 @@ const InvoiceDetailModal = (props: Props) => {
 		setState,
 		setTotalRemovalCharges,
 		warranty,
+		customerSignature,
+		isExchangeMode,
+		originalItemTotal,
+		exchangeDifference,
 	} = props;
 	const setCartId = useSetRecoilState(cartIdAtom);
 	const [customer, setCustomer] = useRecoilState(customerAtom);
@@ -108,7 +116,7 @@ const InvoiceDetailModal = (props: Props) => {
 			title={<TitleComponent title="Invoice Detail" />}
 		>
 
-			<CardComponent className="mt-3" mih={90} shadow="sm" radius="md" padding="sm" withBorder>
+			<CardComponent className="mt-1" mih={90} shadow="sm" radius="md" padding="sm" withBorder>
 				<StackComponent gap="sm">
 					<GroupComponent justify="space-between">
 						<TextComponent text="Customer Name:" bold />
@@ -257,27 +265,28 @@ const InvoiceDetailModal = (props: Props) => {
 						<TextComponent text="Discount:" bold c="red" />
 						<TextComponent text={`- ${currencySign} ${discount.toFixed(2)}`} bold c="red" />
 					</GroupComponent>
+					{isExchangeMode && (
+						<GroupComponent justify="space-between">
+							<TextComponent text="Original Item Value:" bold c="red" />
+							<TextComponent text={`- ${currencySign} ${originalItemTotal.toFixed(2)}`} bold c="red" />
+						</GroupComponent>
+					)}
 					<GroupComponent justify="space-between">
 						<TextComponent text="Total:" bold c="green" />
-						<TextComponent text={`${currencySign} ${total.toFixed(2)}`} bold c="green" />
+						<TextComponent text={`${currencySign} ${Math.abs(Number(total.toFixed(2)))} `} bold c="green" />
 					</GroupComponent>
 				</StackComponent>
 			</CardComponent>
 
-			<BoxComponent h={60} className="mt-3">
+			<BoxComponent h={60} className="mt-5">
 				<GroupComponent grow justify="space-evenly" style={{ flexGrow: 1 }}>
-					<ButtonComponent
-						title="Close"
-						variant="subtle"
-						color={appAccentColorRGBA}
-						onClick={handleCloseModal}
-					/>
 					<DeliveryButton
 						fullAddress={fullAddress}
 						orderDate={orderDate}
 						customer={customer}
 						cartItems={cartItems}
 						note={note}
+						customerSignature={customerSignature}
 					/>
 					<PickupButton
 						fullAddress={fullAddress}
@@ -285,6 +294,8 @@ const InvoiceDetailModal = (props: Props) => {
 						customer={customer}
 						cartItems={cartItems}
 						note={note}
+						customerSignature={customerSignature}
+
 					/>
 					<InvoiceButton
 						totalRemovalCharges={totalRemovalCharges}
@@ -298,9 +309,11 @@ const InvoiceDetailModal = (props: Props) => {
 						cartItems={cartItems}
 						discount={discount}
 						total={total}
+						paymentType={paymentMethod}
 						note={note}
 						tax5={tax5}
 						tax7={tax7}
+						customerSignature={customerSignature}
 					/>
 				</GroupComponent>
 			</BoxComponent>

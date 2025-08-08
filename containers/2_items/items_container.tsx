@@ -45,7 +45,7 @@ const initialItemValue: InitialItemValue = {
 	icon: "",
 	price: "",
 	msrp: "",
-	stock_quantity: "",
+	// stock_quantity: "",
 	created_by_id: "",
 	created_at: "",
 	is_deleted: false,
@@ -187,9 +187,8 @@ const ItemsContainer = () => {
 		"Item Id",
 		"Name",
 		"Category",
-		"Sub category",
 		"Item type",
-		"Quantity",
+		"NC number",
 		"Created By",
 		"Created At",
 		...(canDisableItem ? ["Disable"] : []),
@@ -202,11 +201,9 @@ const ItemsContainer = () => {
 			<TableTdComponent>{element.item_id}</TableTdComponent>
 			<TableTdComponent>{element.name}</TableTdComponent>
 			<TableTdComponent>{element.category.name}</TableTdComponent>
-			<TableTdComponent>
-				{element.sub_category?.name ?? null}
-			</TableTdComponent>
 			<TableTdComponent>{element.type.name}</TableTdComponent>
-			<TableTdComponent>{element.stock_quantity}</TableTdComponent>
+			<TableTdComponent>{(element as any).nc_number || "N/A"}</TableTdComponent>
+			{/*<TableTdComponent>{element.stock_quantity}</TableTdComponent>*/}
 			<TableTdComponent>{element.created_by.name}</TableTdComponent>
 			<TableTdComponent>
 				{formatDate(element.created_at)}

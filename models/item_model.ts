@@ -21,7 +21,7 @@ export interface ItemModel {
     icon?: string;
     price: string;
     msrp: string;
-    stock_quantity: string;
+    // stock_quantity: string;
     custom_attribute_ids: string[];
     created_by_id: string;
     created_by: UserModel;

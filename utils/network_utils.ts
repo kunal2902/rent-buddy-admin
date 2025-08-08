@@ -26,7 +26,14 @@ const makeGetRequest = async (
 	url: string | URL | Request,
 	additionalHeaders = {},
 ) => {
-	const rawResponse = await fetch(url, {
+	const location = localStorage.getItem("selected_location");
+	const urlString = url.toString();
+
+	const separator = urlString.includes("?") ? "&" : "?";
+
+	const finalUrl = `${urlString}${separator}location=${location}`;
+
+	const rawResponse = await fetch(finalUrl, {
 		method: "GET",
 		headers: {
 			Accept: "application/json",
@@ -41,7 +48,9 @@ const makeDeleteRequest = async (
 	url: string | URL | Request,
 	additionalHeaders = {},
 ) => {
-	const rawResponse = await fetch(url, {
+	const location = localStorage.getItem("selected_location");
+
+	const rawResponse = await fetch(`${url}?location=${location}`, {
 		method: "DELETE",
 		headers: {
 			Accept: "application/json",
@@ -56,10 +65,11 @@ const makePostRequest = async (
 	url: string | URL | Request,
 	body: any,
 	additionalHeaders = {},
+	options: { skipLocation?: boolean } = {}
 ) => {
+	const location = localStorage.getItem("selected_location");
 	const isFormData = body instanceof FormData;
 
-	// Use a type assertion to inform TypeScript that `headers` can have additional properties
 	const headers: { [key: string]: string } = {
 		"X-localization": "en",
 		...additionalHeaders,
@@ -69,7 +79,13 @@ const makePostRequest = async (
 		headers["Content-Type"] = "application/json";
 	}
 
-	const rawResponse = await fetch(url, {
+	// ✅ only add location if not skipped
+	const finalUrl =
+		!options.skipLocation && location
+			? `${url}?location=${location}`
+			: url.toString();
+
+	const rawResponse = await fetch(finalUrl, {
 		method: "POST",
 		headers,
 		body: isFormData ? body : JSON.stringify(body),
@@ -80,10 +96,14 @@ const makePostRequest = async (
 
 const makePutRequest = async (
 	url: string | URL | Request,
+	body:any,
 	additionalHeaders = {},
 ) => {
-	const rawResponse = await fetch(url, {
+	const location = localStorage.getItem("selected_location");
+
+	const rawResponse = await fetch(`${url}?location=${location}`, {
 		method: "PUT",
+		body: JSON.stringify(body),
 		headers: {
 			"Content-Type": "application/json",
 			"X-localization": "en",
@@ -100,10 +120,12 @@ export const loginApi = async (
 	successCallback: (arg0: any) => void,
 	errorCallback: (arg0: any) => void,
 ) => {
-	const response = await makePostRequest(loginAPIPath, {
-		email,
-		password,
-	});
+	const response = await makePostRequest(
+		loginAPIPath,
+		{ email, password },
+		{},
+		{ skipLocation: true }
+	);
 
 	if (isDebug) {
 		console.log(response);
@@ -1202,9 +1224,12 @@ export const getItemApi = async (
 		return;
 	}
 	const path = query === "" ? itemAPIPath : `${itemAPIPath}?${query}`;
+	console.log("Making request to:", path);
 	const response = await makeGetRequest(path, {
-		authorization: `Bearer ${token}`,
+		Authorization: `Bearer ${token}`,
 	});
+	console.log("API Response:", response); // Debug log
+
 	if (isDebug) {
 		console.log(response);
 	}
@@ -1290,6 +1315,40 @@ export const upsertItemApi = async (
 	}
 };
 
+export const updateItemApi = async (
+	id: string,
+	updateData: any,
+	successCallback: (arg0: any) => void,
+	errorCallback: (arg0: any) => void,
+	logoutCallback: () => void,
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === "" || token === "null") {
+		logoutCallback();
+		return;
+	}
+	const response = await makePutRequest(`${itemAPIPath}/${id}`, updateData, {
+		authorization: `Bearer ${token}`,
+	});
+	if (isDebug) {
+		console.log(response);
+	}
+	switch (response.code) {
+		case 200:
+			successCallback(response.data);
+			break;
+		case 403:
+		case 420:
+		case 498:
+		case 499:
+			logoutCallback();
+			break;
+		default:
+			errorCallback(response.message);
+			toast.error(response.message);
+	}
+};
+
 export const disableItemApi = async (
 	id: string,
 	successCallback: (arg0: any) => void,
@@ -1301,7 +1360,8 @@ export const disableItemApi = async (
 		logoutCallback();
 		return;
 	}
-	const response = await makePutRequest(`${itemAPIPath}/${id}`, {
+	// Send empty body for disable functionality (controller will handle toggle)
+	const response = await makePutRequest(`${itemAPIPath}/${id}`, {}, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
@@ -2169,6 +2229,52 @@ export const getReportsAPI = async (
 		default:
 			errorCallback(response.message);
 			toast.error(response.message);
+	}
+};
+
+export const updateReportApi = async (
+	id: string,
+	updateData:any,
+	successCallback: (arg0: any) => void,
+	errorCallback: (arg0: any) => void,
+	logoutCallback: () => void,
+) => {
+	const token = getCrmJWT();
+	if (token === null || token === "" || token === "null") {
+		logoutCallback();
+		return;
+	}
+
+	// Pass the required headers including the token and Content-Type
+	const headers = {
+		authorization: `Bearer ${token}`,
+		"Content-Type": "application/json",
+	};
+
+	try {
+		const response = await makePutRequest(`${reportsAPIPath}/${id}`, updateData, headers);
+
+		if (isDebug) {
+			console.log(response);
+		}
+
+		switch (response.code) {
+			case 200:
+				successCallback(response.data);
+				break;
+			case 403:
+			case 420:
+			case 498:
+			case 499:
+				logoutCallback();
+				break;
+			default:
+				errorCallback(response.message);
+				toast.error(response.message);
+		}
+	} catch (error) {
+		errorCallback("An unexpected error occurred.");
+		toast.error("An unexpected error occurred.");
 	}
 };
 

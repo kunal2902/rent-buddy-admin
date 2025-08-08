@@ -27,6 +27,9 @@ interface Props {
 	totalEHF: number | undefined;
 	totalRemovalCharges: number | undefined;
 	deliveryCharges: string | number | undefined;
+	isExchangeMode?: boolean;
+	originalItemTotal?: number;
+	exchangeDifference?: number;
 }
 
 const PriceBreakupModal = (props: Props) => {
@@ -43,6 +46,9 @@ const PriceBreakupModal = (props: Props) => {
 		warranty,
 		totalRemovalCharges,
 		deliveryCharges,
+		isExchangeMode = false,
+		originalItemTotal = 0,
+		exchangeDifference = 0,
 	} = props;
 
 	return (
@@ -98,6 +104,12 @@ const PriceBreakupModal = (props: Props) => {
 						<TextComponent text="Discount:" bold c="red" />
 						<TextComponent text={`- ${currencySign} ${discount.toFixed(2)}`} bold c="red" />
 					</GroupComponent>
+						{isExchangeMode && (
+								<GroupComponent justify="space-between">
+									<TextComponent text="Original Item Value:" bold c="red" />
+									<TextComponent text={`- ${currencySign} ${originalItemTotal.toFixed(2)}`} bold c="red" />
+								</GroupComponent>
+						)}
 					<GroupComponent justify="space-between">
 						<TextComponent text="Total:" bold c="green" />
 						<TextComponent text={`${currencySign} ${total.toFixed(2)}`} bold c="green" />
