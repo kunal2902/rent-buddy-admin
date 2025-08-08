@@ -122,13 +122,10 @@ const ReportsContainer = () => {
 
 					const updateData = {
 						increment_stock: quantityToReturn,
-						is_returned: true,
-						returned_at: new Date().toISOString(),
-						returned_from_invoice: invoice.invoice_id,
 					};
 
-					// Call the API function with the defined callbacks
-					updateItemApi(
+				console.log(`API call data for item ${itemId}:`, updateData);
+				updateItemApi(
 						itemId,
 						updateData,
 						(data) => {
@@ -147,9 +144,9 @@ const ReportsContainer = () => {
 			await Promise.all(updatePromises);
 
 			const reportUpdateData = {
-				is_returned: false, // Add this
+				is_returned: true, // Add this
 				returned_at: new Date().toISOString(), // Add this (even though not returned)
-				is_exchanged: true,
+				is_exchanged: false,
 				exchanged_at: new Date().toISOString(),
 			};
 			await new Promise((resolve, reject) => {

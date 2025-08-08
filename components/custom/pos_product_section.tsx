@@ -62,7 +62,7 @@ export const PosProductSection = () => {
 	}, [router, searchQuery]);
 
 	const initState = async () => {
-		getItemApi(
+		await getItemApi(
 			"page_size=100",
 			(data: any) => {
 				setItemList(data.items);
