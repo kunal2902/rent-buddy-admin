@@ -3,20 +3,15 @@
 import React from "react";
 import { Checkbox, CheckboxProps } from "@mantine/core";
 
-/** Props list of Mantine's Checkbox component - https://mantine.dev/core/checkbox/?t=props */
 export interface CheckboxComponentProps extends CheckboxProps {
 	onChecked: (val: boolean) => void;
+	label?: React.ReactNode;
 }
 
-/** This is the Mantine Checkbox component - https://mantine.dev/core/checkbox/ */
-export const CheckboxComponent = (props: CheckboxComponentProps) => {
-	const { onChecked, ...rest } = props;
-	return (
-		<Checkbox
-			{...rest}
-			onChange={(e) => onChecked(e.target.checked)}
-	>
-			{props.children}
-		</Checkbox>
-	);
-};
+export const CheckboxComponent = ({ onChecked, label, ...rest }: CheckboxComponentProps) => (
+	<Checkbox
+		{...rest}
+		label={label}
+		onChange={(e) => onChecked(e.target.checked)}
+	/>
+);
