@@ -495,7 +495,6 @@ export const PosCartSection = () => {
 		if (!matchedCategory) {
 			return 0;
 		}
-
 		const fee = ehfFees[matchedCategory] || 0;
 		return fee * quantity;
 	};
@@ -1051,7 +1050,7 @@ export const PosCartSection = () => {
 														<TextComponent
 															lh={1}
 															fz={12}
-															text={`$ ${selectedWarranties[index]?.price * item.quantity}`}
+															text={`$ ${(selectedWarranties[index]?.price ?? 0) * item.quantity}`}
 														/>
 														<ActionIconComponent
 															onClick={() =>
@@ -1326,10 +1325,10 @@ export const PosCartSection = () => {
 					warrantiesList={warrantiesList}
 					onClose={() => setWarrentyModal(null)}
 					itemPrice={Number(cartItems[warrentyModal]?.item.price)}
-					setSelectedWarranty={(warranty) => {
+					setSelectedWarranty={(newWarranty:any) => {
 						setSelectedWarranties((prev) => ({
 							...prev,
-							[warrentyModal]: warranty,
+							[warrentyModal]: newWarranty,
 						}));
 					}}
 					selectedWarranty={
