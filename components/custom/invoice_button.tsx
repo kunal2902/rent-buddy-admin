@@ -30,6 +30,8 @@ interface Props {
 	note: string | undefined;
 	customerSignature: string | undefined;
 	paymentType: string | undefined;
+	isExchangeMode:boolean;
+	originalItemTotal: number;
 }
 
 const InvoiceButton = (props: Props) => {
@@ -50,6 +52,8 @@ const InvoiceButton = (props: Props) => {
 		warranty,
 		customerSignature,
 		paymentType,
+		isExchangeMode,
+		originalItemTotal,
 	} = props;
 
 	const renderInvoice = () => {
@@ -336,7 +340,7 @@ const InvoiceButton = (props: Props) => {
 			</tr>
 			<tr>
 				<td class="label-col">DELIVERY</td>
-				<td class="amount-col">${currencySign}${Number(total).toFixed(2)}</td>
+				<td class="amount-col">${currencySign}${deliveryCharges}</td>
 			</tr>
 			<tr>
 				<td class="label-col">REMOVAL</td>
@@ -354,17 +358,23 @@ const InvoiceButton = (props: Props) => {
 				<td class="label-col">7% PST</td>
 				<td class="amount-col">${currencySign}${tax7.toFixed(2)}</td>
 			</tr>
+			{ ${isExchangeMode} &&
+			<tr>
+				<td class="label-col">Original Item Value</td>
+				<td class="amount-col">${currencySign}${originalItemTotal}</td>
+			</tr>
+			}
 			<tr>
 				<td class="label-col"><strong>TOTAL</strong></td>
-				<td class="amount-col"><strong>${currencySign}${total.toFixed(2)}</strong></td>
+				<td class="amount-col"><strong>${currencySign}${Math.abs(Number(total.toFixed(2)))}</strong></td>
 			</tr>
 			<tr>
 				<td class="label-col">DEPOSIT</td>
-				<td class="amount-col">0.00</td>
+				<td class="amount-col">${currencySign}${Math.abs(Number(total.toFixed(2)))}</td>
 			</tr>
 			<tr>
 				<td class="label-col"><strong>BALANCE</strong></td>
-				<td class="amount-col"><strong>${currencySign}${total.toFixed(2)}</strong></td>
+				<td class="amount-col"><strong>False</strong></td>
 			</tr>
 		</table>
 	</div>

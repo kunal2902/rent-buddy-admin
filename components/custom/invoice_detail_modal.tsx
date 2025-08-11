@@ -314,6 +314,8 @@ const InvoiceDetailModal = (props: Props) => {
 						tax5={tax5}
 						tax7={tax7}
 						customerSignature={customerSignature}
+						isExchangeMode={isExchangeMode}
+						originalItemTotal={originalItemTotal}
 					/>
 				</GroupComponent>
 			</BoxComponent>

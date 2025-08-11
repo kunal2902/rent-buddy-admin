@@ -112,7 +112,7 @@ const PriceBreakupModal = (props: Props) => {
 						)}
 					<GroupComponent justify="space-between">
 						<TextComponent text="Total:" bold c="green" />
-						<TextComponent text={`${currencySign} ${total.toFixed(2)}`} bold c="green" />
+						<TextComponent text={`${currencySign} ${Math.abs(Number(total.toFixed(2)))}`} bold c="green" />
 					</GroupComponent>
 				</StackComponent>
 			</CardComponent>

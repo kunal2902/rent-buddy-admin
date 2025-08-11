@@ -12,6 +12,7 @@ export const LocationSwitcher = () => {
 		if (value) {
 			setLocation(value);
 			localStorage.setItem(LOCATION_KEY, value);
+			window.location.reload();
 		}
 	};
 
