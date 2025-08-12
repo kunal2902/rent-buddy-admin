@@ -267,6 +267,12 @@ const InvoiceDetailModal = (props: Props) => {
 					</GroupComponent>
 					{isExchangeMode && (
 						<GroupComponent justify="space-between">
+							<TextComponent text="Exchange Balance:" bold c="red" />
+							<TextComponent text={`- ${currencySign} ${exchangeDifference.toFixed(2)}`} bold c="red" />
+						</GroupComponent>
+					)}
+					{isExchangeMode && (
+						<GroupComponent justify="space-between">
 							<TextComponent text="Original Item Value:" bold c="red" />
 							<TextComponent text={`- ${currencySign} ${originalItemTotal.toFixed(2)}`} bold c="red" />
 						</GroupComponent>

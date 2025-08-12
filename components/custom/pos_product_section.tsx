@@ -184,7 +184,7 @@ export const PosProductSection = () => {
 
 	return (
 		<div
-			className="w-[70%] max-h-screen overflow-hidden"
+			className="w-[70%] max-h-screen overflow-hidden p-4"
 			style={{
 				display: "flex",
 				flexDirection: "column",
@@ -214,7 +214,7 @@ export const PosProductSection = () => {
 			</BoxComponent>
 			<div style={{ whiteSpace: "nowrap" }}>
 				<ScrollAreaComponent h={60}>
-					<BoxComponent className="mt-3">
+					<BoxComponent className="m-3">
 						<ChipGroupComponent value={catValue} onChange={handleCategoryChange}>
 							<ChipComponent value="all_item" style={{ display: "inline-block", marginRight: "8px" }}>
 								All items
@@ -232,24 +232,6 @@ export const PosProductSection = () => {
 					</BoxComponent>
 				</ScrollAreaComponent>
 			</div>
-			{/*<BoxComponent h={30} className="px-3 mt-3">*/}
-			{/*	<ChipGroupComponent*/}
-			{/*		value={catValue}*/}
-			{/*		onChange={handleCategoryChange}*/}
-			{/*	>*/}
-			{/*		<GroupComponent justify="start">*/}
-			{/*			<ChipComponent value="">All items</ChipComponent>*/}
-			{/*			{categoriesList.map((item: any) => (*/}
-			{/*				<ChipComponent*/}
-			{/*					key={item.category_id}*/}
-			{/*					value={item.category_id}*/}
-			{/*				>*/}
-			{/*					{item.name}*/}
-			{/*				</ChipComponent>*/}
-			{/*			))}*/}
-			{/*		</GroupComponent>*/}
-			{/*	</ChipGroupComponent>*/}
-			{/*</BoxComponent>*/}
 
 			{subCategories.length > 0 && (
 				<BoxComponent h={70} className="px-3 mt-1">
@@ -277,10 +259,7 @@ export const PosProductSection = () => {
 				style={{
 					display: "grid",
 					flexGrow: 1,
-					// height:
-					// 	subCategories.length > 0
-					// 		? "calc(100vh - 250px)"
-					// 		: "calc(100vh - 173px)",
+
 				}}
 				className="my-3"
 			>
@@ -294,18 +273,6 @@ export const PosProductSection = () => {
 						xl: 4,
 					}}
 				>
-					{/* {itemList.map((item, index) => (
-						// <ProductCard
-						// 	key={item.item_id}
-						// 	index={index + 1}
-						// 	item={item}
-						// 	cartItem={
-						// 		cart.filter(
-						// 			(c_item) => c_item.item_id === item.item_id,
-						// 		)[0]
-						// 	}
-						// />
-					))} */}
 					{itemList.map((item) => (
 						<ProductCard
 							key={item.item_id}
