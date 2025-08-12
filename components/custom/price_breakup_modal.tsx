@@ -106,8 +106,8 @@ const PriceBreakupModal = (props: Props) => {
 					</GroupComponent>
 						{isExchangeMode && (
 								<GroupComponent justify="space-between">
-									<TextComponent text="Original Item Value:" bold c="red" />
-									<TextComponent text={`- ${currencySign} ${originalItemTotal.toFixed(2)}`} bold c="red" />
+									<TextComponent text="Exchange Balance:" bold c="red" />
+									<TextComponent text={`-${currencySign} ${Math.abs(Number(exchangeDifference.toFixed(2)))}`} bold c="red" />
 								</GroupComponent>
 						)}
 					<GroupComponent justify="space-between">

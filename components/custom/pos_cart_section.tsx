@@ -117,6 +117,7 @@ export const PosCartSection = () => {
 	const [exchangeData, setExchangeData] = useState<any>(null);
 	const [signatureModalOpen, setSignatureModalOpen] = useState(false);
 	const [customerSignature, setCustomerSignature] = useState(null);
+	const [manualExchangeBalance, setManualExchangeBalance] = useState<number>(0);
 
 	useEffect(() => {
 		const storedExchangeData = localStorage.getItem("exchangeData");
@@ -281,8 +282,6 @@ export const PosCartSection = () => {
 		 0);
 	};
 
-	// In PosCartSection - Replace the price calculation useEffect
-
 	useEffect(() => {
 		// eslint-disable-next-line @typescript-eslint/no-shadow
 		const totalMsrp = calculateMsrp();
@@ -304,22 +303,21 @@ export const PosCartSection = () => {
 		let calculatedTotal = calculateSubTotal - (totalMsrp - totalItemQuantity);
 
 		if (isExchangeMode && exchangeData) {
-			const newItemTotal = totalItemQuantity; // Current cart item total
-			const originalItemTotal = getOriginalItemTotal(); // Original item total
-			// eslint-disable-next-line @typescript-eslint/no-shadow
-			const exchangeDifference = newItemTotal - originalItemTotal;
+			const newItemTotal = totalItemQuantity;
+			const originalItemTotal = getOriginalItemTotal();
+			// eslint-disable-next-line @typescript-eslint/no-shadow,max-len
+			const calculatedExchangeDifference = newItemTotal - originalItemTotal;
+			// eslint-disable-next-line max-len
+			const effectiveExchangeDifference = manualExchangeBalance !== 0 ? manualExchangeBalance : calculatedExchangeDifference;
 
-			setExchangeDifference(exchangeDifference);
+			setExchangeDifference(effectiveExchangeDifference);
 
-			// Calculate total including taxes and charges based on the difference
 			if (exchangeDifference >= 0) {
-				// Customer needs to pay additional amount
-				calculatedTotal = exchangeDifference + calculatedTax5 + calculatedTax7 +
+				calculatedTotal = effectiveExchangeDifference + calculatedTax5 + calculatedTax7 +
 					Number(totalRemovalCharges || 0) + Number(deliveryCharges || 0) +
 					warrantyTotal + Number(totalEHF || 0);
 			} else {
-				// Customer gets refund (negative amount)
-				calculatedTotal = exchangeDifference; // This will be negative
+				calculatedTotal = effectiveExchangeDifference;
 			}
 		} else {
 			setExchangeDifference(0);
@@ -342,7 +340,12 @@ export const PosCartSection = () => {
 		totalEHF,
 		isExchangeMode,
 		exchangeData,
+		manualExchangeBalance,
 	]);
+
+	const handleExchangeBalanceChange = (value:string | number) => {
+		setManualExchangeBalance(Number(value) || 0);
+	};
 
 	const handleCustomerChange = (option: { value: string; label: string }) => {
 		setSelectedCustomer({
@@ -398,6 +401,7 @@ export const PosCartSection = () => {
 		setAddress("");
 		setNote("");
 		setExchangeDifference(0);
+		setManualExchangeBalance(0);
 		setDiscount(0);
 		setTotal(0);
 		setSubTotal(0);
@@ -564,16 +568,13 @@ export const PosCartSection = () => {
 				);
 			});
 
-			// Handle item quantity updates for exchange
 			if (isExchangeMode && exchangeData) {
 				try {
 					console.log("Processing exchange - updating item quantities");
 
-					// 1. Increase quantity for returned items (original invoice items)
 					const originalInvoiceItems = exchangeData.originalInvoice?.invoice_items || [];
 
 					for (const originalItem of originalInvoiceItems) {
-						// Only update stock - remove non-existent fields
 						const updateData = {
 							increment_stock: Number(originalItem.quantity),
 						};
@@ -687,7 +688,6 @@ export const PosCartSection = () => {
 			};
 
 			console.log("Calling checkout API with body:", checkoutBody);
-			// Call checkout API with proper Promise handling
 			// eslint-disable-next-line max-len
 			const checkoutResult: { invoice: { created_at: string } } = await new Promise((resolve, reject) => {
 				checkoutApi(
@@ -708,7 +708,6 @@ export const PosCartSection = () => {
 				);
 			});
 
-			// Handle successful checkout
 			console.log("Checkout completed successfully:", checkoutResult);
 			setLoading(false);
 			setSignatureModalOpen(true);
@@ -1132,45 +1131,48 @@ export const PosCartSection = () => {
 								p={0}
 								py={0}
 							/>
+
+							{isExchangeMode && (
+								<>
+									<GroupComponent justify="space-between">
+										<TextComponent
+											text="Exchange Balance:"
+											bold
+										/>
+										<NumberInputComponent
+											w={120}
+											size="sm"
+											prefix="$ "
+											allowNegative
+											title="Exchange Balance"
+											value={exchangeDifference}
+											setValue={handleExchangeBalanceChange}
+											placeholder="Exchange Balance"
+										/>
+									</GroupComponent>
+									<DividerComponent
+										my={0}
+										variant="dashed"
+										p={0}
+										py={0}
+									/>
+								</>
+							)}
+
 							<GroupComponent justify="space-between">
 								<TextComponent
-									text={
-										isExchangeMode
-											? "Exchange Amount:"
-											: "Total:"
-									}
+									text="Total:"
 									bold
 								/>
 								<StackComponent gap={0} align="end">
 									<TextComponent
 										text={`${currencySign} ${Math.abs(total).toFixed(2)}`}
 										bold
-										color={
-											isExchangeMode
-												? total === 0
-													? "dark"
-													: total > 0
-														? "red"
-														: "green"
-												: "dark"
-										}
+										color="dark"
 									/>
-									{isExchangeMode && (
-										<TextComponent
-											text={
-												total === 0
-													? "Even exchange"
-													: total < 0
-														? "Refund to customer"
-														: "Additional payment required"
-											}
-											size="xs"
-											color="gray"
-											ta="right"
-										/>
-									)}
 								</StackComponent>
 							</GroupComponent>
+
 							<GroupComponent
 								justify={
 									note === "" ? "space-between" : "right"
