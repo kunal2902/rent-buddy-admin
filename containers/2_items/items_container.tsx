@@ -2,8 +2,9 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useDebouncedCallback } from "@mantine/hooks";
-import { MdOutlineEdit } from "react-icons/md";
+import { MdLocalOffer, MdOutlineEdit } from "react-icons/md";
 import { useRouter } from "next/navigation";
+import { Tooltip } from "@mantine/core";
 import {
 	ActionIconComponent,
 	BoxComponent,
@@ -30,6 +31,7 @@ import { deleteItemApi, disableItemApi, formatDate, getItemApi, logoutUser } fro
 import AddItemModal, { InitialItemValue } from "./add_item_modal";
 import ShowNotification from "@/components/mantine/show_notification";
 import { checkPermissions } from "@/components/custom/check_permission_entities";
+import PriceTagModal from "@/components/custom/price_tag_modal";
 
 const initialItemValue: InitialItemValue = {
 	item_id: "",
@@ -83,6 +85,8 @@ const ItemsContainer = () => {
 	const [order, setOrder] = useState<string>("asc");
 	const [pageSize, setPageSize] = useState<number>(15);
 	const currentQueryRef = useRef(searchValue);
+	const [openPriceTagModal, setOpenPriceTagModal] = useState<boolean>(false);
+	const [selectedItemForPriceTag, setSelectedItemForPriceTag] = useState<ItemModel | null>(null);
 
 	const canDeleteItem = checkPermissions("item", ["delete"]);
 	const canUpdateItem = checkPermissions("item", ["update"]);
@@ -96,6 +100,11 @@ const ItemsContainer = () => {
 	useEffect(() => {
 		currentQueryRef.current = searchValue;
 	}, [searchValue]);
+
+	const handlePriceTagModal = (item: ItemModel) => {
+		setSelectedItemForPriceTag(item);
+		setOpenPriceTagModal(true);
+	};
 
 	const initState = async () => {
 		setLoading(true);
@@ -221,29 +230,51 @@ const ItemsContainer = () => {
 					/>
 				}
 			</TableTdComponent>
-			<TableTdComponent w={110}>
+			<TableTdComponent w={180}>
 				<GroupComponent>
-					{canDeleteItem &&
-						<PopConfirmComponent
-							entityName="item"
-							actionName="delete"
-							onConfirm={async () =>
-								handleActionItem(element.item_id, "delete")
-							}
-						/>
-					}
-					{canUpdateItem &&
-						<ActionIconComponent
-							onClick={() => handleAddOpenModal(element)}
-							size="md"
+
+					<Tooltip label="View Price Tag" position="top">
+						<span>
+							<ActionIconComponent
+								onClick={() => handlePriceTagModal(element)}
+								size="md"
+								color="green"
 						>
-							<MdOutlineEdit size={18} />
-						</ActionIconComponent>
+								<MdLocalOffer size={18} />
+							</ActionIconComponent>
+						</span>
+					</Tooltip>
+					{canUpdateItem &&
+						<Tooltip label="Edit Item" position="top">
+							<span>
+								<ActionIconComponent
+									onClick={() => handleAddOpenModal(element)}
+									size="md"
+							>
+									<MdOutlineEdit size={18} />
+								</ActionIconComponent>
+							</span>
+						</Tooltip>
+					}
+					{canDeleteItem &&
+						<Tooltip label="Delete Item" position="top">
+							<div>
+								<PopConfirmComponent
+									entityName="item"
+									actionName="delete"
+									onConfirm={async () =>
+										handleActionItem(element.item_id, "delete")
+									}
+								/>
+							</div>
+						</Tooltip>
 					}
 				</GroupComponent>
 			</TableTdComponent>
 		</TableTrComponent>
 	));
+
+	console.log("selected item for price tag", selectedItemForPriceTag);
 
 	return (
 		<MainComponent>
@@ -315,6 +346,16 @@ const ItemsContainer = () => {
 					onClose={() => setOpenAddModal(false)}
 				/>
 			}
+			{openPriceTagModal && selectedItemForPriceTag && (
+				<PriceTagModal
+					isOpen={openPriceTagModal}
+					item={selectedItemForPriceTag}
+					onClose={() => {
+						setOpenPriceTagModal(false);
+						setSelectedItemForPriceTag(null);
+					}}
+				/>
+			)}
 		</MainComponent>
 	);
 };
