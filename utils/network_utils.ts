@@ -67,7 +67,7 @@ const makePostRequest = async (
 	additionalHeaders = {},
 	options: { skipLocation?: boolean } = {}
 ) => {
-	const location = localStorage.getItem("selected_location") || "Surrey";
+	const location = localStorage.getItem("selected_location");
 	const isFormData = body instanceof FormData;
 
 	const headers: { [key: string]: string } = {
@@ -84,6 +84,10 @@ const makePostRequest = async (
 		!options.skipLocation && location
 			? `${url}?location=${location}`
 			: url.toString();
+
+	console.log("[DEBUG] Final URL:", finalUrl);
+	console.log("[DEBUG] Location from localStorage:", location);
+	console.log("[DEBUG] skipLocation option:", options.skipLocation);
 
 	const rawResponse = await fetch(finalUrl, {
 		method: "POST",
@@ -124,7 +128,7 @@ export const loginApi = async (
 		loginAPIPath,
 		{ email, password },
 		{},
-		// { skipLocation: true }
+		{ skipLocation: true }
 	);
 
 	if (isDebug) {
