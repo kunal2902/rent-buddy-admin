@@ -266,11 +266,11 @@ const InvoiceButton = (props: Props) => {
 			Fax: 604-593-1289<br>
 			<a href="https://www.newcountryappliances.com">www.newcountryappliances.com</a>
 		</div>
-		<div class="logo-section">
-			<div class="logo-placeholder">
-				LOGO
-			</div>
-		</div>
+<!--		<div class="logo-section">-->
+<!--			<div class="logo-placeholder">-->
+<!--				LOGO-->
+<!--			</div>-->
+<!--		</div>-->
 		<div class="contact-info">
 			<strong>DELIVERY DATE:</strong><br><br>
 			<strong>SHIP TO:</strong><br>
@@ -358,11 +358,11 @@ const InvoiceButton = (props: Props) => {
 				<td class="label-col">7% PST</td>
 				<td class="amount-col">${currencySign}${tax7.toFixed(2)}</td>
 			</tr>
-			{ ${isExchangeMode} &&
-			<tr>
+			${isExchangeMode ?
+			`<tr>
 				<td class="label-col">Original Item Value</td>
 				<td class="amount-col">${currencySign}${originalItemTotal}</td>
-			</tr>
+			</tr>` : ""
 			}
 			<tr>
 				<td class="label-col"><strong>TOTAL</strong></td>
