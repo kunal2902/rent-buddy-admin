@@ -348,7 +348,7 @@ const InvoiceButton = (props: Props) => {
 			</tr>
 			<tr>
 				<td class="label-col">SUBTOTAL</td>
-				<td class="amount-col">${currencySign}${subTotal.toFixed(2)}</td>
+				<td class="amount-col">${currencySign}${cartItems[0].item.price}</td>
 			</tr>
 			<tr>
 				<td class="label-col">5% GST</td>
