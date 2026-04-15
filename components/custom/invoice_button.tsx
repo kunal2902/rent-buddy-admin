@@ -89,17 +89,18 @@ const InvoiceButton = (props: Props) => {
         .header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
             margin-bottom: 20px;
             border: 2px solid black;
             padding: 10px;
         }
 
         .company-info {
-            flex: 1;
-            font-size: 11px;
-            line-height: 1.3;
-        }
+      flex: 0 0 auto;
+      width: 28%;
+      font-size: 11px;
+      line-height: 1.4;
+    }
 
         .company-info a {
             color: black;
@@ -107,12 +108,13 @@ const InvoiceButton = (props: Props) => {
         }
 
         .logo-section {
-            flex: 1;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+      flex: 0 0 auto;
+      width: 22%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
 
         .logo-placeholder {
             width: 80px;
@@ -154,6 +156,14 @@ const InvoiceButton = (props: Props) => {
             font-weight: bold;
             min-width: 120px;
         }
+        
+        .invoice-date-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 11px;
+    }
+    .invoice-date-row span { font-weight: bold; }
 
         .items-table {
             width: 100%;
@@ -211,6 +221,18 @@ const InvoiceButton = (props: Props) => {
             text-align: right;
             min-width: 80px;
         }
+        
+        .invoice-title-section {
+      flex: 0 0 auto;
+      width: 22%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .invoice-title-section img {
+    width: 100%;
+    }
 
         .warranty-section {
             margin: 20px 0;
@@ -266,28 +288,25 @@ const InvoiceButton = (props: Props) => {
 			Fax: 604-593-1289<br>
 			<a href="https://www.newcountryappliances.com">www.newcountryappliances.com</a>
 		</div>
-<!--		<div class="logo-section">-->
-<!--			<div class="logo-placeholder">-->
-<!--				LOGO-->
-<!--			</div>-->
-<!--		</div>-->
-		<div class="contact-info">
-			<strong>DELIVERY DATE:</strong><br><br>
-			<strong>SHIP TO:</strong><br>
-			${fullAddress}
-		</div>
+
+    <div class="logo-section">
+      <img src="/images/nca_logo_2.png" alt="Logo" />
+            <h1>INVOICE</h1>
+    </div>
+    
+		<div class="invoice-title-section">
+    <img src="/images/nca_product.png" alt="Sales product" />
+      <div class="email">ncaisales@gmail.com</div>
+      
+    </div>
 	</div>
 
-	<div class="invoice-details">
-		<div class="invoice-left">
-			<div class="detail-row">
-				<span class="detail-label">INVOICE DATE:</span>
-				<span>${formatDate(orderDate)}</span>
-			</div>
-		</div>
-		<div class="invoice-right">
-		</div>
-	</div>
+	 <div class="invoice-date-row">
+    <div><span>INVOICE DATE:</span> ${formatDate(orderDate)}</div>
+<div class="contact-info">
+      <span class="field-label">SHIP TO:</span><br>
+      ${fullAddress}
+    </div>  </div>
 
 	<table class="items-table">
 		<thead>
@@ -309,7 +328,6 @@ const InvoiceButton = (props: Props) => {
 		`).join("")}
 		${Array.from({ length: Math.max(0, 8 - cartItems.length) }, () => `
 		<tr>
-			<td>&nbsp;</td>
 			<td>&nbsp;</td>
 			<td>&nbsp;</td>
 			<td>&nbsp;</td>

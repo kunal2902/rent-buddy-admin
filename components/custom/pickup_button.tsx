@@ -66,17 +66,18 @@ const PickupButton = (props: Props) => {
         .header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
             margin-bottom: 15px;
             border: 2px solid black;
             padding: 10px;
         }
 
         .company-info {
-            flex: 1;
-            font-size: 10px;
-            line-height: 1.3;
-        }
+      flex: 0 0 auto;
+      width: 28%;
+      font-size: 11px;
+      line-height: 1.4;
+    }
 
         .company-info a {
             color: black;
@@ -84,12 +85,13 @@ const PickupButton = (props: Props) => {
         }
 
         .logo-section {
-            flex: 1;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+      flex: 0 0 auto;
+      width: 22%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
 
         .logo-placeholder {
             width: 80px;
@@ -133,6 +135,35 @@ const PickupButton = (props: Props) => {
         .customer-info-table .data-cell {
             width: 35%;
         }
+        
+        .invoice-title-section {
+      flex: 0 0 auto;
+      width: 22%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .invoice-title-section img {
+    width: 100%;
+    }
+    .invoice-title-section h1 {
+      font-size: 36px;
+      font-weight: bold;
+      margin: 0 0 4px 0;
+      letter-spacing: 1px;
+    }
+    .invoice-title-section .email {
+      font-size: 10px;
+    }
+    
+    .invoice-date-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 11px;
+    }
+    .invoice-date-row span { font-weight: bold; }
 
         .items-table {
             width: 100%;
@@ -168,6 +199,14 @@ const PickupButton = (props: Props) => {
             margin-bottom: 15px;
             text-align: justify;
         }
+        
+        .invoice-date-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 11px;
+    }
+    .invoice-date-row span { font-weight: bold; }
 
         .acknowledgment-section {
             font-size: 9px;
@@ -240,14 +279,21 @@ const PickupButton = (props: Props) => {
 			ncasales@gmail.com
 		</div>
 		<div class="logo-section">
-			<div class="logo-placeholder">
-				LOGO
-			</div>
+			<img src="/images/nca_logo_2.png" alt="Logo" />
+            <h1>PICKUP SLIP</h1>
 		</div>
-		<div class="contact-info">
-			<a href="mailto:ncaisales@gmail.com"><strong>ncaisales@gmail.com</strong></a>
-		</div>
+		<div class="invoice-title-section">
+    <img src="/images/nca_product.png" alt="Sales product" />
+      <div class="email">ncaisales@gmail.com</div>
+    </div>
 	</div>
+	
+	<div class="invoice-date-row">
+    <div><span>INVOICE DATE:</span> ${formatDate(orderDate)}</div>
+<div class="contact-info">
+      <span class="field-label">SHIP TO:</span>
+      ${fullAddress}
+    </div>  </div>
 
 	<table class="customer-info-table">
 		<tr>

@@ -67,30 +67,28 @@ const DeliveryButton = (props: Props) => {
         .header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
             margin-bottom: 15px;
             border: 2px solid black;
             padding: 10px;
         }
 
         .company-info {
-            flex: 1;
-            font-size: 10px;
-            line-height: 1.3;
-        }
-
-        .company-info a {
-            color: black;
-            text-decoration: none;
-        }
+      flex: 0 0 auto;
+      width: 28%;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+    .company-info a { color: black; text-decoration: none; }
 
         .logo-section {
-            flex: 1;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+      flex: 0 0 auto;
+      width: 22%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
 
         .logo-placeholder {
             width: 80px;
@@ -103,6 +101,27 @@ const DeliveryButton = (props: Props) => {
             background-color: #f0f0f0;
             font-size: 10px;
         }
+        
+        .invoice-title-section {
+      flex: 0 0 auto;
+      width: 22%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .invoice-title-section img {
+    width: 100%;
+    }
+    .invoice-title-section h1 {
+      font-size: 36px;
+      font-weight: bold;
+      margin: 0 0 4px 0;
+      letter-spacing: 1px;
+    }
+    .invoice-title-section .email {
+      font-size: 10px;
+    }
 
         .contact-info {
             flex: 1;
@@ -254,13 +273,13 @@ const DeliveryButton = (props: Props) => {
 			ncasales@gmail.com
 		</div>
 		<div class="logo-section">
-			<div class="logo-placeholder">
-				LOGO
-			</div>
-		</div>
-		<div class="contact-info">
-			<a href="mailto:ncaisales@gmail.com"><strong>ncaisales@gmail.com</strong></a>
-		</div>
+      <img src="/images/nca_logo_2.png" alt="Logo" />
+            <h1>INVOICE</h1>
+    </div>
+		<div class="invoice-title-section">
+    <img src="/images/nca_product.png" alt="Sales product" />
+      <div class="email">ncaisales@gmail.com</div>
+    </div>
 	</div>
 
 	<div class="invoice-date-section">
