@@ -25,7 +25,7 @@ interface Props {
 const WarrantyModal = ({
    isOpen,
    onClose,
-   itemPrice,
+   // itemPrice,
    selectedWarranty,
    setSelectedWarranty,
    warrantiesList,
@@ -45,12 +45,13 @@ const WarrantyModal = ({
 		>
 			<StackComponent gap="sm">
 				{warrantiesList
-					.filter(
-						(option) =>
-							itemPrice >= Number(option.min_price) &&
-							itemPrice <= Number(option.max_price)
-					)
+					// .filter(
+					// 	(option) =>
+					// 		itemPrice >= Number(option.min_price) &&
+					// 		itemPrice <= Number(option.max_price)
+					// )
 					.map((option) => (
+						// eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
 						<div
 							key={option.warranty_id}
 							onClick={() => handleCardClick(option)}

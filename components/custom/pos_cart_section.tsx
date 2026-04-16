@@ -681,6 +681,7 @@ export const PosCartSection = () => {
 					note,
 					tax5,
 					tax7,
+					warranty,
 					isExchange: isExchangeMode,
 					originalInvoiceId: exchangeData?.originalInvoice?.invoice_id || null,
 					exchangeAmount: isExchangeMode ? total : null,
@@ -1323,7 +1324,7 @@ export const PosCartSection = () => {
 
 			{warrentyModal !== null && (
 				<WarrantyModal
-					isOpen={warrentyModal !== null}
+					isOpen
 					warrantiesList={warrantiesList}
 					onClose={() => setWarrentyModal(null)}
 					itemPrice={Number(cartItems[warrentyModal]?.item.price)}

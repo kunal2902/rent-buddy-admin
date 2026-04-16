@@ -36,6 +36,7 @@ interface Props {
 	paymentType: string;
 	customer: CustomerModel;
 	cartItems: CartItemModel[];
+	warranty: number;
 }
 
 const InvoiceModal = (props: Props) => {
@@ -45,16 +46,15 @@ const InvoiceModal = (props: Props) => {
 		total,
 		tax5,
 		tax7,
-		subTotal,
 		totalEHF = 0,
 		orderDate,
-		deliveryDate = "", // ← NEW
 		fullAddress = "N/A",
 		deliveryCharges = 0,
 		totalRemovalCharges,
 		paymentType,
 		customer,
 		cartItems,
+		warranty,
 	} = props;
 
 	const handleCloseModal = () => onClose();
@@ -389,6 +389,12 @@ const InvoiceModal = (props: Props) => {
           <td class="label-col">7% PST</td>
           <td class="amount-col">${currencySign}${tax7.toFixed(2)}</td>
         </tr>
+        ${
+			warranty ? `<tr>
+				<td class="label-col">Warranty</td>
+				<td class="amount-col">${currencySign}${warranty}</td>
+			</tr>` : ""
+		}
         <tr>
           <td class="label-col"><strong>TOTAL</strong></td>
           <td class="amount-col"><strong>${currencySign}${Math.abs(Number(total.toFixed(2)))}</strong></td>

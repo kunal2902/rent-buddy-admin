@@ -376,6 +376,14 @@ const InvoiceButton = (props: Props) => {
 				<td class="label-col">7% PST</td>
 				<td class="amount-col">${currencySign}${tax7.toFixed(2)}</td>
 			</tr>
+			
+			${
+			warranty ? `<tr>
+				<td class="label-col">Warranty</td>
+				<td class="amount-col">${currencySign}${warranty}</td>
+			</tr>` : ""
+		}
+			
 			${isExchangeMode ?
 			`<tr>
 				<td class="label-col">Original Item Value</td>

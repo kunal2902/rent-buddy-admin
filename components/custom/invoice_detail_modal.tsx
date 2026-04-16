@@ -301,7 +301,6 @@ const InvoiceDetailModal = (props: Props) => {
 						cartItems={cartItems}
 						note={note}
 						customerSignature={customerSignature}
-
 					/>
 					<InvoiceButton
 						totalRemovalCharges={totalRemovalCharges}
