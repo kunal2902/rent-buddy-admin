@@ -8,7 +8,7 @@ interface CartItem {
 		name: string;
 		msrp: string;
 		price: string;
-		short_description: string;
+		short_description?: string;
 	};
 }
 
