@@ -1064,6 +1064,22 @@ export const PosCartSection = () => {
 																size={18}
 															/>
 														</ActionIconComponent>
+														<ActionIconComponent
+															onClick={() =>
+																setSelectedWarranties((prev) => {
+																	if (!prev) return prev;
+																	const updated = { ...prev };
+																	delete updated[index];
+																	return updated;
+																})
+															}
+															size="md"
+															c="red"
+														>
+															<RiDeleteBin6Line
+																size={18}
+															/>
+														</ActionIconComponent>
 													</GroupComponent>
 												</GroupComponent>
 											) : (
