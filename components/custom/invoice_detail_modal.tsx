@@ -127,7 +127,7 @@ const InvoiceDetailModal = (props: Props) => {
 						<TextComponent text={formatDate(orderDate)} />
 					</GroupComponent>
 					<GroupComponent justify="space-between">
-						<TextComponent text="Paynebt method:" bold />
+						<TextComponent text="Payment method:" bold />
 						<TextComponent text={paymentMethod} />
 					</GroupComponent>
 				</StackComponent>

@@ -8,6 +8,7 @@ interface CartItem {
 		name: string;
 		msrp: string;
 		price: string;
+		short_description: string;
 	};
 }
 
@@ -308,7 +309,7 @@ const DeliveryButton = (props: Props) => {
 		${cartItems.map(item => `
 		<tr>
 			<td>${item.quantity}</td>
-			<td style="text-align: left;">${note}</td>
+			<td style="text-align: left;">${item.item.short_description}</td>
 			<td>${item.item.name}</td>
 		</tr>
 		`).join("")}
