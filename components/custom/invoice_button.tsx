@@ -8,6 +8,7 @@ interface CartItem {
 		name: string;
 		msrp: string;
 		price: string;
+		short_description: string;
 	};
 }
 
@@ -128,10 +129,13 @@ const InvoiceButton = (props: Props) => {
         }
 
         .contact-info {
-            flex: 1;
-            text-align: right;
-            font-size: 11px;
-        }
+      flex: 0 0 auto;
+      width: 100%;
+      text-align: right;
+      font-size: 11px;
+      line-height: 1.6;
+      margin-top: 10px;
+    }
 
         .invoice-details {
             display: flex;
@@ -162,6 +166,11 @@ const InvoiceButton = (props: Props) => {
       justify-content: space-between;
       margin-bottom: 8px;
       font-size: 11px;
+    }
+    .delivery-date-row {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
     }
     .invoice-date-row span { font-weight: bold; }
 
@@ -303,18 +312,22 @@ const InvoiceButton = (props: Props) => {
 
 	 <div class="invoice-date-row">
     <div><span>INVOICE DATE:</span> ${formatDate(orderDate)}</div>
-<div class="contact-info">
-      <span class="field-label">SHIP TO:</span><br>
+<div class="delivery-date-row">
+    <strong>DELIVERY DATE: _______________</strong> 
+    <div class="contact-info">
+      <span class="field-label">SHIP TO:</span>
       ${fullAddress}
-    </div>  </div>
+    </div>
+    </div>   </div>
 
 	<table class="items-table">
 		<thead>
 		<tr>
-			<th style="width: 10%;">QUANTITY</th>
-			<th style="width: 50%;">ITEM</th>
-			<th style="width: 20%;">UNIT COST</th>
-			<th style="width: 20%;">AMOUNT</th>
+			<th style="width:10%;">QUANTITY</th>
+        <th style="width:30%;">ITEM </th>
+        <th style="width:40%;">DESCRIPTION </th>
+        <th style="width:10%;">UNIT COST</th>
+        <th style="width:10%;">AMOUNT</th>
 		</tr>
 		</thead>
 		<tbody>
@@ -322,12 +335,14 @@ const InvoiceButton = (props: Props) => {
 		<tr>
 			<td>${item.quantity}</td>
 			<td style="text-align: left;">${item.item.name}</td>
-			<td>${currencySign}${item.item.price}</td>
+			<td style="text-align: left;">${item.item.short_description}</td>
+            <td>${currencySign}${item.item.price}</td>
 			<td>${currencySign}${(parseInt(item.item.price, 10) * item.quantity).toFixed(2)}</td>
 		</tr>
 		`).join("")}
 		${Array.from({ length: Math.max(0, 8 - cartItems.length) }, () => `
 		<tr>
+			<td>&nbsp;</td>
 			<td>&nbsp;</td>
 			<td>&nbsp;</td>
 			<td>&nbsp;</td>

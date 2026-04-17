@@ -28,7 +28,6 @@ interface Props {
 	tax5: number;
 	tax7: number;
 	orderDate: string;
-	deliveryDate?: string; // ← NEW
 	totalEHF?: number;
 	totalRemovalCharges: number;
 	fullAddress?: string;
@@ -37,6 +36,7 @@ interface Props {
 	customer: CustomerModel;
 	cartItems: CartItemModel[];
 	warranty: number;
+	description: string;
 }
 
 const InvoiceModal = (props: Props) => {
@@ -55,6 +55,7 @@ const InvoiceModal = (props: Props) => {
 		customer,
 		cartItems,
 		warranty,
+		description,
 	} = props;
 
 	const handleCloseModal = () => onClose();
@@ -153,10 +154,11 @@ const InvoiceModal = (props: Props) => {
 
     .contact-info {
       flex: 0 0 auto;
-      width: 28%;
+      width: 100%;
       text-align: right;
       font-size: 11px;
       line-height: 1.6;
+      margin-top: 10px;
     }
     .contact-info .field-label { font-weight: bold; }
 
@@ -248,6 +250,11 @@ const InvoiceModal = (props: Props) => {
       text-align: right;
       min-width: 80px;
     }
+    .delivery-date-row {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    }
 
     /* ── GST ── */
     .gst-number {
@@ -305,19 +312,26 @@ const InvoiceModal = (props: Props) => {
   <!-- INVOICE DATE ROW -->
   <div class="invoice-date-row">
     <div><span>INVOICE DATE:</span> ${formatDate(orderDate)}</div>
-<div class="contact-info">
+    <div class="delivery-date-row">
+    <strong>DELIVERY DATE: _______________</strong> 
+    <div class="contact-info">
       <span class="field-label">SHIP TO:</span>
       ${fullAddress}
-    </div>  </div>
+    </div>
+    </div> 
+  </div>
+    
+     
 
   <!-- ITEMS TABLE (5 columns) -->
   <table class="items-table">
     <thead>
       <tr>
         <th style="width:10%;">QUANTITY</th>
-        <th style="width:50%;">ITEM </th>
-        <th style="width:20%;">UNIT COST</th>
-        <th style="width:20%;">AMOUNT</th>
+        <th style="width:30%;">ITEM </th>
+        <th style="width:40%;">DESCRIPTION </th>
+        <th style="width:10%;">UNIT COST</th>
+        <th style="width:10%;">AMOUNT</th>
       </tr>
     </thead>
     <tbody>
@@ -325,13 +339,14 @@ const InvoiceModal = (props: Props) => {
       <tr>
         <td>${item.quantity}</td>
         <td class="desc">${item.item.name}</td>
+        <td>${description}</td>
         <td>${currencySign}${Number(item.item.price).toFixed(2)}</td>
         <td>${currencySign}${(Number(item.item.price) * item.quantity).toFixed(2)}</td>
       </tr>
       `).join("")}
       ${Array.from({ length: EMPTY_ROWS }, () => `
       <tr>
-        <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+        <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
       </tr>
       `).join("")}
     </tbody>
