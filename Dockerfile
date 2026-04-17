@@ -1,43 +1,30 @@
 # Stage 1: Dependencies
 FROM node:20-alpine AS deps
-RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 COPY package.json ./
-RUN npm install
+RUN npm install  --no-audit --no-fund
 
 # Stage 2: Builder
 FROM node:20-alpine AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+
 COPY . .
+COPY --from=deps /app/package-lock.json ./
+COPY --from=deps /app/node_modules ./node_modules
 
-ENV NEXT_TELEMETRY_DISABLED 1
-
-# Build the project
-RUN npm run build
+RUN npx next telemetry disable
+RUN npm run build -- --no-lint
 
 # Stage 3: Runner
 FROM node:20-alpine AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
-
-# Security: Don't run as root
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-# Copy all necessary assets for a standard 'next start'
-COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
-USER nextjs
-
 EXPOSE 3000
-ENV PORT 3000
 
-# Standard Next.js start command
 CMD ["npm", "start"]
