@@ -15,4 +15,5 @@ export interface CartItemModel {
     cart?: CartModel;
     item: ItemModel;
     quantity: number;
+    nc_number?:string
 }

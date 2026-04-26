@@ -52,6 +52,8 @@ interface Props {
 	isExchangeMode:boolean;
 originalItemTotal: number;
 exchangeDifference: number;
+invoiceId: string;
+nc_number?: string;
 }
 
 const InvoiceDetailModal = (props: Props) => {
@@ -81,6 +83,8 @@ const InvoiceDetailModal = (props: Props) => {
 		isExchangeMode,
 		originalItemTotal,
 		exchangeDifference,
+		invoiceId,
+		nc_number,
 	} = props;
 	const setCartId = useSetRecoilState(cartIdAtom);
 	const [customer, setCustomer] = useRecoilState(customerAtom);
@@ -321,6 +325,8 @@ const InvoiceDetailModal = (props: Props) => {
 						customerSignature={customerSignature}
 						isExchangeMode={isExchangeMode}
 						originalItemTotal={originalItemTotal}
+						invoiceId={invoiceId}
+						nc_number={nc_number}
 					/>
 				</GroupComponent>
 			</BoxComponent>

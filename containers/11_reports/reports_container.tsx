@@ -409,8 +409,8 @@ const ReportsContainer = () => {
 					cartItems={selectedInvoice.invoice_items}
 					orderDate={selectedInvoice.created_at}
 					customer={selectedInvoice.customer}
-					description={selectedInvoice.invoice_items[0].item.short_description}
 					warranty={selectedInvoice.transaction_detail.warranty}
+					invoiceId={selectedInvoice.invoice_id}
 				/>
 			)}
 			{confirmationModal.open && (

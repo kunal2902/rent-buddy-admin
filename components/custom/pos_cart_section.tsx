@@ -42,7 +42,7 @@ import {
 	upsertCartApi,
 } from "@/utils";
 import { ComboBoxProps } from "@/types";
-import { CartItemModel, CartModel } from "@/models";
+import { CartItemModel, CartModel, ItemModel } from "@/models";
 import InvoiceDetailModal from "@/components/custom/invoice_detail_modal";
 import ShowNotification from "@/components/mantine/show_notification";
 import AddCustomerModal from "@/containers/9_customers/add_customer_modal";
@@ -118,6 +118,8 @@ export const PosCartSection = () => {
 	const [signatureModalOpen, setSignatureModalOpen] = useState(false);
 	const [customerSignature, setCustomerSignature] = useState(null);
 	const [manualExchangeBalance, setManualExchangeBalance] = useState<number>(0);
+	const [invoiceId, setInvoiceId] = useState<string | null>(null);
+	const [NcNumber, setNcNumber] = useState<string | undefined>(undefined);
 
 	useEffect(() => {
 		const storedExchangeData = localStorage.getItem("exchangeData");
@@ -130,7 +132,6 @@ export const PosCartSection = () => {
 				(data) => {
 					// eslint-disable-next-line max-len
 					const originalInvoice = data.reports.find((report:any) => report.invoice_id === parsedData.id);
-
 					if (originalInvoice) {
 						const fullExchangeData = {
 							...parsedData,
@@ -288,8 +289,15 @@ export const PosCartSection = () => {
 		const totalItemQuantity = calculateItemQuantity();
 		const warrantyTotal = calculateTotalWarrantyPrice(selectedWarranties || {});
 
-		const calculatedTax5 = (totalItemQuantity * 5) / 100;
-		const calculatedTax7 = (totalItemQuantity * 7) / 100;
+		const taxableBase =
+			totalItemQuantity +
+			Number(totalEHF || 0) +
+			Number(warrantyTotal || 0) +
+			Number(totalRemovalCharges || 0) +
+			Number(deliveryCharges || 0);
+
+		const calculatedTax5 = (taxableBase * 5) / 100;
+		const calculatedTax7 = (taxableBase * 7) / 100;
 
 		const calculateSubTotal =
 			totalMsrp +
@@ -690,7 +698,7 @@ export const PosCartSection = () => {
 
 			console.log("Calling checkout API with body:", checkoutBody);
 			// eslint-disable-next-line max-len
-			const checkoutResult: { invoice: { created_at: string } } = await new Promise((resolve, reject) => {
+			const checkoutResult: { invoice: { created_at: string, invoice_id:string, invoice_items : [{ nc_number:string }] } } = await new Promise((resolve, reject) => {
 				checkoutApi(
 					checkoutBody,
 					(res) => {
@@ -713,6 +721,8 @@ export const PosCartSection = () => {
 			setLoading(false);
 			setSignatureModalOpen(true);
 			setOrderDate(checkoutResult?.invoice.created_at);
+			setInvoiceId(checkoutResult.invoice.invoice_id);
+			setNcNumber(checkoutResult?.invoice.invoice_items[0].nc_number);
 
 			const successMessage = isExchangeMode
 				? "Exchange completed successfully"
@@ -1306,6 +1316,8 @@ export const PosCartSection = () => {
 					isExchangeMode={isExchangeMode}
 					originalItemTotal={isExchangeMode ? getOriginalItemTotal() : 0}
 					exchangeDifference={exchangeDifference}
+					invoiceId={invoiceId!}
+					nc_number={NcNumber}
 				/>
 			)}
 
