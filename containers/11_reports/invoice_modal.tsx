@@ -427,7 +427,7 @@ const InvoiceModal = (props: Props) => {
     <div class="address-box">
   <strong>Bill To:</strong>
   ${customer?.name || "&nbsp;"}<br>
-  ${billAddress || "&nbsp;"}
+  ${fullAddress || "&nbsp;"}
 </div>
 <div class="address-box">
   <strong>Ship To:</strong>
