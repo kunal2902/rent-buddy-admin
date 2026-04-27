@@ -113,13 +113,11 @@ const InvoiceModal = (props: Props) => {
     .header {
       display: flex;
       align-items: stretch;
-      border: 2px solid #000;
       margin-bottom: 6px;
     }
     .header-logo {
       flex: 0 0 30%;
       padding: 8px 10px;
-      border-right: 1px solid #000;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -127,7 +125,6 @@ const InvoiceModal = (props: Props) => {
     .header-logo img { width: 110px; max-height: 80px; object-fit: contain; }
     .header-logo .logo-placeholder {
       width: 110px; height: 70px;
-      border: 1px solid #ccc;
       display: flex; align-items: center; justify-content: center;
       background: #f5f5f5; font-size: 10px; color: #666;
     }
@@ -143,7 +140,6 @@ const InvoiceModal = (props: Props) => {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      border-right: 1px solid #000;
       padding: 8px;
     }
     .header-invoice img { width: 100%; max-height: 85px; object-fit: contain; }

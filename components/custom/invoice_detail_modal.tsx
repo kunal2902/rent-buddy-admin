@@ -297,6 +297,8 @@ const InvoiceDetailModal = (props: Props) => {
 						cartItems={cartItems}
 						note={note}
 						customerSignature={customerSignature}
+						invoiceId={invoiceId}
+
 					/>
 					<PickupButton
 						fullAddress={fullAddress}
@@ -305,6 +307,8 @@ const InvoiceDetailModal = (props: Props) => {
 						cartItems={cartItems}
 						note={note}
 						customerSignature={customerSignature}
+						invoiceId={invoiceId}
+
 					/>
 					<InvoiceButton
 						totalRemovalCharges={totalRemovalCharges}

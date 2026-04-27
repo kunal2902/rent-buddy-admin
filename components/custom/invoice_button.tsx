@@ -85,14 +85,14 @@ const InvoiceButton = (props: Props) => {
 	* { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: Arial, sans-serif; font-size: 11px; padding: 12px; color: #000; }
 .container { width: 100%; max-width: 840px; margin: 0 auto; }
-.header { display: flex; align-items: stretch; border: 2px solid #000; margin-bottom: 6px; }
-.header-logo { flex: 0 0 30%; padding: 8px 10px; border-right: 1px solid #000; display: flex; flex-direction: column; justify-content: center; }
+.header { display: flex; align-items: stretch; margin-bottom: 6px; }
+.header-logo { flex: 0 0 30%; padding: 8px 10px; display: flex; flex-direction: column; justify-content: center; }
 .header-logo img { width: 110px; max-height: 80px; object-fit: contain; }
 .header-logo .logo-placeholder { width: 110px; height: 70px; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; background: #f5f5f5; font-size: 10px; color: #666; }
 .header-logo .company-name { font-size: 10px; margin-top: 6px; line-height: 1.35; }
 .header-logo .company-name strong { font-size: 11px; }
 .header-logo .company-name a { color: #000; text-decoration: none; }
-.header-invoice { flex: 0 0 30%; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid #000; padding: 8px; }
+.header-invoice { flex: 0 0 30%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px; }
 .header-invoice img { width: 100%; max-height: 85px; object-fit: contain; }
 .header-invoice h1 { font-size: 40px; font-weight: 900; letter-spacing: 2px; margin-top: 4px; }
 .header-details { flex: 0 0 40%; display: flex; flex-direction: column; }
@@ -166,11 +166,12 @@ body { font-family: Arial, sans-serif; font-size: 11px; padding: 12px; color: #0
   <div class="address-row">
     <div class="address-box">
       <strong>Bill To:</strong>
-      ${customer?.name || "&nbsp;"}
+      ${customer?.name || "&nbsp;"} <br/>
+      ${fullAddress}
     </div>
     <div class="address-box">
       <strong>Ship To:</strong>
-      ${customer?.id}
+      Customer ${customer?.id} <br/>
       ${fullAddress || "&nbsp;"}
     </div>
   </div>
@@ -180,7 +181,7 @@ body { font-family: Arial, sans-serif; font-size: 11px; padding: 12px; color: #0
     <thead>
       <tr>
         <th style="width:6%;">NC #</th>
-        <th style="width:54%;">MODEL / ITEM # + DESCRIPTION</th>
+        <th style="width:54%;">Description</th>
         <th style="width:14%;">UNIT COST</th>
         <th style="width:13%;">DISCOUNT</th>
         <th style="width:13%;">PRICE</th>
