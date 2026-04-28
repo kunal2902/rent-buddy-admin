@@ -48,7 +48,7 @@ interface Props {
 	setState: Dispatch<SetStateAction<undefined | string>>;
 	setCity: Dispatch<SetStateAction<undefined | string>>;
 	setTotalRemovalCharges: Dispatch<SetStateAction<number | undefined>>;
-	customerSignature: string | undefined;
+	customerSignature?: string;
 	isExchangeMode:boolean;
 originalItemTotal: number;
 exchangeDifference: number;

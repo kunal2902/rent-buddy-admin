@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
-import { appAccentColor, appColor } from "@/utils";
+import { appColor } from "@/utils";
 
 // eslint-disable-next-line max-len
-export const DigitalSignatureModal = ({ isOpen, onClose, onConfirm, onSkip, customerName }:{ isOpen:boolean, onClose:any, onConfirm:any, onSkip:any, customerName:string }) => {
+export const DigitalSignatureModal = ({ isOpen, onConfirm, customerName }:{ isOpen:boolean, onClose:any, onConfirm:any, onSkip:any, customerName:string }) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [isDrawing, setIsDrawing] = useState(false);
 	const [hasSignature, setHasSignature] = useState(false);
@@ -106,15 +106,6 @@ export const DigitalSignatureModal = ({ isOpen, onClose, onConfirm, onSkip, cust
 		onConfirm(signatureDataURL);
 	};
 
-	const handleSkip = () => {
-		onSkip();
-	};
-
-	const handleClose = () => {
-		clearSignature();
-		onClose();
-	};
-
 	if (!isOpen) return null;
 
 	return (
@@ -144,21 +135,6 @@ export const DigitalSignatureModal = ({ isOpen, onClose, onConfirm, onSkip, cust
 						<h2 style={{ margin: "0 0 8px 0", fontSize: "24px", fontWeight: "bold" }}>
 							Customer Digital Signature
 						</h2>
-						{/* eslint-disable-next-line react/button-has-type */}
-						<button
-							onClick={handleClose}
-							style={{
-								padding: "8px 15px",
-								backgroundColor: "#6c757d",
-								color: "white",
-								border: "none",
-								borderRadius: "4px",
-								cursor: "pointer",
-								fontSize: "14px",
-							}}
-						>
-							X
-						</button>
 					</div>
 
 					<p style={{ margin: "0", color: "#666", fontSize: "14px" }}>
@@ -233,22 +209,6 @@ export const DigitalSignatureModal = ({ isOpen, onClose, onConfirm, onSkip, cust
 					gap: "12px",
 					justifyContent: "flex-end",
 				}}>
-
-					{/* eslint-disable-next-line react/button-has-type */}
-					<button
-						onClick={handleSkip}
-						style={{
-							padding: "10px 20px",
-							backgroundColor: appAccentColor,
-							color: "#000",
-							border: "none",
-							borderRadius: "4px",
-							cursor: "pointer",
-							fontSize: "14px",
-						}}
-					>
-						Skip
-					</button>
 
 					{/* eslint-disable-next-line react/button-has-type */}
 					<button
