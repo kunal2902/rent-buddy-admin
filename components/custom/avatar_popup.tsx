@@ -25,73 +25,91 @@ export interface AvatarPopupComponentProps extends PopoverProps {
 }
 
 /** This is the Mantine Menu component - https://mantine.dev/core/menu/ */
-export const AvatarPopupComponent = (props: AvatarPopupComponentProps) => {
-	const {
-		darkMode,
-		toggleDarkMode,
-	} = useThemeProvider();
+export const AvatarPopupComponent = ({ customTrigger, ...rest
+}: AvatarPopupComponentProps) => {
+	const { darkMode, toggleDarkMode } = useThemeProvider();
 	const router = useRouter();
+
 	const [name, setName] = useState<string>("");
 	const [loadingName, setLoadingName] = useState<boolean>(true);
 	const [loadingLogout, setLoadingLogout] = useState<boolean>(false);
 
 	useEffect(() => {
-		setTimeout(() => {
+		const timeout = setTimeout(() => {
 			setName(getName());
 			setLoadingName(false);
 		}, 1000);
+		return () => clearTimeout(timeout);
 	}, []);
 
-	const PopButton = forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<"div">>((buttonProps, ref) => (
+	// ── Default trigger: avatar-only (original behaviour) ────────────────────
+	const DefaultTrigger = forwardRef<
+		HTMLDivElement,
+		React.ComponentPropsWithoutRef<"div">
+	>((buttonProps, ref) => (
 		<div ref={ref} {...buttonProps}>
-			<AvatarComponent
-				src={null}
-				alt={name}
-				className="cursor-pointer"
-			>
-				{
-					loadingName ?
-						<LoaderComponent color="white" /> :
-						<TitleComponent title={name[0]} c="white" />
-				}
+			<AvatarComponent src={null} alt={name} className="cursor-pointer">
+				{loadingName ? (
+					<LoaderComponent color="white" />
+				) : (
+					<TitleComponent title={name[0]} c="white" />
+				)}
 			</AvatarComponent>
 		</div>
 	));
+	DefaultTrigger.displayName = "DefaultTrigger";
+
+	// ── Custom trigger: any React node wrapped so Mantine can attach its ref ──
+	const CustomTriggerWrapper = forwardRef<
+		HTMLDivElement,
+		React.ComponentPropsWithoutRef<"div">
+	>((wrapperProps, ref) => (
+		<div ref={ref} {...wrapperProps} style={{ display: "inline-flex" }}>
+			{customTrigger}
+		</div>
+	));
+	CustomTriggerWrapper.displayName = "CustomTriggerWrapper";
+
+	const TriggerEl = customTrigger ? CustomTriggerWrapper : DefaultTrigger;
 
 	return (
-		<PopoverComponent
-			{...props}
-		>
+		<PopoverComponent {...rest}>
 			<PopoverTargetComponent>
-				<PopButton />
+				<TriggerEl />
 			</PopoverTargetComponent>
 
 			<PopoverDropdownComponent p={0}>
+				{/* ── Profile header ──────────────────────────────────── */}
 				<StackComponent gap={5} align="center" p={12}>
 					<AvatarComponent h={60} w={60} src={null} alt={name}>
-						<TitleComponent
-							size={26}
-							c="white"
-							title={name[0]}
-						/>
+						<TitleComponent size={26} c="white" title={name[0]} />
 					</AvatarComponent>
 					<TitleComponent title={name} />
 					<TextComponent text={getEmail()} c="dimmed" />
 				</StackComponent>
+
 				<DividerComponent orientation="horizontal" />
+
+				{/* ── Dark mode toggle ─────────────────────────────────── */}
 				<ButtonComponent
 					fullWidth
 					radius={0}
 					justify="start"
 					variant="subtle"
 					onClick={toggleDarkMode}
-					leftSection={darkMode ?
-						<MdOutlineDarkMode size={18} /> :
-						<MdOutlineLightMode size={18} />
+					leftSection={
+						darkMode ? (
+							<MdOutlineDarkMode size={18} />
+						) : (
+							<MdOutlineLightMode size={18} />
+						)
 					}
 					title={darkMode ? "Change to Light mode" : "Change to Dark mode"}
 				/>
+
 				<DividerComponent orientation="horizontal" />
+
+				{/* ── Logout ───────────────────────────────────────────── */}
 				<ButtonComponent
 					fullWidth
 					radius={0}
@@ -109,7 +127,6 @@ export const AvatarPopupComponent = (props: AvatarPopupComponentProps) => {
 						}, 1500);
 					}}
 				/>
-
 			</PopoverDropdownComponent>
 		</PopoverComponent>
 	);
