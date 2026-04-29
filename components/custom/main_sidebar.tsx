@@ -26,6 +26,7 @@ import {
 	useSidebarState,
 	useThemeProvider,
 } from "@/utils";
+import { ProductsNavSection } from "@/components/custom/products_section";
 
 const GENERAL_SECTION = [
 	dashboardName,
@@ -363,16 +364,20 @@ export const MainSidebar = ({
 					{generalItems.length > 0 && (
 						<div className="space-y-0.5">
 							<SectionLabel label="General" isOpen={isSidebarOpen} />
-							{generalItems.map((item) => (
-								<NavItem
-									key={item.id}
-									item={item}
-									isOpen={isSidebarOpen}
-									openedIds={openedIds}
-									onToggle={toggleItem}
-									currentPathname={currentPathname}
-								/>
-							))}
+							{generalItems.map((item) =>
+     item.title === inventoryName ? (
+	<ProductsNavSection key={item.id} isOpen={isSidebarOpen} />
+     ) : (
+	<NavItem
+		key={item.id}
+		item={item}
+		isOpen={isSidebarOpen}
+		openedIds={openedIds}
+		onToggle={toggleItem}
+		currentPathname={currentPathname}
+       />
+     )
+   )}
 						</div>
 					)}
 

@@ -1,5 +1,5 @@
 export * from "@/containers/1_dashboard/index";
-export * from "@/containers/2_items/index";
+export * from "@/containers/2_products/index";
 export * from "@/containers/3_item_types/index";
 export * from "@/containers/4_categories/index";
 export * from "@/containers/5_sub_categories/index";
