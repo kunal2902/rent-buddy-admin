@@ -11366,6 +11366,7 @@ __metadata:
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     react-icons: "npm:^5.0.1"
+    react-to-print: "npm:^3.1.1"
     react-toastify: "npm:^10.0.5"
     recoil: "npm:^0.7.7"
     storybook: "npm:^8.0.0"
@@ -12703,6 +12704,15 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
   checksum: 10c0/3a924db59259a6e3b834dcddc12a8661b43dcdaa1b43c41c732e0548bb2761e9a53dbc6db4e0d9e237728b4869e42c25e5417408b0391aec290c90874733a09f
+  languageName: node
+  linkType: hard
+
+"react-to-print@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "react-to-print@npm:3.1.1"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ~19
+  checksum: 10c0/07ce955f35bb9cef1c856d94eda3b5a9f82759367c76e5c6b4139c76012fb3c66ad866dd37bbc2eb714a98c096ef7077a553317722ddb72ebbfb95449337110e
   languageName: node
   linkType: hard
 
