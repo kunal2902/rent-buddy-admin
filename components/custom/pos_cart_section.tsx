@@ -243,9 +243,7 @@ export const PosCartSection = () => {
 				setCustomersList(formattedCustomers);
 			},
 			() => {},
-			() => {
-				logoutUser(router);
-			},
+
 		).then();
 		getWarrantyApi(
 			"",

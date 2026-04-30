@@ -1,13 +1,13 @@
 "use client";
 
-import { CustomerContainer } from "@/containers";
 import { MainNavbar, MainSidebar } from "@/components";
+import CustomersContainer from "@/containers/9_customers/customers_container";
 
 const CustomersPage = () => (
 	<>
 		<MainNavbar />
 		<MainSidebar />
-		<CustomerContainer />
+		<CustomersContainer />
 	</>
 );
 

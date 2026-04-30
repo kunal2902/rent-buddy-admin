@@ -1,1 +1,1 @@
-export { default as CustomerContainer } from "./customers_container";
+export { default as CostumersContainer } from "./customers_container";

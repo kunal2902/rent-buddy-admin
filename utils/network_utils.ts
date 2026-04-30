@@ -21,6 +21,7 @@ import {
 	usersAPIPath, warrantyAPIPath,
 } from "@/utils";
 import { CartItemModel, CartModel } from "@/models";
+import { DUMMY_CUSTOMERS } from "@/containers/9_customers/dummyCostumers";
 
 const makeGetRequest = async (
 	url: string | URL | Request,
@@ -1823,37 +1824,87 @@ export const deleteUserApi = async (
 };
 
 // Customer api
+const PAGE_SIZE = 10;
+
+/**
+ * getCustomerApi — dummy implementation.
+ * Mirrors the real signature exactly; swap the body for the real HTTP call.
+ */
 export const getCustomerApi = async (
-	query: string | undefined,
-	successCallback: (arg0: any) => void,
-	errorCallback: (arg0: any) => void,
-	logoutCallback: () => void,
+	query: string,
+	successCallback: {
+		(data: any): void;
+		(arg0: {
+			customers: {
+				customer_id: string;
+				name: string;
+				email: string;
+				phone: string;
+				purchases: string;
+				order_qty: string;
+				address: string;
+				is_disabled: boolean;
+				created_by_id: string;
+				created_at: string;
+			}[];
+			count: number;
+		}): void;
+	},
+	errorCallback: { (): void; (arg0: { error: any; }): void; },
 ) => {
-	const token = getCrmJWT();
-	if (token === null || token === "" || token === "null") {
-		logoutCallback();
-		return;
+	try {
+		const params = new URLSearchParams(query || "");
+		const filterQuery = (params.get("filter_query") || "").toLowerCase();
+		const page = parseInt(params.get("page") || "1", 10);
+		const pageSize = parseInt(params.get("page_size") || String(PAGE_SIZE), 10);
+		const orderBy = params.get("orderBy") || "customer_id";
+		const order = params.get("order") || "asc";
+
+		// Filter against dummy data
+		const filtered = DUMMY_CUSTOMERS.filter((c) =>
+			filterQuery
+				? c.name.toLowerCase().includes(filterQuery) ||
+				c.customer_id.toLowerCase().includes(filterQuery) ||
+				c.email.toLowerCase().includes(filterQuery)
+				: true,
+		);
+
+		// Sort
+		filtered.sort((a, b) => {
+			const va = String(a[orderBy] ?? "").toLowerCase();
+			const vb = String(b[orderBy] ?? "").toLowerCase();
+			return order === "asc" ? va.localeCompare(vb) : vb.localeCompare(va);
+		});
+
+		const count = filtered.length;
+		const offset = (page - 1) * pageSize;
+		const customers = filtered.slice(offset, offset + pageSize);
+
+		await new Promise((r) => { setTimeout(r, 400); }); // simulated network delay
+		successCallback({ customers, count });
+	} catch (err) {
+		errorCallback({ error: err.message });
 	}
-	const path = query === "" ? customerAPIPath : `${customerAPIPath}?${query}`;
-	const response = await makeGetRequest(path, {
-		authorization: `Bearer ${token}`,
-	});
-	if (isDebug) {
-		console.log(response);
-	}
-	switch (response.code) {
-		case 200:
-			successCallback(response.data);
-			break;
-		case 403:
-		case 420:
-		case 498:
-		case 499:
-			logoutCallback();
-			break;
-		default:
-			errorCallback(response.message);
-			toast.error(response.message);
+};
+
+/**
+ * deleteCustomerApi — dummy implementation.
+ * Mirrors the real signature exactly; swap the body for the real HTTP call.
+ */
+export const deleteCustomerApi = async (
+	id: string,
+	successCallback: (arg0: { message: string; }) => void,
+	errorCallback: (arg0: { error: any; }) => void,
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	_logoutCallback: any,
+) => {
+	try {
+		await new Promise((r) => { setTimeout(r, 300); });
+		const idx = DUMMY_CUSTOMERS.findIndex((c) => c.customer_id === id);
+		if (idx !== -1) DUMMY_CUSTOMERS.splice(idx, 1);
+		successCallback({ message: "Deleted successfully" });
+	} catch (err) {
+		errorCallback({ error: err.message });
 	}
 };
 
@@ -1931,39 +1982,6 @@ export const disableCustomerApi = async (
 		return;
 	}
 	const response = await makePutRequest(`${customerAPIPath}/${id}`, {
-		authorization: `Bearer ${token}`,
-	});
-	if (isDebug) {
-		console.log(response);
-	}
-	switch (response.code) {
-		case 200:
-			successCallback(response.data);
-			break;
-		case 403:
-		case 420:
-		case 498:
-		case 499:
-			logoutCallback();
-			break;
-		default:
-			errorCallback(response.message);
-			toast.error(response.message);
-	}
-};
-
-export const deleteCustomerApi = async (
-	id: string,
-	successCallback: (arg0: any) => void,
-	errorCallback: (arg0: any) => void,
-	logoutCallback: () => void,
-) => {
-	const token = getCrmJWT();
-	if (token === null || token === "" || token === "null") {
-		logoutCallback();
-		return;
-	}
-	const response = await makeDeleteRequest(`${customerAPIPath}/${id}`, {
 		authorization: `Bearer ${token}`,
 	});
 	if (isDebug) {
