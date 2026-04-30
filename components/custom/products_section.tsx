@@ -94,7 +94,7 @@ export const ProductsNavSection = ({ isOpen }: ProductsNavSectionProps) => {
 			>
 				{/* Clicking icon + label navigates to /products */}
 				<Link
-					href="/products"
+					href="/inventory"
 					title={!isOpen ? `Product (${totalCount})` : undefined}
 					className="flex items-center gap-3 flex-1 min-w-0"
 				>

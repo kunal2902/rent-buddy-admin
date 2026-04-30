@@ -1,7 +1,7 @@
 import { MainNavbar, MainSidebar } from "@/components";
 import { ProductsContainer } from "@/containers/2_products/items_container";
 
-const ItemsPage = () => (
+const ProductsPage = () => (
 	<>
 		<MainNavbar />
 		<MainSidebar />
@@ -9,4 +9,4 @@ const ItemsPage = () => (
 	</>
 );
 
-export default ItemsPage;
+export default ProductsPage;

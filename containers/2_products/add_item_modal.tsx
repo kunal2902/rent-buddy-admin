@@ -4,875 +4,481 @@ import React, {
 	Dispatch,
 	SetStateAction,
 	useEffect,
-	useMemo,
 	useRef,
 	useState,
 } from "react";
 import { useRouter } from "next/navigation";
-import { Image as ImageIcon } from "lucide-react";
-import { MdOutlineDeleteForever, MdOutlineEdit } from "react-icons/md";
-import { MultiSelectProps } from "@mantine/core";
+import { MdArrowBack, MdOutlineDeleteForever, MdOutlineEdit, MdOutlineImage } from "react-icons/md";
+import { Text, Tooltip } from "@mantine/core";
 import {
 	ActionIconComponent,
-	AvatarComponent, BoxComponent,
+	// eslint-disable-next-line no-mixed-spaces-and-tabs
+	BoxComponent,
 	ButtonComponent,
-	CheckboxComponent,
-	FieldsetComponent,
-	FileInputComponent,
-	GroupComponent,
-	ImageComponent,
-	LoaderComponent,
+	GroupComponent, MainComponent,
 	ModalComponent,
-	MultiSelectComponent,
-	NumberInputComponent,
-	ScrollAreaComponent,
+	NumberInputComponent, PaperComponent,
 	SelectComponent,
-	SimpleGridComponent,
-	SpaceComponent,
 	StackComponent,
-	TextAreaInputComponent,
-	TextComponent,
 	TextInputComponent,
-	TitleComponent,
 } from "@/components";
 import {
-	appAccentColorRGBA,
-	getAddOnApi,
-	getAttributeApi,
 	getCategoryApi,
-	getItemTypeApi,
-	getSubCategoryApi,
-	getTagApi,
 	logoutUser,
-	upsertItemApi,
+	upsertProductApi,
 } from "@/utils";
 import ShowNotification from "@/components/mantine/show_notification";
 
-interface Props {
-	isOpen: boolean;
+export interface InitialProductValue {
+	product_id: string;
+	sku: string;
+	name: string;
+	size: string;
+	color: string;
+	category_id: string;
+	price: string | number;
+	quantity: string | number;
+	status: string;
+	images: string[];
+	category: { name: string };
+}
+
+interface ProductModalProps {
 	onClose: () => void;
-	initialItemValue: InitialItemValue;
+	initialProductValue: InitialProductValue;
 	setCallApi: Dispatch<SetStateAction<boolean>>;
 }
 
-interface AttributeState {
-	value: string;
-	checked: boolean;
-}
+export const initialProductValue: InitialProductValue = {
+	product_id: "",
+	sku: "",
+	name: "",
+	size: "",
+	color: "",
+	category_id: "",
+	price: "",
+	quantity: "",
+	status: "",
+	images: [],
+	category: { name: "" },
+};
 
-interface AddOn {
-	icon: string;
-	price: string;
-	label: string;
-}
+const STATUS_OPTIONS = [
+	{ value: "available", label: "Available" },
+	{ value: "out_of_stock", label: "Out of Stock" },
+	{ value: "discontinued", label: "Discontinued" },
+];
 
-interface AddOnData {
-	[key: string]: AddOn;
-}
+const MAX_IMAGES = 4;
 
-export interface InitialItemValue {
-	sku: string;
-	name: string;
-	item_id: string;
-	images: string[];
-	add_ons: string[];
-	created_at: string;
-	category_id: string;
-	description: string;
-	icon: string | null;
-	is_deleted: boolean;
-	is_disabled: boolean;
-	item_type_id: string;
-	item_tags: ItemTag[];
-	internal_name: string;
-	created_by_id: string;
-	price: string | number;
-	msrp: string | number;
-	sub_category_id: string;
-	short_description: string;
-	custom_attributes: ItemCustomAttribute[];
-	created_by: {
-		name: string;
-	};
-	category: {
-		name: string;
-	};
-	sub_category: {
-		name: string;
-	};
-	type: {
-		name: string;
-	};
-}
-
-interface Tag {
-	tag_id: string;
-	name: string;
-}
-
-interface ItemTag {
-	item_tag_id: string;
-	item_id: string;
-	tag_id: string;
-	created_by_id: string;
-	created_at: string;
-	is_deleted: boolean;
-	is_disabled: boolean;
-	tag: Tag;
-}
-
-interface CustomAttribute {
-	custom_attribute_id: string;
-	name: string;
-	type: string;
-	created_by_id: string;
-	created_at: string;
-	is_deleted: boolean;
-	is_disabled: boolean;
-	default_value: string;
-	is_tax: boolean;
-	tax_type: string;
-}
-
-interface ItemCustomAttribute {
-	item_custom_attribute_id: string;
-	item_id: string;
-	custom_attribute_id: string;
-	attribute_value: string;
-	created_by_id: string;
-	created_at: string;
-	is_deleted: boolean;
-	is_disabled: boolean;
-	custom_attribute: CustomAttribute;
-}
-
-const AddItemModal = (props: Props) => {
-	const { isOpen, onClose, setCallApi, initialItemValue } = props;
-
+export const AddProductModal = (props: ProductModalProps) => {
+	// eslint-disable-next-line @typescript-eslint/no-shadow
+	const { onClose, setCallApi, initialProductValue } = props;
 	const router = useRouter();
-	const isEditModal: boolean = initialItemValue.name !== undefined;
-	const hasInitializedCustomAttributes = useRef(false);
-	const fileInputTriggerRef = useRef<HTMLButtonElement>(null);
 
-	const [loading, setLoading] = useState<boolean>(false);
-	const [searchLoading, setSearchLoading] = useState<boolean>(false);
-	const [inputError, setInputError] = useState<string | null>(null);
-	const [inputPriceError, setInputPriceError] = useState<string | null>(null);
+	const isEdit = !!initialProductValue.product_id;
+	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [replaceIndex, setReplaceIndex] = useState<number | null>(null);
 
-	const [tagsList, setTagsList] = useState([]);
-	const [addOnsList, setAddOnsList] = useState([]);
-	const [categories, setCategories] = useState([]);
-	const [itemTypesList, setItemTypesList] = useState([]);
-	const [subCategoryList, setSubCategoryList] = useState([]);
+	const [loading, setLoading] = useState(false);
+	const [categories, setCategories] = useState<{ value: string; label: string }[]>([]);
+
+	const [sku, setSku] = useState(initialProductValue.sku);
+	const [name, setName] = useState(initialProductValue.name);
+	const [size, setSize] = useState(initialProductValue.size);
+	const [color, setColor] = useState(initialProductValue.color);
+	const [categoryId, setCategoryId] = useState(initialProductValue.category_id);
+	const [price, setPrice] = useState<string | number>(initialProductValue.price);
+	const [quantity, setQuantity] = useState<string | number>(initialProductValue.quantity);
+	const [status, setStatus] = useState(initialProductValue.status);
 	const [removedImages, setRemovedImages] = useState<string[]>([]);
-	const [customAttributesList, setCustomAttributesList] =
-		useState<CustomAttribute[]>([]);
-
-	const [addOnData, setAddOnData] = useState<AddOnData>({});
-	const [attributesState, setAttributesState] = useState<
-		Record<string, AttributeState>
-	>({});
-
-	// const [longDesc, setLongDesc] = useState<string>(initialItemValue.description);
-	const [sku, setSku] = useState<string>(initialItemValue.sku);
-	const [itemName, setItemName] = useState<string>(initialItemValue.name);
-	const [addOnsId, setAddOnsId] = useState<string[]>(initialItemValue.add_ons);
-	const [categoryId, setCategoryId] = useState<string>(initialItemValue.category_id);
-	const [price, setPrice] = useState<string | number>(initialItemValue.price);
-	const [MSRP, setMSRP] = useState<string | number>(initialItemValue.msrp);
-	const [itemTypeId, setItemTypeId] = useState<string>(initialItemValue.item_type_id);
-	const [shortDesc, setShortDesc] = useState<string>(initialItemValue.short_description);
-	const [tagsId, setTagsId] = useState<string[]>(
-		initialItemValue?.item_tags?.map(tagItem => tagItem?.tag?.tag_id)
-	);
-	const [subCategoryId, setSubCategoryId] = useState<string>(initialItemValue.sub_category_id);
-	const [itemInternalName, setItemInternalName] =
-		useState<string>(initialItemValue.internal_name);
-	// const [stockQuantity, setStockQuantity]
-	// 	= useState<string | number>(initialItemValue.stock_quantity);
 	const [images, setImages] = useState<{ file: File | null; previewURL: string }[]>(
-		initialItemValue.images ? initialItemValue.images.map(imageURL =>
-			({ file: null, previewURL: imageURL })) : []
+		initialProductValue.images?.map(url => ({ file: null, previewURL: url })) ?? []
 	);
 
-	const initializeCustomAttributes = (list: any, initialValue: any) =>
-		list.map((att2: { custom_attribute_id: any; default_value: any; }) => {
-		const match = initialValue?.custom_attributes?.find((att: { custom_attribute_id: any; }) =>
-			att.custom_attribute_id === att2.custom_attribute_id
-		);
-		if (match && att2.default_value !== match.attribute_value) {
-			return {
-				...att2,
-				default_value: match.attribute_value,
-			};
-		}
-		return att2;
-	});
+	const [nameError, setNameError] = useState<string | null>(null);
 
 	useEffect(() => {
-		if (isEditModal && customAttributesList.length > 0 &&
-			!hasInitializedCustomAttributes.current) {
-			const new_arr = initializeCustomAttributes(customAttributesList, initialItemValue);
-			setCustomAttributesList(new_arr);
-			hasInitializedCustomAttributes.current = true;
-		}
-	}, [isEditModal, initialItemValue.custom_attributes, customAttributesList]);
-
-	useEffect(() => {
-		const initialState = customAttributesList.reduce((acc, attr2) => {
-			const match = initialItemValue.custom_attributes?.find(attr =>
-				attr.custom_attribute_id === attr2.custom_attribute_id);
-			acc[attr2.custom_attribute_id] = {
-				checked: !!match,
-				value: attr2.default_value,
-			};
-			return acc;
-		}, {} as Record<string, { checked: boolean; value: string }>);
-		setAttributesState(initialState);
-	}, [customAttributesList]);
-
-	useEffect(() => {
-		if (itemName) {
-			setInputError(null);
-		}
-		if (price > MSRP) {
-			setInputPriceError("Selling price cannot be greater than MSRP");
-		} else {
-			setInputPriceError(null);
-		}
 		getCategoryApi(
 			"",
 			(data: any) => {
-				const formattedCategories = data.categories.map(
-					(category: { category_id: string; name: string }) => ({
-						value: category.category_id,
-						label: category.name,
-					}),
+				setCategories(
+					data.categories.map((c: { category_id: string; name: string }) => ({
+						value: c.category_id,
+						label: c.name,
+					}))
 				);
-				setCategories(formattedCategories);
 			},
 			() => {},
-			() => {
-				logoutUser(router);
-			},
-		).then();
+			() => logoutUser(router)
+		);
+	}, []);
 
-		getItemTypeApi(
-			"",
-			(data: any) => {
-				const formattedItemType = data.item_types.map(
-					(itemType: { item_type_id: string; name: string }) => ({
-						value: itemType.item_type_id,
-						label: itemType.name,
-					}),
-				);
-				setItemTypesList(formattedItemType);
-			},
-			() => {},
-			() => {
-				logoutUser(router);
-			},
-		).then();
-
-		getTagApi(
-			"",
-			(data: any) => {
-				const formattedTags = data.tags.map(
-					(tag: { tag_id: string; name: string }) => ({
-						value: tag.tag_id,
-						label: tag.name,
-					}),
-				);
-				setTagsList(formattedTags);
-			},
-			() => {},
-			() => {
-				logoutUser(router);
-			},
-		).then();
-
-		getAddOnApi(
-			"",
-			(data: any) => {
-				const formattedAddOns = data.add_ons.map(
-					(addOn: {
-						icon: string;
-						price: string;
-						add_on_id: string;
-						name: string;
-					}) => ({
-						value: addOn.add_on_id.toString(),
-						label: addOn.name.toString(),
-						icon: addOn.icon,
-						price: addOn.price,
-					}),
-				);
-				setAddOnsList(formattedAddOns);
-
-				const tempAddOnData: AddOnData = {};
-				data.add_ons.forEach(
-					(addOn: {
-						add_on_id: string;
-						name: string;
-						icon: string;
-						price: string;
-					}) => {
-						tempAddOnData[addOn.add_on_id] = {
-							icon: addOn.icon,
-							price: addOn.price,
-							label: addOn.name,
-						};
-					},
-				);
-				setAddOnData(tempAddOnData);
-			},
-			() => {},
-			() => {
-				logoutUser(router);
-			},
-		).then();
-
-		getAttributeApi(
-			"",
-			(data: any) => {
-				setCustomAttributesList(data.custom_attributes);
-			},
-			() => {},
-			() => {
-				logoutUser(router);
-			},
-		).then();
-	}, [itemName, price, MSRP]);
-
-	useEffect(() => {
-		if (categoryId) {
-			setSearchLoading(true);
-			getSubCategoryApi(
-				`filter_type=category&filter_query=${categoryId}`,
-				(data: any) => {
-					const formattedCategories = data.sub_categories.map(
-						(subCategory: {
-							sub_category_id: string;
-							name: string;
-						}) => ({
-							value: subCategory.sub_category_id,
-							label: subCategory.name,
-						}),
-					);
-					setSubCategoryList(formattedCategories);
-					setSearchLoading(false);
-				},
-				() => {
-					setSearchLoading(false);
-				},
-				() => {
-					logoutUser(router);
-					setSearchLoading(false);
-				},
-			).then();
-		}
-	}, [categoryId]);
-
-	const handleSubmitItem = async (event: React.FormEvent) => {
-		setLoading(true);
-		event.preventDefault();
-		if (!itemName) {
-			setInputError("Please enter the name first");
-			return;
-		}
-
-		// setLoading(true);
-		const itemBody = new FormData();
-		itemBody.append("sku", sku || "");
-		itemBody.append("id", initialItemValue.item_id || "");
-		itemBody.append("name", itemName || "");
-		itemBody.append("price", String(price) || "");
-		itemBody.append("msrp", String(MSRP) || "");
-
-		itemBody.append("short_description", shortDesc || "");
-		if (subCategoryId?.trim()) itemBody.append("sub_category_id", subCategoryId.trim());
-		itemBody.append("category_id", categoryId || "");
-		itemBody.append("item_type_id", itemTypeId || "");
-		itemBody.append("tags", JSON.stringify(tagsId || []));
-		if (itemInternalName?.trim()) itemBody.append("internal_name", itemInternalName.trim());
-		itemBody.append("add_ons", JSON.stringify(addOnsId || []));
-		// itemBody.append("stock_quantity", String(stockQuantity || ""));
-		itemBody.append("attributes", JSON.stringify(checkedAttributes || []));
-
-		images.forEach((image) => {
-			if (image.file instanceof File) {
-				itemBody.append("image_files_added", image.file);
-			} else if (image.file === null && image.previewURL) {
-				itemBody.append("image_files_added", image.previewURL);
-			}
-		});
-
-		if (isEditModal && removedImages.length > 0) {
-			itemBody.append("images_deleted", JSON.stringify(removedImages));
-		}
-
-		try {
-			await upsertItemApi(
-				itemBody,
-				() => {
-					onClose();
-					setCallApi((val) => !val);
-					setLoading(false);
-					ShowNotification("Success", "success");
-				},
-				(message: any) => {
-					ShowNotification(message.error, "error");
-					setLoading(false);
-				},
-				() => {
-					logoutUser(router);
-				}
-			);
-		} catch (error) {
-			console.error("Error:", error);
-			setLoading(false);
-		}
-	};
-
-	const onChooseIconClick = () => {
-		if (fileInputTriggerRef.current) {
-			fileInputTriggerRef.current.click();
-		}
-	};
-
-	const createPreviewURL = (file: File): string => URL.createObjectURL(file);
-
-	const onFilePick = (files: File[] | File | null) => {
-		if (files) {
-			const fileArray = Array.isArray(files) ? files : [files];
-
-			const newImages = fileArray.map((file) => {
-				const previewURL = createPreviewURL(file);
-				return { file, previewURL };
+	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const files = Array.from(e.target.files ?? []);
+		if (!files.length) return;
+		const newImages = files.map(f => ({ file: f, previewURL: URL.createObjectURL(f) }));
+		if (replaceIndex !== null) {
+			setImages(prev => {
+				const updated = [...prev];
+				// eslint-disable-next-line prefer-destructuring
+				updated[replaceIndex] = newImages[0];
+				return [...updated, ...newImages.slice(1)];
 			});
-
-			if (replaceIndex !== null) {
-				setImages((prevImages) => {
-					const updatedImages = [...prevImages];
-					const [firstNewImage, ...restNewImages] = newImages;
-					updatedImages[replaceIndex] = firstNewImage;
-					return [...updatedImages, ...restNewImages];
-				});
-				setReplaceIndex(null);
-			} else {
-				setImages((prevImages) => [...prevImages, ...newImages]);
-			}
+			setReplaceIndex(null);
+		} else {
+			setImages(prev => [...prev, ...newImages].slice(0, MAX_IMAGES));
 		}
+		e.target.value = "";
 	};
 
 	const handleRemoveImage = (index: number, url: string) => {
-		setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+		setImages(prev => prev.filter((_, i) => i !== index));
 		if (url && !url.startsWith("blob:")) {
-			setRemovedImages((prevRemovedImages) => [...prevRemovedImages, url]);
+			setRemovedImages(prev => [...prev, url]);
 		}
 	};
 
 	const handleReplaceImage = (index: number) => {
 		setReplaceIndex(index);
-		if (fileInputTriggerRef.current) {
-			fileInputTriggerRef.current.click();
+		fileInputRef.current?.click();
+	};
+
+	const handleDiscard = () => {
+		setSku(initialProductValue.sku);
+		setName(initialProductValue.name);
+		setSize(initialProductValue.size);
+		setColor(initialProductValue.color);
+		setCategoryId(initialProductValue.category_id);
+		setPrice(initialProductValue.price);
+		setQuantity(initialProductValue.quantity);
+		setStatus(initialProductValue.status);
+		setImages(initialProductValue.images?.map(url => ({ file: null, previewURL: url })) ?? []);
+		setRemovedImages([]);
+		setNameError(null);
+	};
+
+	const handleSubmit = async () => {
+		if (!name.trim()) { setNameError("Product name is required"); return; }
+		setNameError(null);
+		setLoading(true);
+
+		const body = new FormData();
+		body.append("id", initialProductValue.product_id ?? "");
+		body.append("sku", sku);
+		body.append("name", name);
+		body.append("size", String(size));
+		body.append("color", color);
+		body.append("category_id", categoryId);
+		body.append("price", String(price));
+		body.append("quantity", String(quantity));
+		body.append("status", status);
+		images.forEach(img => {
+			if (img.file instanceof File) body.append("image_files_added", img.file);
+			else if (img.previewURL) body.append("image_files_added", img.previewURL);
+		});
+		if (isEdit && removedImages.length > 0) {
+			body.append("images_deleted", JSON.stringify(removedImages));
 		}
+
+		try {
+			await upsertProductApi(
+				body,
+				() => { onClose(); setCallApi(v => !v); ShowNotification("Success", "success"); setLoading(false); },
+				(msg: any) => { ShowNotification(msg.error ?? msg, "error"); setLoading(false); },
+				() => { logoutUser(router); }
+			);
+		} catch { setLoading(false); }
 	};
 
-	const handleCheckboxChange = (custom_attribute_id: string) => {
-		setAttributesState((prevState) => ({
-			...prevState,
-			[custom_attribute_id]: {
-				...prevState[custom_attribute_id],
-				checked: !prevState[custom_attribute_id]?.checked,
-			},
-		}));
+	// ── Photo slot renderer ──────────────────────────────────────
+	const renderPhotoSlots = () => {
+		const slots = Array.from({ length: MAX_IMAGES });
+		return slots.map((_, i) => {
+			const img = images[i];
+			return (
+				<BoxComponent
+					key={i}
+					style={{
+						width: "calc(50% - 6px)",
+						aspectRatio: "1",
+						borderRadius: 10,
+						border: "1.5px dashed #d1d5db",
+						backgroundColor: img ? "#f9fafb" : "#f3f4f6",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+						position: "relative",
+						overflow: "hidden",
+						cursor: img ? "default" : "pointer",
+					}}
+					onClick={!img ? () => fileInputRef.current?.click() : undefined}
+				>
+					{img ? (
+						<>
+							{/* eslint-disable-next-line jsx-a11y/img-redundant-alt */}
+							<img
+								src={img.previewURL}
+								alt={`Photo ${i + 1}`}
+								style={{ width: "100%", height: "100%", objectFit: "cover" }}
+							/>
+							{/* Overlay controls */}
+							<div
+								style={{
+									position: "absolute",
+inset: 0,
+									backgroundColor: "rgba(0,0,0,0.35)",
+									display: "flex",
+alignItems: "center",
+									justifyContent: "center",
+gap: 8,
+									opacity: 0,
+transition: "opacity 0.2s",
+								}}
+								className="image-overlay"
+								// eslint-disable-next-line no-return-assign
+								onMouseEnter={e => e.currentTarget.style.opacity = "1"}
+								// eslint-disable-next-line no-return-assign
+								onMouseLeave={e => (e.currentTarget.style.opacity = "0")}
+							>
+								<ActionIconComponent
+									size="sm"
+									color="white"
+									variant="transparent"
+									onClick={() => handleReplaceImage(i)}
+								>
+									<MdOutlineEdit size={16} />
+								</ActionIconComponent>
+								<ActionIconComponent
+									size="sm"
+									color="red"
+									variant="transparent"
+									onClick={() => handleRemoveImage(i, img.previewURL)}
+								>
+									<MdOutlineDeleteForever size={16} />
+								</ActionIconComponent>
+							</div>
+						</>
+					) : (
+						<BoxComponent style={{ textAlign: "center", color: "#9ca3af" }}>
+							<MdOutlineImage size={28} />
+							<Text size="xs" mt={4}>Photo {i + 1}</Text>
+						</BoxComponent>
+					)}
+				</BoxComponent>
+			);
+		});
 	};
 
-	const handleInputChange = (custom_attribute_id: string, value: string) => {
-		setAttributesState((prevState) => ({
-			...prevState,
-			[custom_attribute_id]: {
-				...prevState[custom_attribute_id],
-				value,
-			},
-		}));
-	};
-
-	const checkedAttributes = useMemo(
-		() =>
-			Object.entries(attributesState)
-				.filter(([, value]) => value.checked)
-				.map(([key, value]) => ({
-					attribute_id: key,
-					value: value.value,
-				})),
-		[attributesState],
+	// ── Product Information form fields ─────────────────────────
+	const formFields = (
+		<StackComponent gap={12}>
+			<TextInputComponent
+				label="SKU"
+				value={sku}
+				setValue={setSku}
+				placeholder="Input no SKU"
+				title="SKU"
+			/>
+			<TextInputComponent
+				required
+				label="Product Name"
+				value={name}
+				setValue={setName}
+				placeholder="Input product name"
+				title="Product Name"
+				error={nameError}
+			/>
+			<GroupComponent grow gap={12}>
+				<TextInputComponent
+					label="Size"
+					value={size}
+					setValue={setSize}
+					placeholder="Input Price"
+					title="Size"
+				/>
+				<TextInputComponent
+					label="Color"
+					value={color}
+					setValue={setColor}
+					placeholder="Color"
+					title="Color"
+				/>
+			</GroupComponent>
+			<SelectComponent
+				required
+				label="Product Category"
+				data={categories}
+				value={categoryId}
+				setValue={setCategoryId}
+				placeholder="Select product category"
+				clearable={false}
+				checkIconPosition="right"
+			/>
+			<NumberInputComponent
+				label="Price"
+				value={price}
+				setValue={setPrice}
+				placeholder="Input Price"
+				title="Price"
+				min={0}
+			/>
+			<NumberInputComponent
+				label="Quantity"
+				value={quantity}
+				setValue={setQuantity}
+				placeholder="Input stock"
+				title="Quantity"
+				min={0}
+			/>
+			<SelectComponent
+				label="Status Product"
+				data={STATUS_OPTIONS}
+				value={status}
+				setValue={setStatus}
+				placeholder="Select status product"
+				clearable={false}
+				checkIconPosition="right"
+			/>
+		</StackComponent>
 	);
 
-	const renderMultiSelectOption: MultiSelectProps["renderOption"] = ({
-		option,
-	}) => (
-		<GroupComponent gap="sm">
-			<AvatarComponent
-				src={addOnData[option.value]?.icon}
-				size={36}
-				radius="xl"
-			/>
-			<div>
-				<TextComponent text={addOnData[option.value].label} />
-				<TextComponent
-					opacity={0.5}
-					text={addOnData[option.value]?.price}
-				/>
-			</div>
-		</GroupComponent>
+	// ── Image section ───────────────────────────────────────────
+	const imageSection = (
+		<BoxComponent>
+			<Text size="xs" c="dimmed" mb={10}>
+				<Text component="span" c="orange" fw={600}>Note: </Text>
+				Format photos SVG, PNG, or JPG (Max size 4mb)
+			</Text>
+			<GroupComponent gap={12} wrap="wrap">
+				{renderPhotoSlots()}
+			</GroupComponent>
+		</BoxComponent>
 	);
 
 	return (
-		<ModalComponent
-			fullScreen
-			opened={isOpen}
-			onClose={onClose}
-			title={
-				<TitleComponent
-					title={isEditModal ? "Edit Item" : "Add New Item"}
-				/>
-			}
-		>
-			<FieldsetComponent
-				legend={
-					<TitleComponent title="Product Information" order={5} />
-				}
-			>
-				<StackComponent>
-					<SimpleGridComponent
-						cols={{
-							sm: 2,
-							md: 3,
-							lg: 3,
-							xl: 3,
-							base: 1,
-						}}
-					>
-						<TextInputComponent
-							required
-							title="Name"
-							value={itemName}
-							label="Item Name"
-							error={inputError}
-							setValue={setItemName}
-							placeholder="Enter Item Name"
-						/>
-						<TextInputComponent
-							value={itemInternalName}
-							title="Internal Name"
-							label="Internal Name"
-							setValue={setItemInternalName}
-							placeholder="Enter Internal Name"
-						/>
-						<TextInputComponent
-							required
-							title="SKU"
-							label="SKU"
-							value={sku}
-							error={inputError}
-							setValue={setSku}
-							placeholder="Enter SKU"
-						/>
-						{/*<NumberInputComponent*/}
-						{/*	required*/}
-						{/*	error={inputError}*/}
-						{/*	value={stockQuantity}*/}
-						{/*	title="Stock Quantity"*/}
-						{/*	label="Stock Quantity"*/}
-						{/*	setValue={setStockQuantity}*/}
-						{/*	placeholder="Enter Stock Quantity"*/}
-						{/*/>*/}
-						<NumberInputComponent
-							min={0}
-							required
-							value={price}
-							setValue={setPrice}
-							title="Selling Price"
-							label="Selling Price"
-							error={inputPriceError}
-							placeholder="Enter Price"
-						/>
-						<NumberInputComponent
-							min={0}
-							required
-							title="MSRP"
-							label="MSRP"
-							value={MSRP}
-							error={inputError}
-							setValue={setMSRP}
-							placeholder="Enter MSRP"
-						/>
-					</SimpleGridComponent>
-
-					<SimpleGridComponent
-						cols={{
-							sm: 2,
-							md: 2,
-							lg: 2,
-							xl: 2,
-							base: 1,
-						}}
-					>
-						<TextAreaInputComponent
-							value={shortDesc}
-							resize="vertical"
-							error={inputError}
-							setValue={setShortDesc}
-							title="Short Description"
-							label="Short Description"
-							placeholder="Enter Short Description"
-						/>
-					</SimpleGridComponent>
-
-					{/*<GroupComponent grow>*/}
-					{/*	<TextAreaInputComponent*/}
-					{/*		value={shortDesc}*/}
-					{/*		resize="vertical"*/}
-					{/*		error={inputError}*/}
-					{/*		setValue={setShortDesc}*/}
-					{/*		title="Short Description"*/}
-					{/*		label="Short Description"*/}
-					{/*		placeholder="Enter Short Description"*/}
-					{/*	/>*/}
-					{/*	<TextAreaInputComponent*/}
-					{/*		value={longDesc}*/}
-					{/*		resize="vertical"*/}
-					{/*		title="Description"*/}
-					{/*		label="Description"*/}
-					{/*		setValue={setLongDesc}*/}
-					{/*		placeholder="Enter Description"*/}
-					{/*	/>*/}
-					{/*</GroupComponent>*/}
-				</StackComponent>
-			</FieldsetComponent>
-
-			<SpaceComponent showHeight />
-
-			<FieldsetComponent
-				legend={<TitleComponent title="Images" order={5} />}
-			>
-				<ScrollAreaComponent h={200} w="100%" scrollbars="x">
-					<GroupComponent
-						gap={10}
-						w={(images.length + 1) * 170}
-						maw={(images.length + 1) * 170}
-					>
-						<FileInputComponent
-							required
-							className="hidden"
-							onChange={onFilePick}
-							ref={fileInputTriggerRef}
-							placeholder="Category icon"
-							label="Please select category icon"
-						/>
-						{images.map((img, index) => (
-							<StackComponent
-								gap={10}
-								h={180}
-								mah={180}
-								maw={160}
-								w={160}
-							>
-								<ImageComponent
-									w={160}
-									h={140}
-									src={img.previewURL ? img.previewURL : img}
-									mih={140}
-									fit="cover"
-								/>
-								<GroupComponent
-									h={30}
-									gap={0}
-									mah={30}
-									justify="center"
-								>
-									<ActionIconComponent
-										h={30}
-										w={30}
-										mr={5}
-										size="xs"
-										color="red"
-										onClick={() => handleRemoveImage(index, img.previewURL ? img.previewURL : "")}
-									>
-										<MdOutlineDeleteForever size={18} />
-									</ActionIconComponent>
-
-									<ActionIconComponent
-										h={30}
-										w={30}
-										ml={5}
-										size="xs"
-										onClick={() =>
-											handleReplaceImage(index)
-										}
-									>
-										<MdOutlineEdit size={18} />
-									</ActionIconComponent>
-								</GroupComponent>
-							</StackComponent>
-						))}
-						<StackComponent
-							h={180}
-							w={160}
-							align="center"
-							justify="center"
-							onClick={onChooseIconClick}
-							className="cursor-pointer border border-dashed flex flex-col items-center justify-center rounded-md border-primary-darker text-primary-darker"
+		<>
+			{/* Breadcrumb */}
+			<BoxComponent mb={20} className="pt-4 pl-5">
+				<GroupComponent align="flex-start">
+					<Tooltip label="Back to Products" position="left">
+						<ActionIconComponent
+							size="lg"
+							variant="subtle"
+							onClick={onClose}
 						>
-							<ImageIcon size={50} />
-							<p className="text-center mt-0.5">Choose an Icon</p>
-						</StackComponent>
-					</GroupComponent>
-				</ScrollAreaComponent>
-			</FieldsetComponent>
-
-			<SpaceComponent showHeight />
-
-			<FieldsetComponent
-				legend={<TitleComponent title="Other Arrtributes" order={5} />}
-			>
-				<SimpleGridComponent
-					cols={{
-						sm: 2,
-						md: 3,
-						lg: 3,
-						xl: 3,
-						base: 1,
-					}}
-				>
-					<SelectComponent
-						required
-						data={categories}
-						clearable={false}
-						value={categoryId}
-						label="Select category"
-						setValue={setCategoryId}
-						checkIconPosition="right"
-						placeholder="Select category"
-					/>
-					{subCategoryList.length > 0 && (
-						<SelectComponent
-							clearable={false}
-							value={subCategoryId}
-							data={subCategoryList}
-							checkIconPosition="right"
-							label="Select sub-category"
-							setValue={setSubCategoryId}
-							placeholder="Select sub-category"
-							rightSection={
-								searchLoading && <LoaderComponent size={20} />
-							}
-						/>
-					)}
-					<SelectComponent
-						required
-						label="Item type"
-						clearable={false}
-						value={itemTypeId}
-						data={itemTypesList}
-						placeholder="Item type"
-						setValue={setItemTypeId}
-						checkIconPosition="right"
-					/>
-					<MultiSelectComponent
-						required
-						label="Tags"
-						value={tagsId}
-						data={tagsList}
-						clearable={false}
-						placeholder="Tags"
-						setValue={setTagsId}
-						checkIconPosition="right"
-					/>
-					<MultiSelectComponent
-						label="Add-ons"
-						value={addOnsId}
-						data={addOnsList}
-						clearable={false}
-						placeholder="Add-ons"
-						setValue={setAddOnsId}
-						checkIconPosition="right"
-						renderOption={renderMultiSelectOption}
-					/>
-				</SimpleGridComponent>
-			</FieldsetComponent>
-
-			<SpaceComponent showHeight />
-
-			<FieldsetComponent
-				legend={<TitleComponent title="Custom Arrtribute" order={5} />}
-			>
-				<SimpleGridComponent
-					cols={{
-						sm: 2,
-						md: 3,
-						lg: 3,
-						xl: 3,
-						base: 1,
-					}}
-				>
-					{customAttributesList.map((element, index) => (
-						<GroupComponent align="start" key={index}>
-							<CheckboxComponent
-								mt={7}
-								checked={
-									attributesState[element.custom_attribute_id]?.checked || false
-								}
-								onChecked={() =>
-									handleCheckboxChange(
-										element.custom_attribute_id,
-									)
-								}
-							/>
-							<TextInputComponent
-								title={element.name}
-								label={element.name}
-								className="flex-grow"
-								placeholder="Enter Item Name"
-								setValue={(value) =>
-									handleInputChange(
-										element.custom_attribute_id,
-										value,
-									)
-								}
-								value={
-									attributesState[element.custom_attribute_id]
-										?.value || ""
-								}
-							/>
-						</GroupComponent>
-					))}
-				</SimpleGridComponent>
-			</FieldsetComponent>
-
-			<SpaceComponent showHeight />
-
-			<BoxComponent h={60} className="mt-3">
-				<GroupComponent justify="end">
-					<ButtonComponent
-						title="Close"
-						variant="subtle"
-						color={appAccentColorRGBA}
-						onClick={onClose}
-						/>
-					<ButtonComponent
-						w={100}
-						title="Save"
-						loading={loading}
-						onClick={handleSubmitItem}
-						/>
+							<MdArrowBack size={20} />
+						</ActionIconComponent>
+					</Tooltip>
+					<BoxComponent>
+						<Text fw={700} size="xl">Product</Text>
+						<Text size="xs" c="dimmed">
+							Dashboard &rsaquo; Product &rsaquo; Sneakers &rsaquo;{" "}
+							<Text component="span" c="blue" fw={600}>
+								{isEdit ? "Edit Product" : "Add Product"}
+							</Text>
+						</Text>
+					</BoxComponent>
 				</GroupComponent>
 			</BoxComponent>
-		</ModalComponent>
+			<input
+				ref={fileInputRef}
+				type="file"
+				accept="image/svg+xml,image/png,image/jpeg"
+				multiple
+				style={{ display: "none" }}
+				onChange={handleFileChange}
+			/>
+
+			{/* ── Desktop layout ── */}
+			<BoxComponent visibleFrom="sm" className="px-6">
+				<GroupComponent align="flex-start" gap={20} wrap="nowrap">
+					{/* Left: Product Information */}
+					<PaperComponent
+						style={{ flex: 1, borderRadius: 12, padding: 24 }}
+						>
+						<Text fw={600} size="md" mb={4}>Product Information</Text>
+						<Text size="xs" c="dimmed" mb={16}>
+							Lorem ipsum dolor sit amet consectetur. Non ac nulla
+							aliquam asnean in velit mattis.
+						</Text>
+						{formFields}
+					</PaperComponent>
+
+					{/* Right: Image Product */}
+					<BoxComponent style={{ width: 280, flexShrink: 0 }}>
+						<PaperComponent style={{ borderRadius: 12, padding: 24 }}>
+							<Text fw={600} size="md" mb={16}>Image Product</Text>
+							{imageSection}
+						</PaperComponent>
+
+						{/* Desktop action buttons */}
+						<GroupComponent justify="flex-end" mt={16} gap={10}>
+							{isEdit && (
+							<ButtonComponent
+								variant="default"
+								onClick={handleDiscard}
+									>
+								Discard Changes
+							</ButtonComponent>
+								)}
+							<ButtonComponent
+								loading={loading}
+								onClick={handleSubmit}
+								>
+								{isEdit ? "Save Changes" : "Save Product"}
+							</ButtonComponent>
+						</GroupComponent>
+					</BoxComponent>
+				</GroupComponent>
+			</BoxComponent>
+
+			{/* ── Mobile layout ── */}
+			<BoxComponent hiddenFrom="sm">
+				<PaperComponent style={{ borderRadius: 12, padding: 16, marginBottom: 16 }}>
+					<Text fw={600} size="md" mb={4}>Product Information</Text>
+					<Text size="xs" c="dimmed" mb={16}>
+						Lorem ipsum dolor sit amet consectetur. Non ac nulla
+						aliquam asnean in velit mattis.
+					</Text>
+					{formFields}
+				</PaperComponent>
+
+				<PaperComponent style={{ borderRadius: 12, padding: 16, marginBottom: 80 }}>
+					<Text fw={600} size="md" mb={16}>Image Product</Text>
+					{imageSection}
+				</PaperComponent>
+
+				{/* Mobile sticky footer button */}
+				<BoxComponent
+					style={{
+							position: "fixed",
+							bottom: 0,
+left: 0,
+right: 0,
+							padding: "12px 16px",
+							backgroundColor: "#fff",
+							borderTop: "1px solid #e5e7eb",
+							zIndex: 100,
+						}}
+					>
+					<GroupComponent gap={10} justify="flex-end">
+						{isEdit && (
+						<ButtonComponent variant="default" onClick={handleDiscard}>
+							Discard
+						</ButtonComponent>
+							)}
+						<ButtonComponent
+							loading={loading}
+							onClick={handleSubmit}
+							style={{ flex: isEdit ? undefined : 1 }}
+							>
+							{isEdit ? "Save Changes" : "Save Product"}
+						</ButtonComponent>
+					</GroupComponent>
+				</BoxComponent>
+			</BoxComponent>
+		</>
 	);
 };
-
-export default AddItemModal;
+export default AddProductModal;

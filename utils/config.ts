@@ -39,7 +39,7 @@ export const commonColor: string = "#777";
 
 /** Mantine Variables */
 export const mantineH2Size: number = 18;
-export const appColorRGBA: MantineColor = "rgba(116, 105, 182, 1)";
+export const appColorRGBA: MantineColor = "#1A71F6";
 export const appAccentColorRGBA: MantineColor = "rgba(238,66,102,1)";
 export const mantineSize: MantineSize = "md";
 export const mantineButtonHeight: number = 36;

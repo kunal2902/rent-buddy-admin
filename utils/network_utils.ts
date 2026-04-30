@@ -1216,41 +1216,47 @@ export const deleteItemTypeApi = async (
 };
 
 // Item api
-export const getItemApi = async (
-	query: string | undefined,
-	successCallback: (arg0: any) => void,
-	errorCallback: (arg0: any) => void,
-	logoutCallback: () => void,
+// Add this dummy API alongside getItemApi
+export const getProductApi = async (
+	query: string,
+	successCallback: (data: any) => void,
 ) => {
-	const token = getCrmJWT();
-	if (token === null || token === "" || token === "null") {
-		logoutCallback();
-		return;
-	}
-	const path = query === "" ? itemAPIPath : `${itemAPIPath}?${query}`;
-	console.log("Making request to:", path);
-	const response = await makeGetRequest(path, {
-		Authorization: `Bearer ${token}`,
-	});
-	console.log("API Response:", response); // Debug log
+	// TODO: Replace with real API call when ready
+	// const token = getCrmJWT();
+	// if (!token || token === "null") { logoutCallback(); return; }
+	// const path = query ? `${productAPIPath}?${query}` : productAPIPath;
+	// const response = await makeGetRequest(path, { Authorization: `Bearer ${token}` });
 
-	if (isDebug) {
-		console.log(response);
-	}
-	switch (response.code) {
-		case 200:
-			successCallback(response.data);
-			break;
-		case 403:
-		case 420:
-		case 498:
-		case 499:
-			logoutCallback();
-			break;
-		default:
-			errorCallback(response.message);
-			toast.error(response.message);
-	}
+	const CATEGORIES = [
+		{ id: "ac", name: "Air Conditioner", count: 50 },
+		{ id: "ref1", name: "Refrigerator", count: 26 },
+		{ id: "mic", name: "Microwave", count: 121 },
+		{ id: "ref2", name: "Refrigerator", count: 21 },
+	];
+
+	const DUMMY_PRODUCTS = Array.from({ length: 10 }, (_, i) => ({
+		product_id: "021231",
+		name: "Air Conditioner",
+		image: "",
+		price: 20.0,
+		size: 40,
+		qty: 234,
+		created_at: "2023-04-17T20:25:00",
+		status: i % 3 === 1 || i % 3 === 2 ? "Out of Stock" : "Available",
+		category: { name: "Air Conditioner", id: "ac" },
+	}));
+
+	successCallback({
+		products: DUMMY_PRODUCTS,
+		products_count: 130,
+		stats: {
+			total_products: 1245,
+			total_products_growth: 12,
+			low_stock_items: 18,
+			inventory_value: 284500,
+		},
+		categories: CATEGORIES,
+	});
 };
 
 export const getItemByIdApi = async (
@@ -1286,12 +1292,14 @@ export const getItemByIdApi = async (
 	}
 };
 
-export const upsertItemApi = async (
+// ── Add / Edit Product API ──────────────────────────────────────
+export const upsertProductApi = async (
 	body: any,
 	successCallback: (arg0: any) => void,
 	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
+	// TODO: replace productAPIPath with the real endpoint
 	const token = getCrmJWT();
 	if (token === null || token === "" || token === "null") {
 		logoutCallback();
@@ -1300,17 +1308,12 @@ export const upsertItemApi = async (
 	const response = await makePostRequest(itemAPIPath, body, {
 		authorization: `Bearer ${token}`,
 	});
-	if (isDebug) {
-		console.log(response);
-	}
+	if (isDebug) console.log(response);
 	switch (response.code) {
 		case 200:
 			successCallback(response.data);
 			break;
-		case 403:
-		case 420:
-		case 498:
-		case 499:
+		case 403: case 420: case 498: case 499:
 			logoutCallback();
 			break;
 		default:
@@ -1319,13 +1322,14 @@ export const upsertItemApi = async (
 	}
 };
 
-export const updateItemApi = async (
+export const updateProductApi = async (
 	id: string,
 	updateData: any,
 	successCallback: (arg0: any) => void,
 	errorCallback: (arg0: any) => void,
 	logoutCallback: () => void,
 ) => {
+	// TODO: replace with real product endpoint
 	const token = getCrmJWT();
 	if (token === null || token === "" || token === "null") {
 		logoutCallback();
@@ -1334,17 +1338,12 @@ export const updateItemApi = async (
 	const response = await makePutRequest(`${itemAPIPath}/${id}`, updateData, {
 		authorization: `Bearer ${token}`,
 	});
-	if (isDebug) {
-		console.log(response);
-	}
+	if (isDebug) console.log(response);
 	switch (response.code) {
 		case 200:
 			successCallback(response.data);
 			break;
-		case 403:
-		case 420:
-		case 498:
-		case 499:
+		case 403: case 420: case 498: case 499:
 			logoutCallback();
 			break;
 		default:
